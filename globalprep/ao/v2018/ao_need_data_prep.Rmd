@@ -28,7 +28,7 @@ None
 ***
 #Data Source 
 
-**Downloaded**: 8/17/2017
+**Downloaded**: 3/9/2018
 
 **Description**:  
 GDP adjusted per capita by PPP (ppppcgdp)
@@ -62,7 +62,7 @@ library(stringr)
 library(readr)
 
 # comment out when knitting:
-# setwd("globalprep/ao/v2017")
+# setwd("globalprep/ao/v2018")
 
 # directory paths
 source('../../../src/R/common.R')
@@ -80,6 +80,7 @@ yr_end   = 2016
 
 ## get description of variables (NOTE: these descriptions appear out of date, they aren't in sync with the definitions of the World Bank):
 indicators <-  data.frame(WDI_data[[1]])
+
 #indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
 indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars 
 
@@ -95,7 +96,7 @@ write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE)
 
 ## Within country gapfilling
 
-When a country has some values, a within country regression model is used to predict the missing values.
+When a country has some values (but not a complete series), a within country regression model is used to predict the missing values.
 
 ```{r}
 
@@ -139,22 +140,23 @@ d_gf <- d_gf %>%
   
 ```
 
-## Calculate standardized values
+## Calculate rescaled values
 This is performed by taking the natural log of each value and then dividing by the 95th quantile of values across all years (from 2005 to 2016). 
 
 ```{r}
 
-d_stand <- d_gf %>%
+d_rescale <- d_gf %>%
   mutate(quantile_95 = quantile(value, probs=0.95)) %>%
   mutate(value_stand = value/quantile_95) %>%
   mutate(value_stand = ifelse(value_stand > 1, 1, value_stand))
 
-d_stand <- d_stand %>%
+d_rescale <- d_rescale %>%
   select(country, year, value, score=value_stand, gapfilled, method)
 
-plotData <- d_stand %>%
-  mutate(need = 1-score) %>%
-  dplyr::select(country, year, need)
+# check the data with some plots
+# plotData <- d_stand %>%
+#   mutate(need = 1-score) %>%
+#   dplyr::select(country, year, need)
 
 # library(googleVis)
 #
@@ -173,7 +175,7 @@ plotData <- d_stand %>%
 ```{r}
 
 ### Function to convert to OHI region ID
-d_stand_rgn <- name_2_rgn(df_in = d_stand, 
+d_stand_rgn <- name_2_rgn(df_in = d_rescale, 
                        fld_name='country', 
                        flds_unique=c('year'))
 
