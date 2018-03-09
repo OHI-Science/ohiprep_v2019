@@ -83,11 +83,25 @@ indicators <-  data.frame(WDI_data[[1]])
 
 #indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
 indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars 
+indicators[4460:4461, c(1,2,3)]  # [rows, columns]
 
 # download the data
 gdppcppp = WDI(country = "all",
                indicator = "NY.GDP.PCAP.PP.KD", 
                start = yr_start, end=yr_end)
+
+if (!file.exists("raw")){
+  dir.create("raw")
+} 
+
+if (!file.exists("intermediate")){
+  dir.create("intermediate")
+} 
+
+if (!file.exists("final")){
+  dir.create("final")
+} 
+
 
 write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE)
 
