@@ -81,15 +81,19 @@ yr_end   = 2016
 ## get description of variables (NOTE: these descriptions appear out of date, they aren't in sync with the definitions of the World Bank):
 indicators <-  data.frame(WDI_data[[1]])
 
+head(indicators)
+
 #indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
 indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars 
+?grep
 
 # download the data
 gdppcppp = WDI(country = "all",
                indicator = "NY.GDP.PCAP.PP.KD", 
                start = yr_start, end=yr_end)
 
-write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE)
+write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE) #make sure to have a folder in your working directory named raw
+
 
 ```
 
@@ -107,15 +111,15 @@ d <- read.csv('raw/raw_gdppcppp.csv') %>%
   spread(year, value) %>%  ## fill in potentially missing values with NA
   data.frame() %>%
   gather(year, value, starts_with("X")) %>%
-  mutate(year = gsub("X", "", year)) %>%
-  mutate(year = as.numeric(year))
+  mutate(year = gsub("X", "", year)) %>% #sunstitute X for "" (nothing)in the columne year
+  mutate(year = as.numeric(year)) #give the column year a numeric values
 
 ## for the first case, if there is only one value use this value for all years
 ## this is not ideal, but likely better than other forms of gapfilling
 
 d <- d %>%
   group_by(country) %>%
-  mutate(value_num = sum(!is.na(value))) %>%
+  mutate(value_num = sum(!is.na(value))) %>% #creating a column called value_num, where it sums the value column. 
   filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2015   
   mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%
   ungroup() %>%
