@@ -81,23 +81,31 @@ yr_end   = 2016
 ## get description of variables (NOTE: these descriptions appear out of date, they aren't in sync with the definitions of the World Bank):
 indicators <-  data.frame(WDI_data[[1]])
 
+head(indicators)
+
 #indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
-#indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars (download this data)
+indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars. grep helps identify rows to select based on a string. (used this data)
 
 # download the data
 gdppcppp = WDI(country = "all",
                indicator = "NY.GDP.PCAP.PP.KD", 
                start = yr_start, end=yr_end)
 
-# check if file 'raw' exists, if not create the folder
-if(!file.exists("raw")){
-  
-  dir.create("raw")
-  
-}
 
-# save data table into 'raw' folder
-write.csv(gdppcppp, './raw/raw_gdppcppp.csv', row.names=FALSE)
+# check if 'raw', 'intermediate', and 'final' exists, if not, then create the folder in the working directory
+if (!file.exists("raw")){
+  dir.create("raw")
+} 
+
+if (!file.exists("intermediate")){
+  dir.create("intermediate")
+} 
+
+if (!file.exists("final")){
+  dir.create("final")
+} 
+
+write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
 
 ```
 
@@ -108,24 +116,23 @@ When a country has some values (but not a complete series), a within country reg
 
 ```{r}
 
-
 d <- read.csv('raw/raw_gdppcppp.csv') %>%
   select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   filter(year >= 2005) %>%
   spread(year, value) %>%  ## fill in potentially missing values with NA
   data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
-  gather(year, value, starts_with("X")) %>% 
-  mutate(year = gsub("X", "", year)) %>%
-  mutate(year = as.numeric(year))
+  gather(year, value, starts_with("X")) %>%
+  mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
+  mutate(year = as.numeric(year)) #convert the year column into a numeric format
 
 ## for the first case, if there is only one value use this value for all years
 ## this is not ideal, but likely better than other forms of gapfilling
 
 d <- d %>%
   group_by(country) %>%
-  mutate(value_num = sum(!is.na(value))) %>%
-  filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2015   
-  mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>% # mean() function is just used to get the single value and remove all NAs in that group
+  mutate(value_num = sum(!is.na(value))) %>% # counts the numbers of non-NAs for each country (logical TRUEs regarded as one)
+  filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2016
+  mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%  # mean() function is just used to get the single value and remove all NAs in that group
   ungroup() %>%
   mutate(value = ifelse(is.na(value), value_num_gf, value)) %>%
   select(country, year, value, value_num)
@@ -185,7 +192,7 @@ d_rescale <- d_rescale %>%
 ### Function to convert to OHI region ID
 d_stand_rgn <- name_2_rgn(df_in = d_rescale, 
                        fld_name='country', 
-                       flds_unique=c('year'))
+                       flds_unique=c('year')) # cannot load look up tables
 
 
 ### Combine the duplicate regions (we report these at lower resolution)
