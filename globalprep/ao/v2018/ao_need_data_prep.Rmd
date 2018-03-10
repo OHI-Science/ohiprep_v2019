@@ -82,14 +82,22 @@ yr_end   = 2016
 indicators <-  data.frame(WDI_data[[1]])
 
 #indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
-indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars 
+#indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars (download this data)
 
 # download the data
 gdppcppp = WDI(country = "all",
                indicator = "NY.GDP.PCAP.PP.KD", 
                start = yr_start, end=yr_end)
 
-write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE)
+# check if file 'raw' exists, if not create the folder
+if(!file.exists("raw")){
+  
+  dir.create("raw")
+  
+}
+
+# save data table into 'raw' folder
+write.csv(gdppcppp, './raw/raw_gdppcppp.csv', row.names=FALSE)
 
 ```
 
@@ -105,8 +113,8 @@ d <- read.csv('raw/raw_gdppcppp.csv') %>%
   select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   filter(year >= 2005) %>%
   spread(year, value) %>%  ## fill in potentially missing values with NA
-  data.frame() %>%
-  gather(year, value, starts_with("X")) %>%
+  data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
+  gather(year, value, starts_with("X")) %>% 
   mutate(year = gsub("X", "", year)) %>%
   mutate(year = as.numeric(year))
 
@@ -117,7 +125,7 @@ d <- d %>%
   group_by(country) %>%
   mutate(value_num = sum(!is.na(value))) %>%
   filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2015   
-  mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%
+  mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>% # mean() function is just used to get the single value and remove all NAs in that group
   ungroup() %>%
   mutate(value = ifelse(is.na(value), value_num_gf, value)) %>%
   select(country, year, value, value_num)
