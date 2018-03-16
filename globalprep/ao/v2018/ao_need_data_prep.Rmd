@@ -88,7 +88,7 @@ head(indicators)
 indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars. grep helps identify rows to select based on a string. (used this data)
 
 
-# download the data
+# download the data - This is the data we are going to work with. Create a variable for the data frame
 gdppcppp = WDI(country = "all",
                indicator = "NY.GDP.PCAP.PP.KD", 
                start = yr_start, end=yr_end)
@@ -107,6 +107,7 @@ if (!file.exists("output")){
   dir.create("output")
 } 
 
+#Save the file into the raw folder
 write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
 
 ```
@@ -122,7 +123,7 @@ When a country has some values (but not a complete series), a within country reg
 d <- read.csv('raw/raw_gdppcppp.csv') %>%
   select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   filter(year >= 2005) %>%
-  spread(year, value) %>%  # fill in potentially missing values with NA
+  spread(year, value) %>%  # spread to fill in potentially missing values with NA
   data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
   gather(year, value, starts_with("X")) %>%
   mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
@@ -156,7 +157,7 @@ d_gf <- d %>%
 # These are those countries where number of non-NA values > 1
 d_gf <- d_gf %>%
   ungroup() %>%
-  mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled' that indicates whether gapfilling occurred
+  mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled' that indicates whether gapfilling occurred (1 for yes, 0 for no)
   mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>%
   mutate(value = ifelse(is.na(value), value_pred, value)) %>% # if missing value still, input the value in value_pred column
   mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling
