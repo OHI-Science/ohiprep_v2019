@@ -86,7 +86,7 @@ head(indicators)
 #indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
 indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars. grep helps identify rows to select based on a string. (used this data)
 
-# download the data
+# download the data - This is the data we are going to work with. Create a variable for the data frame
 gdppcppp = WDI(country = "all",
                indicator = "NY.GDP.PCAP.PP.KD", 
                start = yr_start, end=yr_end)
@@ -105,6 +105,7 @@ if (!file.exists("final")){
   dir.create("final")
 } 
 
+#Save the file into the raw folder
 write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
 
 ```
@@ -119,7 +120,7 @@ When a country has some values (but not a complete series), a within country reg
 d <- read.csv('raw/raw_gdppcppp.csv') %>%
   select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   filter(year >= 2005) %>%
-  spread(year, value) %>%  ## fill in potentially missing values with NA
+  spread(year, value) %>%  ## we spread to fill in potentially missing values with NA
   data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
   gather(year, value, starts_with("X")) %>%
   mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
@@ -137,17 +138,10 @@ d <- d %>%
   mutate(value = ifelse(is.na(value), value_num_gf, value)) %>%
   select(country, year, value, value_num)
 
-d_gf <- d %>%
-  group_by(country) %>%
-  do({
-    mod <- lm(value ~ year, data=.)
-    value_pred <- predict(mod, newdata=.[c('year')])
-    data.frame(., value_pred)
-  })
 
 d_gf <- d_gf %>%
   ungroup() %>%
-  mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>%
+  mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% #if value is NA fill in with 1 if not with 0
   mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>%
   mutate(value = ifelse(is.na(value), value_pred, value)) %>%
   mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>%
@@ -169,11 +163,11 @@ d_rescale <- d_rescale %>%
   select(country, year, value, score=value_stand, gapfilled, method)
 
 # check the data with some plots
-# plotData <- d_stand %>%
-#   mutate(need = 1-score) %>%
-#   dplyr::select(country, year, need)
+#plotData <- d_rescale %>%
+  # mutate(need = 1-score) %>%
+   #dplyr::select(country, year, need)
 
-# library(googleVis)
+# library(googleVis) ??
 #
 # Motion = gvisMotionChart(plotData,
 # idvar="country", timevar="year")
