@@ -130,18 +130,18 @@ d <- read.csv('raw/raw_gdppcppp.csv') %>%
 
 d <- d %>%
   group_by(country) %>%
-  mutate(value_num = sum(!is.na(value))) %>% # counts the numbers of non-NAs for each country (logical TRUEs regarded as one)
+  mutate(value_num = sum(!is.na(value))) %>% # counts the numbers of non-missing values for each country (logical TRUEs regarded as one)
   filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2016
   mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%  # mean() function is just used to get the single value and remove all NAs in that group
   ungroup() %>%
-  mutate(value = ifelse(is.na(value), value_num_gf, value)) %>%
+  mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave its, otherwise gapfill
   select(country, year, value, value_num)
 
 d_gf <- d %>%
   group_by(country) %>%
   do({
     mod <- lm(value ~ year, data=.)
-    value_pred <- predict(mod, newdata=.[c('year')])
+    value_pred <- predict(mod, newdata=.['year']) # do we need to `c()` here? removed c() around 'year' because we are only selecting one column.
     data.frame(., value_pred)
   })
 
