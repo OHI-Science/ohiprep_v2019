@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Fri Mar 16 08:10:59 2018 by ecampbell" />
+<meta name="author" content="Compiled on Fri Mar 16 08:41:24 2018 by ecampbell" />
 
 
 <title>OHI 2017 - Artisanal Opportunities: Preparing need data</title>
@@ -261,7 +261,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2017 - Artisanal Opportunities: Preparing need data</h1>
-<h4 class="author"><em><em>Compiled on Fri Mar 16 08:10:59 2018 by ecampbell</em></em></h4>
+<h4 class="author"><em><em>Compiled on Fri Mar 16 08:41:24 2018 by ecampbell</em></em></h4>
 
 </div>
 
@@ -377,19 +377,19 @@ d &lt;-<span class="st"> </span>d <span class="op">%&gt;%</span>
 <span class="co"># Create new column with these predicted values</span>
 d_gf &lt;-<span class="st"> </span>d <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(country) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">do</span>({
-    mod &lt;-<span class="st"> </span><span class="kw">lm</span>(value <span class="op">~</span><span class="st"> </span>year, <span class="dt">data=</span>.) <span class="co"># why is country not included in the lm?</span>
+<span class="st">  </span><span class="kw">do</span>({ 
+    mod &lt;-<span class="st"> </span><span class="kw">lm</span>(value <span class="op">~</span><span class="st"> </span>year, <span class="dt">data=</span>.) <span class="co"># why is country not included in the lm? -&gt; country not included as dummy var because grouping by country means linear models are already fitted by country</span>
     value_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(mod, <span class="dt">newdata=</span>.[<span class="st">'year'</span>])
     <span class="kw">data.frame</span>(., value_pred)
-  })
+  }) <span class="co"># do loop applies the model fitting and prediction to each country group</span>
 
 
 <span class="co"># Fill out the remaining NA values using the predicted values</span>
 <span class="co"># These are those countries where number of non-NA values &gt; 1</span>
 d_gf &lt;-<span class="st"> </span>d_gf <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gapfilled =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Create column 'gapfilled' that indicates whether gapfilling occurred (1 for yes, 0 for no)</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gapfilled =</span> <span class="kw">ifelse</span>(value_num <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, gapfilled)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gapfilled =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Create column 'gapfilled' that indicates whether gapfilling occurred (1 for yes, 0 for no); if value is currently NA, it will be gapfilled and gets a 1</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gapfilled =</span> <span class="kw">ifelse</span>(value_num <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, gapfilled)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># if value_num is 1 it was gapfilled previously and gets a 1</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">value =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), value_pred, value)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># if missing value still, input the value in value_pred column</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">method =</span> <span class="kw">ifelse</span>(gapfilled<span class="op">==</span><span class="dv">1</span>, <span class="kw">paste</span>(<span class="st">&quot;lm based on N years data:&quot;</span>, value_num, <span class="dt">sep=</span><span class="st">&quot; &quot;</span>), <span class="ot">NA</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Create column 'method' that indicates method of gapfilling</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">method =</span> <span class="kw">ifelse</span>(value_num <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="st">&quot;gapfilled using one year of data&quot;</span>, method))</code></pre></div>

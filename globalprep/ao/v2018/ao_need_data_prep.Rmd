@@ -146,19 +146,19 @@ d <- d %>%
 # Create new column with these predicted values
 d_gf <- d %>%
   group_by(country) %>%
-  do({
-    mod <- lm(value ~ year, data=.) # why is country not included in the lm?
+  do({ 
+    mod <- lm(value ~ year, data=.) # why is country not included in the lm? -> country not included as dummy var because grouping by country means linear models are already fitted by country
     value_pred <- predict(mod, newdata=.['year'])
     data.frame(., value_pred)
-  })
+  }) # do loop applies the model fitting and prediction to each country group
 
 
 # Fill out the remaining NA values using the predicted values
 # These are those countries where number of non-NA values > 1
 d_gf <- d_gf %>%
   ungroup() %>%
-  mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled' that indicates whether gapfilling occurred (1 for yes, 0 for no)
-  mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>%
+  mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled' that indicates whether gapfilling occurred (1 for yes, 0 for no); if value is currently NA, it will be gapfilled and gets a 1
+  mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>% # if value_num is 1 it was gapfilled previously and gets a 1
   mutate(value = ifelse(is.na(value), value_pred, value)) %>% # if missing value still, input the value in value_pred column
   mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling
   mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method))
