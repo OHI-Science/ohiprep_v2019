@@ -204,7 +204,7 @@ d_rescale <- d_rescale %>%
 # Function to add OHI region ID based on country name
 d_stand_rgn <- name_2_rgn(df_in = d_rescale, 
                        fld_name='country', 
-                       flds_unique=c('year')) # cannot load look up tables
+                       flds_unique=c('year')) # cannot load look up tables. 
 
 
 # Combine the duplicate regions (we report these at lower resolution)
