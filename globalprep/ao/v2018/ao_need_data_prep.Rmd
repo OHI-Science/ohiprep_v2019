@@ -216,10 +216,9 @@ population_weights <- read.csv('../../../../ohiprep_v2018/src/LookupTables/Pop_w
 d_stand_rgn <- d_stand_rgn %>%
   left_join(population_weights, by="country") %>%
   mutate(population = ifelse(is.na(population), 1, population)) %>% # If no value available, input 1 (these values will not change)
-  group_by(rgn_id, year, method) %>% 
+  group_by(rgn_id, year, method, gapfilled) %>% 
   summarize(score = weighted.mean(score, population), # weight the single score value by pop.
-            value = weighted.mean(value, population),
-            gapfilled = weighted.mean(gapfilled, population)) %>%
+            value = weighted.mean(value, population)) %>%
   ungroup() 
 
 
