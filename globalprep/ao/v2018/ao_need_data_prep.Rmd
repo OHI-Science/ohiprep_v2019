@@ -160,8 +160,8 @@ d_gf <- d_gf %>%
   mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled' that indicates whether gapfilling occurred (1 for yes, 0 for no); if value is currently NA, it will be gapfilled and gets a 1
   mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>% # if value_num is 1 it was gapfilled previously and gets a 1
   mutate(value = ifelse(is.na(value), value_pred, value)) %>% # if missing value still, input the value in value_pred column
-  mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling
-  mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method))
+  mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling; this puts message "lm based..." even in some rows gapfilled with one year of data
+  mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method)) # this overwrites/corrects method "lm based..." for rows actually gapfilled with "one-year of data"" method
   
 ```
 
