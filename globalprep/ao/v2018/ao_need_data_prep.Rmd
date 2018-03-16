@@ -222,7 +222,7 @@ d_stand_rgn <- d_stand_rgn %>%
   ungroup() 
 
 
-# Removed `Azerbaijan` (255) and `Aruba` (250)
+# Removed `Azerbaijan` (255) because the adjacent body of water is a sea not the ocean 
 d_stand_rgn <- d_stand_rgn %>%
   filter(rgn_id <= 250)
 
