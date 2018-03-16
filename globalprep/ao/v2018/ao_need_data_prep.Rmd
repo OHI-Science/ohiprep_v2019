@@ -138,8 +138,8 @@ d <- d %>%
   filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2016
   mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%  # mean() function is just used to get the single value and remove all NAs in that group
   ungroup() %>%
-  mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave it, otherwise gapfill
-  select(country, year, value, value_num)
+  mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave it, otherwise gapfill; still have NAs where 12 > value_num > 1
+  select(country, year, value, value_num) # select just these columns; to eliminate extraneous value_num_gf column
 
 
 # Predict values using a linear regression with 'year' as an independent variable 
