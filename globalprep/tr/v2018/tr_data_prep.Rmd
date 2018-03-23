@@ -174,13 +174,13 @@ avoid_nonessential travel: "defer non-essential travel"
 avoid_all: "avoid all travel"
 gtfo: get out!!!
 
-regional: added if the warning only applies to specific regions
+regional: added if the warning only applies to specific regions within a country
 
 The following code is used to clean these data and transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
 ```{r travel warnings}
 
 scores = data.frame(category = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"),
-                    score = c(0, 0.25, 0.75, 1, 1))
+                    score = c(0, 0.25, 0.75, 1, 1)) 
 
 warn <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
   select(year = assess_year, rgn_name, inform, risk, avoid_nonessential, avoid_all, gtfo, regional) %>%
