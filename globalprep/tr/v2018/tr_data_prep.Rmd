@@ -152,7 +152,7 @@ abline(0,1, col="red")
 
 ```
 
-#Tw: Travel warnings
+# Tw: Travel warnings
 
 Information is from the U.S. State Department (https://travel.state.gov/content/passports/en/alertswarnings.html)
 
@@ -191,7 +191,7 @@ warn <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
   mutate(regions = n()) 
 
 warn2 <- warn %>%
-  mutate(score = ifelse(regions %in% 1 & regional %in% 1, score*0.5, score)) %>%
+  mutate(score = ifelse(regions %in% 1 & regional %in% 1, score*0.5, score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
   summarize(score = mean(score)) %>%
   mutate(multiplier = 1-score) %>%
   select(year, rgn_name, multiplier) %>%
