@@ -56,10 +56,8 @@ We were able to update the following data:
 library(ohicore)
 
 source('../../../src/R/common.R')
-library(readr)
+library(tidyverse)
 library(stringr)
-library(dplyr)
-library(tidyr)
 library(WDI)
 
 ## maximum year of wttc data:
