@@ -16,8 +16,8 @@ output:
 
 [REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2017/tr_dataprep.html]
 
-#Summary
-This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2017 global assessment.
+# Summary
+This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2018 global assessment.
 
 The general calculation is:
 tr = Ep * Sr * Tw
@@ -29,12 +29,13 @@ Xtr = tr/90th quantile across regions
 * Tw = A penalty applied to regions with travel warnings from the US State Department
 
 The following data are used:
+
 * Tourism sustainability: TCCI
 * Proportion of workforce directly employed in tourism: (WEF)
 * Travel warnings: (U.S. State Department)
 * Per capita GDP: (World Bank with gaps filled using CIA data), used to gapfill missing values in Tourism sustainability
 
-#Updates from previous assessment
+# Updates from previous assessment
 We discovered that the WEF-Economics Global Competitiveness Index data used to estimate sustainability is not compatible across years.  New methods are used each year and previous year's of data are not recalculated using the updated methods. Consequently, we use the most recent data for all scenario years.  
 
 We were able to update the following data:
@@ -46,7 +47,7 @@ We were able to update the following data:
 # Some code to set everything up
 ```{r}
 
-#setwd('globalprep/tr/v2017') #comment out when knitting
+# setwd('/globalprep/tr/v2018') #comment out when knitting
 
 # library(devtools)
 # devtools::install_github("ohi-science/ohicore@dev") 
@@ -75,7 +76,7 @@ These data are cleaned and formatted using the R/process_WTTC.R script. Missing 
 ```{r wttc prop tourism}
 
 ## describe where the raw data are located:
-dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2017/raw')
+dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2018/raw')
 
 ## processing script that formats the WTTC for OHI, saves the following: intermediate/wttc_empd_rgn
 source('R/process_WTTC.R', local = TRUE)
