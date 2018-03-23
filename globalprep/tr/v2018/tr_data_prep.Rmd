@@ -46,7 +46,7 @@ We were able to update the following data:
 # Some code to set everything up
 ```{r}
 
-#setwd('globalprep/tr/v2017') #comment out when knitting
+#setwd('globalprep/tr/v2018') #comment out when knitting
 
 # library(devtools)
 # devtools::install_github("ohi-science/ohicore@dev") 
