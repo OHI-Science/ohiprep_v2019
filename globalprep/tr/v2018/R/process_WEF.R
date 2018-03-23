@@ -1,5 +1,5 @@
 ### process_WEF.R: 
-### Do not run stand-alone - source from main data_prep.R for TourismRecreation.
+### Do not run stand-alone - source from main tr_data_prep.Rmd for TourismRecreation.
 ###
 ### reformat and add rgn_ids to World Economic Forum (WEF) data 
 ### 
