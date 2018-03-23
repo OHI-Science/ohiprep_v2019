@@ -39,15 +39,16 @@ The following data are used:
 We discovered that the WEF-Economics Global Competitiveness Index data used to estimate sustainability is not compatible across years.  New methods are used each year and previous year's of data are not recalculated using the updated methods. Consequently, we use the most recent data for all scenario years.  
 
 We were able to update the following data:
+
 * Proportion of jobs in tourism 
 * Travel warnings for 2017 (downloaded: 8/11/2017)
 * Sustainability
 
 
 # Some code to set everything up
-```{r}
+```{r, message=FALSE, warning=FALSE}
 
-# setwd('/globalprep/tr/v2018') #comment out when knitting
+# setwd('globalprep/tr/v2018') #comment out when knitting
 
 # library(devtools)
 # devtools::install_github("ohi-science/ohicore@dev") 
