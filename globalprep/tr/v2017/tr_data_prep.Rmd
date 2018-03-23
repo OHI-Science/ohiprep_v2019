@@ -14,9 +14,9 @@ output:
 ---
 
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2017/tr_dataprep.html]
+[REFERENCE RMD FILE (knitted)](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2017/tr_dataprep.html)
 
-#Summary
+# Summary
 This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2017 global assessment.
 
 The general calculation is:
@@ -67,7 +67,7 @@ source('R/tr_fxns.R')
 ```
 
 
-#Ep: Proportion of workforce directly employed in tourism
+# Ep: Proportion of workforce directly employed in tourism
 These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/README.md for instructions on obtaining data). The data extend to 2027, but these values are projections.  The actual data goes to 2015.
 
 These data are cleaned and formatted using the R/process_WTTC.R script. Missing values are gapfilled using the UN georegion information.
@@ -152,7 +152,7 @@ abline(0,1, col="red")
 
 ```
 
-#Tw: Travel warnings
+# Tw: Travel warnings
 
 Information is from the U.S. State Department (https://travel.state.gov/content/passports/en/alertswarnings.html)
 
@@ -211,7 +211,7 @@ write.csv(warn_rgn, 'output/tr_travelwarnings.csv', row.names=FALSE)
 ```
 
 
-#Ts: Tourism sustainability
+# Ts: Tourism sustainability
 
 These data are from the World Economic Forum's "Travel and Tourism Competitiveness Report" (http://reports.weforum.org/travel-and-tourism-competitiveness-report-2015/downloads/) See mazu: _raw_data/WEF-Economics/ for more details and the raw data.
 
