@@ -48,7 +48,6 @@ We were able to update the following data:
 # Some code to set everything up
 ```{r, message=FALSE, warning=FALSE}
 
-
 #setwd('globalprep/tr/v2018') #comment out when knitting
 
 # library(devtools)
@@ -78,7 +77,7 @@ These data are cleaned and formatted using the R/process_WTTC.R script. Missing 
 ```{r wttc prop tourism}
 
 ## describe where the raw data are located:
-dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2018/raw')
+dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2017/raw')
 
 ## processing script that formats the WTTC for OHI, saves the following: intermediate/wttc_empd_rgn
 source('R/process_WTTC.R', local = TRUE)
