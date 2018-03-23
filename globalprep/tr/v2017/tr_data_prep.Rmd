@@ -20,8 +20,11 @@ output:
 This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2017 global assessment.
 
 The general calculation is:
+
 tr = Ep * Sr * Tw
+
 and
+
 Xtr = tr/90th quantile across regions
 
 * Ep = Proportion of workforce directly employed in tourism
@@ -29,6 +32,7 @@ Xtr = tr/90th quantile across regions
 * Tw = A penalty applied to regions with travel warnings from the US State Department
 
 The following data are used:
+
 * Tourism sustainability: TCCI
 * Proportion of workforce directly employed in tourism: (WEF)
 * Travel warnings: (U.S. State Department)
