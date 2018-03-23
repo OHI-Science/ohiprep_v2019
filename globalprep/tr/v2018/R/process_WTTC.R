@@ -1,5 +1,5 @@
 # process_WTTC.R
-# Do not run stand-alone - source from main data_prep.R for TourismRecreation.
+# Do not run stand-alone - source from main tr_data_prep.Rmd for TourismRecreation.
 #
 # Add rgn_ids for World Travel and Tourism Council (WTTC)
 # Previously had been named clean_WTTC.r (by JStewart May2013). This script created by JStewartLowndes Mar2014.
