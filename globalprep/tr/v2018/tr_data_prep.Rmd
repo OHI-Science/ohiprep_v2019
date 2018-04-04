@@ -60,7 +60,7 @@ library(stringr)
 library(WDI)
 
 ## maximum year of wttc data:
-year_max    <- 2015
+year_max <- 2015
 
 source('R/tr_fxns.R')
 
@@ -68,7 +68,7 @@ source('R/tr_fxns.R')
 
 
 #Ep: Proportion of workforce directly employed in tourism
-These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/README.md for instructions on obtaining data). The data extend to 2027, but these values are projections.  The actual data goes to 2015.
+These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/d2017/README.md for instructions on obtaining data). The data extend to 2027, but these values are projections.  The actual data goes to 2015.
 
 These data are cleaned and formatted using the R/process_WTTC.R script. Missing values are gapfilled using the UN georegion information.
 

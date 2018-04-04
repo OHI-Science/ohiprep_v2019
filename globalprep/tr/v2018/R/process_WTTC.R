@@ -40,17 +40,19 @@ emp_file <- wttc_files[str_detect(wttc_files, 'empd')]
   names(d)[1] <- 'temp'
   head(d)
 
-  d <- filter(d, temp != "% growth")  ## appears a new variable was added to WTTC analysis
+  d <- d %>% 
+    filter(temp != "% growth")  ## appears a new variable ("% growth") was added to WTTC analysis
   
-  data_rows <- unlist(d[2:3, 1])
+  data_rows <- unlist(d[2:3, 1]) ## select the names of variables that are not countries
   
+  ## extract only country names and save as vector
   rgn_name <- d %>% 
-    filter(!temp %in% data_rows) %>% 
+    filter(!temp %in% data_rows) %>%
     select(country = temp)
-  rgn_name[nrow(rgn_name), 1]
-  # note: last one is 'Source: WTTC'
+  rgn_name[nrow(rgn_name), 1] ## note: last one is 'Source: WTTC'
   rgn_name <- rgn_name[1:(nrow(rgn_name) - 1), ]
   
+  ## Create data frame for number of jobs in each country
   data_count <- cbind(rgn_name,
                       d %>% filter(temp == data_rows[1]) %>%
                         select(-temp))
@@ -58,6 +60,8 @@ emp_file <- wttc_files[str_detect(wttc_files, 'empd')]
     gather(year, jobs_ct, -rgn_name) %>%
     mutate(jobs_ct = round(jobs_ct * 1000),
            year = as.integer(as.character(year)))
+  
+  ## Create data frame for % share of total employment in each country
   data_perct <- cbind(rgn_name,
                       d %>% filter(temp == data_rows[2]) %>%
                         select(-temp))
@@ -65,6 +69,7 @@ emp_file <- wttc_files[str_detect(wttc_files, 'empd')]
     gather(year, jobs_pct, -rgn_name) %>%
     mutate(year = as.integer(as.character(year)))
   
+  ## Combine the two data frames created above
   empd <- full_join(data_count, data_perct, by = c('rgn_name', 'year'))
 
 
