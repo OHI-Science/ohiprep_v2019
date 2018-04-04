@@ -85,17 +85,18 @@ tr_jobs_pct_tour <- read.csv('intermediate/wttc_empd_rgn.csv', stringsAsFactors 
                 select(rgn_id, year, jobs_pct)
 
 ## format data to have complete years/regions and convert percentage of jobs to proportion of jobs
-    rgn_names <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv', stringsAsFactors = FALSE) %>%
+rgn_names <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv', stringsAsFactors = FALSE) %>%
     dplyr::select(rgn_id)
 
-    rgn_names <- expand.grid(rgn_id = rgn_names$rgn_id, 
+# create data frame with a row for each combination of region id and year
+rgn_names <- expand.grid(rgn_id = rgn_names$rgn_id, 
                              year = min(tr_jobs_pct_tour$year):max(tr_jobs_pct_tour$year))
       
 tr_data_raw <- rgn_names %>%
     full_join(tr_jobs_pct_tour %>%
                 rename(Ep = jobs_pct) %>%
                 mutate(Ep = Ep/100) %>%
-                mutate(Ep = ifelse(Ep > 1, NA, Ep)),  # Rgn 54, United Arab Emirates appears to have an error bteween 1995-1999, this cuts these
+                mutate(Ep = ifelse(Ep > 1, NA, Ep)),  # Rgn 54, United Arab Emirates appears to have an error bteween 1995-1999 (original Ep value > 100%), this cuts these
               by = c('rgn_id', 'year'))
 
 ## gapfill missing data using UN georegion data:
@@ -108,6 +109,7 @@ tr_data_raw <- tr_data_raw %>%
   select(-r0) %>%
   filter(rgn_id != c(255, 213)) # ditch disputed regions and Antarctica
 
+# Calculate two different gapfill columns using r2 and r1
 tr_data_raw_gf <- tr_data_raw %>%
   group_by(year, r2) %>%
   mutate(Ep_pred_r2 = mean(Ep, na.rm=TRUE)) %>%
@@ -116,15 +118,15 @@ tr_data_raw_gf <- tr_data_raw %>%
   mutate(Ep_pred_r1 = mean(Ep, na.rm=TRUE)) %>%
   ungroup()
 
+# first gapfill with r2, if no value available use r1; create column indicating whether value was gapfilled and if so, by what method.
 tr_data_raw_gf <- tr_data_raw_gf %>%
   mutate(Ep_all = ifelse(is.na(Ep), Ep_pred_r2, Ep)) %>%
-  mutate(Ep_all = ifelse(is.na(Ep_all), Ep_pred_r1, Ep_all)) %>%
+  mutate(Ep_all = ifelse(is.na(Ep_all), Ep_pred_r1, Ep_all)) %>% 
   mutate(gapfilled = ifelse(is.na(Ep) & !is.na(Ep_all), "gapfilled", NA)) %>%
   mutate(method = ifelse(is.na(Ep) & !is.na(Ep_pred_r2), "UN georegion (r2)", NA)) %>%
   mutate(method = ifelse(is.na(Ep) & is.na(Ep_pred_r2) & !is.na(Ep_pred_r1), "UN georegion (r1)", method)) 
 
 # save the data
-
 tr_data_gf <- tr_data_raw_gf %>%
   select(rgn_id, year, gapfilled, method) 
 
@@ -139,7 +141,7 @@ write.csv(tr_data, "output/tr_jobs_pct_tourism.csv", row.names=FALSE)
 ## A quick check to make sure last year's values aren't too crazy different
 ## (NOTE: the source data has been updated, so there are some changes, but they shouldn't be super different)
 
-old <- read.csv('../v2016/output/tr_jobs_pct_tourism.csv')%>%
+old <- read.csv('../v2017/output/tr_jobs_pct_tourism.csv')%>%
   select(rgn_id, year, ep_old=Ep)
 new <- read.csv('output/tr_jobs_pct_tourism.csv') %>%
   left_join(old) %>%
