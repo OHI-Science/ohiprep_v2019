@@ -438,20 +438,26 @@ abline(0,1)
 ## Estimate missing data and gapfill
 # Some of the r1 levels do not have data and consequently causes a fail.  
 # Need to drop these levels so an NA is returned
+
+# Select only r2 column
 new_data <- tr_sust[, c("r2_label", "gdp_all")]
 unique(tr_sust$r2_label)
 r2_w_data <- unique(tr_sust$r2_label[!is.na(tr_sust$S_score)])
 new_data_r2 <- new_data %>%
   mutate(r2_label = ifelse(r2_label %in% r2_w_data, r2_label, NA))
 
+# Predict sustainability scores using linear model 3 (using r2 data)
 tr_sust$S_score_pred_r2 <- predict(mod3, newdata = new_data_r2)
 
+
+# Select only r1 column
 new_data <- tr_sust[, c("r1_label", "gdp_all")]
 unique(tr_sust$r1_label)
 r1_w_data <- unique(tr_sust$r1_label[!is.na(tr_sust$S_score)])
 new_data_r1 <- new_data %>%
   mutate(r1_label = ifelse(r1_label %in% r1_w_data, r1_label, NA))
 
+# Predict sustainability scores using linear model 4 (using r1 data)
 tr_sust$S_score_pred_r1 <- predict(mod4, newdata = new_data_r1)
 
 ## some are missing the r1 predictions, but none of these have Ep scores, so not relevant
@@ -463,11 +469,13 @@ tr_sust <- tr_sust %>%
   mutate(year = '2017') %>%
 #  filter(!is.na(Ep)) %>%
   select(rgn_id, year, S_score=S_score_2)
+
 summary(tr_sust)
+
 write_csv(tr_sust, "output/tr_sustainability.csv")
 
 ## compare with previous year of data 
-compare <- read.csv("../v2015/data/tr_sustainability.csv") %>%
+compare <- read.csv("../v2015/data/tr_sustainability.csv") %>% # change year
   select(rgn_id, old_S_score = S_score) %>%
   left_join(tr_sust, by = "rgn_id") %>%
   mutate(dif = old_S_score - S_score)
