@@ -33,7 +33,7 @@ Xtr = tr/90th quantile across regions
 
 The following data are used:
 
-* Tourism sustainability: TCCI
+* Tourism sustainability: TTCI
 * Proportion of workforce directly employed in tourism: (WEF)
 * Travel warnings: (U.S. State Department)
 * Per capita GDP: (World Bank with gaps filled using CIA data), used to gapfill missing values in Tourism sustainability
