@@ -39,7 +39,7 @@ The Worldwide Governance Indicators (WGI) project reports aggregate and individu
 * Rule of Law
 * Control of Corruption
 
-**Time range**: 1996-2015
+**Time range**: 1996-2016
 
 ***
 
@@ -49,15 +49,15 @@ library(ohicore) # devtools::install_github('ohi-science/ohicore@dev')
 library(tools)
 library(dplyr)
 library(tidyr)
-library(WDI) # install.packages('WDI')
+library(WDI) # install.packages('WDI')  # used to extract World Development Indicator (World Bank) data 
 library(stringr)
 
 # comment out when knitting:
-# setwd('globalprep/prs_res_wgi/v2017')
+# setwd('globalprep/prs_res_wgi/v2018')
 
 # check website to see what years are available: http://info.worldbank.org/governance/wgi/index.aspx#home
 yr_start = 1996
-yr_end   = 2015
+yr_end   = 2016
 
 
 ```
@@ -80,8 +80,8 @@ indicators[grep("CC.EST", indicators$indicator), ]
 # identify the six indicators
 # WDIsearch('violence')# general search
 key_voice = WDI(
-  WDIsearch('Voice and Accountability: Estimate', field='name')['indicator'],
-  country='all',start = yr_start, end=yr_end)
+  indicator = WDIsearch('Voice and Accountability: Estimate', field='name')['indicator'],
+  country = 'all', start = yr_start, end=yr_end)
 
 key_polst = WDI(
   WDIsearch('Political Stability and Absence of Violence/Terrorism: Estimate', field='name')['indicator'],
@@ -115,7 +115,8 @@ d = key_voice %>%
   left_join(key_regqt %>% select(-iso2c), by=(c('country', 'year'))) %>%
   left_join(key_rolaw %>% select(-iso2c), by=(c('country', 'year'))) %>%
   left_join(key_corrp %>% select(-iso2c), by=(c('country', 'year'))); head(d); summary(d); sapply(d, class)  
-# archived record of raw data: write.csv(d, file.path('raw', 'worldbank_wgi_from_wdi_api.csv'), row.names=F)
+# archived record of raw data: 
+# write.csv(d, 'raw/worldbank_wgi_from_wdi_api.csv', row.names=FALSE)
 
 
 ```
