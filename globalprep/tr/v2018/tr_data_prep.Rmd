@@ -148,6 +148,7 @@ new <- read.csv('output/tr_jobs_pct_tourism.csv') %>%
   filter(year==2014) %>%
   arrange(ep_old)
 new
+
 plot(new$Ep, new$ep_old)
 abline(0,1, col="red")
 ## NOTE: This looks reasonable to me.
@@ -190,7 +191,7 @@ warn <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
   select(-n) %>%
   left_join(scores, by="category") %>%
   group_by(year, rgn_name) %>%
-  mutate(regions = n()) 
+  mutate(regions = n()) # column 'regions' is number of warnings issued that year for each country
 
 warn2 <- warn %>%
   mutate(score = ifelse(regions %in% 1 & regional %in% 1, score*0.5, score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
@@ -293,7 +294,7 @@ cia_gdp <- cia_gdp %>%
 cia_gdp_rgn <- name_2_rgn(df_in = cia_gdp, 
                        fld_name='country')
 
-### Collapse regions (regions we include as a single region)
+### Collapse regions after weighting by population (regions we include as a single region) - 
 
 population_weights <- data.frame(country = c("Virgin Islands", "Puerto Rico",
                                              "China", "Hong Kong", "Macau",
@@ -331,7 +332,7 @@ gdppcppp2 <- read.csv('intermediate/wb_rgn_cia_GDPPCPPP.csv')
 
 ### Use WB data, but if missing, use pcgdp_cia.
 ### combine with UN georegion data
-expand.grid.df <- function(...) Reduce(function(...) merge(..., by=NULL), list(...))
+expand.grid.df <- function(...) Reduce(function(...) merge(..., by=NULL), list(...)) # first merge df then reduce
 
 regions <- georegions %>%
   left_join(georegion_labels, by = 'rgn_id')
@@ -390,7 +391,8 @@ ep_gf <- read.csv("output/tr_jobs_pct_tourism.csv") %>%
   select(rgn_id, Ep) %>%
   filter(!is.na(Ep))
 
-gdp_raw_gf <- read.csv("intermediate/gdp_raw_gf.csv", stringsAsFactors = FALSE) %>%
+# gdp dataframe prepared above (World Bank, CIA, and gapfilled gdp data)
+gdp_raw_gf <- read.csv("intermediate/gdp_raw_gf.csv", stringsAsFactors = FALSE) %>% 
   filter(year == 2016) %>%
   select(rgn_id, r0_label, r1_label, r2_label, rgn_label, pcgdp, pcgdp_cia, pcgdp2, gdp_all) 
 
@@ -407,6 +409,7 @@ tr_sust_gf <- tr_sust %>%
   mutate(method = ifelse(is.na(S_score) & !is.na(Ep) & is.na(pcgdp2), "lm georegion + gdppcppp, with est. gdppcppp", NA)) %>%
   mutate(method = ifelse(is.na(S_score) & !is.na(Ep) & !is.na(pcgdp2), "lm georegion + gdppcppp", method)) %>%
   select(rgn_id, gapfilled, method)
+
 write.csv(tr_sust_gf, "output/tr_sustainability_gf.csv", row.names=FALSE)
 
   
