@@ -54,7 +54,7 @@ We were able to update the following data:
 # devtools::install_github("ohi-science/ohicore@dev") 
 library(ohicore)
 
-source('../../../src/R/common.R')
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
 library(tidyverse)
 library(stringr)
 library(WDI)
@@ -164,14 +164,14 @@ Information is from the U.S. State Department (https://travel.state.gov/content/
 Add the data to tr_travelwarnings_xxx.xls
 Most of the data can be cut and paste (after it is checked) from the previous year (update the data and year information).
 
-If different regions have different warnings, these are put on two lines and combined in the R script:
+If different subregions within a country have different warnings, these are put on two lines and combined in the R script:
 
 assess_year  date  rgn_name  rgn_name_full 
 2016		4-Feb-15	Cameroon	Cameroon		    risk 				
 2016		4-Feb-15	Cameroon	Cameroon (North and Far North region)				avoid_all		regional
 
-inform: information travelor should be aware of (election violence, be aware due to crime, etc)
-risk: risks that trevelors should be aware of ("consider carefully risks of travel", "warns of risks")
+inform: information traveler should be aware of (election violence, be aware due to crime, etc)
+risk: risks that travelers should be aware of ("consider carefully risks of travel", "warns of risks")
 avoid_nonessential travel: "defer non-essential travel"
 avoid_all: "avoid all travel"
 gtfo: get out!!!
@@ -232,7 +232,7 @@ ttci_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WEF-Econom
 ttci <- ttci_raw %>%
     mutate(country = as.character(country)) %>%
     mutate(country = ifelse(country == "Congo, Democratic Rep.", "Democratic Republic of the Congo", country)) %>%
-    mutate(country = ifelse(country == "Côte d'Ivoire", "Ivory Coast", country))
+    mutate(country = ifelse(str_detect(country, "Ivoire"), "Ivory Coast", country))
   
   
 ttci_rgn <- name_2_rgn(df_in = ttci, 
