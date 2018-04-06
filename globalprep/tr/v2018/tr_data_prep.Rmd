@@ -332,12 +332,12 @@ gdppcppp2 <- read.csv('intermediate/wb_rgn_cia_GDPPCPPP.csv')
 
 ### Use WB data, but if missing, use pcgdp_cia.
 ### combine with UN georegion data
-expand.grid.df <- function(...) Reduce(function(...) merge(..., by=NULL), list(...)) # first merge df then reduce
+years <- data.frame(year = min(gdppcppp$year):max(gdppcppp$year))
 
 regions <- georegions %>%
   left_join(georegion_labels, by = 'rgn_id')
 
-gdp_raw <- expand.grid.df(regions, data.frame(year = min(gdppcppp$year):max(gdppcppp$year))) %>%
+gdp_raw <- merge(years, regions, by=NULL) %>%
    left_join(gdppcppp, by = c('rgn_id', 'year')) %>%
   left_join(gdppcppp2, by = c("rgn_id")) 
 
