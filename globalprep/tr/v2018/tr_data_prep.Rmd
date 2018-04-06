@@ -191,10 +191,10 @@ warn <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
   select(-n) %>%
   left_join(scores, by="category") %>%
   group_by(year, rgn_name) %>%
-  mutate(regions = n()) # column 'regions' is number of warnings issued that year for each country
+  mutate(warning_count = n()) # column 'regions' is number of warnings issued that year for each country
 
 warn2 <- warn %>%
-  mutate(score = ifelse(regions %in% 1 & regional %in% 1, score*0.5, score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
+  mutate(score = ifelse(warning_count %in% 1 & regional %in% 1, score*0.5, score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
   summarize(score = mean(score)) %>%
   mutate(multiplier = 1-score) %>%
   select(year, rgn_name, multiplier) %>%
