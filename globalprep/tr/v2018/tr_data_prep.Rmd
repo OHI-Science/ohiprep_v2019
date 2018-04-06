@@ -214,7 +214,7 @@ write.csv(warn_rgn, 'output/tr_travelwarnings.csv', row.names=FALSE)
 ```
 
 
-#Ts: Tourism sustainability
+# Ts: Tourism sustainability
 
 These data are from the World Economic Forum's "Travel and Tourism Competitiveness Report" (http://reports.weforum.org/travel-and-tourism-competitiveness-report-2015/downloads/) See mazu: _raw_data/WEF-Economics/ for more details and the raw data.
 
