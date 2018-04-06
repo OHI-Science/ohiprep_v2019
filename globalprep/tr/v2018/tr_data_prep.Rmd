@@ -14,17 +14,14 @@ output:
 ---
 
 
-[REFERENCE RMD FILE (knitted)](https://rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/tr/v2017/tr_data_prep.html)
+[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2017/tr_dataprep.html]
 
 # Summary
-This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2017 global assessment.
+This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2018 global assessment.
 
 The general calculation is:
-
 tr = Ep * Sr * Tw
-
 and
-
 Xtr = tr/90th quantile across regions
 
 * Ep = Proportion of workforce directly employed in tourism
@@ -33,46 +30,45 @@ Xtr = tr/90th quantile across regions
 
 The following data are used:
 
-* Tourism sustainability: TTCI
+* Tourism sustainability: TCCI
 * Proportion of workforce directly employed in tourism: (WEF)
 * Travel warnings: (U.S. State Department)
 * Per capita GDP: (World Bank with gaps filled using CIA data), used to gapfill missing values in Tourism sustainability
 
-#Updates from previous assessment
+# Updates from previous assessment
 We discovered that the WEF-Economics Global Competitiveness Index data used to estimate sustainability is not compatible across years.  New methods are used each year and previous year's of data are not recalculated using the updated methods. Consequently, we use the most recent data for all scenario years.  
 
 We were able to update the following data:
+
 * Proportion of jobs in tourism 
 * Travel warnings for 2017 (downloaded: 8/11/2017)
 * Sustainability
 
 
 # Some code to set everything up
-```{r}
 
-#setwd('globalprep/tr/v2017') #comment out when knitting
+```{r setup, message=FALSE, warning=FALSE}
+#setwd('globalprep/tr/v2018') #comment out when knitting
 
 # library(devtools)
 # devtools::install_github("ohi-science/ohicore@dev") 
 library(ohicore)
 
-source('../../../src/R/common.R')
-library(readr)
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
+library(tidyverse)
 library(stringr)
-library(dplyr)
-library(tidyr)
 library(WDI)
 
 ## maximum year of wttc data:
-year_max    <- 2015
+year_max <- 2015
 
 source('R/tr_fxns.R')
 
 ```
 
 
-# Ep: Proportion of workforce directly employed in tourism
-These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/README.md for instructions on obtaining data). The data extend to 2027, but these values are projections.  The actual data goes to 2015.
+#Ep: Proportion of workforce directly employed in tourism
+These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/d2017/README.md for instructions on obtaining data). The data extend to 2027, but these values are projections.  The actual data goes to 2015.
 
 These data are cleaned and formatted using the R/process_WTTC.R script. Missing values are gapfilled using the UN georegion information.
 
@@ -89,17 +85,18 @@ tr_jobs_pct_tour <- read.csv('intermediate/wttc_empd_rgn.csv', stringsAsFactors 
                 select(rgn_id, year, jobs_pct)
 
 ## format data to have complete years/regions and convert percentage of jobs to proportion of jobs
-    rgn_names <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv', stringsAsFactors = FALSE) %>%
+rgn_names <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv', stringsAsFactors = FALSE) %>%
     dplyr::select(rgn_id)
 
-    rgn_names <- expand.grid(rgn_id = rgn_names$rgn_id, 
+# create data frame with a row for each combination of region id and year
+rgn_names <- expand.grid(rgn_id = rgn_names$rgn_id, 
                              year = min(tr_jobs_pct_tour$year):max(tr_jobs_pct_tour$year))
       
 tr_data_raw <- rgn_names %>%
     full_join(tr_jobs_pct_tour %>%
                 rename(Ep = jobs_pct) %>%
                 mutate(Ep = Ep/100) %>%
-                mutate(Ep = ifelse(Ep > 1, NA, Ep)),  # Rgn 54, United Arab Emirates appears to have an error bteween 1995-1999, this cuts these
+                mutate(Ep = ifelse(Ep > 1, NA, Ep)),  # Rgn 54, United Arab Emirates appears to have an error bteween 1995-1999 (original Ep value > 100%), this cuts these
               by = c('rgn_id', 'year'))
 
 ## gapfill missing data using UN georegion data:
@@ -112,6 +109,7 @@ tr_data_raw <- tr_data_raw %>%
   select(-r0) %>%
   filter(rgn_id != c(255, 213)) # ditch disputed regions and Antarctica
 
+# Calculate two different gapfill columns using r2 and r1
 tr_data_raw_gf <- tr_data_raw %>%
   group_by(year, r2) %>%
   mutate(Ep_pred_r2 = mean(Ep, na.rm=TRUE)) %>%
@@ -120,15 +118,15 @@ tr_data_raw_gf <- tr_data_raw %>%
   mutate(Ep_pred_r1 = mean(Ep, na.rm=TRUE)) %>%
   ungroup()
 
+# first gapfill with r2, if no value available use r1; create column indicating whether value was gapfilled and if so, by what method.
 tr_data_raw_gf <- tr_data_raw_gf %>%
   mutate(Ep_all = ifelse(is.na(Ep), Ep_pred_r2, Ep)) %>%
-  mutate(Ep_all = ifelse(is.na(Ep_all), Ep_pred_r1, Ep_all)) %>%
+  mutate(Ep_all = ifelse(is.na(Ep_all), Ep_pred_r1, Ep_all)) %>% 
   mutate(gapfilled = ifelse(is.na(Ep) & !is.na(Ep_all), "gapfilled", NA)) %>%
   mutate(method = ifelse(is.na(Ep) & !is.na(Ep_pred_r2), "UN georegion (r2)", NA)) %>%
   mutate(method = ifelse(is.na(Ep) & is.na(Ep_pred_r2) & !is.na(Ep_pred_r1), "UN georegion (r1)", method)) 
 
 # save the data
-
 tr_data_gf <- tr_data_raw_gf %>%
   select(rgn_id, year, gapfilled, method) 
 
@@ -143,13 +141,14 @@ write.csv(tr_data, "output/tr_jobs_pct_tourism.csv", row.names=FALSE)
 ## A quick check to make sure last year's values aren't too crazy different
 ## (NOTE: the source data has been updated, so there are some changes, but they shouldn't be super different)
 
-old <- read.csv('../v2016/output/tr_jobs_pct_tourism.csv')%>%
+old <- read.csv('../v2017/output/tr_jobs_pct_tourism.csv')%>%
   select(rgn_id, year, ep_old=Ep)
 new <- read.csv('output/tr_jobs_pct_tourism.csv') %>%
   left_join(old) %>%
   filter(year==2014) %>%
   arrange(ep_old)
 new
+
 plot(new$Ep, new$ep_old)
 abline(0,1, col="red")
 ## NOTE: This looks reasonable to me.
@@ -165,25 +164,25 @@ Information is from the U.S. State Department (https://travel.state.gov/content/
 Add the data to tr_travelwarnings_xxx.xls
 Most of the data can be cut and paste (after it is checked) from the previous year (update the data and year information).
 
-If different regions have different warnings, these are put on two lines and combined in the R script:
+If different subregions within a country have different warnings, these are put on two lines and combined in the R script:
 
 assess_year  date  rgn_name  rgn_name_full 
 2016		4-Feb-15	Cameroon	Cameroon		    risk 				
 2016		4-Feb-15	Cameroon	Cameroon (North and Far North region)				avoid_all		regional
 
-inform: information travelor should be aware of (election violence, be aware due to crime, etc)
-risk: risks that trevelors should be aware of ("consider carefully risks of travel", "warns of risks")
+inform: information traveler should be aware of (election violence, be aware due to crime, etc)
+risk: risks that travelers should be aware of ("consider carefully risks of travel", "warns of risks")
 avoid_nonessential travel: "defer non-essential travel"
 avoid_all: "avoid all travel"
 gtfo: get out!!!
 
-regional: added if the warning only applies to specific regions
+regional: added if the warning only applies to specific regions within a country
 
 The following code is used to clean these data and transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
 ```{r travel warnings}
 
 scores = data.frame(category = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"),
-                    score = c(0, 0.25, 0.75, 1, 1))
+                    score = c(0, 0.25, 0.75, 1, 1)) 
 
 warn <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
   select(year = assess_year, rgn_name, inform, risk, avoid_nonessential, avoid_all, gtfo, regional) %>%
@@ -192,10 +191,10 @@ warn <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
   select(-n) %>%
   left_join(scores, by="category") %>%
   group_by(year, rgn_name) %>%
-  mutate(regions = n()) 
+  mutate(warning_count = n()) # column 'regions' is number of warnings issued that year for each country
 
 warn2 <- warn %>%
-  mutate(score = ifelse(regions %in% 1 & regional %in% 1, score*0.5, score)) %>%
+  mutate(score = ifelse(warning_count %in% 1 & regional %in% 1, score*0.5, score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
   summarize(score = mean(score)) %>%
   mutate(multiplier = 1-score) %>%
   select(year, rgn_name, multiplier) %>%
@@ -233,7 +232,7 @@ ttci_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WEF-Econom
 ttci <- ttci_raw %>%
     mutate(country = as.character(country)) %>%
     mutate(country = ifelse(country == "Congo, Democratic Rep.", "Democratic Republic of the Congo", country)) %>%
-    mutate(country = ifelse(country == "Côte d'Ivoire", "Ivory Coast", country))
+    mutate(country = ifelse(str_detect(country, "Ivoire"), "Ivory Coast", country))
   
   
 ttci_rgn <- name_2_rgn(df_in = ttci, 
@@ -295,7 +294,7 @@ cia_gdp <- cia_gdp %>%
 cia_gdp_rgn <- name_2_rgn(df_in = cia_gdp, 
                        fld_name='country')
 
-### Collapse regions (regions we include as a single region)
+### Collapse regions after weighting by population (regions we include as a single region) - 
 
 population_weights <- data.frame(country = c("Virgin Islands", "Puerto Rico",
                                              "China", "Hong Kong", "Macau",
@@ -333,12 +332,12 @@ gdppcppp2 <- read.csv('intermediate/wb_rgn_cia_GDPPCPPP.csv')
 
 ### Use WB data, but if missing, use pcgdp_cia.
 ### combine with UN georegion data
-expand.grid.df <- function(...) Reduce(function(...) merge(..., by=NULL), list(...))
+years <- data.frame(year = min(gdppcppp$year):max(gdppcppp$year))
 
 regions <- georegions %>%
   left_join(georegion_labels, by = 'rgn_id')
 
-gdp_raw <- expand.grid.df(regions, data.frame(year = min(gdppcppp$year):max(gdppcppp$year))) %>%
+gdp_raw <- merge(years, regions, by=NULL) %>%
    left_join(gdppcppp, by = c('rgn_id', 'year')) %>%
   left_join(gdppcppp2, by = c("rgn_id")) 
 
@@ -392,7 +391,8 @@ ep_gf <- read.csv("output/tr_jobs_pct_tourism.csv") %>%
   select(rgn_id, Ep) %>%
   filter(!is.na(Ep))
 
-gdp_raw_gf <- read.csv("intermediate/gdp_raw_gf.csv", stringsAsFactors = FALSE) %>%
+# gdp dataframe prepared above (World Bank, CIA, and gapfilled gdp data)
+gdp_raw_gf <- read.csv("intermediate/gdp_raw_gf.csv", stringsAsFactors = FALSE) %>% 
   filter(year == 2016) %>%
   select(rgn_id, r0_label, r1_label, r2_label, rgn_label, pcgdp, pcgdp_cia, pcgdp2, gdp_all) 
 
@@ -409,6 +409,7 @@ tr_sust_gf <- tr_sust %>%
   mutate(method = ifelse(is.na(S_score) & !is.na(Ep) & is.na(pcgdp2), "lm georegion + gdppcppp, with est. gdppcppp", NA)) %>%
   mutate(method = ifelse(is.na(S_score) & !is.na(Ep) & !is.na(pcgdp2), "lm georegion + gdppcppp", method)) %>%
   select(rgn_id, gapfilled, method)
+
 write.csv(tr_sust_gf, "output/tr_sustainability_gf.csv", row.names=FALSE)
 
   
@@ -437,20 +438,26 @@ abline(0,1)
 ## Estimate missing data and gapfill
 # Some of the r1 levels do not have data and consequently causes a fail.  
 # Need to drop these levels so an NA is returned
+
+# Select only r2 column
 new_data <- tr_sust[, c("r2_label", "gdp_all")]
 unique(tr_sust$r2_label)
 r2_w_data <- unique(tr_sust$r2_label[!is.na(tr_sust$S_score)])
 new_data_r2 <- new_data %>%
   mutate(r2_label = ifelse(r2_label %in% r2_w_data, r2_label, NA))
 
+# Predict sustainability scores using linear model 3 (using r2 data)
 tr_sust$S_score_pred_r2 <- predict(mod3, newdata = new_data_r2)
 
+
+# Select only r1 column
 new_data <- tr_sust[, c("r1_label", "gdp_all")]
 unique(tr_sust$r1_label)
 r1_w_data <- unique(tr_sust$r1_label[!is.na(tr_sust$S_score)])
 new_data_r1 <- new_data %>%
   mutate(r1_label = ifelse(r1_label %in% r1_w_data, r1_label, NA))
 
+# Predict sustainability scores using linear model 4 (using r1 data)
 tr_sust$S_score_pred_r1 <- predict(mod4, newdata = new_data_r1)
 
 ## some are missing the r1 predictions, but none of these have Ep scores, so not relevant
@@ -462,11 +469,13 @@ tr_sust <- tr_sust %>%
   mutate(year = '2017') %>%
 #  filter(!is.na(Ep)) %>%
   select(rgn_id, year, S_score=S_score_2)
+
 summary(tr_sust)
+
 write_csv(tr_sust, "output/tr_sustainability.csv")
 
 ## compare with previous year of data 
-compare <- read.csv("../v2015/data/tr_sustainability.csv") %>%
+compare <- read.csv("../v2015/data/tr_sustainability.csv") %>% # change year
   select(rgn_id, old_S_score = S_score) %>%
   left_join(tr_sust, by = "rgn_id") %>%
   mutate(dif = old_S_score - S_score)

@@ -49,7 +49,7 @@ GDP per capita based on purchasing power parity (PPP). PPP GDP is gross domestic
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/', message = FALSE, warning = FALSE)
 
-#setting up provenance
+# setting up provenance
 # devtools::install_github('oharac/provRmd')
 # library(provRmd)
 # prov_setup()
@@ -78,18 +78,23 @@ yr_start = 1990
 yr_end   = 2016
 
 
-## get description of variables (NOTE: these descriptions appear out of date, they aren't in sync with the definitions of the World Bank):
+# get description of variables (NOTE: these descriptions appear out of date, they aren't in sync with the definitions of the World Bank):
 indicators <-  data.frame(WDI_data[[1]])
 
-#indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
-indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars 
-indicators[4460:4461, c(1,2,3)]  # [rows, columns]
+head(indicators)
 
-# download the data
+
+# indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
+indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars. grep helps identify rows to select based on a string. (used this data)
+
+
+# download the data - This is the data we are going to work with. Create a variable for the data frame
 gdppcppp = WDI(country = "all",
                indicator = "NY.GDP.PCAP.PP.KD", 
                start = yr_start, end=yr_end)
 
+
+# check if 'raw', 'intermediate', and 'final' exists, if not, then create the folder in the working directory
 if (!file.exists("raw")){
   dir.create("raw")
 } 
@@ -98,12 +103,12 @@ if (!file.exists("intermediate")){
   dir.create("intermediate")
 } 
 
-if (!file.exists("final")){
-  dir.create("final")
+if (!file.exists("output")){
+  dir.create("output")
 } 
 
-
-write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE)
+#Save the file into the raw folder
+write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
 
 ```
 
@@ -114,43 +119,49 @@ When a country has some values (but not a complete series), a within country reg
 
 ```{r}
 
-
+# Reorganize to create cells for countries that have missing values for some years
 d <- read.csv('raw/raw_gdppcppp.csv') %>%
   select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   filter(year >= 2005) %>%
-  spread(year, value) %>%  ## fill in potentially missing values with NA
-  data.frame() %>%
+  spread(year, value) %>%  # spread to fill in potentially missing values with NA
+  data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
   gather(year, value, starts_with("X")) %>%
-  mutate(year = gsub("X", "", year)) %>%
-  mutate(year = as.numeric(year))
+  mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
+  mutate(year = as.numeric(year)) #convert the year column into a numeric format
 
-## for the first case, if there is only one value use this value for all years
-## this is not ideal, but likely better than other forms of gapfilling
 
+# For the first case, if there is only one value use this value for all years
+# This is not ideal, but likely better than other forms of gapfilling
 d <- d %>%
   group_by(country) %>%
-  mutate(value_num = sum(!is.na(value))) %>%
-  filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2015   
-  mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%
+  mutate(value_num = sum(!is.na(value))) %>% # counts the numbers of non-missing values for each country (logical TRUEs regarded as one)
+  filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2016
+  mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%  # mean() function is just used to get the single value and remove all NAs in that group
   ungroup() %>%
-  mutate(value = ifelse(is.na(value), value_num_gf, value)) %>%
-  select(country, year, value, value_num)
+  mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave it, otherwise gapfill; still have NAs where 12 > value_num > 1
+  select(country, year, value, value_num) # select just these columns; to eliminate extraneous value_num_gf column
 
+
+# Predict values using a linear regression with 'year' as an independent variable 
+# Create new column with these predicted values
 d_gf <- d %>%
   group_by(country) %>%
-  do({
-    mod <- lm(value ~ year, data=.)
-    value_pred <- predict(mod, newdata=.[c('year')])
+  do({ 
+    mod <- lm(value ~ year, data=.) 
+    value_pred <- predict(mod, newdata=.['year']) # value_pred = country-grouped mod$fitted.values?
     data.frame(., value_pred)
-  })
+  }) # do loop applies the model fitting and prediction to each country group
 
+
+# Fill out the remaining NA values using the predicted values
+# These are those countries where number of non-NA values > 1
 d_gf <- d_gf %>%
   ungroup() %>%
-  mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>%
-  mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>%
-  mutate(value = ifelse(is.na(value), value_pred, value)) %>%
-  mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>%
-  mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method))
+  mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled', if value is currently NA, it will be gapfilled (indicated by a 1)
+  mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>% # if value_num is 1 it was gapfilled previously and gets a 1
+  mutate(value = ifelse(is.na(value), value_pred, value)) %>% # if missing value still, input the value in value_pred column
+  mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling; this puts message "lm based..." even in some rows gapfilled with one year of data
+  mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method)) # this overwrites/corrects method "lm based..." for rows actually gapfilled with "one-year of data"" method
   
 ```
 
@@ -159,16 +170,18 @@ This is performed by taking the natural log of each value and then dividing by t
 
 ```{r}
 
+# Values at the 95th Quantile or greater are given a rescaled score of '1' (the highest value)
 d_rescale <- d_gf %>%
-  mutate(quantile_95 = quantile(value, probs=0.95)) %>%
-  mutate(value_stand = value/quantile_95) %>%
+  mutate(quantile_95 = quantile(value, probs=0.95)) %>% # gives a single value - the 95th quant
+  mutate(value_stand = value/quantile_95) %>% # where does value scale relative to 95th quantile
   mutate(value_stand = ifelse(value_stand > 1, 1, value_stand))
 
 d_rescale <- d_rescale %>%
-  select(country, year, value, score=value_stand, gapfilled, method)
+  select(country, year, value, score=value_stand, gapfilled, method) # rename value_stand 'score'
+
 
 # check the data with some plots
-# plotData <- d_stand %>%
+# plotData <- d_rescale %>%
 #   mutate(need = 1-score) %>%
 #   dplyr::select(country, year, need)
 
@@ -177,9 +190,9 @@ d_rescale <- d_rescale %>%
 # Motion = gvisMotionChart(plotData,
 # idvar="country", timevar="year")
 # 
-#  plot(Motion)
+# plot(Motion)
 # 
-#  print(Motion, file = file.path('ao_need_95q.html'))
+# print(Motion, file = file.path('ao_need_95q.html'))
 
 ```
 
@@ -188,32 +201,35 @@ d_rescale <- d_rescale %>%
 
 ```{r}
 
-### Function to convert to OHI region ID
+# Function to add OHI region ID based on country name
 d_stand_rgn <- name_2_rgn(df_in = d_rescale, 
                        fld_name='country', 
-                       flds_unique=c('year'))
+                       flds_unique=c('year')) # cannot load look up tables. 
 
 
-### Combine the duplicate regions (we report these at lower resolution)
-### In this case, we take the average score weighted by population
-population_weights <- read.csv('../../../../ohiprep/src/LookupTables/Pop_weight_ChinaSAR_USVIslPRico.csv')
+# Combine the duplicate regions (we report these at lower resolution)
+# In this case, we take the average score weighted by population
+population_weights <- read.csv('../../../../ohiprep_v2018/src/LookupTables/Pop_weight_ChinaSAR_USVIslPRico.csv')
 
+
+# Weight the `score`, `value`, and `gapfilled` column by population
 d_stand_rgn <- d_stand_rgn %>%
   left_join(population_weights, by="country") %>%
-  mutate(population = ifelse(is.na(population), 1, population)) %>%
-  group_by(rgn_id, year) %>%
-  summarize(score = weighted.mean(score, population),
-            value = weighted.mean(value, population),
-            gapfilled = weighted.mean(gapfilled, population),
-            method = method[1]) %>%
+  mutate(population = ifelse(is.na(population), 1, population)) %>% # If no value available, input 1 (these values will not change)
+  group_by(rgn_id, year, method, gapfilled) %>% 
+  summarize(score = weighted.mean(score, population), # weight the single score value by pop.
+            value = weighted.mean(value, population)) %>%
   ungroup() 
 
+
+# Removed `Azerbaijan` (255) because the adjacent body of water is a sea not the ocean 
 d_stand_rgn <- d_stand_rgn %>%
   filter(rgn_id <= 250)
 
 summary(d_stand_rgn)
 
-## save the cleaned gdppcppp for other goals
+
+# save the cleaned gdppcppp for other goals
 gdppcppp_data <- d_stand_rgn %>%
   select(rgn_id, year, value)
 
@@ -226,9 +242,13 @@ In this case, we gapfill regions with no data using UN geopolitical means.
 
 ```{r}
 
+# Create dataframe pairing each UN geopolitical region id with a year from 2005 to current
 d_stand_gf <- data.frame(year=min(d_stand_rgn$year):max(d_stand_rgn$year)) %>% 
   merge(georegions, by=NULL) 
 
+
+# Combine the two data frames by region id and year
+# Calculate means across different geopolitical levels (e.g. r2, r1)
 d_stand_gf <- d_stand_gf %>%  
   left_join(d_stand_rgn, by = c("rgn_id", "year")) %>%
   group_by(r2, year) %>%
@@ -241,6 +261,9 @@ d_stand_gf <- d_stand_gf %>%
   mutate(r0_value = mean(score, na.rm=TRUE)) %>%
   ungroup()
 
+
+# For `score` cells that still have NA values (still several hundred):
+# Check to see if r2 has a value, if so use that to gapfill `score`, otherwise use r1, otherwise use r0
 d_stand_gf <- d_stand_gf %>%
   mutate(gapfilled = ifelse(is.na(score) & !is.na(r2_value), "1", gapfilled)) %>%
   mutate(method = ifelse(is.na(score) & !is.na(r2_value), "UN_geopolitical region avg, r2", method)) %>%
@@ -252,6 +275,8 @@ d_stand_gf <- d_stand_gf %>%
   mutate(method = ifelse(is.na(score) & !is.na(r0_value), "UN_geopolitical region avg, r0", method)) %>%
   mutate(score = ifelse(is.na(score), r0_value, score))
 
+# should no longer have NAs in the score column!
+
 ```
 
 
@@ -259,11 +284,14 @@ d_stand_gf <- d_stand_gf %>%
 
 ```{r}
 
+# Save dataframe with adjusted, gapfilled, and rescaled score information
 final <- d_stand_gf %>%
   select(rgn_id, year, value=score)
 
 write.csv(final, "output/wb_gdppcppp_rescaled.csv", row.names=FALSE)
 
+
+# Save dataframe with gapfilled method and status information
 final_gf <- d_stand_gf %>%
   select(rgn_id, year, gapfilled, method)
 
