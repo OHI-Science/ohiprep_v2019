@@ -124,7 +124,8 @@ d = key_voice %>%
 # Gapfill missing data (part 1)
 The first gapfilling occurs when we use the average of previous years data within each country/indicator.  This occurs when a country has data, but not for all years.
 
-Countries without 4 or more indicators are cut (gapfilled later).
+Countries without 4 or more indicator are cut (gapfilled later).
+
 ```{r}
 
 d <- read.csv('raw/worldbank_wgi_from_wdi_api.csv')
@@ -135,17 +136,17 @@ d <- gather(d, "indicator", "value", VA.EST:CC.EST)
 ## each country has 17 years of data
 d_gap_fill  <- d %>%
   group_by(country, year) %>%
-  mutate(NA_count_c_y = sum(is.na(value))) %>%  # get count of NA values for the indicators prior to gapfilling, max value is 6 ()
+  mutate(NA_count_c_y = sum(is.na(value))) %>% # get count of NA values for the indicators prior to gapfilling, max value is 6 ()
   ungroup() %>%
-  group_by(country, indicator) %>%              # this section gap-fills with the mean of values across years within the same region/indicator
+  group_by(country, indicator) %>% # this section gap-fills with the mean of values across years within the same region/indicator
   mutate(ind_mean_c_i = mean(value, na.rm=TRUE)) %>%
   ungroup() %>%
   mutate(value = ifelse(is.na(value), ind_mean_c_i, value)) %>%
-  group_by(country, year) %>%
-  mutate(NA_count_post_gf1 = sum(is.na(value)))     #count NA values for the num of indicators after last gap-fill (some values will be gapfilled by other years of data)
+  group_by(country, year) %>% # count NA values for the num of indicators after last gap-fill (some values will be gapfilled by other years of data)
+  mutate(NA_count_post_gf1 = sum(is.na(value)))     
 
 
-## cut regions with <4 indicators to calculate score:
+## cut regions with < 4 indicators (if any) to calculate score:
 countries_no_data <- d_gap_fill %>%
   filter(NA_count_post_gf1 > 3)
 
@@ -160,7 +161,9 @@ d_gap_fill <- d_gap_fill %>%
 ```
 
 # Calculate overall WGI score for each country
+
 This involves:
+
 * taking the average of the 6 indicators (assuming there are at least 4 of the 6 indicators)
 * rescaling the data from 0 to 1 
 
@@ -169,11 +172,11 @@ This involves:
 d_calcs  <-  d_gap_fill %>%
   group_by(country, year) %>%
   summarize(score_wgi_scale = mean(value, na.rm=T),
-            NA_start = mean(NA_count_c_y),
-            NA_post_gf_1 = mean(NA_count_post_gf1)) %>%
+            NA_start = mean(NA_count_c_y), # initial mean number of NA across indicators, pre-gapfill
+            NA_post_gf_1 = mean(NA_count_post_gf1)) %>% # number of NA across indicators, post-gapfill
   ungroup() 
 
-wgi_range = c(-2.5, 2.5)
+wgi_range = c(-2.5, 2.5) # historic values have been between -2.5 and 2.5
 
 d_calcs <- d_calcs %>%
   mutate(score =  (score_wgi_scale - wgi_range[1]) / (wgi_range[2] - wgi_range[1])) %>%
@@ -182,15 +185,24 @@ d_calcs <- d_calcs %>%
 # document gapfilling
 d_calcs <- d_calcs %>%
   mutate(gap_fill = NA_start - NA_post_gf_1,   # if there are values in NA_post_gf_1, it means these weren't gapfilled
-         gap_fill = ifelse(is.na(score), 0, gap_fill)) %>%
+         gap_fill = ifelse(is.na(score), 0, gap_fill)) %>% # number of values that were gapfilled
   select(-NA_start, -NA_post_gf_1)
 
+```
 
+## Explore & check intermediate d_calcs data table
+
+```{r}
 
 d_calcs[d_calcs$gap_fill>0, ]     
 d_calcs[d_calcs$country == "New Caledonia", ]  # no data, was deleted earlier
 d_calcs[d_calcs$country == "Niue", ] # should have gap-fill values between 0-6
 
+```
+
+## Save intermediate file 
+
+```{r}
 
 ## save intermediate file of wgi scores pre-gapfilling (for OHI+ use)
 write.csv(d_calcs %>%
@@ -280,8 +292,18 @@ d_sovs = d_calcs_rgn %>%
    filter(!is.na(gapfill_within_rgn)) %>%
   ungroup()
 
+```
+
+## Data check
+
+```{r}
 head(d_sovs)
 summary(d_sovs)
+```
+
+## Resume gapfilling missing data (part 2)
+
+```{r}
 
 # format these data
 d_gf2 <- d_sovs %>%
@@ -301,11 +323,18 @@ regions <- rgn_master %>%
 d_gf2 <- regions %>%
   left_join(d_gf2)
 
+```
+
+## Data check
+
+```{r}
+
 ## check for NA values within "score" variable
 ## if so, need to gapfill using UN geopolitical regions
 summary(d_gf2)
 
 ```
+
 
 # Uninhabited regions
 
@@ -322,6 +351,7 @@ These regions will receive an NA for their score (when established population is
 
 
 # Check data 
+
 Comparing this year's values against last year's.  These should be the same unless there have been updates to WGI source data or a change to methods.  For this year, there was a small change that effected a few territorial regions.  In the past, we used the sovereign country value, but in the case, we averaged the sovereign country and the available territorial values. For example, 
 
 Also look at top/bottom 10 regions to make sure these seem reasonable.
