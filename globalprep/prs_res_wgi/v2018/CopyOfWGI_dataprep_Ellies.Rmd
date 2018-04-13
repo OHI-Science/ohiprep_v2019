@@ -16,7 +16,7 @@ output:
 [REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2017/WGI_dataprep.html]
 
 #Summary
-This script downloads WGI data and prepares it for a pressures (1 - WGI) and resilience data layer.  
+This script downloads WGI data and prepares it for a pressures layer (1 - WGI) and a resilience data layer.  
 
 #Updates from previous assessment
 
@@ -52,7 +52,7 @@ library(tidyr)
 library(WDI) # install.packages('WDI')  # used to extract World Development Indicator (World Bank) data 
 library(stringr)
 
-# comment out when knitting:
+# comment out when knitting: # is there a way to build this so you don't have to manually comment/uncomment when running vs knitting?
 # setwd('globalprep/prs_res_wgi/v2018')
 
 # check website to see what years are available: http://info.worldbank.org/governance/wgi/index.aspx#home
@@ -78,7 +78,7 @@ indicators[grep("RL.EST", indicators$indicator), ]
 indicators[grep("CC.EST", indicators$indicator), ]
 
 # identify the six indicators
-# WDIsearch('violence')# general search
+# WDIsearch('violence')# general search # not sure what this comment is about
 key_voice = WDI(
   indicator = WDIsearch('Voice and Accountability: Estimate', field='name')['indicator'],
   country = 'all', start = yr_start, end=yr_end)
@@ -105,7 +105,7 @@ key_corrp = WDI(
 
 ```
 
-Combine the indicators.
+Combine the indicators into a single table, with a column for each indicator, and rows for each country-year pair.
 
 ```{r}
 d = key_voice %>% 
@@ -116,15 +116,15 @@ d = key_voice %>%
   left_join(key_rolaw %>% select(-iso2c), by=(c('country', 'year'))) %>%
   left_join(key_corrp %>% select(-iso2c), by=(c('country', 'year'))); head(d); summary(d); sapply(d, class)  
 # archived record of raw data: 
-# write.csv(d, 'raw/worldbank_wgi_from_wdi_api.csv', row.names=FALSE)
+# write.csv(d, 'raw/worldbank_wgi_from_wdi_api.csv', row.names=FALSE) # explain this more? when does this get uncommented?
 
 
 ```
 
-# Gapfill missing data (part 1)
+# Gapfill, part 1: filling missing years of data for indicators, within countries
 The first gapfilling occurs when we use the average of previous years data within each country/indicator.  This occurs when a country has data, but not for all years.
 
-Countries without 4 or more indicators are cut (gapfilled later).
+Countries without 4 or more indicators are cut (gapfilled later). ***why 3 or fewer? why not just keep what is there and gapfill around that?***
 ```{r}
 
 d <- read.csv('raw/worldbank_wgi_from_wdi_api.csv')
@@ -137,12 +137,12 @@ d_gap_fill  <- d %>%
   group_by(country, year) %>%
   mutate(NA_count_c_y = sum(is.na(value))) %>%  # get count of NA values for the indicators prior to gapfilling, max value is 6 ()
   ungroup() %>%
-  group_by(country, indicator) %>%              # this section gap-fills with the mean of values across years within the same region/indicator
+  group_by(country, indicator) %>%  # this section gap-fills with the mean of values across years within the same region/indicator
   mutate(ind_mean_c_i = mean(value, na.rm=TRUE)) %>%
   ungroup() %>%
   mutate(value = ifelse(is.na(value), ind_mean_c_i, value)) %>%
   group_by(country, year) %>%
-  mutate(NA_count_post_gf1 = sum(is.na(value)))     #count NA values for the num of indicators after last gap-fill (some values will be gapfilled by other years of data)
+  mutate(NA_count_post_gf1 = sum(is.na(value))) #count NA values for the num of indicators after last gap-fill (some values will be gapfilled by other years of data)
 
 
 ## cut regions with <4 indicators to calculate score:
@@ -188,7 +188,7 @@ d_calcs <- d_calcs %>%
 
 
 d_calcs[d_calcs$gap_fill>0, ]     
-d_calcs[d_calcs$country == "New Caledonia", ]  # no data, was deleted earlier
+d_calcs[d_calcs$country == "New Caledonia", ] # no data, was deleted earlier
 d_calcs[d_calcs$country == "Niue", ] # should have gap-fill values between 0-6
 
 
@@ -252,8 +252,8 @@ summary(d_calcs_rgn)
 ```
 
 
-# Gapfill missing data (part 2)
-This gapfilling occurs when we use assign a territorial region the value of their parent country.
+# Gapfilling, part 2: assigning territorial region value from parent country
+This gapfilling occurs when we use assign a territorial region the value of their parent country. *** in section below say that "but "in this case, we averaged the sovereign country and the available territorial values;" is this gapfilling section still up to date or is the "check the region" portion not correct?***
 
 ```{r}
 
@@ -261,7 +261,7 @@ This gapfilling occurs when we use assign a territorial region the value of thei
 territory = rgn_master %>% 
   select(rgn_id = rgn_id_2013,
          sov_id) %>%               
-  group_by(rgn_id) %>%                  # remove duplicated countries from this rgn_id list                    
+  group_by(rgn_id) %>% # remove duplicated countries from this rgn_id list                    
   summarize(sov_id = mean(sov_id, na.rm=T)) %>% # duplicates always have the same sov_id (r2 value)
   filter(rgn_id <= 250, rgn_id != 213)
 
@@ -321,8 +321,8 @@ These regions will receive an NA for their score (when established population is
 ```
 
 
-# Check data 
-Comparing this year's values against last year's.  These should be the same unless there have been updates to WGI source data or a change to methods.  For this year, there was a small change that effected a few territorial regions.  In the past, we used the sovereign country value, but in the case, we averaged the sovereign country and the available territorial values. For example, 
+# Check the data 
+Comparing this year's values against last year's.  These should be the same unless there have been updates to WGI source data or a change to methods.  For this year, there was a small change that effected a few territorial regions.  In the past, we used the sovereign country value, but in this case, we averaged the sovereign country and the available territorial values. For example, **?**
 
 Also look at top/bottom 10 regions to make sure these seem reasonable.
 
@@ -368,23 +368,24 @@ hist(tmp$score)
 
 
 # Save the data
-Gapfilling and score data are saved for each scenario year.  
+Gapfilling and score data are saved for each scenario year. *** still confused about "scenario year" vs "data year" vs "download year"; does this mean data are saved every year the scenario is completed, or data for every year the scenario is completed is saved in a given assessment year?***
 
 ```{r}
 
+# have to comment this out to knit it; why/is this an issue?
 
-  tmp_data_res <- d_gf2 %>%
-    select(rgn_id, year, resilience_score = score)
-  write.csv(tmp_data_res, "output/wgi_res.csv", row.names=FALSE)
-  
-  tmp_data_prs <- d_gf2 %>%
-    mutate(score = 1 - score) %>%
-    select(rgn_id, year, pressure_score = score)
-  write.csv(tmp_data_prs, "output/wgi_prs.csv", row.names=FALSE)
-  
-  tmp_gf <- d_gf2 %>%
-    select(rgn_id, year, gapfill_within_rgn, gapfill_territory)
-  write.csv(tmp_gf, "output/wgi_gf.csv", row.names=FALSE)
+  # tmp_data_res <- d_gf2 %>%
+  #   select(rgn_id, year, resilience_score = score)
+  # write.csv(tmp_data_res, "output/wgi_res.csv", row.names=FALSE)
+  # 
+  # tmp_data_prs <- d_gf2 %>%
+  #   mutate(score = 1 - score) %>%
+  #   select(rgn_id, year, pressure_score = score)
+  # write.csv(tmp_data_prs, "output/wgi_prs.csv", row.names=FALSE)
+  # 
+  # tmp_gf <- d_gf2 %>%
+  #   select(rgn_id, year, gapfill_within_rgn, gapfill_territory)
+  # write.csv(tmp_gf, "output/wgi_gf.csv", row.names=FALSE)
   
 
 ```
