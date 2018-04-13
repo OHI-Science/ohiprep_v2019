@@ -15,16 +15,16 @@ output:
 
 [REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2017/WGI_dataprep.html]
 
-#Summary
+# Summary
 This script downloads WGI data and prepares it for a pressures (1 - WGI) and resilience data layer.  
 
-#Updates from previous assessment
+# Updates from previous assessment
 
 None
 
 ***
 
-#Data Source 
+# Data Source 
 **Reference**:  http://info.worldbank.org/governance/wgi/index.aspx#home    
 
 **Downloaded**: April 6 2018
@@ -322,6 +322,7 @@ d_sovs = d_calcs_rgn %>%
 
 ```
 
+
 Define new data object from d_sovs which includes gapfill method and gapfilled scores:
 
 ```{r}
@@ -377,13 +378,16 @@ Plot most recent shared year between last year and this years data, and look for
 ```{r}
 
 new2015 <- d_gf2 %>%
+
   filter(year==2015) %>% # update to most recent shared year for comparison
   select(rgn_id, score)
 
 old2015 <- read.csv('../v2017/output/wgi_res.csv') %>% # change filepath to the previous assessment year's, rename variable for clarity
   filter(year == 2015) %>%
+
   select(rgn_id, old_score=resilience_score) %>%
   full_join(new2015)
+
 
 plot(old_score ~ score, data=old2015)
 # identify(old2015$score, old2015$old_score, labels=old2015$rgn_id) # can use this to identify regions from the plot
