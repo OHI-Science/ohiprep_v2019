@@ -15,16 +15,16 @@ output:
 
 [REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2017/WGI_dataprep.html]
 
-#Summary
+# Summary
 This script downloads WGI data and prepares it for a pressures (1 - WGI) and resilience data layer.  
 
-#Updates from previous assessment
+# Updates from previous assessment
 
 None
 
 ***
 
-#Data Source 
+# Data Source 
 **Reference**:  http://info.worldbank.org/governance/wgi/index.aspx#home    
 
 **Downloaded**: April 6 2018
@@ -322,7 +322,7 @@ d_sovs = d_calcs_rgn %>%
 
 ```
 
-## Data check
+## Take a look at the `d_sovs` data table summary
 
 ```{r}
 head(d_sovs)
@@ -352,7 +352,7 @@ d_gf2 <- regions %>%
 
 ```
 
-## Data check
+## Take a look at the summary for `d_gf2`
 
 ```{r}
 
@@ -385,16 +385,17 @@ Also look at top/bottom 10 regions to make sure these seem reasonable.
 
 ```{r}
 
-new2014 <- d_gf2 %>%
-  filter(year==2014) %>%
+new2015 <- d_gf2 %>%
+  filter(year==2015) %>%
   select(rgn_id, score)
 
-old2014 <- read.csv('../v2016/output/wgi_res_2016.csv') %>%
+old2015 <- read.csv('../v2017/output/wgi_res.csv') %>%
   select(rgn_id, old_score=resilience_score) %>%
   full_join(new2014)
 
 ## should be a 1:1 relationship
-plot(old_score ~ score, data=old2014)
+plot(old_score ~ score, data=old2015)
+identify(old2015$score, old2015$old_score, labels = old2015$rgn_id)
 abline(0,1, col="red")
 
 
