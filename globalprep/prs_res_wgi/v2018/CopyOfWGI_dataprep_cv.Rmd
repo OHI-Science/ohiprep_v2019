@@ -305,7 +305,6 @@ d_sovs = d_calcs_rgn %>%
 head(d_sovs)
 summary(d_sovs)
 
-#Error: `by` can't contain join column `year` which is missing from RHS
 
 # format these data
 d_gf2 <- d_sovs %>%
@@ -395,7 +394,6 @@ hist(tmp$score)
 Gapfilling and score data are saved for each scenario year.  
 
 ```{r}
-
 
   tmp_data_res <- d_gf2 %>%
     select(rgn_id, year, resilience_score = score)
