@@ -131,9 +131,8 @@ Uncomment the code chunk lines when updating WGI data, this will most likely occ
 
 
 # Gapfill, part 1: filling missing years of data for indicators, within countries
-The first gapfilling occurs when we use the average of previous years data within each country/indicator.  This occurs when a country has data, but not for all years.
+The first gapfilling occurs when we use the average of previous years data within each region/indicator.  This occurs when a region has data for an indicator, but not for all years.
 
-Countries without 4 or more indicator are cut (gapfilled using a different method later).
 
 **Read in WGI data - change appended date in file name to reflect the most recent version of the saved WGI data:**
 ```{r}
@@ -148,17 +147,24 @@ d <- gather(d, "indicator", "value", VA.EST:CC.EST)
 ## each country has 17 years of data
 d_gap_fill  <- d %>%
   group_by(country, year) %>%
-  mutate(NA_count_c_y = sum(is.na(value))) %>% # get count of NA values for the indicators prior to gapfilling, max value is 6
+  mutate(NA_count_c_y = sum(is.na(value))) %>% # gf record: NA values within a region/year prior to gapfilling, max value is 6
   ungroup() %>%
-  group_by(country, indicator) %>% # this section gap-fills with the mean of values across years within the same region/indicator
+  group_by(country, indicator) %>% # gapfill missing data with mean of values across years within the same region/indicator
   mutate(ind_mean_c_i = mean(value, na.rm=TRUE)) %>%
   ungroup() %>%
   mutate(value = ifelse(is.na(value), ind_mean_c_i, value)) %>%
-  group_by(country, year) %>% # count NA values for the num of indicators after last gap-fill (some values will be gapfilled by other years of data)
-  mutate(NA_count_post_gf1 = sum(is.na(value)))     
+  group_by(country, year) %>% 
+  mutate(NA_count_post_gf1 = sum(is.na(value))) # gf record: NA values within a region/year after within region/indicator gapfilling (i.e. indicator is gapfilled by other years of data), used to cut regions <4 indicators (below)    
 
+```
 
-## Safeguard: cut regions with < 4 indicators (if any) to calculate score. No countries were cut in 2018.
+## Safeguard: cut regions with < 4 indicators (if any) to calculate score.
+Once gapfilling is complete, the WGI scores are calculated as an average of the 6 indicators.  However, if a country is missing 4 or more of the indicators within a year the average would be very biased.  In these cases, a different method should be used to gapfill these data 
+
+(NOTE: for the 2018 assessment all regions had at least 3 of the 6 indicators).
+
+```{r purge datapoor region}
+
 countries_no_data <- d_gap_fill %>%
   filter(NA_count_post_gf1 > 3)
 
@@ -184,8 +190,8 @@ This involves:
 d_calcs  <-  d_gap_fill %>%
   group_by(country, year) %>%
   summarize(score_wgi_scale = mean(value, na.rm=T),
-            NA_start = mean(NA_count_c_y), # initial mean number of NA across indicators, pre-gapfill
-            NA_post_gf_1 = mean(NA_count_post_gf1)) %>% # number of NA across indicators, post-gapfill
+            NA_start = mean(NA_count_c_y), # initial mean number of NA across indicators, pre-gapfill 
+            NA_post_gf_1 = mean(NA_count_post_gf1)) %>% # number of NA across indicators, post-gapfill across year gapfill within region/indicator
   ungroup() 
 
 ```
