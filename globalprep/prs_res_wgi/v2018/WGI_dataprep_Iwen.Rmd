@@ -105,7 +105,7 @@ key_corrp = WDI(
 
 ```
 
-Combine the indicators.
+Combine the indicators into a single table, with a column for each indicator, and rows for each country-year pair.
 
 ```{r}
 d = key_voice %>% 
@@ -115,20 +115,32 @@ d = key_voice %>%
   left_join(key_regqt %>% select(-iso2c), by=(c('country', 'year'))) %>%
   left_join(key_rolaw %>% select(-iso2c), by=(c('country', 'year'))) %>%
   left_join(key_corrp %>% select(-iso2c), by=(c('country', 'year'))); head(d); summary(d); sapply(d, class)  
-# archived record of raw data: 
-# write.csv(d, 'raw/worldbank_wgi_from_wdi_api.csv', row.names=FALSE)
-
 
 ```
 
-# Gapfill missing data (part 1)
-The first gapfilling occurs when we use the average of previous years data within each country/indicator.  This occurs when a country has data, but not for all years.
+## Save a record of any new raw data for archival purposes
 
-Countries without 4 or more indicator are cut (gapfilled later).
+Uncomment the code chunk lines when updating WGI data, this will most likely occur when calculating for new assessment year:
 
 ```{r}
 
-d <- read.csv('raw/worldbank_wgi_from_wdi_api.csv')
+# date <- Sys.Date()
+# write.csv(d, sprintf('raw/worldbank_wgi_from_wdi_api_%s.csv', date), row.names=FALSE)
+
+```
+
+
+# Gapfill, part 1: filling missing years of data for indicators, within countries
+The first gapfilling occurs when we use the average of previous years data within each country/indicator.  This occurs when a country has data, but not for all years.
+
+Countries without 4 or more indicator are cut (gapfilled using a different method later).
+
+**Read in WGI data - change appended date in file name to reflect the most recent version of the saved WGI data:**
+```{r}
+d <- read.csv('raw/worldbank_wgi_from_wdi_api_2018-04-13.csv') # change appended date 
+```
+
+```{r}
 
 d <- gather(d, "indicator", "value", VA.EST:CC.EST)
 
@@ -136,7 +148,7 @@ d <- gather(d, "indicator", "value", VA.EST:CC.EST)
 ## each country has 17 years of data
 d_gap_fill  <- d %>%
   group_by(country, year) %>%
-  mutate(NA_count_c_y = sum(is.na(value))) %>% # get count of NA values for the indicators prior to gapfilling, max value is 6 ()
+  mutate(NA_count_c_y = sum(is.na(value))) %>% # get count of NA values for the indicators prior to gapfilling, max value is 6
   ungroup() %>%
   group_by(country, indicator) %>% # this section gap-fills with the mean of values across years within the same region/indicator
   mutate(ind_mean_c_i = mean(value, na.rm=TRUE)) %>%
@@ -146,15 +158,15 @@ d_gap_fill  <- d %>%
   mutate(NA_count_post_gf1 = sum(is.na(value)))     
 
 
-## cut regions with < 4 indicators (if any) to calculate score:
+## Safeguard: cut regions with < 4 indicators (if any) to calculate score. No countries were cut in 2018.
 countries_no_data <- d_gap_fill %>%
   filter(NA_count_post_gf1 > 3)
 
 countries_no_data <- unique(countries_no_data$country)
 countries_no_data
 
-# In this case, the countries with minimal data (< 4 indicators ever calculated) are deleted.  
-# These will be gap-filled later on if they are deleted now.
+## In this case, the countries with minimal data (< 4 indicators ever calculated) are deleted.  
+## These will be gap-filled later on if they are deleted now.
 d_gap_fill <- d_gap_fill %>%
   filter(!(country %in% countries_no_data))
 
@@ -176,7 +188,17 @@ d_calcs  <-  d_gap_fill %>%
             NA_post_gf_1 = mean(NA_count_post_gf1)) %>% # number of NA across indicators, post-gapfill
   ungroup() 
 
+```
+
+## Check that the values in `scores_wgi_scale` fall within the wgi range specified below:
+```{r}
+
+# summary(d_calcs)
 wgi_range = c(-2.5, 2.5) # historic values have been between -2.5 and 2.5
+
+```
+
+```{r}
 
 d_calcs <- d_calcs %>%
   mutate(score =  (score_wgi_scale - wgi_range[1]) / (wgi_range[2] - wgi_range[1])) %>%
@@ -187,7 +209,6 @@ d_calcs <- d_calcs %>%
   mutate(gap_fill = NA_start - NA_post_gf_1,   # if there are values in NA_post_gf_1, it means these weren't gapfilled
          gap_fill = ifelse(is.na(score), 0, gap_fill)) %>% # number of values that were gapfilled
   select(-NA_start, -NA_post_gf_1)
-
 ```
 
 ## Explore & check intermediate d_calcs data table
@@ -238,13 +259,13 @@ d_calcs$country[grep("Korea, Dem.", d_calcs$country)] <- "North Korea"
 
 
 
-### Function to convert to OHI region ID
+## Function to convert to OHI region ID
 d_calcs_rgn <- name_2_rgn(df_in = d_calcs, 
                        fld_name='country', 
                        flds_unique=c('year'))
 
-### Combine the duplicate regions (we report these at lower resolution)
-### In this case, we take the weighted average
+## Combine the duplicate regions (we report these at lower resolution)
+## In this case, we take the weighted average
 population_weights <- data.frame(country = c("Virgin Islands (U.S.)", "Puerto Rico",
                                              "China", "Hong Kong SAR, China", "Macao SAR, China"),
                                  population = c(106405, 3725789,
@@ -264,8 +285,9 @@ summary(d_calcs_rgn)
 ```
 
 
-# Gapfill missing data (part 2)
-This gapfilling occurs when we use assign a territorial region the value of their parent country.
+# Gapfill, part 2: Filling in missing territorial region value
+
+Assigning territorial region value to be the mean of parent country value and territorial regions with data (using same `sov_id`).
 
 ```{r}
 
@@ -273,7 +295,7 @@ This gapfilling occurs when we use assign a territorial region the value of thei
 territory = rgn_master %>% 
   select(rgn_id = rgn_id_2013,
          sov_id) %>%               
-  group_by(rgn_id) %>%                  # remove duplicated countries from this rgn_id list                    
+  group_by(rgn_id) %>%                  # remove duplicated countries from this rgn_id list
   summarize(sov_id = mean(sov_id, na.rm=T)) %>% # duplicates always have the same sov_id (r2 value)
   filter(rgn_id <= 250, rgn_id != 213)
 
@@ -283,7 +305,7 @@ territory <- data.frame(year=yr_start:yr_end) %>%
   merge(territory, by=NULL) 
 
 
-# assign territories the values of their country
+# assign territories the values of their sovereign country
 d_sovs = d_calcs_rgn %>% 
   full_join(territory, by = c('rgn_id', 'year')) %>%
   group_by(sov_id, year) %>%
@@ -301,7 +323,6 @@ head(d_sovs)
 summary(d_sovs)
 ```
 
-## Resume gapfilling missing data (part 2)
 
 ```{r}
 
