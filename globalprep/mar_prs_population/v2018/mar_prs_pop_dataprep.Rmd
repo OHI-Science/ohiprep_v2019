@@ -21,6 +21,8 @@ pdf_document:
 
 #Summary
 
+
+
 #Updates from previous assessment
 
 ***
@@ -40,37 +42,74 @@ pdf_document:
 **Format**:
 
 ***
-  
-#Methods, Calculations
 
-##Setup
+#Setup
 
 Load all relevant libraries including parallel processing packages.
-
 
 ```{r setup,message=FALSE,warning=FALSE,verbose=FALSE}
 #set options for all chunks in code
 knitr::opts_chunk$set(warning=FALSE, message=FALSE,fig.width = 6, fig.height = 4, fig.path = 'figs/')
 
 # comment out when knitting
-# setwd("globalprep/prs_fish/v2017")
+# setwd("globalprep/mar_prs_population/v2018")
 
 source('../../../src/R/common.R')
+
+if(!requireNamespace("raster", quietly = FALSE))
+  install.packages("raster")
+if(!requireNamespace("ohicore", quietly = FALSE))
+  devtools::install_github('ohi-science/ohicore')
+
+library(ohicore)
+
+library(raster)
+library(rgdal)
+library(sp)
+
+library(dplyr)
+library(stringr)
+
+library(parallel)
+library(foreach)
+library(doParallel)
 
 
 ```
 
-# Results
+#Methods and Calculations
 
-# Tidy/Wrangle
+##Import Raw Data
 
-## Extract by or Add OHI Regions
+##Prepare Densities (Project, Resample, Interpolate)
 
-# Data Checks and/or Meta-analysis
+##Convert Density to Population 
+
+Density is in units (people per km2?)...and population will be in units of...
+
+##Create EEZ plus 25-mile Inland Raster
+
+##Save Results 
+
+#Tidy/Wrangle
+
+##Extract by or Add OHI Regions
+
+#Gapfilling
+
+##Summary of Gapfill Methods
+
+##Methods and Calculations
+
+##Save Gapfill-tracking File
+
+#Data Checks and/or Meta-analysis
+
+##Check that Zonal Counts match UN Populations
 
 ***
 
-# Citation information  
+#Citation Information  
 
 
 
