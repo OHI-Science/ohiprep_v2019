@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Fri Apr 13 14:08:42 2018 by isu" />
+<meta name="author" content="Compiled on Wed Apr 18 10:16:14 2018 by isu" />
 
 
 <title>OHI: Mariculture</title>
@@ -143,7 +143,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">OHI: Mariculture</h1>
-<h4 class="author"><em><em>Compiled on Fri Apr 13 14:08:42 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Wed Apr 18 10:16:14 2018 by isu</em></em></h4>
 
 </div>
 
@@ -153,12 +153,20 @@ $(document).ready(function () {
 <li><a href="#updates-from-previous-assessment"><span class="toc-section-number">2</span> Updates from previous assessment</a></li>
 <li><a href="#data-source"><span class="toc-section-number">3</span> Data Source</a></li>
 <li><a href="#methods"><span class="toc-section-number">4</span> Methods</a></li>
-<li><a href="#fao-mariculuture-data"><span class="toc-section-number">5</span> FAO Mariculuture data</a><ul>
-<li><a href="#gapfilling"><span class="toc-section-number">5.0.1</span> Gapfilling</a></li>
+<li><a href="#import-raw-data-fao-mariculture-data"><span class="toc-section-number">5</span> Import Raw Data: FAO Mariculture data</a></li>
+<li><a href="#wrangle"><span class="toc-section-number">6</span> Wrangle:</a><ul>
+<li><a href="#clean-mariculture-data"><span class="toc-section-number">6.1</span> Clean mariculture data</a></li>
+<li><a href="#update-species-names-in-the-rawspecies_list.csv-file"><span class="toc-section-number">6.2</span> Update species names in the <code>raw/species_list.csv</code> file</a></li>
+<li><a href="#convert-country-names-to-ohi-regions"><span class="toc-section-number">6.3</span> Convert country names to OHI regions</a></li>
 </ul></li>
-<li><a href="#trujillo-sustainability-scores"><span class="toc-section-number">6</span> Trujillo sustainability scores</a></li>
-<li><a href="#fao-maricultue-and-sustainability-scores"><span class="toc-section-number">7</span> FAO maricultue and sustainability scores</a></li>
-<li><a href="#genetic-escapes-data"><span class="toc-section-number">8</span> Genetic escapes data</a></li>
+<li><a href="#gapfilling"><span class="toc-section-number">7</span> Gapfilling</a></li>
+<li><a href="#save-file"><span class="toc-section-number">8</span> Save file:</a></li>
+<li><a href="#import-data-trujillo-sustainability-scores"><span class="toc-section-number">9</span> Import data: Trujillo sustainability scores</a></li>
+<li><a href="#wrangle-1"><span class="toc-section-number">10</span> Wrangle</a><ul>
+<li><a href="#convert-country-names-to-ohi-region-names."><span class="toc-section-number">10.1</span> Convert country names to OHI region names.</a></li>
+</ul></li>
+<li><a href="#fao-mariculture-and-sustainability-scores"><span class="toc-section-number">11</span> FAO mariculture and sustainability scores</a></li>
+<li><a href="#genetic-escapes-data"><span class="toc-section-number">12</span> Genetic escapes data</a></li>
 </ul>
 </div>
 
@@ -169,7 +177,7 @@ $(document).ready(function () {
 </div>
 <div id="updates-from-previous-assessment" class="section level1">
 <h1><span class="header-section-number">2</span> Updates from previous assessment</h1>
-<p>New year of FAO mariculture yield data, but no changes to sustainability or genetic escapee data or general methods.</p>
+<p>New year of FAO mariculture yield data for 2016. No changes to sustainability. Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.</p>
 <hr />
 </div>
 <div id="data-source" class="section level1">
@@ -183,7 +191,7 @@ $(document).ready(function () {
 </div>
 <div id="methods" class="section level1">
 <h1><span class="header-section-number">4</span> Methods</h1>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load libraries, set directories</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## load libraries, set directories
 <span class="kw">library</span>(ohicore)  <span class="co">#devtools::install_github('ohi-science/ohicore@dev')</span>
 <span class="kw">library</span>(dplyr)</code></pre></div>
 <pre><code>## 
@@ -198,18 +206,18 @@ $(document).ready(function () {
 <span class="kw">library</span>(tidyr)
 
 ## comment out when knitting
-<span class="co">#setwd(&quot;globalprep/mar/v2017&quot;)</span>
+<span class="co"># setwd(&quot;globalprep/mar/v2018&quot;)</span>
 
 
-### Load FAO-specific user-defined functions
+## Load FAO-specific user-defined functions
 <span class="kw">source</span>(<span class="st">'mar_fxs.R'</span>) <span class="co"># functions specific to mariculture dealing with compound countries</span>
 <span class="kw">source</span>(<span class="st">'../../../src/R/fao_fxn.R'</span>) <span class="co"># function for cleaning FAO files</span>
 <span class="kw">source</span>(<span class="st">'../../../src/R/common.R'</span>) <span class="co"># directory locations</span></code></pre></div>
 </div>
-<div id="fao-mariculuture-data" class="section level1">
-<h1><span class="header-section-number">5</span> FAO Mariculuture data</h1>
-<p>Clean mariculture data: Filter freshwater mariculture, make long format, and clean FAO codes.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">'git-annex/globalprep/_raw_data/FAO_mariculture/d2017/FAO_GlobalAquacultureProduction_Quantity_1950_2015.csv'</span>), <span class="dt">check.names=</span><span class="ot">FALSE</span>, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>) ; <span class="kw">head</span>(mar) </code></pre></div>
+<div id="import-raw-data-fao-mariculture-data" class="section level1">
+<h1><span class="header-section-number">5</span> Import Raw Data: FAO Mariculture data</h1>
+<p>Mariculture production in tonnes.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">'git-annex/globalprep/_raw_data/FAO_mariculture/d2018/FAO_GlobalAquacultureProduction_Quantity_1950_2016.csv'</span>), <span class="dt">check.names=</span><span class="ot">FALSE</span>, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>) ; <span class="kw">head</span>(mar) </code></pre></div>
 <pre><code>##   Country (Country) Species (ASFIS species)
 ## 1       Afghanistan           Cyprinids nei
 ## 2       Afghanistan           Rainbow trout
@@ -217,100 +225,109 @@ $(document).ready(function () {
 ## 4           Albania             Common carp
 ## 5           Albania            Crucian carp
 ## 6           Albania        European seabass
-##   Aquaculture area (FAO major fishing area) Environment (Environment) Unit
-## 1                      Asia - Inland waters                Freshwater    t
-## 2                      Asia - Inland waters                Freshwater    t
-## 3                    Europe - Inland waters                Freshwater    t
-## 4                    Europe - Inland waters                Freshwater    t
-## 5                    Europe - Inland waters                Freshwater    t
-## 6               Mediterranean and Black Sea                    Marine    t
-##   1950 1951 1952 1953 1954 1955 1956 1957 1958 1959 1960 1961 1962 1963
-## 1  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
-## 2  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
-## 3    -    -    -    -    -    -    -    -    -    -    -    -    -    -
-## 4  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
-## 5  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
-## 6  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
-##   1964 1965 1966 1967 1968 1969 1970 1971 1972 1973 1974 1975  1976  1977
-## 1  ...  ...  ...  ...  ... 50 F 50 F 50 F 50 F 50 F 50 F 50 F 150 F 150 F
-## 2  ...  ...  ...  ...  ... 10 F 10 F 10 F 10 F 10 F 10 F 10 F  20 F  20 F
-## 3    -    -    -    -    -    -    -    -    -    -    -    -     -     -
-## 4  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...   ...   ...
-## 5  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...   ...   ...
-## 6  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...   ...   ...
-##    1978  1979  1980  1981  1982  1983  1984  1985  1986  1987  1988  1989
+##   Aquaculture area (FAO major fishing area) Environment (Environment)
+## 1                      Asia - Inland waters                Freshwater
+## 2                      Asia - Inland waters                Freshwater
+## 3                    Europe - Inland waters                Freshwater
+## 4                    Europe - Inland waters                Freshwater
+## 5                    Europe - Inland waters                Freshwater
+## 6               Mediterranean and Black Sea                    Marine
+##     Unit 1950 1951 1952 1953 1954 1955 1956 1957 1958 1959 1960 1961 1962
+## 1 Tonnes  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
+## 2 Tonnes  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
+## 3 Tonnes    -    -    -    -    -    -    -    -    -    -    -    -    -
+## 4 Tonnes  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
+## 5 Tonnes  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
+## 6 Tonnes  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...
+##   1963 1964 1965 1966 1967 1968 1969 1970 1971 1972 1973 1974 1975  1976
+## 1  ...  ...  ...  ...  ...  ... 50 F 50 F 50 F 50 F 50 F 50 F 50 F 150 F
+## 2  ...  ...  ...  ...  ...  ... 10 F 10 F 10 F 10 F 10 F 10 F 10 F  20 F
+## 3    -    -    -    -    -    -    -    -    -    -    -    -    -     -
+## 4  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...   ...
+## 5  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...   ...
+## 6  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...  ...   ...
+##    1977  1978  1979  1980  1981  1982  1983  1984  1985  1986  1987  1988
 ## 1 150 F 150 F 150 F 150 F 150 F 150 F 150 F 150 F 150 F 150 F 150 F 150 F
 ## 2  20 F  20 F  20 F  20 F  20 F  20 F  20 F  20 F  20 F  20 F  20 F  20 F
 ## 3     -     -     -     -     -     -     -     -     -     -     -     -
-## 4   ...   ...   ...   ...   4 F  10 F    10    20    48    42    62   126
-## 5   ...   ...   ...   1 F   6 F   8 F    10    10    12     5     2     7
+## 4   ...   ...   ...   ...   ...   4 F  10 F    10    20    48    42    62
+## 5   ...   ...   ...   ...   1 F   6 F   8 F    10    10    12     5     2
 ## 6   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
-##    1990  1991  1992  1993  1994  1995  1996  1997  1998  1999  2000  2001
-## 1 300 F 300 F 300 F 300 F 300 F 300 F 300 F 300 F 300 F 300 F 300 F 400 F
-## 2   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...  50 F
+##    1989  1990  1991  1992  1993  1994  1995  1996  1997  1998  1999  2000
+## 1 150 F 300 F 300 F 300 F 300 F 300 F 300 F 300 F 300 F 300 F 300 F 300 F
+## 2  20 F   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
 ## 3     -     -     -     -     -     -     -     -     -     -     -     -
-## 4  76 F  23 F  13 F  13 F  14 F  34 F  45 F     4     4     2     2     3
-## 5   5 F   2 F   1 F   2 F   1 F     -     -     -     -     -     -     -
+## 4   126  76 F  23 F  13 F  13 F  14 F  34 F  45 F     4     4     2     2
+## 5     7   5 F   2 F   1 F   2 F   1 F     -     -     -     -     -     -
 ## 6   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...   ...
-##    2002  2003  2004  2005  2006  2007  2008  2009  2010  2011  2012  2013
-## 1 400 F 400 F 400 F 400 F 400 F 900 F 900 F 900 F 900 F 900 F 900 F 900 F
-## 2  50 F  50 F  50 F  50 F  50 F 150 F 150 F 150 F 150 F 150 F 150 F 150 F
+##    2001  2002  2003  2004  2005  2006  2007  2008  2009  2010  2011  2012
+## 1 400 F 400 F 400 F 400 F 400 F 400 F 900 F 900 F 900 F 900 F 900 F 900 F
+## 2  50 F  50 F  50 F  50 F  50 F  50 F 150 F 150 F 150 F 150 F 150 F 150 F
 ## 3     -     -     -     -     -     -     -     -     -     -     -     -
-## 4     4     6     8     6    10    10    74     6     6     8   222 200 F
+## 4     3     4     6     8     6    10    10    74     6     6     8   222
 ## 5     -     -     -     -     -     -     -     -     -     -     -     -
-## 6   ...   ...   ...   ...    87    84   142   135   135   170   170 170 F
-##    2014   2015
-## 1 950 F 1000 F
-## 2 150 F  150 F
-## 3     -     16
-## 4   214   26.8
-## 5     -     12
-## 6 129.4    392</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># mar &lt;- read.csv('D:/git-annex/globalprep/_raw_data/FAO_mariculture/d2017/FAO_GlobalAquacultureProduction_Quantity_1950_2015.csv', check.names=FALSE, stringsAsFactors=FALSE) ; head(mar) </span>
-
-mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
+## 6   ...   ...   ...   ...   ...    87    84   142   135   135   170   170
+##    2013  2014   2015   2016
+## 1 900 F 950 F 1000 F 1050 F
+## 2 150 F 150 F  150 F  150 F
+## 3     -     -     16   10 F
+## 4 200 F   214   26.8   20 F
+## 5     -     -     12   10 F
+## 6 170 F 129.4    392  200 F</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># mar &lt;- read.csv('D:/git-annex/globalprep/_raw_data/FAO_mariculture/d2017/FAO_GlobalAquacultureProduction_Quantity_1950_2015.csv', check.names=FALSE, stringsAsFactors=FALSE) ; head(mar) </span></code></pre></div>
+</div>
+<div id="wrangle" class="section level1">
+<h1><span class="header-section-number">6</span> Wrangle:</h1>
+<div id="clean-mariculture-data" class="section level2">
+<h2><span class="header-section-number">6.1</span> Clean mariculture data</h2>
+<p>Filter freshwater mariculture, make long format, and clean FAO codes.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">rename</span>(<span class="dt">country =</span> <span class="st">`</span><span class="dt">Country (Country)</span><span class="st">`</span>,
-         <span class="dt">FAO_name =</span> <span class="st">`</span><span class="dt">Species (ASFIS species)</span><span class="st">`</span>,
-         <span class="dt">fao =</span> <span class="st">`</span><span class="dt">Aquaculture area (FAO major fishing area)</span><span class="st">`</span>,
+         <span class="dt">FAO_name =</span> <span class="st">`</span><span class="dt">Species (ASFIS species)</span><span class="st">`</span>, 
+         <span class="dt">fao =</span> <span class="st">`</span><span class="dt">Aquaculture area (FAO major fishing area)</span><span class="st">`</span>, 
          <span class="dt">environment =</span> <span class="st">`</span><span class="dt">Environment (Environment)</span><span class="st">`</span>)
 <span class="kw">table</span>(mar<span class="op">$</span>environment)  </code></pre></div>
 <pre><code>## 
-## Brackishwater    Freshwater        Marine 
-##           491          1722          1041</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># include only marine environments</span>
+##               Brackishwater    Freshwater        Marine 
+##             2           494          1731          1073</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## include only marine environments
 mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="kw">filter</span>(environment <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Brackishwater&quot;</span>, <span class="st">&quot;Marine&quot;</span>))  
 
-## long format and clean FAO codes:
+## convert to long format and clean FAO codes:
+## for some reason, I can't provide the data range in gather programatically!
 mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>Unit) 
 
-## for some reason, I can't provide the data range in gather programatically!
-col_num &lt;-<span class="st"> </span><span class="kw">ncol</span>(<span class="kw">data.frame</span>(mar))
-range &lt;-<span class="st"> </span><span class="dv">5</span><span class="op">:</span>col_num
 mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">gather</span>(<span class="dt">key=</span><span class="st">&quot;year&quot;</span>, <span class="dt">value=</span><span class="st">&quot;value&quot;</span>, <span class="dv">5</span><span class="op">:</span><span class="dv">70</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">gather</span>(<span class="dt">key=</span><span class="st">&quot;year&quot;</span>, <span class="dt">value=</span><span class="st">&quot;value&quot;</span>, <span class="kw">num_range</span>(<span class="st">&quot;&quot;</span>,<span class="dv">1950</span><span class="op">:</span><span class="dv">2016</span>)) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">fao_clean_data</span>() </code></pre></div>
-<p>Update species names and exclude non-food species. I simplified the species_list. I cut the “species”&quot; name columns because it wasn’t clear what this was trying to accomplish and created potential error.</p>
+</div>
+<div id="update-species-names-in-the-rawspecies_list.csv-file" class="section level2">
+<h2><span class="header-section-number">6.2</span> Update species names in the <code>raw/species_list.csv</code> file</h2>
+<p>Update species name in the raw file with names in the <code>mar</code> dataset (exclude non-food species). I simplified the species_list. I cut the “species” name columns because it wasn’t clear what this was trying to accomplish and created potential error.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar_sp &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'raw/species_list.csv'</span>, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(FAO_name, exclude, alias, Taxon_code)
 new.spp &lt;-<span class="st"> </span><span class="kw">setdiff</span>(mar<span class="op">$</span>FAO_name, mar_sp<span class="op">$</span>FAO_name)
 new.spp <span class="co"># check: if dim has 0 rows it means all match</span></code></pre></div>
-<pre><code>## character(0)</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># if length(new.spp) &gt;0 , hand check whether to keep (exclude seaweeds and species harvested for ornamental/medicinal), check if synonyms match Trujillo names</span>
+<pre><code>## [1] &quot;Speckled longfin eel&quot;          &quot;[Trochita spp]&quot;               
+## [3] &quot;Green mud crab&quot;                &quot;Scorpionfishes, redfishes nei&quot;
+## [5] &quot;Malabar blood snapper&quot;         &quot;Crimson snapper&quot;              
+## [7] &quot;[Dunaliella salina]&quot;           &quot;Spirulina nei&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## if length(new.spp) &gt;0 , hand check whether to keep (exclude seaweeds and species harvested for ornamental/medicinal), check if synonyms match Trujillo names
 
-<span class="co"># Remove species not relevant to mariculuture goal (i.e., non-food species)</span>
+## Remove species not relevant to mariculuture goal (i.e., non-food species)
 mar &lt;-<span class="st"> </span><span class="kw">left_join</span> (mar, mar_sp, <span class="dt">by=</span><span class="st">&quot;FAO_name&quot;</span>) 
 mar &lt;-<span class="st"> </span><span class="kw">filter</span> (mar, exclude<span class="op">==</span><span class="dv">0</span>) 
 
 
-<span class="co"># change names using species name and the species alias (global changes)</span>
+## change names using species name and the species alias (global changes)
 mar<span class="op">$</span>species &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(mar<span class="op">$</span>alias), mar<span class="op">$</span>alias, mar<span class="op">$</span>FAO_name) 
 
-<span class="co"># sum duplicates after name change (this also gets rid of the NA values)</span>
+## sum duplicates after name change (this also gets rid of the NA values)
 mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(value)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">group_by</span>(country, fao, environment, species, year, Taxon_code) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(country, fao, environment, species, year, Taxon_code) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="kw">summarize</span>(<span class="dt">value =</span> <span class="kw">sum</span>(value)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">ungroup</span>()
 
@@ -322,7 +339,9 @@ mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(total_value <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>total_value) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ungroup</span>()</code></pre></div>
-<p>Convert country names to OHI regions</p>
+</div>
+<div id="convert-country-names-to-ohi-regions" class="section level2">
+<h2><span class="header-section-number">6.3</span> Convert country names to OHI regions</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Divide mariculture from countries that we report as separate regions (assume equal production in all regions)</span>
 <span class="co"># Netherlands Antilles: Conch restoration among Aruba, Bonaire, Curacao</span>
 <span class="co"># Channel Islands: Jersey and Guernsey</span>
@@ -335,7 +354,7 @@ mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 
 mar_rgn &lt;-<span class="st"> </span><span class="kw">name_2_rgn</span>(<span class="dt">df_in =</span> mar, 
                        <span class="dt">fld_name=</span><span class="st">'country'</span>, 
-                       <span class="dt">flds_unique=</span><span class="kw">c</span>(<span class="st">'species'</span>, <span class="st">'fao'</span>, <span class="st">'environment'</span>, <span class="st">'Taxon_code'</span>, <span class="st">'year'</span>))</code></pre></div>
+                       <span class="dt">flds_unique=</span><span class="kw">c</span>(<span class="st">'species'</span>, <span class="st">'fao'</span>, <span class="st">'environment'</span>, <span class="st">'Taxon_code'</span>, <span class="st">'year'</span>)) </code></pre></div>
 <pre><code>## 
 ## These data were removed for not having any match in the lookup tables:
 ## 
@@ -345,7 +364,7 @@ mar_rgn &lt;-<span class="st"> </span><span class="kw">name_2_rgn</span>(<span c
 ## These data were removed for not being of the proper rgn_type (eez,ohi_region) or mismatching region names in the lookup tables:
 ##                          tmp_type
 ## tmp_name                  disputed
-##   Palestine, Occupied Tr.        9</code></pre>
+##   Palestine, Occupied Tr.       10</code></pre>
 <pre><code>## 
 ## DUPLICATES found. Consider using collapse2rgn to collapse duplicates (function in progress).</code></pre>
 <pre><code>## # A tibble: 15 x 1
@@ -366,13 +385,13 @@ mar_rgn &lt;-<span class="st"> </span><span class="kw">name_2_rgn</span>(<span c
 ## 13 Tanzania, United Rep. of
 ## 14 Un. Sov. Soc. Rep.      
 ## 15 Zanzibar</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### sum values of regions with multiple subregions
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## sum values of regions with multiple subregions
 mar_rgn &lt;-<span class="st"> </span>mar_rgn <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">group_by</span>(fao, environment, species, year, Taxon_code, rgn_id) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(fao, environment, species, year, Taxon_code, rgn_id) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">summarize</span>(<span class="dt">value =</span> <span class="kw">sum</span>(value)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">ungroup</span>()
-
-<span class="kw">data.frame</span>(<span class="kw">filter</span>(mar_rgn, rgn_id<span class="op">==</span><span class="dv">130</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ungroup</span>()</code></pre></div>
+<p><strong>Take a look at the tidied data for a single year and region</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="kw">filter</span>(mar_rgn, rgn_id<span class="op">==</span><span class="dv">130</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(year<span class="op">==</span><span class="dv">2013</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">arrange</span>(species))</code></pre></div>
 <pre><code>##                        fao   environment                species year
@@ -435,40 +454,42 @@ mar_rgn &lt;-<span class="st"> </span>mar_rgn <span class="op">%&gt;%</span>
 <span class="co">#   group_by(fao, environment, species, year, Taxon_code, rgn_id) %&gt;%</span>
 <span class="co">#   summarize(value = sum(value)) %&gt;%</span>
 <span class="co">#   ungroup()</span></code></pre></div>
-<div id="gapfilling" class="section level3">
-<h3><span class="header-section-number">5.0.1</span> Gapfilling</h3>
-<p>Fill in missing years after first harvest with 0 values</p>
+</div>
+</div>
+<div id="gapfilling" class="section level1">
+<h1><span class="header-section-number">7</span> Gapfilling</h1>
+<p>Fill in missing years after first harvest with 0 values. Checked to make sure that there weren’t instances in which it made more sense to carry the previous year’s data forward as a method of gapilling. This didn’t seem to be the case.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar_rgn_spread &lt;-<span class="st"> </span><span class="kw">spread</span>(mar_rgn, year, value)
 <span class="kw">dim</span>(mar_rgn_spread)</code></pre></div>
-<pre><code>## [1] 1301   71</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar_rgn_gf &lt;-<span class="st"> </span><span class="kw">gather</span>(mar_rgn_spread, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;value&quot;</span>, <span class="dv">6</span><span class="op">:</span><span class="dv">71</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(rgn_id, species, year, Taxon_code, fao, environment)
+<pre><code>## [1] 1321   72</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar_rgn_gf &lt;-<span class="st"> </span><span class="kw">gather</span>(mar_rgn_spread, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;value&quot;</span>, <span class="kw">num_range</span>(<span class="st">&quot;&quot;</span>,<span class="dv">1950</span><span class="op">:</span><span class="dv">2016</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(rgn_id, species, year, Taxon_code, fao, environment) 
 
-## NA values are converted to zero.  I checked to make sure there 
-## weren't instances in which in made more sense to carry the previous
-## years data forward as a method of gapfilling. This didn't seem to be the case
+## NA values are converted to zero.
 mar_rgn_gf &lt;-<span class="st"> </span>mar_rgn_gf <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">as.numeric</span>(<span class="kw">as.character</span>(year))) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">value_w_0 =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), <span class="dv">0</span>, value)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">group_by</span>(fao, environment, species, Taxon_code, rgn_id) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(fao, environment, species, Taxon_code, rgn_id) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cum_value =</span> <span class="kw">cumsum</span>(value_w_<span class="dv">0</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(cum_value <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gap_0_fill =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), <span class="st">&quot;NA_to_zero&quot;</span>, <span class="st">&quot;0&quot;</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">value =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), <span class="dv">0</span>, value)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cum_value, <span class="op">-</span>value_w_<span class="dv">0</span>)
+
 <span class="kw">table</span>(mar_rgn_gf<span class="op">$</span>gap_0_fill)</code></pre></div>
 <pre><code>## 
 ##          0 NA_to_zero 
-##      25842       3344</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 3344 of these out of 25842+3344 cases</code></pre></div>
+##      26778       3743</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 3344 of these out of 25842+3344 cases
+## 3743 of these out of 26778+3743 cases had NA values converted to 0</code></pre></div>
 <p>Remove time series with less than four non-zero datapoints (assume these are not established mariculture programs).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar_rgn_gf =<span class="st"> </span>mar_rgn_gf <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">group_by</span>(rgn_id, species, fao, environment) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span> (<span class="dt">not_0 =</span> <span class="kw">length</span>(value[value<span class="op">&gt;</span><span class="dv">0</span>])) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">filter</span> (not_<span class="dv">0</span><span class="op">&gt;</span><span class="dv">3</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(rgn_id, species, fao, environment, year, value, Taxon_code, gap_0_fill)</code></pre></div>
+<span class="st">  </span><span class="kw">select</span>(rgn_id, species, fao, environment, year, value, Taxon_code, gap_0_fill) </code></pre></div>
 <p>Add a unique identifier per cultivated stock that describes species, fao region, and environment.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add a unique identifier per cultivated stock</span>
 identifier =<span class="st"> </span>mar_rgn_gf <span class="op">%&gt;%</span><span class="st"> </span>
@@ -479,33 +500,34 @@ identifier =<span class="st"> </span>mar_rgn_gf <span class="op">%&gt;%</span><s
 mar_rgn_gf =<span class="st"> </span><span class="kw">left_join</span>(mar_rgn_gf, identifier)</code></pre></div>
 <pre><code>## Joining, by = c(&quot;rgn_id&quot;, &quot;species&quot;, &quot;fao&quot;, &quot;environment&quot;)</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maric &lt;-<span class="st"> </span>mar_rgn_gf</code></pre></div>
-<p>Save file to estimate total mariculture yield per country.</p>
+</div>
+<div id="save-file" class="section level1">
+<h1><span class="header-section-number">8</span> Save file:</h1>
+<p>Used to estimate total mariculture yield per country.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(maric, <span class="st">'output/MAR_FP_data.csv'</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
 </div>
-</div>
-<div id="trujillo-sustainability-scores" class="section level1">
-<h1><span class="header-section-number">6</span> Trujillo sustainability scores</h1>
+<div id="import-data-trujillo-sustainability-scores" class="section level1">
+<h1><span class="header-section-number">9</span> Import data: Trujillo sustainability scores</h1>
 <p>These data describe the sustainability and genetic escapes for country/species combinations (and, in a couple cases, environment and fao region combinations). In cases where these data were not available for a specific county/species, we averaged the data across taxonomic groups to gapfill the missing data.</p>
-<p>Convert country names to OHI region names.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Trujillo sustainability data:</span>
-sus =<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'raw/Truj_label_sust.csv'</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>, <span class="dt">na.strings =</span> <span class="ot">NA</span>)
-
-## these need to be re-added (get cut when associated with region ids)
-sus_no_rgn &lt;-<span class="st"> </span><span class="kw">filter</span>(sus, <span class="kw">is.na</span>(country))
-
-<span class="co"># convert country names to OHI region names:</span>
-sus_rgn &lt;-<span class="st"> </span><span class="kw">name_2_rgn</span>(<span class="dt">df_in =</span> sus, 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Trujillo sustainability data:
+sus =<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'raw/Truj_label_sust.csv'</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>, <span class="dt">na.strings =</span> <span class="ot">NA</span>)</code></pre></div>
+</div>
+<div id="wrangle-1" class="section level1">
+<h1><span class="header-section-number">10</span> Wrangle</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## these need to be re-added (get cut when associated with region ids)
+sus_no_rgn &lt;-<span class="st"> </span><span class="kw">filter</span>(sus, <span class="kw">is.na</span>(country))</code></pre></div>
+<div id="convert-country-names-to-ohi-region-names." class="section level2">
+<h2><span class="header-section-number">10.1</span> Convert country names to OHI region names.</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sus_rgn &lt;-<span class="st"> </span><span class="kw">name_2_rgn</span>(<span class="dt">df_in =</span> sus, 
                        <span class="dt">fld_name=</span><span class="st">'country'</span>, 
                        <span class="dt">flds_unique=</span><span class="kw">c</span>(<span class="st">'species_fao'</span>, <span class="st">'fao'</span>, <span class="st">'environment'</span>, <span class="st">'species_Truj'</span>))</code></pre></div>
 <pre><code>## 
 ## These data were removed for not having any match in the lookup tables:
 ## &lt; table of extent 0 &gt;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sus_rgn &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(sus_rgn, sus_no_rgn) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">unique</span>()
-
-
-<span class="co"># check the fao spp list in the Trujillo sustainability file matches FAO mariculture species</span>
-<span class="kw">setdiff</span>(sus_rgn<span class="op">$</span>species_fao, maric<span class="op">$</span>species) <span class="co"># species that are no longer have mariculture industry or are not included due to being freshwater or non-food</span></code></pre></div>
+<span class="st">  </span><span class="kw">unique</span>()</code></pre></div>
+<p><strong>check the fao spp list in the Trujillo sustainability file matches FAO mariculture species</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setdiff</span>(sus_rgn<span class="op">$</span>species_fao, maric<span class="op">$</span>species) <span class="co"># species that are no longer have mariculture industry or are not included due to being freshwater or non-food</span></code></pre></div>
 <pre><code>##  [1] &quot;River Plata mussel&quot;    &quot;Gracilaria seaweeds&quot;  
 ##  [3] &quot;Laver (Nori)&quot;          &quot;Atlantic wolffish&quot;    
 ##  [5] &quot;Spotted wolffish&quot;      &quot;Bagrid catfish&quot;       
@@ -577,26 +599,26 @@ sus_rgn &lt;-<span class="st"> </span><span class="kw">name_2_rgn</span>(<span c
 ##  [93] &quot;Mackerels nei&quot;                  &quot;Malabar grouper&quot;               
 ##  [95] &quot;Mangrove cupped oyster&quot;         &quot;Marbled spinefoot&quot;             
 ##  [97] &quot;Marine crabs nei&quot;               &quot;Meagre&quot;                        
-##  [99] &quot;Mud spiny lobster&quot;              &quot;Northern quahog(=Hard clam)&quot;   
-## [101] &quot;Northern white shrimp&quot;          &quot;Octopuses, etc. nei&quot;           
-## [103] &quot;Okhotsk atka mackerel&quot;          &quot;Olympia oyster&quot;                
-## [105] &quot;Orange mud crab&quot;                &quot;Pacific bluefin tuna&quot;          
-## [107] &quot;Pacific calico scallop&quot;         &quot;Pacific geoduck&quot;               
-## [109] &quot;Pacific horse clam&quot;             &quot;Pacific lion's paw&quot;            
-## [111] &quot;Pacific littleneck clam&quot;        &quot;Palaemonid shrimps nei&quot;        
-## [113] &quot;Papuan black snapper&quot;           &quot;Pargo breams nei&quot;              
-## [115] &quot;Pearl oyster shells nei&quot;        &quot;Penguin wing oyster&quot;           
-## [117] &quot;Pen shells nei&quot;                 &quot;Peppery furrow&quot;                
-## [119] &quot;Periwinkles nei&quot;                &quot;Pod razor shell&quot;               
-## [121] &quot;Pollack&quot;                        &quot;Porgies, seabreams nei&quot;        
-## [123] &quot;Portunus swimcrabs nei&quot;         &quot;Puffers nei&quot;                   
-## [125] &quot;Queen conch&quot;                    &quot;Queen scallop&quot;                 
-## [127] &quot;Rainbow abalone&quot;                &quot;Red abalone&quot;                   
-## [129] &quot;Red porgy&quot;                      &quot;Redtail prawn&quot;                 
-## [131] &quot;Righteye flounders nei&quot;         &quot;Russell's snapper&quot;             
-## [133] &quot;Salmonids nei&quot;                  &quot;Salmonoids nei&quot;                
-## [135] &quot;Sand gaper&quot;                     &quot;Scats&quot;                         
-## [137] &quot;Sciaenas nei&quot;                   &quot;Scorpionfishes nei&quot;            
+##  [99] &quot;Mediterranean shore crab&quot;       &quot;Mud spiny lobster&quot;             
+## [101] &quot;Northern quahog(=Hard clam)&quot;    &quot;Northern white shrimp&quot;         
+## [103] &quot;Octopuses, etc. nei&quot;            &quot;Okhotsk atka mackerel&quot;         
+## [105] &quot;Olympia oyster&quot;                 &quot;Orange mud crab&quot;               
+## [107] &quot;Pacific bluefin tuna&quot;           &quot;Pacific calico scallop&quot;        
+## [109] &quot;Pacific geoduck&quot;                &quot;Pacific horse clam&quot;            
+## [111] &quot;Pacific lion's paw&quot;             &quot;Pacific littleneck clam&quot;       
+## [113] &quot;Palaemonid shrimps nei&quot;         &quot;Papuan black snapper&quot;          
+## [115] &quot;Pargo breams nei&quot;               &quot;Pearl oyster shells nei&quot;       
+## [117] &quot;Penguin wing oyster&quot;            &quot;Pen shells nei&quot;                
+## [119] &quot;Peppery furrow&quot;                 &quot;Periwinkles nei&quot;               
+## [121] &quot;Pod razor shell&quot;                &quot;Pollack&quot;                       
+## [123] &quot;Porgies, seabreams nei&quot;         &quot;Portunus swimcrabs nei&quot;        
+## [125] &quot;Puffers nei&quot;                    &quot;Queen conch&quot;                   
+## [127] &quot;Queen scallop&quot;                  &quot;Rainbow abalone&quot;               
+## [129] &quot;Red abalone&quot;                    &quot;Red porgy&quot;                     
+## [131] &quot;Redtail prawn&quot;                  &quot;Righteye flounders nei&quot;        
+## [133] &quot;Russell's snapper&quot;              &quot;Salmonids nei&quot;                 
+## [135] &quot;Salmonoids nei&quot;                 &quot;Sand gaper&quot;                    
+## [137] &quot;Scats&quot;                          &quot;Sciaenas nei&quot;                  
 ## [139] &quot;Sea cucumbers nei&quot;              &quot;Sea snails&quot;                    
 ## [141] &quot;Sea squirts nei&quot;                &quot;Senegalese sole&quot;               
 ## [143] &quot;Sharpsnout seabream&quot;            &quot;Shi drum&quot;                      
@@ -618,15 +640,16 @@ sus_rgn &lt;-<span class="st"> </span><span class="kw">name_2_rgn</span>(<span c
 ## [175] &quot;White seabream&quot;                 &quot;White-spotted spinefoot&quot;       
 ## [177] &quot;White trevally&quot;                 &quot;Yellowfin seabream&quot;</code></pre>
 </div>
-<div id="fao-maricultue-and-sustainability-scores" class="section level1">
-<h1><span class="header-section-number">7</span> FAO maricultue and sustainability scores</h1>
+</div>
+<div id="fao-mariculture-and-sustainability-scores" class="section level1">
+<h1><span class="header-section-number">11</span> FAO mariculture and sustainability scores</h1>
 <p>Match the sustainability score to the FAO mariculture data.</p>
 <p>The following joins the sustainability scores to regions/species that have Trujillo data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(sus_rgn<span class="op">$</span>match_type)</code></pre></div>
 <pre><code>## 
 ##     c_sp c_sp_env c_sp_fao  species    taxon 
 ##      301        4        2      110       12</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># join taxa specific to country/species/environment</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## join taxa specific to country/species/environment
 c_sp_env =<span class="st"> </span>sus_rgn <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">filter</span>(match_type <span class="op">==</span><span class="st"> 'c_sp_env'</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">select</span>(rgn_id, <span class="dt">species=</span>species_fao, environment, <span class="dt">Sust_c_sp_env =</span> Maric_sustainability)
@@ -634,7 +657,7 @@ c_sp_env =<span class="st"> </span>sus_rgn <span class="op">%&gt;%</span><span c
 mar_sus &lt;-<span class="st"> </span>maric <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">left_join</span>(c_sp_env, <span class="dt">by=</span> <span class="kw">c</span>(<span class="st">&quot;species&quot;</span>, <span class="st">&quot;environment&quot;</span>, <span class="st">&quot;rgn_id&quot;</span>))
 
-<span class="co"># join taxa specific to country/species/fao region</span>
+## join taxa specific to country/species/fao region
 c_sp_fao =<span class="st"> </span>sus_rgn <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">filter</span>(match_type <span class="op">==</span><span class="st"> 'c_sp_fao'</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">select</span>(rgn_id, <span class="dt">species=</span>species_fao, fao, <span class="dt">Sust_c_sp_fao =</span> Maric_sustainability)
@@ -710,73 +733,77 @@ mar_sus &lt;-<span class="st"> </span>mar_sus <span class="op">%&gt;%</span>
 ## 64    218 Atlantic salmon  Pacific, Northeast      Marine 2014 62475
 ## 65    218 Atlantic salmon Atlantic, Northwest      Marine 2015 29000
 ## 66    218 Atlantic salmon  Pacific, Northeast      Marine 2015 92926
+## 67    218 Atlantic salmon Atlantic, Northwest      Marine 2016 33011
+## 68    218 Atlantic salmon  Pacific, Northeast      Marine 2016 90511
 ##    Taxon_code gap_0_fill species_code Sust_c_sp_env Sust_c_sp_fao
-## 1           F          0         1004            NA          0.17
-## 2           F          0         1004            NA          0.17
-## 3           F          0         1004            NA          0.17
-## 4           F          0         1004            NA          0.17
-## 5           F          0         1004            NA          0.17
-## 6           F          0         1004            NA          0.17
-## 7           F          0         1004            NA          0.17
-## 8           F          0         1004            NA          0.17
-## 9           F          0         1004            NA          0.17
-## 10          F          0         1005            NA          0.27
-## 11          F          0         1004            NA          0.17
-## 12          F          0         1005            NA          0.27
-## 13          F          0         1004            NA          0.17
-## 14          F          0         1005            NA          0.27
-## 15          F          0         1004            NA          0.17
-## 16          F          0         1005            NA          0.27
-## 17          F          0         1004            NA          0.17
-## 18          F          0         1005            NA          0.27
-## 19          F          0         1004            NA          0.17
-## 20          F          0         1005            NA          0.27
-## 21          F          0         1004            NA          0.17
-## 22          F          0         1005            NA          0.27
-## 23          F          0         1004            NA          0.17
-## 24          F          0         1005            NA          0.27
-## 25          F          0         1004            NA          0.17
-## 26          F          0         1005            NA          0.27
-## 27          F          0         1004            NA          0.17
-## 28          F          0         1005            NA          0.27
-## 29          F          0         1004            NA          0.17
-## 30          F          0         1005            NA          0.27
-## 31          F          0         1004            NA          0.17
-## 32          F          0         1005            NA          0.27
-## 33          F          0         1004            NA          0.17
-## 34          F          0         1005            NA          0.27
-## 35          F          0         1004            NA          0.17
-## 36          F          0         1005            NA          0.27
-## 37          F          0         1004            NA          0.17
-## 38          F          0         1005            NA          0.27
-## 39          F          0         1004            NA          0.17
-## 40          F          0         1005            NA          0.27
-## 41          F          0         1004            NA          0.17
-## 42          F          0         1005            NA          0.27
-## 43          F          0         1004            NA          0.17
-## 44          F          0         1005            NA          0.27
-## 45          F          0         1004            NA          0.17
-## 46          F          0         1005            NA          0.27
-## 47          F          0         1004            NA          0.17
-## 48          F          0         1005            NA          0.27
-## 49          F          0         1004            NA          0.17
-## 50          F          0         1005            NA          0.27
-## 51          F          0         1004            NA          0.17
-## 52          F          0         1005            NA          0.27
-## 53          F          0         1004            NA          0.17
-## 54          F          0         1005            NA          0.27
-## 55          F          0         1004            NA          0.17
-## 56          F          0         1005            NA          0.27
-## 57          F          0         1004            NA          0.17
-## 58          F          0         1005            NA          0.27
-## 59          F          0         1004            NA          0.17
-## 60          F          0         1005            NA          0.27
-## 61          F          0         1004            NA          0.17
-## 62          F          0         1005            NA          0.27
-## 63          F          0         1004            NA          0.17
-## 64          F          0         1005            NA          0.27
-## 65          F          0         1004            NA          0.17
-## 66          F          0         1005            NA          0.27</code></pre>
+## 1           F          0         1016            NA          0.17
+## 2           F          0         1016            NA          0.17
+## 3           F          0         1016            NA          0.17
+## 4           F          0         1016            NA          0.17
+## 5           F          0         1016            NA          0.17
+## 6           F          0         1016            NA          0.17
+## 7           F          0         1016            NA          0.17
+## 8           F          0         1016            NA          0.17
+## 9           F          0         1016            NA          0.17
+## 10          F          0         1017            NA          0.27
+## 11          F          0         1016            NA          0.17
+## 12          F          0         1017            NA          0.27
+## 13          F          0         1016            NA          0.17
+## 14          F          0         1017            NA          0.27
+## 15          F          0         1016            NA          0.17
+## 16          F          0         1017            NA          0.27
+## 17          F          0         1016            NA          0.17
+## 18          F          0         1017            NA          0.27
+## 19          F          0         1016            NA          0.17
+## 20          F          0         1017            NA          0.27
+## 21          F          0         1016            NA          0.17
+## 22          F          0         1017            NA          0.27
+## 23          F          0         1016            NA          0.17
+## 24          F          0         1017            NA          0.27
+## 25          F          0         1016            NA          0.17
+## 26          F          0         1017            NA          0.27
+## 27          F          0         1016            NA          0.17
+## 28          F          0         1017            NA          0.27
+## 29          F          0         1016            NA          0.17
+## 30          F          0         1017            NA          0.27
+## 31          F          0         1016            NA          0.17
+## 32          F          0         1017            NA          0.27
+## 33          F          0         1016            NA          0.17
+## 34          F          0         1017            NA          0.27
+## 35          F          0         1016            NA          0.17
+## 36          F          0         1017            NA          0.27
+## 37          F          0         1016            NA          0.17
+## 38          F          0         1017            NA          0.27
+## 39          F          0         1016            NA          0.17
+## 40          F          0         1017            NA          0.27
+## 41          F          0         1016            NA          0.17
+## 42          F          0         1017            NA          0.27
+## 43          F          0         1016            NA          0.17
+## 44          F          0         1017            NA          0.27
+## 45          F          0         1016            NA          0.17
+## 46          F          0         1017            NA          0.27
+## 47          F          0         1016            NA          0.17
+## 48          F          0         1017            NA          0.27
+## 49          F          0         1016            NA          0.17
+## 50          F          0         1017            NA          0.27
+## 51          F          0         1016            NA          0.17
+## 52          F          0         1017            NA          0.27
+## 53          F          0         1016            NA          0.17
+## 54          F          0         1017            NA          0.27
+## 55          F          0         1016            NA          0.17
+## 56          F          0         1017            NA          0.27
+## 57          F          0         1016            NA          0.17
+## 58          F          0         1017            NA          0.27
+## 59          F          0         1016            NA          0.17
+## 60          F          0         1017            NA          0.27
+## 61          F          0         1016            NA          0.17
+## 62          F          0         1017            NA          0.27
+## 63          F          0         1016            NA          0.17
+## 64          F          0         1017            NA          0.27
+## 65          F          0         1016            NA          0.17
+## 66          F          0         1017            NA          0.27
+## 67          F          0         1016            NA          0.17
+## 68          F          0         1017            NA          0.27</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="kw">filter</span>(mar_sus, <span class="op">!</span><span class="kw">is.na</span>(Sust_c_sp_fao)))</code></pre></div>
 <pre><code>##    rgn_id         species                 fao environment year value
 ## 1     218 Atlantic salmon Atlantic, Northwest      Marine 1979     5
@@ -845,74 +872,78 @@ mar_sus &lt;-<span class="st"> </span>mar_sus <span class="op">%&gt;%</span>
 ## 64    218 Atlantic salmon  Pacific, Northeast      Marine 2014 62475
 ## 65    218 Atlantic salmon Atlantic, Northwest      Marine 2015 29000
 ## 66    218 Atlantic salmon  Pacific, Northeast      Marine 2015 92926
+## 67    218 Atlantic salmon Atlantic, Northwest      Marine 2016 33011
+## 68    218 Atlantic salmon  Pacific, Northeast      Marine 2016 90511
 ##    Taxon_code gap_0_fill species_code Sust_c_sp_env Sust_c_sp_fao
-## 1           F          0         1004            NA          0.17
-## 2           F          0         1004            NA          0.17
-## 3           F          0         1004            NA          0.17
-## 4           F          0         1004            NA          0.17
-## 5           F          0         1004            NA          0.17
-## 6           F          0         1004            NA          0.17
-## 7           F          0         1004            NA          0.17
-## 8           F          0         1004            NA          0.17
-## 9           F          0         1004            NA          0.17
-## 10          F          0         1005            NA          0.27
-## 11          F          0         1004            NA          0.17
-## 12          F          0         1005            NA          0.27
-## 13          F          0         1004            NA          0.17
-## 14          F          0         1005            NA          0.27
-## 15          F          0         1004            NA          0.17
-## 16          F          0         1005            NA          0.27
-## 17          F          0         1004            NA          0.17
-## 18          F          0         1005            NA          0.27
-## 19          F          0         1004            NA          0.17
-## 20          F          0         1005            NA          0.27
-## 21          F          0         1004            NA          0.17
-## 22          F          0         1005            NA          0.27
-## 23          F          0         1004            NA          0.17
-## 24          F          0         1005            NA          0.27
-## 25          F          0         1004            NA          0.17
-## 26          F          0         1005            NA          0.27
-## 27          F          0         1004            NA          0.17
-## 28          F          0         1005            NA          0.27
-## 29          F          0         1004            NA          0.17
-## 30          F          0         1005            NA          0.27
-## 31          F          0         1004            NA          0.17
-## 32          F          0         1005            NA          0.27
-## 33          F          0         1004            NA          0.17
-## 34          F          0         1005            NA          0.27
-## 35          F          0         1004            NA          0.17
-## 36          F          0         1005            NA          0.27
-## 37          F          0         1004            NA          0.17
-## 38          F          0         1005            NA          0.27
-## 39          F          0         1004            NA          0.17
-## 40          F          0         1005            NA          0.27
-## 41          F          0         1004            NA          0.17
-## 42          F          0         1005            NA          0.27
-## 43          F          0         1004            NA          0.17
-## 44          F          0         1005            NA          0.27
-## 45          F          0         1004            NA          0.17
-## 46          F          0         1005            NA          0.27
-## 47          F          0         1004            NA          0.17
-## 48          F          0         1005            NA          0.27
-## 49          F          0         1004            NA          0.17
-## 50          F          0         1005            NA          0.27
-## 51          F          0         1004            NA          0.17
-## 52          F          0         1005            NA          0.27
-## 53          F          0         1004            NA          0.17
-## 54          F          0         1005            NA          0.27
-## 55          F          0         1004            NA          0.17
-## 56          F          0         1005            NA          0.27
-## 57          F          0         1004            NA          0.17
-## 58          F          0         1005            NA          0.27
-## 59          F          0         1004            NA          0.17
-## 60          F          0         1005            NA          0.27
-## 61          F          0         1004            NA          0.17
-## 62          F          0         1005            NA          0.27
-## 63          F          0         1004            NA          0.17
-## 64          F          0         1005            NA          0.27
-## 65          F          0         1004            NA          0.17
-## 66          F          0         1005            NA          0.27</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># join taxa specific to country/species</span>
+## 1           F          0         1016            NA          0.17
+## 2           F          0         1016            NA          0.17
+## 3           F          0         1016            NA          0.17
+## 4           F          0         1016            NA          0.17
+## 5           F          0         1016            NA          0.17
+## 6           F          0         1016            NA          0.17
+## 7           F          0         1016            NA          0.17
+## 8           F          0         1016            NA          0.17
+## 9           F          0         1016            NA          0.17
+## 10          F          0         1017            NA          0.27
+## 11          F          0         1016            NA          0.17
+## 12          F          0         1017            NA          0.27
+## 13          F          0         1016            NA          0.17
+## 14          F          0         1017            NA          0.27
+## 15          F          0         1016            NA          0.17
+## 16          F          0         1017            NA          0.27
+## 17          F          0         1016            NA          0.17
+## 18          F          0         1017            NA          0.27
+## 19          F          0         1016            NA          0.17
+## 20          F          0         1017            NA          0.27
+## 21          F          0         1016            NA          0.17
+## 22          F          0         1017            NA          0.27
+## 23          F          0         1016            NA          0.17
+## 24          F          0         1017            NA          0.27
+## 25          F          0         1016            NA          0.17
+## 26          F          0         1017            NA          0.27
+## 27          F          0         1016            NA          0.17
+## 28          F          0         1017            NA          0.27
+## 29          F          0         1016            NA          0.17
+## 30          F          0         1017            NA          0.27
+## 31          F          0         1016            NA          0.17
+## 32          F          0         1017            NA          0.27
+## 33          F          0         1016            NA          0.17
+## 34          F          0         1017            NA          0.27
+## 35          F          0         1016            NA          0.17
+## 36          F          0         1017            NA          0.27
+## 37          F          0         1016            NA          0.17
+## 38          F          0         1017            NA          0.27
+## 39          F          0         1016            NA          0.17
+## 40          F          0         1017            NA          0.27
+## 41          F          0         1016            NA          0.17
+## 42          F          0         1017            NA          0.27
+## 43          F          0         1016            NA          0.17
+## 44          F          0         1017            NA          0.27
+## 45          F          0         1016            NA          0.17
+## 46          F          0         1017            NA          0.27
+## 47          F          0         1016            NA          0.17
+## 48          F          0         1017            NA          0.27
+## 49          F          0         1016            NA          0.17
+## 50          F          0         1017            NA          0.27
+## 51          F          0         1016            NA          0.17
+## 52          F          0         1017            NA          0.27
+## 53          F          0         1016            NA          0.17
+## 54          F          0         1017            NA          0.27
+## 55          F          0         1016            NA          0.17
+## 56          F          0         1017            NA          0.27
+## 57          F          0         1016            NA          0.17
+## 58          F          0         1017            NA          0.27
+## 59          F          0         1016            NA          0.17
+## 60          F          0         1017            NA          0.27
+## 61          F          0         1016            NA          0.17
+## 62          F          0         1017            NA          0.27
+## 63          F          0         1016            NA          0.17
+## 64          F          0         1017            NA          0.27
+## 65          F          0         1016            NA          0.17
+## 66          F          0         1017            NA          0.27
+## 67          F          0         1016            NA          0.17
+## 68          F          0         1017            NA          0.27</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## join taxa specific to country/species
 c_sp =<span class="st"> </span>sus_rgn <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">filter</span>(match_type <span class="op">==</span><span class="st"> 'c_sp'</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">select</span>(rgn_id, <span class="dt">species=</span>species_fao, <span class="dt">Sust_c_sp =</span> Maric_sustainability)
@@ -921,30 +952,30 @@ mar_sus &lt;-<span class="st"> </span>mar_sus <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">left_join</span>(c_sp, <span class="dt">by=</span> <span class="kw">c</span>(<span class="st">&quot;species&quot;</span>, <span class="st">&quot;rgn_id&quot;</span>))
 <span class="kw">summary</span>(mar_sus)</code></pre></div>
 <pre><code>##      rgn_id        species              fao            environment       
-##  Min.   :  5.0   Length:27001       Length:27001       Length:27001      
-##  1st Qu.: 51.0   Class :character   Class :character   Class :character  
+##  Min.   :  5.0   Length:28133       Length:28133       Length:28133      
+##  1st Qu.: 52.0   Class :character   Class :character   Class :character  
 ##  Median :163.0   Mode  :character   Mode  :character   Mode  :character  
 ##  Mean   :130.3                                                           
-##  3rd Qu.:205.0                                                           
+##  3rd Qu.:204.0                                                           
 ##  Max.   :250.0                                                           
 ##                                                                          
 ##       year          value          Taxon_code         gap_0_fill       
-##  Min.   :1950   Min.   :      0   Length:27001       Length:27001      
+##  Min.   :1950   Min.   :      0   Length:28133       Length:28133      
 ##  1st Qu.:1991   1st Qu.:      1   Class :character   Class :character  
-##  Median :2002   Median :     97   Mode  :character   Mode  :character  
-##  Mean   :1998   Mean   :  17348                                        
-##  3rd Qu.:2009   3rd Qu.:   1818                                        
-##  Max.   :2015   Max.   :4573953                                        
+##  Median :2002   Median :     92   Mode  :character   Mode  :character  
+##  Mean   :1999   Mean   :  17558                                        
+##  3rd Qu.:2010   3rd Qu.:   1800                                        
+##  Max.   :2016   Max.   :4835211                                        
 ##                                                                        
-##   species_code    Sust_c_sp_env   Sust_c_sp_fao     Sust_c_sp    
-##  Min.   :   1.0   Min.   :0.170   Min.   :0.170   Min.   :0.100  
-##  1st Qu.: 246.0   1st Qu.:0.170   1st Qu.:0.170   1st Qu.:0.330  
-##  Median : 537.0   Median :0.230   Median :0.170   Median :0.470  
-##  Mean   : 536.2   Mean   :0.231   Mean   :0.214   Mean   :0.521  
-##  3rd Qu.: 833.0   3rd Qu.:0.270   3rd Qu.:0.270   3rd Qu.:0.770  
-##  Max.   :1068.0   Max.   :0.270   Max.   :0.270   Max.   :1.000  
-##                   NA's   :26911   NA's   :26935   NA's   :17238</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### merge these into a single sustainability score
+##   species_code  Sust_c_sp_env   Sust_c_sp_fao     Sust_c_sp    
+##  Min.   :   1   Min.   :0.170   Min.   :0.170   Min.   :0.10   
+##  1st Qu.: 251   1st Qu.:0.170   1st Qu.:0.170   1st Qu.:0.33   
+##  Median : 542   Median :0.230   Median :0.170   Median :0.47   
+##  Mean   : 542   Mean   :0.231   Mean   :0.214   Mean   :0.52   
+##  3rd Qu.: 839   3rd Qu.:0.270   3rd Qu.:0.270   3rd Qu.:0.77   
+##  Max.   :1079   Max.   :0.270   Max.   :0.270   Max.   :1.00   
+##                 NA's   :28040   NA's   :28065   NA's   :18040</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## merge these into a single sustainability score
 mar_sus =<span class="st"> </span>mar_sus <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Sust =</span> <span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(Sust_c_sp_env), Sust_c_sp_env, Sust_c_sp_fao)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Sust =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(Sust), Sust_c_sp, Sust)) <span class="op">%&gt;%</span>
@@ -973,41 +1004,41 @@ mar_sus_gf =<span class="st"> </span>mar_sus_gf <span class="op">%&gt;%</span>
 
 <span class="kw">summary</span>(mar_sus_gf)</code></pre></div>
 <pre><code>##      rgn_id        species              fao            environment       
-##  Min.   :  5.0   Length:27001       Length:27001       Length:27001      
-##  1st Qu.: 51.0   Class :character   Class :character   Class :character  
+##  Min.   :  5.0   Length:28133       Length:28133       Length:28133      
+##  1st Qu.: 52.0   Class :character   Class :character   Class :character  
 ##  Median :163.0   Mode  :character   Mode  :character   Mode  :character  
 ##  Mean   :130.3                                                           
-##  3rd Qu.:205.0                                                           
+##  3rd Qu.:204.0                                                           
 ##  Max.   :250.0                                                           
 ##                                                                          
 ##       year          value          Taxon_code         gap_0_fill       
-##  Min.   :1950   Min.   :      0   Length:27001       Length:27001      
+##  Min.   :1950   Min.   :      0   Length:28133       Length:28133      
 ##  1st Qu.:1991   1st Qu.:      1   Class :character   Class :character  
-##  Median :2002   Median :     97   Mode  :character   Mode  :character  
-##  Mean   :1998   Mean   :  17348                                        
-##  3rd Qu.:2009   3rd Qu.:   1818                                        
-##  Max.   :2015   Max.   :4573953                                        
+##  Median :2002   Median :     92   Mode  :character   Mode  :character  
+##  Mean   :1999   Mean   :  17558                                        
+##  3rd Qu.:2010   3rd Qu.:   1800                                        
+##  Max.   :2016   Max.   :4835211                                        
 ##                                                                        
-##   species_code         Sust         gapfill            Sust_gf_sp   
-##  Min.   :   1.0   Min.   :0.100   Length:27001       Min.   :0.100  
-##  1st Qu.: 246.0   1st Qu.:0.330   Class :character   1st Qu.:0.375  
-##  Median : 537.0   Median :0.470   Mode  :character   Median :0.478  
-##  Mean   : 536.2   Mean   :0.516                      Mean   :0.546  
-##  3rd Qu.: 833.0   3rd Qu.:0.770                      3rd Qu.:0.757  
-##  Max.   :1068.0   Max.   :1.000                      Max.   :0.902  
-##                   NA's   :17082                      NA's   :8214   
+##   species_code       Sust         gapfill            Sust_gf_sp   
+##  Min.   :   1   Min.   :0.100   Length:28133       Min.   :0.100  
+##  1st Qu.: 251   1st Qu.:0.330   Class :character   1st Qu.:0.375  
+##  Median : 542   Median :0.430   Mode  :character   Median :0.478  
+##  Mean   : 542   Mean   :0.515                      Mean   :0.546  
+##  3rd Qu.: 839   3rd Qu.:0.770                      3rd Qu.:0.757  
+##  Max.   :1079   Max.   :1.000                      Max.   :0.902  
+##                 NA's   :17879                      NA's   :8528   
 ##  Sust_gf_taxon   
 ##  Min.   :0.3667  
 ##  1st Qu.:0.4440  
 ##  Median :0.4440  
-##  Mean   :0.5587  
+##  Mean   :0.5582  
 ##  3rd Qu.:0.8118  
 ##  Max.   :0.8118  
 ## </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(mar_sus_gf<span class="op">$</span>gapfill)</code></pre></div>
 <pre><code>## 
 ## genus_average    sp_average 
-##          2269         16518</code></pre>
+##          2352         17253</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Obtain a sustainability score for each record, and a book-keeping column of whether it's actual or gap-filled</span>
 mar_sus_final =<span class="st"> </span>mar_sus_gf <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gapfill =</span> <span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(Sust), <span class="st">&quot;none&quot;</span>, gapfill)) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1044,7 +1075,7 @@ mar_sustainability_score_gf =<span class="st"> </span>mar_sus_final <span class=
 <span class="kw">write.csv</span>(mar_sustainability_score, <span class="st">'output/mar_sustainability_gf.csv'</span>, <span class="dt">row.names=</span>F)</code></pre></div>
 </div>
 <div id="genetic-escapes-data" class="section level1">
-<h1><span class="header-section-number">8</span> Genetic escapes data</h1>
+<h1><span class="header-section-number">12</span> Genetic escapes data</h1>
 <p>These data are used as a pressure layer to describe the risk of genetic escapees due to mariculture.</p>
 <p>First merge with the species data (no gapfilling) for each country/species/fao region combination.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># can eliminate the environment category because these have the same scores</span>
@@ -1131,73 +1162,77 @@ mar_esc &lt;-<span class="st"> </span>maric <span class="op">%&gt;%</span>
 ## 64    218 Atlantic salmon  Pacific, Northeast      Marine 2014 62475
 ## 65    218 Atlantic salmon Atlantic, Northwest      Marine 2015 29000
 ## 66    218 Atlantic salmon  Pacific, Northeast      Marine 2015 92926
+## 67    218 Atlantic salmon Atlantic, Northwest      Marine 2016 33011
+## 68    218 Atlantic salmon  Pacific, Northeast      Marine 2016 90511
 ##    Taxon_code gap_0_fill species_code Esc_c_sp_fao
-## 1           F          0         1004          1.0
-## 2           F          0         1004          1.0
-## 3           F          0         1004          1.0
-## 4           F          0         1004          1.0
-## 5           F          0         1004          1.0
-## 6           F          0         1004          1.0
-## 7           F          0         1004          1.0
-## 8           F          0         1004          1.0
-## 9           F          0         1004          1.0
-## 10          F          0         1005          0.1
-## 11          F          0         1004          1.0
-## 12          F          0         1005          0.1
-## 13          F          0         1004          1.0
-## 14          F          0         1005          0.1
-## 15          F          0         1004          1.0
-## 16          F          0         1005          0.1
-## 17          F          0         1004          1.0
-## 18          F          0         1005          0.1
-## 19          F          0         1004          1.0
-## 20          F          0         1005          0.1
-## 21          F          0         1004          1.0
-## 22          F          0         1005          0.1
-## 23          F          0         1004          1.0
-## 24          F          0         1005          0.1
-## 25          F          0         1004          1.0
-## 26          F          0         1005          0.1
-## 27          F          0         1004          1.0
-## 28          F          0         1005          0.1
-## 29          F          0         1004          1.0
-## 30          F          0         1005          0.1
-## 31          F          0         1004          1.0
-## 32          F          0         1005          0.1
-## 33          F          0         1004          1.0
-## 34          F          0         1005          0.1
-## 35          F          0         1004          1.0
-## 36          F          0         1005          0.1
-## 37          F          0         1004          1.0
-## 38          F          0         1005          0.1
-## 39          F          0         1004          1.0
-## 40          F          0         1005          0.1
-## 41          F          0         1004          1.0
-## 42          F          0         1005          0.1
-## 43          F          0         1004          1.0
-## 44          F          0         1005          0.1
-## 45          F          0         1004          1.0
-## 46          F          0         1005          0.1
-## 47          F          0         1004          1.0
-## 48          F          0         1005          0.1
-## 49          F          0         1004          1.0
-## 50          F          0         1005          0.1
-## 51          F          0         1004          1.0
-## 52          F          0         1005          0.1
-## 53          F          0         1004          1.0
-## 54          F          0         1005          0.1
-## 55          F          0         1004          1.0
-## 56          F          0         1005          0.1
-## 57          F          0         1004          1.0
-## 58          F          0         1005          0.1
-## 59          F          0         1004          1.0
-## 60          F          0         1005          0.1
-## 61          F          0         1004          1.0
-## 62          F          0         1005          0.1
-## 63          F          0         1004          1.0
-## 64          F          0         1005          0.1
-## 65          F          0         1004          1.0
-## 66          F          0         1005          0.1</code></pre>
+## 1           F          0         1016          1.0
+## 2           F          0         1016          1.0
+## 3           F          0         1016          1.0
+## 4           F          0         1016          1.0
+## 5           F          0         1016          1.0
+## 6           F          0         1016          1.0
+## 7           F          0         1016          1.0
+## 8           F          0         1016          1.0
+## 9           F          0         1016          1.0
+## 10          F          0         1017          0.1
+## 11          F          0         1016          1.0
+## 12          F          0         1017          0.1
+## 13          F          0         1016          1.0
+## 14          F          0         1017          0.1
+## 15          F          0         1016          1.0
+## 16          F          0         1017          0.1
+## 17          F          0         1016          1.0
+## 18          F          0         1017          0.1
+## 19          F          0         1016          1.0
+## 20          F          0         1017          0.1
+## 21          F          0         1016          1.0
+## 22          F          0         1017          0.1
+## 23          F          0         1016          1.0
+## 24          F          0         1017          0.1
+## 25          F          0         1016          1.0
+## 26          F          0         1017          0.1
+## 27          F          0         1016          1.0
+## 28          F          0         1017          0.1
+## 29          F          0         1016          1.0
+## 30          F          0         1017          0.1
+## 31          F          0         1016          1.0
+## 32          F          0         1017          0.1
+## 33          F          0         1016          1.0
+## 34          F          0         1017          0.1
+## 35          F          0         1016          1.0
+## 36          F          0         1017          0.1
+## 37          F          0         1016          1.0
+## 38          F          0         1017          0.1
+## 39          F          0         1016          1.0
+## 40          F          0         1017          0.1
+## 41          F          0         1016          1.0
+## 42          F          0         1017          0.1
+## 43          F          0         1016          1.0
+## 44          F          0         1017          0.1
+## 45          F          0         1016          1.0
+## 46          F          0         1017          0.1
+## 47          F          0         1016          1.0
+## 48          F          0         1017          0.1
+## 49          F          0         1016          1.0
+## 50          F          0         1017          0.1
+## 51          F          0         1016          1.0
+## 52          F          0         1017          0.1
+## 53          F          0         1016          1.0
+## 54          F          0         1017          0.1
+## 55          F          0         1016          1.0
+## 56          F          0         1017          0.1
+## 57          F          0         1016          1.0
+## 58          F          0         1017          0.1
+## 59          F          0         1016          1.0
+## 60          F          0         1017          0.1
+## 61          F          0         1016          1.0
+## 62          F          0         1017          0.1
+## 63          F          0         1016          1.0
+## 64          F          0         1017          0.1
+## 65          F          0         1016          1.0
+## 66          F          0         1017          0.1
+## 67          F          0         1016          1.0
+## 68          F          0         1017          0.1</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># join taxa specific to country/species</span>
 c_sp =<span class="st"> </span>esc <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">filter</span>(match_type <span class="op">==</span><span class="st"> 'c_sp'</span>) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1207,29 +1242,29 @@ mar_esc &lt;-<span class="st"> </span>mar_esc <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">left_join</span>(c_sp, <span class="dt">by=</span> <span class="kw">c</span>(<span class="st">&quot;species&quot;</span>, <span class="st">&quot;rgn_id&quot;</span>))
 <span class="kw">summary</span>(mar_esc)</code></pre></div>
 <pre><code>##      rgn_id        species              fao            environment       
-##  Min.   :  5.0   Length:27001       Length:27001       Length:27001      
-##  1st Qu.: 51.0   Class :character   Class :character   Class :character  
+##  Min.   :  5.0   Length:28133       Length:28133       Length:28133      
+##  1st Qu.: 52.0   Class :character   Class :character   Class :character  
 ##  Median :163.0   Mode  :character   Mode  :character   Mode  :character  
 ##  Mean   :130.3                                                           
-##  3rd Qu.:205.0                                                           
+##  3rd Qu.:204.0                                                           
 ##  Max.   :250.0                                                           
 ##                                                                          
 ##       year          value          Taxon_code         gap_0_fill       
-##  Min.   :1950   Min.   :      0   Length:27001       Length:27001      
+##  Min.   :1950   Min.   :      0   Length:28133       Length:28133      
 ##  1st Qu.:1991   1st Qu.:      1   Class :character   Class :character  
-##  Median :2002   Median :     97   Mode  :character   Mode  :character  
-##  Mean   :1998   Mean   :  17348                                        
-##  3rd Qu.:2009   3rd Qu.:   1818                                        
-##  Max.   :2015   Max.   :4573953                                        
+##  Median :2002   Median :     92   Mode  :character   Mode  :character  
+##  Mean   :1999   Mean   :  17558                                        
+##  3rd Qu.:2010   3rd Qu.:   1800                                        
+##  Max.   :2016   Max.   :4835211                                        
 ##                                                                        
-##   species_code     Esc_c_sp_fao      Esc_c_sp    
-##  Min.   :   1.0   Min.   :0.100   Min.   :0.100  
-##  1st Qu.: 246.0   1st Qu.:0.100   1st Qu.:0.500  
-##  Median : 537.0   Median :1.000   Median :1.000  
-##  Mean   : 536.2   Mean   :0.605   Mean   :0.739  
-##  3rd Qu.: 833.0   3rd Qu.:1.000   3rd Qu.:1.000  
-##  Max.   :1068.0   Max.   :1.000   Max.   :1.000  
-##                   NA's   :26935   NA's   :17148</code></pre>
+##   species_code   Esc_c_sp_fao      Esc_c_sp    
+##  Min.   :   1   Min.   :0.100   Min.   :0.100  
+##  1st Qu.: 251   1st Qu.:0.100   1st Qu.:0.500  
+##  Median : 542   Median :1.000   Median :1.000  
+##  Mean   : 542   Mean   :0.603   Mean   :0.738  
+##  3rd Qu.: 839   3rd Qu.:1.000   3rd Qu.:1.000  
+##  Max.   :1079   Max.   :1.000   Max.   :1.000  
+##                 NA's   :28065   NA's   :17947</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### merge these into a single sustainability score
 mar_esc =<span class="st"> </span>mar_esc <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Escapees =</span> <span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(Esc_c_sp_fao), Esc_c_sp_fao, Esc_c_sp)) <span class="op">%&gt;%</span>
@@ -1258,41 +1293,41 @@ mar_esc_gf =<span class="st"> </span>mar_esc_gf <span class="op">%&gt;%</span>
 
 <span class="kw">summary</span>(mar_esc_gf)</code></pre></div>
 <pre><code>##      rgn_id        species              fao            environment       
-##  Min.   :  5.0   Length:27001       Length:27001       Length:27001      
-##  1st Qu.: 51.0   Class :character   Class :character   Class :character  
+##  Min.   :  5.0   Length:28133       Length:28133       Length:28133      
+##  1st Qu.: 52.0   Class :character   Class :character   Class :character  
 ##  Median :163.0   Mode  :character   Mode  :character   Mode  :character  
 ##  Mean   :130.3                                                           
-##  3rd Qu.:205.0                                                           
+##  3rd Qu.:204.0                                                           
 ##  Max.   :250.0                                                           
 ##                                                                          
 ##       year          value          Taxon_code         gap_0_fill       
-##  Min.   :1950   Min.   :      0   Length:27001       Length:27001      
+##  Min.   :1950   Min.   :      0   Length:28133       Length:28133      
 ##  1st Qu.:1991   1st Qu.:      1   Class :character   Class :character  
-##  Median :2002   Median :     97   Mode  :character   Mode  :character  
-##  Mean   :1998   Mean   :  17348                                        
-##  3rd Qu.:2009   3rd Qu.:   1818                                        
-##  Max.   :2015   Max.   :4573953                                        
+##  Median :2002   Median :     92   Mode  :character   Mode  :character  
+##  Mean   :1999   Mean   :  17558                                        
+##  3rd Qu.:2010   3rd Qu.:   1800                                        
+##  Max.   :2016   Max.   :4835211                                        
 ##                                                                        
-##   species_code       Escapees       gapfill            Esc_gf_sp    
-##  Min.   :   1.0   Min.   :0.100   Length:27001       Min.   :0.500  
-##  1st Qu.: 246.0   1st Qu.:0.500   Class :character   1st Qu.:0.500  
-##  Median : 537.0   Median :1.000   Mode  :character   Median :0.625  
-##  Mean   : 536.2   Mean   :0.738                      Mean   :0.678  
-##  3rd Qu.: 833.0   3rd Qu.:1.000                      3rd Qu.:0.797  
-##  Max.   :1068.0   Max.   :1.000                      Max.   :0.925  
-##                   NA's   :17082                      NA's   :24732  
+##   species_code     Escapees       gapfill            Esc_gf_sp    
+##  Min.   :   1   Min.   :0.100   Length:28133       Min.   :0.500  
+##  1st Qu.: 251   1st Qu.:0.500   Class :character   1st Qu.:0.500  
+##  Median : 542   Median :1.000   Mode  :character   Median :0.625  
+##  Mean   : 542   Mean   :0.737                      Mean   :0.678  
+##  3rd Qu.: 839   3rd Qu.:1.000                      3rd Qu.:0.797  
+##  Max.   :1079   Max.   :1.000                      Max.   :0.925  
+##                 NA's   :17879                      NA's   :25781  
 ##   Esc_gf_taxon   
 ##  Min.   :0.1000  
 ##  1st Qu.:0.7423  
 ##  Median :0.7423  
-##  Mean   :0.7045  
+##  Mean   :0.7046  
 ##  3rd Qu.:0.7664  
 ##  Max.   :0.7664  
 ## </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(mar_esc_gf<span class="op">$</span>gapfill)</code></pre></div>
 <pre><code>## 
 ## genus_average 
-##          2269</code></pre>
+##          2352</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Obtain a sustainability score for each record, and a book-keeping column of whether it's actual or gap-filled</span>
 tonnes_esc =<span class="st"> </span>mar_esc_gf <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gapfill =</span> <span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(Escapees), <span class="st">&quot;none&quot;</span>, gapfill)) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -1302,20 +1337,20 @@ tonnes_esc =<span class="st"> </span>mar_esc_gf <span class="op">%&gt;%</span><s
 <span class="st">  </span><span class="kw">select</span>(rgn_id, species, species_code, year, <span class="dt">gapfill_escapees =</span> gapfill, <span class="dt">tonnes=</span>value, Escapees)
 
 <span class="kw">summary</span>(tonnes_esc)</code></pre></div>
-<pre><code>##      rgn_id        species           species_code         year     
-##  Min.   :  5.0   Length:27001       Min.   :   1.0   Min.   :1950  
-##  1st Qu.: 51.0   Class :character   1st Qu.: 246.0   1st Qu.:1991  
-##  Median :163.0   Mode  :character   Median : 537.0   Median :2002  
-##  Mean   :130.3                      Mean   : 536.2   Mean   :1998  
-##  3rd Qu.:205.0                      3rd Qu.: 833.0   3rd Qu.:2009  
-##  Max.   :250.0                      Max.   :1068.0   Max.   :2015  
+<pre><code>##      rgn_id        species           species_code       year     
+##  Min.   :  5.0   Length:28133       Min.   :   1   Min.   :1950  
+##  1st Qu.: 52.0   Class :character   1st Qu.: 251   1st Qu.:1991  
+##  Median :163.0   Mode  :character   Median : 542   Median :2002  
+##  Mean   :130.3                      Mean   : 542   Mean   :1999  
+##  3rd Qu.:204.0                      3rd Qu.: 839   3rd Qu.:2010  
+##  Max.   :250.0                      Max.   :1079   Max.   :2016  
 ##  gapfill_escapees       tonnes           Escapees     
-##  Length:27001       Min.   :      0   Min.   :0.1000  
+##  Length:28133       Min.   :      0   Min.   :0.1000  
 ##  Class :character   1st Qu.:      1   1st Qu.:0.5807  
-##  Mode  :character   Median :     97   Median :0.7664  
-##                     Mean   :  17348   Mean   :0.7093  
-##                     3rd Qu.:   1818   3rd Qu.:0.9000  
-##                     Max.   :4573953   Max.   :1.0000</code></pre>
+##  Mode  :character   Median :     92   Median :0.7664  
+##                     Mean   :  17558   Mean   :0.7091  
+##                     3rd Qu.:   1800   3rd Qu.:0.9000  
+##                     Max.   :4835211   Max.   :1.0000</code></pre>
 <p>Final formatting of the escapee data. This is used as a pressure layer.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># for each region/year: average the genetic escape probability for each taxa based on tonnes mariculture</span>
 genEscapes &lt;-<span class="st"> </span>tonnes_esc <span class="op">%&gt;%</span>

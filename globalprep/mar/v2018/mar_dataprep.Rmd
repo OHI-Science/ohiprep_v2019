@@ -19,7 +19,7 @@ output:
 This analysis converts FAO mariculture data into data used to calculate the OHI global mariculture status score.  This also calculates the genetic escapee from mariculture pressure data.
 
 # Updates from previous assessment
-New year of FAO mariculture yield data. No changes to sustainability. Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
+New year of FAO mariculture yield data for 2016. No changes to sustainability. Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
 
 
 ***
@@ -72,7 +72,10 @@ mar <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_mariculture
 
 ```
 
-# Wrangle: Clean mariculture data
+# Wrangle: 
+
+## Clean mariculture data
+
 Filter freshwater mariculture, make long format, and clean FAO codes.
 
 ```{r}
@@ -99,7 +102,9 @@ mar <- mar %>%
 
 ```
 
-Update species names and exclude non-food species. I simplified the species_list.  I cut the "species" name columns because it wasn't clear what this was trying to accomplish and created potential error.  
+## Update species names
+
+Update species name in the `raw/species_list.csv` file with names in the `mar` dataset (exclude non-food species). I simplified the species_list.  I cut the "species" name columns because it wasn't clear what this was trying to accomplish and created potential error.  
 
 ```{r}
 
@@ -114,7 +119,7 @@ mar <- left_join (mar, mar_sp, by="FAO_name")
 mar <- filter (mar, exclude==0) 
 
 
-## change names using species name and the species alias (global changes)
+## change names using species alias or FAO species name (global changes)
 mar$species <- ifelse(!is.na(mar$alias), mar$alias, mar$FAO_name) 
 
 ## sum duplicates after name change (this also gets rid of the NA values)
@@ -125,7 +130,7 @@ mar <- mar %>%
   ungroup()
 
 
-# eliminate time-series with all 0s
+## eliminate time-series with all 0s
 mar <- mar %>%
   group_by(country, species) %>%
   mutate(total_value = sum(value)) %>%
