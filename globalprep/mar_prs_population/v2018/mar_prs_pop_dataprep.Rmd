@@ -1,0 +1,76 @@
+---
+title: 'OHI 2018: Mariculture Population Pressure Layers'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+[REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2018/mar_prs_pop_dataprep.html)
+
+
+#Summary
+
+#Updates from previous assessment
+
+***
+
+#Data Source
+
+**Reference**:
+
+**Downloaded**:
+
+**Description**:
+
+**Native data resolution**:
+
+**Time range**:
+
+**Format**:
+
+***
+  
+#Methods, Calculations
+
+##Setup
+
+Load all relevant libraries including parallel processing packages.
+
+
+```{r setup,message=FALSE,warning=FALSE,verbose=FALSE}
+#set options for all chunks in code
+knitr::opts_chunk$set(warning=FALSE, message=FALSE,fig.width = 6, fig.height = 4, fig.path = 'figs/')
+
+# comment out when knitting
+# setwd("globalprep/prs_fish/v2017")
+
+source('../../../src/R/common.R')
+
+
+```
+
+# Results
+
+# Tidy/Wrangle
+
+## Extract by or Add OHI Regions
+
+# Data Checks and/or Meta-analysis
+
+***
+
+# Citation information  
+
+
+
