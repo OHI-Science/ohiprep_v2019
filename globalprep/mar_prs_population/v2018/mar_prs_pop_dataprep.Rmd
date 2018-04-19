@@ -1,0 +1,115 @@
+---
+title: 'OHI 2018: Mariculture Population Pressure Layers'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+[REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2018/mar_prs_pop_dataprep.html)
+
+
+#Summary
+
+
+
+#Updates from previous assessment
+
+***
+
+#Data Source
+
+**Reference**:
+
+**Downloaded**:
+
+**Description**:
+
+**Native data resolution**:
+
+**Time range**:
+
+**Format**:
+
+***
+
+#Setup
+
+Load all relevant libraries including parallel processing packages.
+
+```{r setup,message=FALSE,warning=FALSE,verbose=FALSE}
+#set options for all chunks in code
+knitr::opts_chunk$set(warning=FALSE, message=FALSE,fig.width = 6, fig.height = 4, fig.path = 'figs/')
+
+# comment out when knitting
+# setwd("globalprep/mar_prs_population/v2018")
+
+source('../../../src/R/common.R')
+
+if(!requireNamespace("raster", quietly = FALSE))
+  install.packages("raster")
+if(!requireNamespace("ohicore", quietly = FALSE))
+  devtools::install_github('ohi-science/ohicore')
+
+library(ohicore)
+
+library(raster)
+library(rgdal)
+library(sp)
+
+library(dplyr)
+library(stringr)
+
+library(parallel)
+library(foreach)
+library(doParallel)
+
+
+```
+
+#Methods and Calculations
+
+##Import Raw Data
+
+##Prepare Densities (Project, Resample, Interpolate)
+
+##Convert Density to Population 
+
+Density is in units (people per km2?)...and population will be in units of...
+
+##Create EEZ plus 25-mile Inland Raster
+
+##Save Results 
+
+#Tidy/Wrangle
+
+##Extract by or Add OHI Regions
+
+#Gapfilling
+
+##Summary of Gapfill Methods
+
+##Methods and Calculations
+
+##Save Gapfill-tracking File
+
+#Data Checks and/or Meta-analysis
+
+##Check that Zonal Counts match UN Populations
+
+***
+
+#Citation Information  
+
+
+
