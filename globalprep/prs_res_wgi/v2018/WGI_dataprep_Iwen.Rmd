@@ -144,7 +144,7 @@ d <- read.csv('raw/worldbank_wgi_from_wdi_api_2018-04-13.csv') # change appended
 d <- gather(d, "indicator", "value", VA.EST:CC.EST)
 
 
-## each country has 17 years of data
+## each country has 18 years of data
 d_gap_fill  <- d %>%
   group_by(country, year) %>%
   mutate(NA_count_c_y = sum(is.na(value))) %>% # gf record: NA values within a region/year prior to gapfilling, max value is 6
