@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Apr 18 10:16:14 2018 by isu" />
+<meta name="author" content="Compiled on Fri Apr 20 11:14:36 2018 by isu" />
 
 
 <title>OHI: Mariculture</title>
@@ -143,7 +143,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">OHI: Mariculture</h1>
-<h4 class="author"><em><em>Compiled on Wed Apr 18 10:16:14 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Fri Apr 20 11:14:36 2018 by isu</em></em></h4>
 
 </div>
 
@@ -155,11 +155,13 @@ $(document).ready(function () {
 <li><a href="#methods"><span class="toc-section-number">4</span> Methods</a></li>
 <li><a href="#import-raw-data-fao-mariculture-data"><span class="toc-section-number">5</span> Import Raw Data: FAO Mariculture data</a></li>
 <li><a href="#wrangle"><span class="toc-section-number">6</span> Wrangle:</a><ul>
-<li><a href="#clean-mariculture-data"><span class="toc-section-number">6.1</span> Clean mariculture data</a></li>
-<li><a href="#update-species-names-in-the-rawspecies_list.csv-file"><span class="toc-section-number">6.2</span> Update species names in the <code>raw/species_list.csv</code> file</a></li>
+<li><a href="#tidy-mariculture-data"><span class="toc-section-number">6.1</span> Tidy mariculture data</a></li>
+<li><a href="#update-species-names"><span class="toc-section-number">6.2</span> Update species names</a></li>
 <li><a href="#convert-country-names-to-ohi-regions"><span class="toc-section-number">6.3</span> Convert country names to OHI regions</a></li>
 </ul></li>
-<li><a href="#gapfilling"><span class="toc-section-number">7</span> Gapfilling</a></li>
+<li><a href="#gapfilling"><span class="toc-section-number">7</span> Gapfilling</a><ul>
+<li><a href="#fill-in-missing-years-after-first-year-of-harvest-data-with-0-values."><span class="toc-section-number">7.1</span> Fill in missing years after first year of harvest data with 0 values.</a></li>
+</ul></li>
 <li><a href="#save-file"><span class="toc-section-number">8</span> Save file:</a></li>
 <li><a href="#import-data-trujillo-sustainability-scores"><span class="toc-section-number">9</span> Import data: Trujillo sustainability scores</a></li>
 <li><a href="#wrangle-1"><span class="toc-section-number">10</span> Wrangle</a><ul>
@@ -278,8 +280,8 @@ $(document).ready(function () {
 </div>
 <div id="wrangle" class="section level1">
 <h1><span class="header-section-number">6</span> Wrangle:</h1>
-<div id="clean-mariculture-data" class="section level2">
-<h2><span class="header-section-number">6.1</span> Clean mariculture data</h2>
+<div id="tidy-mariculture-data" class="section level2">
+<h2><span class="header-section-number">6.1</span> Tidy mariculture data</h2>
 <p>Filter freshwater mariculture, make long format, and clean FAO codes.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">rename</span>(<span class="dt">country =</span> <span class="st">`</span><span class="dt">Country (Country)</span><span class="st">`</span>,
@@ -303,11 +305,12 @@ mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">gather</span>(<span class="dt">key=</span><span class="st">&quot;year&quot;</span>, <span class="dt">value=</span><span class="st">&quot;value&quot;</span>, <span class="kw">num_range</span>(<span class="st">&quot;&quot;</span>,<span class="dv">1950</span><span class="op">:</span><span class="dv">2016</span>)) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">fao_clean_data</span>() </code></pre></div>
 </div>
-<div id="update-species-names-in-the-rawspecies_list.csv-file" class="section level2">
-<h2><span class="header-section-number">6.2</span> Update species names in the <code>raw/species_list.csv</code> file</h2>
-<p>Update species name in the raw file with names in the <code>mar</code> dataset (exclude non-food species). I simplified the species_list. I cut the “species” name columns because it wasn’t clear what this was trying to accomplish and created potential error.</p>
+<div id="update-species-names" class="section level2">
+<h2><span class="header-section-number">6.2</span> Update species names</h2>
+<p>Update species name in the <code>raw/species_list.csv</code> file with names in the <code>mar</code> dataset (exclude non-food species). I simplified the species_list. I cut the “species” name columns because it wasn’t clear what this was trying to accomplish and created potential error.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar_sp &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'raw/species_list.csv'</span>, <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(FAO_name, exclude, alias, Taxon_code)
+
 new.spp &lt;-<span class="st"> </span><span class="kw">setdiff</span>(mar<span class="op">$</span>FAO_name, mar_sp<span class="op">$</span>FAO_name)
 new.spp <span class="co"># check: if dim has 0 rows it means all match</span></code></pre></div>
 <pre><code>## [1] &quot;Speckled longfin eel&quot;          &quot;[Trochita spp]&quot;               
@@ -321,10 +324,10 @@ mar &lt;-<span class="st"> </span><span class="kw">left_join</span> (mar, mar_sp
 mar &lt;-<span class="st"> </span><span class="kw">filter</span> (mar, exclude<span class="op">==</span><span class="dv">0</span>) 
 
 
-## change names using species name and the species alias (global changes)
+## change names using species alias or FAO species name (global changes)
 mar<span class="op">$</span>species &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(mar<span class="op">$</span>alias), mar<span class="op">$</span>alias, mar<span class="op">$</span>FAO_name) 
 
-## sum duplicates after name change (this also gets rid of the NA values)
+## sum production values for each group to account for duplicate rows after name change (remove NA values)
 mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(value)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(country, fao, environment, species, year, Taxon_code) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -332,7 +335,7 @@ mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ungroup</span>()
 
 
-<span class="co"># eliminate time-series with all 0s</span>
+## eliminate country-species data with zero production throughout the time-series (1950-recent)
 mar &lt;-<span class="st"> </span>mar <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(country, species) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total_value =</span> <span class="kw">sum</span>(value)) <span class="op">%&gt;%</span>
@@ -458,11 +461,16 @@ mar_rgn &lt;-<span class="st"> </span>mar_rgn <span class="op">%&gt;%</span>
 </div>
 <div id="gapfilling" class="section level1">
 <h1><span class="header-section-number">7</span> Gapfilling</h1>
-<p>Fill in missing years after first harvest with 0 values. Checked to make sure that there weren’t instances in which it made more sense to carry the previous year’s data forward as a method of gapilling. This didn’t seem to be the case.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar_rgn_spread &lt;-<span class="st"> </span><span class="kw">spread</span>(mar_rgn, year, value)
+<div id="fill-in-missing-years-after-first-year-of-harvest-data-with-0-values." class="section level2">
+<h2><span class="header-section-number">7.1</span> Fill in missing years after first year of harvest data with 0 values.</h2>
+<p>For example: Production of blue shrimp in Maine starts in 1983 – don’t include years before that.</p>
+<p>Checked to make sure that there weren’t instances in which it made more sense to carry the previous year’s data forward as a method of gapilling. This didn’t seem to be the case.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## spread mar_rgn to create a value for every year-species-region (if missing it will be given a NA)
+mar_rgn_spread &lt;-<span class="st"> </span><span class="kw">spread</span>(mar_rgn, year, value)
 <span class="kw">dim</span>(mar_rgn_spread)</code></pre></div>
 <pre><code>## [1] 1321   72</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar_rgn_gf &lt;-<span class="st"> </span><span class="kw">gather</span>(mar_rgn_spread, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;value&quot;</span>, <span class="kw">num_range</span>(<span class="st">&quot;&quot;</span>,<span class="dv">1950</span><span class="op">:</span><span class="dv">2016</span>)) <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## turn data frame back into long format
+mar_rgn_gf &lt;-<span class="st"> </span><span class="kw">gather</span>(mar_rgn_spread, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;value&quot;</span>, <span class="kw">num_range</span>(<span class="st">&quot;&quot;</span>,<span class="dv">1950</span><span class="op">:</span><span class="dv">2016</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">arrange</span>(rgn_id, species, year, Taxon_code, fao, environment) 
 
 ## NA values are converted to zero.
@@ -472,17 +480,16 @@ mar_rgn_gf &lt;-<span class="st"> </span>mar_rgn_gf <span class="op">%&gt;%</spa
 <span class="st">  </span><span class="kw">group_by</span>(fao, environment, species, Taxon_code, rgn_id) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cum_value =</span> <span class="kw">cumsum</span>(value_w_<span class="dv">0</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(cum_value <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gap_0_fill =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), <span class="st">&quot;NA_to_zero&quot;</span>, <span class="st">&quot;0&quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">value =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), <span class="dv">0</span>, value)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cum_value, <span class="op">-</span>value_w_<span class="dv">0</span>)
-
-<span class="kw">table</span>(mar_rgn_gf<span class="op">$</span>gap_0_fill)</code></pre></div>
+<span class="st">  </span><span class="kw">filter</span>(cum_value <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># eliminates years before mariculture began</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gap_0_fill =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), <span class="st">&quot;NA_to_zero&quot;</span>, <span class="st">&quot;0&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># record gapfill</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">value =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(value), <span class="dv">0</span>, value)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># finally, convert all NAs in original column to 0</span>
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cum_value, <span class="op">-</span>value_w_<span class="dv">0</span>)</code></pre></div>
+<p><strong>See how may NA values were converted to 0</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(mar_rgn_gf<span class="op">$</span>gap_0_fill)</code></pre></div>
 <pre><code>## 
 ##          0 NA_to_zero 
 ##      26778       3743</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 3344 of these out of 25842+3344 cases
-## 3743 of these out of 26778+3743 cases had NA values converted to 0</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 3743 of these out of 26778+3743 cases had NA values converted to 0</code></pre></div>
 <p>Remove time series with less than four non-zero datapoints (assume these are not established mariculture programs).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mar_rgn_gf =<span class="st"> </span>mar_rgn_gf <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">group_by</span>(rgn_id, species, fao, environment) <span class="op">%&gt;%</span>
@@ -500,6 +507,7 @@ identifier =<span class="st"> </span>mar_rgn_gf <span class="op">%&gt;%</span><s
 mar_rgn_gf =<span class="st"> </span><span class="kw">left_join</span>(mar_rgn_gf, identifier)</code></pre></div>
 <pre><code>## Joining, by = c(&quot;rgn_id&quot;, &quot;species&quot;, &quot;fao&quot;, &quot;environment&quot;)</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maric &lt;-<span class="st"> </span>mar_rgn_gf</code></pre></div>
+</div>
 </div>
 <div id="save-file" class="section level1">
 <h1><span class="header-section-number">8</span> Save file:</h1>

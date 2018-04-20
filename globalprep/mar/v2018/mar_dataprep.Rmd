@@ -26,6 +26,8 @@ New year of FAO mariculture yield data for 2016. No changes to sustainability. C
 
 # Data Source 
 
+## Production data
+
 **Reference**:      
     http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
      Release date: March 2018
@@ -36,6 +38,7 @@ FAO Global Aquaculture Production Quantity 1950_2016
 **Description**:  Quantity (tonnes) of mariculture for each county, species, year.
 
 **Time range**: 1950-2016 
+
 
 ***
   
@@ -74,7 +77,7 @@ mar <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_mariculture
 
 # Wrangle: 
 
-## Clean mariculture data
+## Tidy mariculture data
 
 Filter freshwater mariculture, make long format, and clean FAO codes.
 
@@ -110,6 +113,7 @@ Update species name in the `raw/species_list.csv` file with names in the `mar` d
 
 mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
   select(FAO_name, exclude, alias, Taxon_code)
+
 new.spp <- setdiff(mar$FAO_name, mar_sp$FAO_name)
 new.spp # check: if dim has 0 rows it means all match
 ## if length(new.spp) >0 , hand check whether to keep (exclude seaweeds and species harvested for ornamental/medicinal), check if synonyms match Trujillo names
@@ -122,7 +126,7 @@ mar <- filter (mar, exclude==0)
 ## change names using species alias or FAO species name (global changes)
 mar$species <- ifelse(!is.na(mar$alias), mar$alias, mar$FAO_name) 
 
-## sum duplicates after name change (this also gets rid of the NA values)
+## sum production values for each group to account for duplicate rows after name change (remove NA values)
 mar <- mar %>%
   filter(!is.na(value)) %>%
   group_by(country, fao, environment, species, year, Taxon_code) %>% 
@@ -130,7 +134,7 @@ mar <- mar %>%
   ungroup()
 
 
-## eliminate time-series with all 0s
+## eliminate country-species data with zero production throughout the time-series (1950-recent)
 mar <- mar %>%
   group_by(country, species) %>%
   mutate(total_value = sum(value)) %>%
@@ -139,6 +143,7 @@ mar <- mar %>%
   ungroup()
 
 ```
+
 
 ## Convert country names to OHI regions
 
@@ -180,6 +185,7 @@ data.frame(filter(mar_rgn, rgn_id==130) %>%
 For some regions, a specific species can be altered so that it matches more general Trujillo sustainability data.  In this case, I don't want the name changes to be global because some regions may have more specific species data. 
 
 (Will explore this in the future, but will not implement this year).
+
 ```{r, }
 # ## based on looking at the list, make a few name changes to match the regions Trujillo data
 # # Chile name modification
@@ -235,12 +241,19 @@ For some regions, a specific species can be altered so that it matches more gene
 
 # Gapfilling
 
-Fill in missing years after first harvest with 0 values. Checked to make sure that there weren't instances in which it made more sense to carry the previous year's data forward as a method of gapilling. This didn't seem to be the case.
+## Fill in missing years after first year of harvest data with 0 values
+
+For example: Production of blue shrimp in Maine starts in 1983 -- don't include years before that.
+
+Checked to make sure that there weren't instances in which it made more sense to carry the previous year's data forward as a method of gapilling. This didn't seem to be the case.
 
 ```{r}
 
+## spread mar_rgn to create a value for every year-species-region (if missing it will be given a NA)
 mar_rgn_spread <- spread(mar_rgn, year, value)
 dim(mar_rgn_spread)
+
+## turn data frame back into long format
 mar_rgn_gf <- gather(mar_rgn_spread, "year", "value", num_range("",1950:2016)) %>%
   arrange(rgn_id, species, year, Taxon_code, fao, environment) 
 
@@ -251,35 +264,38 @@ mar_rgn_gf <- mar_rgn_gf %>%
   group_by(fao, environment, species, Taxon_code, rgn_id) %>% 
   mutate(cum_value = cumsum(value_w_0)) %>%
   ungroup() %>%
-  filter(cum_value > 0) %>%
-  mutate(gap_0_fill = ifelse(is.na(value), "NA_to_zero", "0")) %>%
-  mutate(value = ifelse(is.na(value), 0, value)) %>%
+  filter(cum_value > 0) %>% # eliminates years before mariculture began
+  mutate(gap_0_fill = ifelse(is.na(value), "NA_to_zero", "0")) %>% # record gapfill
+  mutate(value = ifelse(is.na(value), 0, value)) %>% # finally, convert all NAs in original column to 0
   select(-cum_value, -value_w_0)
+```
 
+See how may NA values were converted to 0
+
+```{r}
 table(mar_rgn_gf$gap_0_fill)
-## 3344 of these out of 25842+3344 cases
 ## 3743 of these out of 26778+3743 cases had NA values converted to 0
 
 ```
 
-Remove time series with less than four non-zero datapoints (assume these are not established mariculture programs).
+Remove species-region-environment time series with less than four years of mariculture production > 0 tonnes (assume these are not established mariculture programs).
 
 ```{r}
 
 mar_rgn_gf = mar_rgn_gf %>% 
   group_by(rgn_id, species, fao, environment) %>%
-  mutate (not_0 = length(value[value>0])) %>% 
-  filter (not_0>3) %>%
+  mutate (not_0 = length(value[value>0])) %>% # length of vector of years greater than 0
+  filter (not_0>3) %>% # filter for groups that have at least four years of mariculture production 
   ungroup() %>% 
   select(rgn_id, species, fao, environment, year, value, Taxon_code, gap_0_fill) 
 
 ```
 
-Add a unique identifier per cultivated stock that describes species, fao region, and environment.
+Add a unique identifier per cultivated stock that describes each species, fao region, and environment grouping.
 
 ```{r}
 
-# add a unique identifier per cultivated stock
+## add a unique identifier per cultivated stock
 identifier = mar_rgn_gf %>% 
   select(rgn_id, species, fao, environment) %>% 
   unique() %>% 
