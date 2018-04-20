@@ -52,7 +52,7 @@ No updates were made to this methodology, from the previous assessment.
 
 #Setup
 
-Load all relevant libraries including parallel processing packages.
+Load all relevant libraries including parallel processing packages, 
 
 ```{r setup, message=FALSE, warning=FALSE, verbose=FALSE}
 
@@ -73,6 +73,12 @@ if(!requireNamespace("ohicore", quietly = FALSE))
   devtools::install_github("ohi-science/ohicore")
 if(!requireNamespace("dplyr", quietly = FALSE))
   install.packages("tidyverse")
+if(!requireNamespace("sf", quietly = FALSE))
+  install.packages("sf")
+if(!requireNamespace("fasterize", quietly = FALSE))
+  install.packages("fasterize")
+if(!requireNamespace("foreach", quietly = FALSE))
+  install.packages("foreach")
 
 library(ohicore)
 
@@ -88,6 +94,14 @@ library(stringr)
 library(parallel)
 library(foreach)
 library(doParallel)
+
+## define path names where data will be read from/written to; change to reflect most recent data (d) and current assessment year (v)
+spdata_filepath <- "git-annex/globalprep/spatial/v2017/"
+raw_gpw_popdata_filepath <- "git-annex/globalprep/_raw_data/CIESEandCIAT_population/d2017"
+un_popdata_filepath <- "git-annex/globalprep/_raw_data/UnitedNations_population/v2017/"
+marprspop_int_filepath <- "git-annex/globalprep/mar_prs_population/v2017/int/"
+globalrgn_filepath <- "git-annex/Global/NCEAS-Regions_v2014/data"
+
 
 ```
 
@@ -116,10 +130,9 @@ pop <- read.csv(file.path(dir_M,
 ## eez raster used in creating 25 mile inland raster
 eez_raster <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/regions_eez_with_fao_ant.tif"))
 
-
 ```
 
-##Project, Resample, Interpolate
+##Project, Resample, Interpolate...
 
 Gridded world population densities from CIESE and CIAT needs to be projected into the (?) coordinate reference system and resampled using nearest neighbor method, and missing years must be filled by interpolation
 
