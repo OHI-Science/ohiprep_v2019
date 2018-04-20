@@ -30,8 +30,8 @@ New year of FAO mariculture yield data for 2016. No changes to sustainability. C
 
 **Reference**:      
     http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
-     Release date: March 2018
-FAO Global Aquaculture Production Quantity 1950_2016
+    Release date: March 2018
+    FAO Global Aquaculture Production Quantity 1950_2016
 
 **Downloaded**: 4/11/2018
 
@@ -39,6 +39,16 @@ FAO Global Aquaculture Production Quantity 1950_2016
 
 **Time range**: 1950-2016 
 
+## Sustainability data
+
+**Reference**:      
+    Mariculture Sustainability Index (Trujillo 2008)
+
+**Description**:  
+    Original MSI rescaled from 1-10 to 0-1 for mariculture taxa groups.
+
+**Time range**: 
+    2012
 
 ***
   
@@ -324,7 +334,7 @@ These data describe the sustainability and genetic escapes for country/species c
 ```{r}
 
 ## Trujillo sustainability data:
-sus = read.csv('raw/Truj_label_sust.csv', stringsAsFactors = FALSE, na.strings = NA)
+sus = read.csv('raw/future_OHI2018/Truj_label_sust.csv', stringsAsFactors = FALSE, na.strings = NA)
 
 ```
 
