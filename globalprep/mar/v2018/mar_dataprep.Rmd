@@ -42,13 +42,12 @@ New year of FAO mariculture yield data for 2016. No changes to sustainability. C
 ## Sustainability data
 
 **Reference**:      
-    Mariculture Sustainability Index (Trujillo 2008)
+Mariculture Sustainability Index (Trujillo 2008)
+
+Trujillo, P. (2008) Using a mariculture sustainability index to rank countries’   performance. p. 28-56 In: Alder, J. and Pauly, D. (eds.) A comparative assessment of biodiversity, fisheries and aquaculture in 53 countries’ Exclusive Economic Zones. Fisheries Centre Research Reports 16(7). Fisheries Centre, University of British Columbia, Vancouver, Canada. 
 
 **Description**:  
     Original MSI rescaled from 1-10 to 0-1 for mariculture taxa groups.
-
-**Time range**: 
-    2012
 
 ***
   
@@ -334,15 +333,17 @@ These data describe the sustainability and genetic escapes for country/species c
 ```{r}
 
 ## Trujillo sustainability data:
-sus = read.csv('raw/future_OHI2018/Truj_label_sust.csv', stringsAsFactors = FALSE, na.strings = NA)
+sus = read.csv('raw/Truj_label_sust.csv', stringsAsFactors = FALSE, na.strings = NA)
 
 ```
 
 # Wrangle
 
 ```{r}
+
 ## these need to be re-added (get cut when associated with region ids)
 sus_no_rgn <- filter(sus, is.na(country))
+
 ```
 
 ## Convert country names to OHI region names.
