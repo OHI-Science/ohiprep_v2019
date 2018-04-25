@@ -19,7 +19,7 @@ pdf_document:
 [REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2018/mar_prs_pop_dataprep.html)
 
 
-#Summary
+# Summary
 
 This document describes the steps for obtaining and wrangling the data used to calculate the mariculture population pressure subdimension for the 2018 global assessment.
 
@@ -29,14 +29,14 @@ The general calculation is:
 
 The following data are used:
 
-#Updates from previous assessment
+# Updates from previous assessment
 No updates were made to this methodology since the previous assessment.
 
 ***
 
-#Data Sources
+# Data Sources
 
-##CIESE and CIAT Gridded World Population
+## CIESE and CIAT Gridded World Population
 
 **Reference**:
 
@@ -50,7 +50,7 @@ No updates were made to this methodology since the previous assessment.
 
 **Format**:
 
-##UN Population
+## UN Population
 
 **Reference**:
 
@@ -66,7 +66,7 @@ No updates were made to this methodology since the previous assessment.
 
 ***
 
-#Setup
+# Setup
 
 Load all relevant libraries including parallel processing packages, and define frequently used pathnames
 
@@ -129,9 +129,9 @@ library(doParallel)
 
 ```
 
-#Methods and Calculations
+# Methods and Calculations
 
-##Import Raw Data
+## Import Raw Data
 
 Raw datasets used in this data prep include: raw CIESE/CIAT population, ocean raster, UN population, and 
 
@@ -155,7 +155,7 @@ eez_raster <- raster(file.path(dir_M, paste0(spdata_filepath, scenario_yr, "/reg
 
 ```
 
-##Project, Resample, Interpolate...
+## Project, Resample, Interpolate...
 
 Gridded world population densities from CIESE and CIAT needs to be projected into the (?) coordinate reference system and resampled using nearest neighbor method, and missing years must be filled by interpolation
 
@@ -232,7 +232,7 @@ yearly_interpolate(2015, start_raster = files[grep("2015_mol", files)], yearly_c
 
 ```
 
-##Convert Density to Population 
+## Convert Density to Population 
 
 Density data are converted to population by ***(some function, meaning of the numeric values in for loop?). GWPv4 provides both densities and population counts. However, we derive population counts from density because (?) Density of the raw datasets is in units (people per km2?), and population will be in units of (?)***
 
@@ -256,7 +256,7 @@ for(rast in den_raster){
 
 ```
 
-##Create EEZ plus 25-mile Inland Raster
+## Create EEZ plus 25-mile Inland Raster
 
 ```{r create eez and 25-mile inland raster}
 
@@ -289,7 +289,7 @@ raster::merge(eez_raster, inland_raster, filename=file.path(dir_M,
                       "git-annex/globalprep/mar_prs_population/v2017/int/eez_25mi_inland.tif"))
 ```
 
-##Create UN_population.csv for data checking later
+## Create UN_population.csv for data checking later
 
 ```{r create un_population.csv}
 
@@ -321,9 +321,9 @@ write.csv(pop_rgn, "globalprep/mar_prs_population/v2017/output/UN_population.csv
 ```
 
 
-#Tidy/Wrangle
+# Tidy/Wrangle
 
-##Extract by or Add OHI Regions
+## Extract by or Add OHI Regions
 
 ```{r extract population data from all population layers}
 
@@ -345,7 +345,7 @@ write.csv(coastal_pop2, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi
 
 ```
 
-#Gapfilling
+# Gapfilling
 
 No gapfilling was completed as part of this data prep methodology. ***Data sets are saved with "_gf" appended just to indicate they are finalized versions.***
 
@@ -361,7 +361,7 @@ write.csv(mar, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi_gf.csv",
 
 ```
 
-#Data Checks and/or Meta-analysis
+# Data Checks and/or Meta-analysis
 
 ```{r check full calculated population against latest UN population data}
 
