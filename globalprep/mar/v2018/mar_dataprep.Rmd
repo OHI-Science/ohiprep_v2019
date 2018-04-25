@@ -472,7 +472,6 @@ For missing sustainability scores:
 
 1. Use species-level Sustainability score
 2. If no species-level scores, gapfill with taxon-level sustainability average
-* 
 
 ```{r}
 
@@ -483,26 +482,37 @@ mar_sus_final = mar_sus_gf %>%
   mutate(Sust = ifelse(is.na(Sust), Sust_gf_taxon, Sust)) %>%
   mutate(taxa_code = paste(species, species_code, sep="_")) %>%
   select(rgn_id, species, species_code, taxa_code, year, gapfill_sus = gapfill, gapfill_fao = gap_0_fill, tonnes=value, Sust)
+```
 
+# Save Data:
 
-## save data layers
+```{r}
+
+## save mariculture harvest data
 mar_harvest_tonnes = mar_sus_final %>%
   select(rgn_id, taxa_code, year, tonnes)
-anyDuplicated(mar_harvest_tonnes)
+
+anyDuplicated(mar_harvest_tonnes) # check for duplications
+
 write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
 
+## save gapfill data for mariculture harvest
 mar_harvest_tonnes_gf = mar_sus_final %>%
   select(rgn_id, taxa_code, year, tonnes=gapfill_fao)
+
 write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
 
-
+## save sustainability scores data for 2012
 mar_sustainability_score = mar_sus_final %>% 
   mutate(year = 2012) %>%
   select(rgn_id, year, taxa_code, sust_coeff = Sust) %>% 
   unique()
+
 anyDuplicated(mar_sustainability_score)
+
 write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F)
 
+## save gapfill data for sustainability scores
 mar_sustainability_score_gf = mar_sus_final %>% 
   select(rgn_id, taxa_code, sust_coeff = gapfill_sus) %>% 
   unique()
