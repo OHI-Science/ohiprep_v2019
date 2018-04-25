@@ -29,9 +29,9 @@ New year of FAO mariculture yield data for 2016. No changes to sustainability. C
 ## Production data
 
 **Reference**:      
-    http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
-    Release date: March 2018
-    FAO Global Aquaculture Production Quantity 1950_2016
+http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
+Release date: March 2018
+FAO Global Aquaculture Production Quantity 1950_2016
 
 **Downloaded**: 4/11/2018
 
@@ -47,7 +47,8 @@ Mariculture Sustainability Index (Trujillo 2008)
 Trujillo, P. (2008) Using a mariculture sustainability index to rank countries’   performance. p. 28-56 In: Alder, J. and Pauly, D. (eds.) A comparative assessment of biodiversity, fisheries and aquaculture in 53 countries’ Exclusive Economic Zones. Fisheries Centre Research Reports 16(7). Fisheries Centre, University of British Columbia, Vancouver, Canada. 
 
 **Description**:  
-    Original MSI rescaled from 1-10 to 0-1 for mariculture taxa groups.
+
+Original MSI rescaled from 1-10 to 0-1 for mariculture taxa groups.
 
 ***
   
@@ -359,7 +360,7 @@ sus_rgn <- bind_rows(sus_rgn, sus_no_rgn) %>%
 
 ```
 
-**check the fao spp list in the Trujillo sustainability file matches FAO mariculture species**
+**Check to see where there are no matches in FAO spp with Trujillo sustainability data to the FAO mariculture species in the wrangled FAO Aquaculture Production data table**
 
 ```{r}
 
@@ -371,7 +372,7 @@ sort(setdiff(maric$species, sus_rgn$species_fao)) # species with no Trujillo dat
 
 # FAO mariculture and sustainability scores
 
-Match the sustainability score to the FAO mariculture data.
+Append sustainability score to the FAO mariculture data.
 
 The following joins the sustainability scores to regions/species that have Trujillo data.
 ```{r}
@@ -394,9 +395,15 @@ c_sp_fao = sus_rgn %>%
 mar_sus <- mar_sus %>%
   left_join(c_sp_fao, by= c("species", "fao", "rgn_id"))
 
-data.frame(filter(mar_sus, rgn_id==218 & species == "Atlantic salmon"))
-data.frame(filter(mar_sus, !is.na(Sust_c_sp_fao)))
+```
 
+**Take a look at the data thus far**
+```{r}
+head(data.frame(filter(mar_sus, rgn_id==218 & species == "Atlantic salmon")))
+head(data.frame(filter(mar_sus, !is.na(Sust_c_sp_fao))))
+```
+
+```{r}
 ## join taxa specific to country/species
 c_sp = sus_rgn %>% 
   filter(match_type == 'c_sp') %>% 
@@ -404,45 +411,71 @@ c_sp = sus_rgn %>%
 
 mar_sus <- mar_sus %>%
   left_join(c_sp, by= c("species", "rgn_id"))
-summary(mar_sus)
+```
 
-## merge these into a single sustainability score
+**Now look at a summary after appending all the Trujillo data**
+```{r}
+summary(mar_sus)
+```
+
+Merge the three Trujillo type categories into a single sustainability score column in the following order:
+
+1. Sust_c_sp_env: taxa specific to country/species/environment (smallest taxonomic level)
+2. Sust_c_sp_fao:  taxa specific to country/species/fao region
+3. Sust_c_sp: taxa specific to country/species (highest taxonomic level)
+
+For example, if Sust_c_sp_env is missing, use Sust_c_sp_fao and so on. 
+
+```{r}
 mar_sus = mar_sus %>% 
   mutate(Sust = ifelse(!is.na(Sust_c_sp_env), Sust_c_sp_env, Sust_c_sp_fao)) %>%
   mutate(Sust = ifelse(is.na(Sust), Sust_c_sp, Sust)) %>%
   select(-Sust_c_sp_env, -Sust_c_sp_fao, -Sust_c_sp)
-
 ```
 
 
 This joins the sustainability data that is gapfilled either at the species level (average of specific species/genera across regions) or at a higher course taxonomic levels and documents which data are gapfilled and how.
+
 ```{r}
 
-## Gapfilled at the species/genera level:
-gf_sp_sus <- filter(sus_rgn, gapfill != "actuals" & match_type == "species") %>%
+## Select observations gapfilled at the species/genera level:
+gf_sp_sus <- sus_rgn %>% 
+  filter(gapfill != "actuals" & match_type == "species") %>%
   select(species = species_fao, gapfill, Sust_gf_sp = Maric_sustainability)
 
 ## check that there are no duplicated species_fao
 gf_sp_sus[duplicated(gf_sp_sus$species), ]
 
-# Match gapfilling values by species
+## Match gapfilling values by species
 mar_sus_gf = mar_sus %>%
   left_join(gf_sp_sus, by = 'species')
 
 
-# Gapfilled at the coarse taxon level:
+## Select observations gapfilled at the coarse taxon level:
 gf_taxon_sus <- filter(sus_rgn, gapfill != "actuals" & match_type == "taxon") %>%
   select(Taxon_code=taxon, Sust_gf_taxon = Maric_sustainability)
 
-# Match gapfilling values by species
+## Match gapfilling values by species
 mar_sus_gf = mar_sus_gf %>%
   left_join(gf_taxon_sus, by = c('Taxon_code'))
+```
 
-summary(mar_sus_gf)
-table(mar_sus_gf$gapfill)
+**Take a look at the wrangled data**
+```{r}
+summary(mar_sus_gf) # no NA's in Sust_gf_taxon column
+table(mar_sus_gf$gapfill) 
+```
 
+Obtain a sustainability score for each record, and a book-keeping column of whether it's actual or gap-filled
 
-#Obtain a sustainability score for each record, and a book-keeping column of whether it's actual or gap-filled
+For missing sustainability scores:
+
+1. Use species-level Sustainability score
+2. If no species-level scores, gapfill with taxon-level sustainability average
+* 
+
+```{r}
+
 mar_sus_final = mar_sus_gf %>% 
   mutate(gapfill = ifelse(!is.na(Sust), "none", gapfill)) %>% 
   mutate(Sust = ifelse(is.na(Sust), Sust_gf_sp, Sust)) %>%
