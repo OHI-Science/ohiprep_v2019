@@ -25,7 +25,7 @@ This document describes the steps for obtaining and wrangling the data used to c
 
 The general calculation is:
 
-
+***summarize here, or just point to other documentation (methods)?***
 
 The following data are used:
 
@@ -37,6 +37,20 @@ No updates were made to this methodology since the previous assessment.
 #Data Sources
 
 ##CIESE and CIAT Gridded World Population
+
+**Reference**:
+
+**Downloaded**:
+
+**Description**:
+
+**Native data resolution**:
+
+**Time range**:
+
+**Format**:
+
+##UN Population
 
 **Reference**:
 
@@ -71,28 +85,28 @@ goal <- "globalprep/mar_prs_population"
 scenario_yr <- "v2018" # change to reflect assessment year
 data_yr <- "d2017" # change to reflect year of most recent data
 
-## define path names where data will be written to and/or read from
+## define path names where data will be written to and/or read from, change to reflect most recent data (d) and current assessment year (v)
 spdata_filepath <- "git-annex/globalprep/spatial/"
 raw_gpw_popdata_filepath <- paste0("git-annex/globalprep/_raw_data/CIESEandCIAT_population/", data_yr)
-un_popdata_filepath <- paste0("git-annex/globalprep/_raw_data/UnitedNations_population/", scenario_yr, "/")
+un_popdata_filepath <- paste0("git-annex/globalprep/_raw_data/UnitedNations_population/", "v2017/")
 marprspop_int_filepath <- paste0("git-annex/globalprep/mar_prs_population/", scenario_yr, "/int/")
 mar_prs_pop_filepath <- paste0("git-annex/globalprep/mar_prs_population/", scenario_yr, "/")
-globalrgn_filepath <- "git-annex/Global/NCEAS-Regions_v2014/data" # change to reflect most recent data (d) and current assessment year (v)
+globalrgn_filepath <- "git-annex/Global/NCEAS-Regions_v2014/data"
 ```
 
 ```{r packages}
 ## load packages, installing them first where necessary
-if(!requireNamespace("raster", quietly = FALSE))
+if(!requireNamespace("raster", quietly = TRUE))
   install.packages("raster")
-if(!requireNamespace("ohicore", quietly = FALSE))
+if(!requireNamespace("ohicore", quietly = TRUE))
   devtools::install_github("ohi-science/ohicore")
-if(!requireNamespace("dplyr", quietly = FALSE))
+if(!requireNamespace("dplyr", quietly = TRUE))
   install.packages("tidyverse")
-if(!requireNamespace("sf", quietly = FALSE))
+if(!requireNamespace("sf", quietly = TRUE))
   install.packages("sf")
-if(!requireNamespace("fasterize", quietly = FALSE))
+if(!requireNamespace("fasterize", quietly = TRUE))
   install.packages("fasterize")
-if(!requireNamespace("foreach", quietly = FALSE))
+if(!requireNamespace("foreach", quietly = TRUE))
   install.packages("foreach")
 
 library(ohicore)
@@ -175,7 +189,7 @@ yearly_diff(year_min = 2005, year_max = 2010)
 yearly_diff(year_min = 2010, year_max = 2015)
 yearly_diff(year_min = 2015, year_max = 2020)
 
-## reason for not looping this to shorten the code (slower)?
+## reason for not looping function (below) to shorten the code (slower)?
 # yearly_interpolate <- function(year, start_raster, yearly_change){
 #   stack(start_raster, yearly_change) %>%  
 #     for(i in 1:4){
@@ -252,7 +266,7 @@ fiji <- sf::read_sf(dsn = file.path(dir_M, paste0(spdata_filepath, scenario_yr))
   filter(rgn_type == "land" & rgn_id==18) %>%
   select(rgn_id, geometry)
 
-# create the 25-mile inland raster and add Fiji
+## create the 25-mile inland raster and add Fiji
 inland <- sf::read_sf(dsn = file.path(dir_M, globalrgn_filepath), layer = "sp_inland25mi_gcs") %>%
   select(rgn_id, geometry)
 inland <- st_transform(inland, st_crs(fiji))
@@ -274,6 +288,38 @@ tmp2 <- data.frame(tmp) %>%
 raster::merge(eez_raster, inland_raster, filename=file.path(dir_M, 
                       "git-annex/globalprep/mar_prs_population/v2017/int/eez_25mi_inland.tif"))
 ```
+
+##Create UN_population.csv for data checking later
+
+```{r create un_population.csv}
+
+pop_gather <- pop %>%
+  gather("year", "population", starts_with("X")) %>%
+  mutate(population = gsub(" ", "", population)) %>%
+  mutate(year = gsub("X", "", year)) %>%
+  mutate(population = as.numeric(as.character(population)) * 1000)
+
+## Channel Islands: ignore Jersey and Guernsey for now
+pop_gather_rename <- pop_gather %>%
+  mutate(country = ifelse(str_detect(country,"C\\Ste d'Ivoire"), "Cote d'Ivoire", country)) %>%
+  mutate(country = ifelse(str_detect(country,"R\\Sunion"), "Reunion", country)) %>%
+  mutate(country = ifelse(str_detect(country,"Cura\\Sao"), "Curacao", country)) %>%
+  mutate(country = ifelse(country=="China, Taiwan Province of China", "Taiwan", country)) %>%
+  mutate(country = ifelse(country=="Dem. People's Republic of Korea", "North Korea", country))
+  
+pop_rgn <- name_2_rgn(df_in = pop_gather_rename, 
+                      fld_name='country', 
+                      flds_unique=c('year'))
+
+pop_rgn <- pop_rgn %>%
+  group_by(rgn_id, year) %>%
+  summarize(population = sum(population)) %>%
+  data.frame()
+  
+write.csv(pop_rgn, "globalprep/mar_prs_population/v2017/output/UN_population.csv", row.names=FALSE)
+
+```
+
 
 #Tidy/Wrangle
 
@@ -301,11 +347,21 @@ write.csv(coastal_pop2, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi
 
 #Gapfilling
 
-No gapfilling was completed as part of the data prep methodology.
+No gapfilling was completed as part of this data prep methodology. ***Data sets are saved with "_gf" appended just to indicate they are finalized versions.***
+
+```{r save prs_pop_density and mar_pop_25mi layers}
+
+prs <- read.csv("globalprep/mar_prs_population/v2017/output/prs_pop_density.csv") %>%
+  mutate(pressure_score = 0)
+mar <- read.csv("globalprep/mar_prs_population/v2017/output/mar_pop_25mi.csv") %>%
+  mutate(popsum = 0)
+
+write.csv(prs, "globalprep/mar_prs_population/v2017/output/prs_pop_density_gf.csv", row.names = FALSE)
+write.csv(mar, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi_gf.csv", row.names = FALSE)
+
+```
 
 #Data Checks and/or Meta-analysis
-
-##Check that Zonal Counts match UN Populations
 
 ```{r check full calculated population against latest UN population data}
 
@@ -327,7 +383,7 @@ abline(0,1, col="red")
 
 ```
 
-```{r quick compare with previous data}
+```{r quick comparison with previous year's data}
 
 old <- read.csv("globalprep/mar_prs_population/v2016/output/mar_pop_25mi.csv") %>%
   dplyr::select(rgn_id, year, popsum_old=popsum)
