@@ -516,18 +516,22 @@ write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F
 mar_sustainability_score_gf = mar_sus_final %>% 
   select(rgn_id, taxa_code, sust_coeff = gapfill_sus) %>% 
   unique()
+
 write.csv(mar_sustainability_score, 'output/mar_sustainability_gf.csv', row.names=F)
 
 ```
 
-# Genetic escapes data
+# Wrangle: Genetic Escapes Data
 
-These data are used as a pressure layer to describe the risk of genetic escapees due to mariculture.
+Combine genetic escapes data to mariculture data. 
 
-First merge with the species data (no gapfilling) for each country/species/fao region combination.
+* Data from Trujillo data table. 
+* These data are used as a pressure layer to describe the risk of genetic escapees due to mariculture.
+* First merge with the species data (no gapfilling) for each country/species/fao region combination.
 
 ```{r}
-# can eliminate the environment category because these have the same scores
+
+## can eliminate the environment category because these have the same scores
 esc = sus_rgn %>% 
   filter(!is.na(Genetic.escapees)) %>%
   mutate(match_type = ifelse(match_type == "c_sp_env", "c_sp", match_type)) %>%
@@ -535,7 +539,7 @@ esc = sus_rgn %>%
   summarize(Genetic.escapees = mean(Genetic.escapees)) %>%
   ungroup()
   
-# join taxa specific to country/species/fao
+## join taxa specific to country/species/fao
 c_sp_fao = esc %>% 
   filter(match_type == 'c_sp_fao') %>% 
   select(rgn_id, species, fao, Esc_c_sp_fao = Genetic.escapees) 
@@ -543,51 +547,84 @@ c_sp_fao = esc %>%
 mar_esc <- maric %>%
   left_join(c_sp_fao, by= c("species", "fao", "rgn_id"))
 
-data.frame(filter(mar_esc, !is.na(Esc_c_sp_fao)))
+head(data.frame(filter(mar_esc, !is.na(Esc_c_sp_fao))))
 
-# join taxa specific to country/species
+## join taxa specific to country/species
 c_sp = esc %>% 
   filter(match_type == 'c_sp') %>% 
-  select(rgn_id, species, Esc_c_sp = Genetic.escapees)
+  select(rgn_id, species, Esc_c_sp = Genetic.escapees) # fao is blank
 
 mar_esc <- mar_esc %>%
   left_join(c_sp, by= c("species", "rgn_id"))
-summary(mar_esc)
 
-### merge these into a single sustainability score
+```
+
+**Look at a summary of the wrangled data table**
+```{r}
+summary(mar_esc)
+```
+
+Merge the different match types (esc_c_sp_fao, esc_c_sp) into a single sustainability score
+
+1. First use Esc_c_sp_fao
+2. If no Esc_c_sp_fao value, use Esc_c_sp
+
+```{r}
+
 mar_esc = mar_esc %>% 
   mutate(Escapees = ifelse(!is.na(Esc_c_sp_fao), Esc_c_sp_fao, Esc_c_sp)) %>%
   select(-Esc_c_sp_fao, -Esc_c_sp)
 
 ```
 
+
+# Gapfill 
+
 Join the sustainability data that is gapfilled either at the species level (average of specific species/genera across regions) or at a higher course taxonomic levels and documents which data are gapfilled and how.
 ```{r}
-## Gapfilled at the species/genera level:
-gf_species_esc <- filter(esc, gapfill != "actuals" & match_type == "species") %>%
+
+## Select observations gapfilled at the species/genera level:
+gf_species_esc <- esc %>% 
+  filter(gapfill != "actuals" & match_type == "species") %>%
   select(species, gapfill, Esc_gf_sp = Genetic.escapees)
 
 ## check that there are no duplicated species_fao
 gf_species_esc[duplicated(gf_species_esc$species), ]
 
-# Match gapfilling values by species
+## Match gapfilling values by species
 mar_esc_gf = mar_esc %>%
   left_join(gf_species_esc, by = 'species')
 
-
-# Gapfilled at the coarse taxon level:
-gf_taxon_sus <- filter(esc, gapfill != "actuals" & match_type == "taxon") %>%
+## Select observations gapfilled at the coarse taxon level:
+gf_taxon_sus <- esc %>% 
+  filter(gapfill != "actuals" & match_type == "taxon") %>%
   select(Taxon_code=taxon, Esc_gf_taxon = Genetic.escapees)
 
-# Match gapfilling values by species
+## Match gapfilling values by species
 mar_esc_gf = mar_esc_gf %>%
   left_join(gf_taxon_sus, by = c('Taxon_code'))
 
+```
+
+**Take a look at wrangled data**
+```{r}
 summary(mar_esc_gf)
 table(mar_esc_gf$gapfill)
+```
 
+## Record Gapfilling Methods
 
-#Obtain a sustainability score for each record, and a book-keeping column of whether it's actual or gap-filled
+Obtain a sustainability score for each record, and a book-keeping column of whether it's actual or gap-filled.
+
+For gapfill column
+
+1. If no missing escapee data, record "none"
+2. If NA, then gapfill with `Esc_gf_sp`
+3. If no `Esc_gf_sp` value, then record "taxon_average" as the gapfill method
+4. Fill in missing value with `Esc_gf_taxon` value
+
+```{r}
+
 tonnes_esc = mar_esc_gf %>% 
   mutate(gapfill = ifelse(!is.na(Escapees), "none", gapfill)) %>% 
   mutate(Escapees = ifelse(is.na(Escapees), Esc_gf_sp, Escapees)) %>%
@@ -595,18 +632,26 @@ tonnes_esc = mar_esc_gf %>%
   mutate(Escapees = ifelse(is.na(Escapees), Esc_gf_taxon, Escapees)) %>%
   select(rgn_id, species, species_code, year, gapfill_escapees = gapfill, tonnes=value, Escapees)
 
-summary(tonnes_esc)
+```
 
+**Take a look at the summary
+```{r}
+summary(tonnes_esc)
 ```
 
 
 Final formatting of the escapee data. This is used as a pressure layer.
+
+For each region/year: take a weighted average of the genetic escape probability for each taxa based on tonnes mariculture
 ```{r}
-# for each region/year: average the genetic escape probability for each taxa based on tonnes mariculture
+
 genEscapes <- tonnes_esc %>%
   group_by(rgn_id, year) %>%
   summarize(genEscapes = weighted.mean(Escapees, tonnes, na.rm=TRUE))
+```
 
+Obtain gapfill information from `genEscapes`
+```{r}
 # obtain corresponding gapfilling information for each region (average of gapfilled data, weighted by tonnes of mariculture).
 genEscapes_gf <- tonnes_esc %>%
   mutate(gapfill = ifelse(gapfill_escapees=="none", 1, 0)) %>%
@@ -617,13 +662,27 @@ genEscapes_gf <- tonnes_esc %>%
   select(rgn_id, pressures.score=genEscapes) %>%
   mutate(pressures.score=ifelse(pressures.score=="NaN", NA, pressures.score)) %>%
   data.frame()
-write.csv(genEscapes_gf, 'output/GenEsc_gf.csv', row.names=FALSE)
 
+```
+
+## Save gapfill data
+```{r}
+write.csv(genEscapes_gf, 'output/GenEsc_gf.csv', row.names=FALSE)
+```
+
+Obtain escapee data layers from `genEscapes`
+```{r}
 # create the escapee data layers:
     data <- genEscapes %>%
     select(rgn_id, year, pressure_score = genEscapes)
-write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
+```
 
+## Save escapee pressure layer 
+```{r}
+write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
+```
+
+```{r}
 old <- read.csv("../v2016/output/GenEsc_v2016.csv") %>%
   select(rgn_id, prs_score_old=pressure_score)
 
