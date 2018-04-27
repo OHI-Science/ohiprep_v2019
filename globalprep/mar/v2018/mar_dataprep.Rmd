@@ -651,14 +651,15 @@ genEscapes <- tonnes_esc %>%
 ```
 
 Obtain gapfill information from `genEscapes`
+Gapfill values in output file are the proportion of data that is gapfilled.
 ```{r}
 # obtain corresponding gapfilling information for each region (average of gapfilled data, weighted by tonnes of mariculture).
 genEscapes_gf <- tonnes_esc %>%
-  mutate(gapfill = ifelse(gapfill_escapees=="none", 1, 0)) %>%
+  mutate(gapfill = ifelse(gapfill_escapees=="none", 0, 1)) %>%
   group_by(rgn_id, year) %>%
   summarize(genEscapes = weighted.mean(gapfill, tonnes, na.rm=TRUE)) %>%
   ungroup() %>%
-  filter(year==2015) %>%
+  filter(year==2016) %>%
   select(rgn_id, pressures.score=genEscapes) %>%
   mutate(pressures.score=ifelse(pressures.score=="NaN", NA, pressures.score)) %>%
   data.frame()
@@ -682,17 +683,19 @@ Obtain escapee data layers from `genEscapes`
 write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
 ```
 
+## Data check
+Comparing this year's data to previous year's data. Expect small variation from year to year. Add a plot below test to view differences.
 ```{r}
-old <- read.csv("../v2016/output/GenEsc_v2016.csv") %>%
+old <- read.csv("../v2017/output/GenEsc_v2016.csv") %>%
   select(rgn_id, prs_score_old=pressure_score)
 
-new <- read.csv("../v2017/output/GenEsc.csv") %>%
-  filter(year == 2014)
+new <- read.csv("../v2018/output/GenEsc.csv") %>%
+  filter(year == 2016)
 
 full_join(old, new, by="rgn_id")
 
-tmp_old <- read.csv("../v2016/raw/Truj_label_sust.csv")
-tmp_new <- read.csv("../v2017/raw/Truj_label_sust.csv")
+tmp_old <- read.csv("../v2017/raw/Truj_label_sust.csv")
+tmp_new <- read.csv("../v2018/raw/Truj_label_sust.csv")
 
 test <- full_join(tmp_new, tmp_old, by=c("country", "species_fao", "fao", "environment" ))
 ```
