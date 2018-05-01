@@ -44,7 +44,7 @@ FAO Global Aquaculture Production Quantity 1950_2016
 **Reference**:      
 Mariculture Sustainability Index (Trujillo 2008)
 
-Trujillo, P. (2008) Using a mariculture sustainability index to rank countries’   performance. p. 28-56 In: Alder, J. and Pauly, D. (eds.) A comparative assessment of biodiversity, fisheries and aquaculture in 53 countries’ Exclusive Economic Zones. Fisheries Centre Research Reports 16(7). Fisheries Centre, University of British Columbia, Vancouver, Canada. 
+Trujillo, Pablo. 2008. “Using a Mariculture Sustainability Index to Rank Countries’ Performance.” In Fisheries Centre Research Reports, edited by Jackie Alder and Daniel Pauly. University of British Columbia, Vancouver, Canada: Fisheries Centre Research Reports. https://circle.ubc.ca/handle/2429/40933. 
 
 **Description**:  
 
@@ -476,10 +476,10 @@ For missing sustainability scores:
 ```{r}
 
 mar_sus_final = mar_sus_gf %>% 
-  mutate(gapfill = ifelse(!is.na(Sust), "none", gapfill)) %>% 
-  mutate(Sust = ifelse(is.na(Sust), Sust_gf_sp, Sust)) %>%
-  mutate(gapfill = ifelse(is.na(Sust), "taxon_average", gapfill)) %>%
-  mutate(Sust = ifelse(is.na(Sust), Sust_gf_taxon, Sust)) %>%
+  mutate(gapfill = ifelse(!is.na(Sust), "none", gapfill)) %>%
+  mutate(Sust = ifelse(is.na(Sust), Sust_gf_sp, Sust)) %>% # gapfill with species level
+  mutate(gapfill = ifelse(is.na(Sust), "taxon_average", gapfill)) %>% # add in taxon gapfill record
+  mutate(Sust = ifelse(is.na(Sust), Sust_gf_taxon, Sust)) %>% # gapfill with taxon level
   mutate(taxa_code = paste(species, species_code, sep="_")) %>%
   select(rgn_id, species, species_code, taxa_code, year, gapfill_sus = gapfill, gapfill_fao = gap_0_fill, tonnes=value, Sust)
 ```
@@ -504,7 +504,7 @@ write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
 
 ## save sustainability scores data for 2012
 mar_sustainability_score = mar_sus_final %>% 
-  mutate(year = 2012) %>%
+  mutate(year = 2012) %>% # Only 2012 sustainability scores exist (Trujillo)
   select(rgn_id, year, taxa_code, sust_coeff = Sust) %>% 
   unique()
 
@@ -619,7 +619,7 @@ Obtain a sustainability score for each record, and a book-keeping column of whet
 For gapfill column
 
 1. If no missing escapee data, record "none"
-2. If NA, then gapfill with `Esc_gf_sp`
+2. If NA, then gapfill with `Esc_gf_sp` (gapfill for species-level already recorded)
 3. If no `Esc_gf_sp` value, then record "taxon_average" as the gapfill method
 4. Fill in missing value with `Esc_gf_taxon` value
 
@@ -651,14 +651,15 @@ genEscapes <- tonnes_esc %>%
 ```
 
 Obtain gapfill information from `genEscapes`
+Gapfill values in output file are the proportion of data that is gapfilled.
 ```{r}
 # obtain corresponding gapfilling information for each region (average of gapfilled data, weighted by tonnes of mariculture).
 genEscapes_gf <- tonnes_esc %>%
-  mutate(gapfill = ifelse(gapfill_escapees=="none", 1, 0)) %>%
+  mutate(gapfill = ifelse(gapfill_escapees=="none", 0, 1)) %>%
   group_by(rgn_id, year) %>%
   summarize(genEscapes = weighted.mean(gapfill, tonnes, na.rm=TRUE)) %>%
   ungroup() %>%
-  filter(year==2015) %>%
+  filter(year==2016) %>%
   select(rgn_id, pressures.score=genEscapes) %>%
   mutate(pressures.score=ifelse(pressures.score=="NaN", NA, pressures.score)) %>%
   data.frame()
@@ -682,17 +683,19 @@ Obtain escapee data layers from `genEscapes`
 write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
 ```
 
+## Data check
+Comparing this year's data to previous year's data. Expect small variation from year to year. Add a plot below test to view differences.
 ```{r}
-old <- read.csv("../v2016/output/GenEsc_v2016.csv") %>%
+old <- read.csv("../v2017/output/GenEsc_v2016.csv") %>%
   select(rgn_id, prs_score_old=pressure_score)
 
-new <- read.csv("../v2017/output/GenEsc.csv") %>%
-  filter(year == 2014)
+new <- read.csv("../v2018/output/GenEsc.csv") %>%
+  filter(year == 2016)
 
 full_join(old, new, by="rgn_id")
 
-tmp_old <- read.csv("../v2016/raw/Truj_label_sust.csv")
-tmp_new <- read.csv("../v2017/raw/Truj_label_sust.csv")
+tmp_old <- read.csv("../v2017/raw/Truj_label_sust.csv")
+tmp_new <- read.csv("../v2018/raw/Truj_label_sust.csv")
 
 test <- full_join(tmp_new, tmp_old, by=c("country", "species_fao", "fao", "environment" ))
 ```
