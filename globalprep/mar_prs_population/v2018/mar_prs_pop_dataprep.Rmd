@@ -23,11 +23,7 @@ pdf_document:
 
 This document describes the steps for obtaining and wrangling the data used to calculate the mariculture population pressure subdimension for the 2018 global assessment.
 
-The general calculation is:
-
-***summarize here, or just point to other documentation (methods)?***
-
-The following data are used:
+The general data preparation calculations are summarized [here](http://ohi-science.org/ohi-global/layers.html#inland_coastal_population). For context and explanation see the mariculture (subgoal of food provision) [model summary](http://ohi-science.org/ohi-global/goals.html#food_provision:_mariculture).
 
 # Updates from previous assessment
 No updates were made to this methodology since the previous assessment.
@@ -36,33 +32,36 @@ No updates were made to this methodology since the previous assessment.
 
 # Data Sources
 
-## CIESE and CIAT Gridded World Population
+## CIESE and CIAT Gridded Population of the World (v4)
 
-**Reference**:
+**Reference**: http://sedac.ciesin.columbia.edu/data/collection/gpw-v4
 
-**Downloaded**:
+**Downloaded**: June 3 2016
 
 **Description**:
+Population counts and population density. Population estimates for 2000, 2005, 2010, 2015, 2020, extrapolated from results of the 2010 Population and Housing Censuses which occurred between 2005 and 2014. Estimates adjusted to national level, historic and future, population predictions from the United Nation's World Population Prospects report are also included in the dataset. Documentation for gridded population of the world is located [here](http://sedac.ciesin.columbia.edu/downloads/docs/gpw-v4/gpw-v4-documentation.pdf).
 
-**Native data resolution**:
+**Native data resolution**: 30 arc-seconds
 
-**Time range**:
+**Time range**: 2000-2020
 
-**Format**:
+**Format**: GeoTiff
 
 ## UN Population
 
-**Reference**:
+UN population data is used in this data prep routine to check population counts; spatially distributed counts derived from the gridded world population are aggregated by region and checked against the UN population estimates.
 
-**Downloaded**:
+**Reference**: https://esa.un.org/unpd/wpp/
 
-**Description**:
+**Downloaded**: August 24 2017
 
-**Native data resolution**:
+**Description**: Population (in thousands) for countries.
 
-**Time range**:
+**Native data resolution**: country scores
 
-**Format**:
+**Time range**: 1950-2015
+
+**Format**: Excel file
 
 ***
 
