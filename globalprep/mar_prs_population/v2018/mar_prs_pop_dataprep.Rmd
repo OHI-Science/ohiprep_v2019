@@ -72,7 +72,7 @@ Load all relevant libraries including parallel processing packages, and define f
 knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.width = 6, fig.height = 4, fig.path = 'figs/')
 
 ## comment out when knitting
-# setwd("globalprep/mar_prs_population/v2018")
+# setwd("globalprep/mar_prs_population/")
 ```
 
 ```{r file paths}
@@ -220,7 +220,7 @@ for(rast in den_raster){
 }
 ```
 
-## Create EEZ plus 25-mile Inland Raster
+## Create EEZ + 25-mile Inland Raster
 
 ```{r create eez + 25-mile inland raster}
 ## re-add in Fiji which appears to get cut: include all of Fiji land falling within 50 mile boundary
@@ -232,7 +232,6 @@ fiji <- regions %>%
 inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"), 
                       layer = "sp_inland25mi_gcs") %>%
   select(rgn_id, geometry)
-
 inland <- st_transform(inland, st_crs(fiji))
 inland <- rbind(inland, fiji)
 
@@ -247,7 +246,27 @@ inland_raster <- fasterize::fasterize(inland, eez_raster, field = 'rgn_id')
 eez_25mi_inland <- raster::merge(eez_raster, inland_raster, filename = file.path(path_mar_prs, "int/eez_25mi_inland.tif"))
 ```
 
-## Create UN_population.csv for data checking later
+
+## Calculate Areas of EEZ + 25mi Inland Buffers
+
+```{r calculate area and mar. pressure}
+inland$area_km2 <- st_area(inland)
+
+area <- data.frame(inland) %>%
+  select(rgn_id, area_km2) %>%
+  mutate(area_km2 = round(area_km2/1000000)) %>%
+  mutate(area_km2 = as.numeric(as.character(gsub(" m^2", "", area_km2)))) %>%
+  filter(rgn_id <=250) %>%
+  filter(rgn_id != 213) %>%
+  group_by(rgn_id) %>%
+  dplyr::summarize(area_km2 = sum(area_km2))
+
+## save area data for the scenario year
+write.csv(area, sprintf("path_mar_prs/%s/int/area_km2_25mi.csv", scenario_yr), row.names=FALSE) # or save to github repo??
+```
+
+
+## Create `UN_population.csv` for data checking later
 
 ```{r create un_population.csv}
 pop_gather <- pop %>%
@@ -264,7 +283,7 @@ pop_gather_rename <- pop_gather %>%
   mutate(country = ifelse(country=="China, Taiwan Province of China", "Taiwan", country)) %>%
   mutate(country = ifelse(country=="Dem. People's Republic of Korea", "North Korea", country))
   
-## organize the data by regions used in OHI
+## organize the data into regions used in OHI, and save
 pop_rgn <- name_2_rgn(df_in = pop_gather_rename, 
                       fld_name='country', 
                       flds_unique=c('year'))
@@ -273,11 +292,9 @@ pop_rgn <- pop_rgn %>%
   summarize(population = sum(population)) %>%
   data.frame()
 
-## save wrangled UN population data  
-write.csv(pop_rgn, "globalprep/mar_prs_population/v2017/output/UN_population.csv", row.names=FALSE)
+write.csv(pop_rgn, sprintf("%s/output/UN_population.csv", scenario_yr), row.names=FALSE)
 ```
 
-# Tidy/Wrangle
 
 ## Append or extract by OHI Regions
 
@@ -297,21 +314,10 @@ coastal_pop2 <- data.frame(coastal_pop) %>%
 write.csv(coastal_pop2, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi.csv", row.names = FALSE)
 ```
 
-```{r calculate area and mar. pressure}
-inland$area_km2 <- st_area(inland)
 
-area <- data.frame(inland) %>%
-  select(rgn_id, area_km2) %>%
-  mutate(area_km2 = round(area_km2/1000000)) %>%
-  mutate(area_km2 = as.numeric(as.character(gsub(" m^2", "", area_km2)))) %>%
-  filter(rgn_id <=250) %>%
-  filter(rgn_id != 213) %>%
-  group_by(rgn_id) %>%
-  dplyr::summarize(area_km2 = sum(area_km2))
+## Calculate Mariculture Population Pressure
 
-## save area data for the scenario year
-write.csv(area, sprintf("path_mar_prs/%s/int/area_km2_25mi.csv", scenario_yr), row.names=FALSE) # or save to github repo??
-
+```{r calculate mar. population pressure}
 area <- read.csv("globalprep/mar_prs_population/v2017/int/area_km2_25mi.csv")
 
 pop_rescaled <- read.csv("globalprep/mar_prs_population/v2017/output/mar_pop_25mi.csv") %>%
@@ -329,7 +335,6 @@ pressure_data <- pop_rescaled %>%
 
 write.csv(pressure_data, "globalprep/mar_prs_population/v2017/output/prs_pop_density.csv", row.names = FALSE)
 ```
-
 
 # Gapfilling
 
