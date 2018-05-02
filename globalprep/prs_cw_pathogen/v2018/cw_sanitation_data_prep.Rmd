@@ -1,0 +1,60 @@
+---
+title: 'OHI 2018 - Clean Water - Pathogen Pollution: Preparing Sanitation data'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+[REFERENCE RMD FILE:
+]
+
+# Summary
+[general description: What data are being generated? Why (what project, etc.)? Upstream/downstream processing information that might be helpful?  Other information?]
+
+This document describes the steps for wrangling the data for the pathogen pollution and pathogen pollution trend data layers for the 2018 global assessment.
+
+# Updates from previous assessment
+Data source (WHO-UNICEF) updated the way they reported the data. However, the 2018 assesment is calculated using the "At least Basic" data becuse it is consistent with what have been used in previous assesmentes and it is more complete. 
+Consider for future assesments: make the "Safely managed" data more complete, and reconsider whether these data would be better to use.
+
+Deffinition of each variable according to the data source:
+"At leasr basic": Use of improved facilities that are not shared with other households.
+
+"Safely managed": Use of improved facilities that are not shared with other households and where excreta are safely disposed of in situ or transported and treated offsite
+
+
+***
+
+# Data Source [NOTE: can be copied from README.md in rawdata file]
+**Reference**: [citation for source data; website, literature, contact information. Version of data (if relevant). Screenshots if a series of menus had to be navigated to obtain the data.]
+
+**Downloaded**: [date downloaded or received]
+
+**Description**:  [e.g., surface aragonite state]
+
+**Native data resolution**: [e.g., 1 degree, 30 m, etc.]   
+
+**Time range**: [e.g., 1880-1899, monthly data provided for each year] 
+
+**Format**:  [e.g. NetCDF]
+
+***
+  
+# Methods
+[R code used to generate the data. Or, alternatively, description of the code/data files used to generate the data.]
+
+***
+
+# Citation information  
+[citation information: include if these data will have their own specific citation.]
