@@ -398,7 +398,7 @@ write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
 
 mar_harvest_tonnes_gf = mar_sus_final %>%
   select(rgn_id, taxa_code, year, tonnes=gapfill_fao)
-write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
+write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
 
 
 mar_sustainability_score = mar_sus_final %>% 
@@ -411,7 +411,7 @@ write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F
 mar_sustainability_score_gf = mar_sus_final %>% 
   select(rgn_id, taxa_code, sust_coeff = gapfill_sus) %>% 
   unique()
-write.csv(mar_sustainability_score, 'output/mar_sustainability_gf.csv', row.names=F)
+write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf.csv', row.names=F)
 
 ```
 
