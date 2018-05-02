@@ -54,7 +54,7 @@ Access to improved sanitation facilities is defined as the percentage of the pop
 
 ***
   
-# Methods OJO!!!
+# Methods
 [R code used to generate the data. Or, alternatively, description of the code/data files used to generate the data.]
 
 Percentages (0-100) for each country were rescaled to 0-1 based on a maximum target of 100% of the population with access to improved sanitation, and a minimum value of 0.
@@ -89,9 +89,12 @@ dir_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/')
 dir_int  <- file.path(dir_git, scenario, 'int')
 
 
-sani_raw <- read.csv(dir_M, 'git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/JMP_2017_WLD.csv'), na.strings = c(NA, ''), skip = 3, stringsAsFactors = FALSE) 
+sani_raw <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/JMP_2017_WLD.csv'), na.strings = c(NA, ''), skip = 3, stringsAsFactors = FALSE) 
 
 sani_raw <- read.csv(paste(dir_data, "JMP_2017_WLD.csv", sep = ""), na.strings = c(NA, ''), skip = 3, stringsAsFactors = FALSE)
+
+#ERROR
+#In file(file, "rt") :cannot open file '/home/shares/ohi/git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/JMP_2017_WLD.csv': No such file or directory
 
 ```
 
