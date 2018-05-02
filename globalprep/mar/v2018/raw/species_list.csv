@@ -1,7 +1,7 @@
 FAO_name,exclude,alias,notes,notes_2,Taxon_code
 [Boleophthalmus pectinirostris],1,NA,,Chinese medicine,F
-[Chondracanthus chamissoi],1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
-[Porphyra columbina],1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+[Chondracanthus chamissoi],1,NA,seaweed: food/carageenan,food use determined using Vasquez and Vega (some for food and carageenan): https://www.researchgate.net/publication/226813687_Chondracanthus_chamissoi_Rhodophyta_Gigartinales_in_northern_Chile_Ecological_aspects_for_management_of_wild_populations; Wiki (Highly consumed in Peru): https://es.wikipedia.org/wiki/Chondracanthus_chamissoi,AL
+[Porphyra columbina],0,NA,seaweed: food,food use determined using New Zealand Gov (Porphyra columbina is also known as karengo indicated as a high value food algae): https://teara.govt.nz/en/seaweed/page-4; Seaweed and Man: https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22,AL
 [Solea spp],0,NA,,,F
 [Spirulina maxima],1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 Abalones nei,0,NA,,,BI
@@ -55,7 +55,7 @@ Blue tilapia,1,NA,freshwater,,F
 Bluefish,0,NA,,,F
 Bluegill,1,NA,freshwater,,F
 Bluespot mullet,0,NA,,,F
-Bright green nori,1,NA,seaweed mixed: animal feed/fertilizer/food,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Bright green nori,0,NA,seaweed mixed: animal feed/fertilizer/food,food use determined using Seaweed and Man (Green nori indicated as an important algae for food): https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22;,AL
 Brill,0,NA,,,F
 Brine shrimp,0,NA,,,SH
 Brown meagre,0,NA,,,F
@@ -100,12 +100,12 @@ Diphos sanguin,0,"Clams, etc. nei",,,BI
 Donax clams,0,"Clams, etc. nei",,,BI
 Dotted gizzard shad,0,NA,,,F
 Drums nei,0,NA,,,F
-Dulse,1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Dulse,0,NA,seaweed: food,food use determined using source:https://www.sciencedirect.com/science/article/pii/B9780124186972000131 and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 Eastern king prawn,0,NA,,,SH
 Eastern school shrimp,0,NA,,,SH
-Elkhorn sea moss,1,NA,seaweed: mixed use,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Elkhorn sea moss,1,NA,seaweed: mixed use/carageenan,primary carageenan use determined using Buschmann et al (also Kappaphycus alvarezii): https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175,AL
 Elongate giant clam,0,NA,,,BI
-Eucheuma seaweeds nei,1,NA,seaweed: mixed use,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Eucheuma seaweeds nei,1,NA,"seaweed: mixed use, carageenan",primary carageenan use determined using Buschmann et al: https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175; Seaweed and Man: https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22; Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 European eel,0,NA,,,F
 European flat oyster,0,NA,,,BI
 European flounder,0,NA,,,F
@@ -145,7 +145,7 @@ Golden carpet shell,0,NA,,,BI
 Golden trevally,0,NA,,,F
 Goldlined seabream,0,NA,,,F
 Goldsilk seabream,0,NA,,,F
-Gracilaria seaweeds,1,NA,seaweed mixed: agar/food,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Gracilaria seaweeds,1,NA,seaweed mixed: agar/food,primary agar use determined using Buschmann et al: https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175; Seaweed and Man: https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22; Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 Grand ark,0,"Clams, etc. nei",,,BI
 Grass carp(=White amur),1,NA,freshwater,,F
 Greasy grouper,0,Groupers nei,,,F
@@ -155,7 +155,7 @@ Great blue spotted mudskipper,1,NA,was excluded,Chinese medicine,F
 Greater amberjack,0,NA,,,F
 Green crab,0,NA,,,CRUST
 Green humphead parrotfish,0,NA,,,F
-Green laver,1,NA,seaweed; was excluded,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Green laver,1,NA,seaweed; food,food use determined using Seaweed and Man (green laver is same as green nori but different country names): https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22; Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 Green mussel,0,NA,,,BI
 Green tiger prawn,0,NA,,,SH
 Green turtle,1,NA,was excluded,,OTHER
@@ -184,7 +184,7 @@ Japanese eel,0,NA,,,F
 Japanese hard clam,0,NA,,,BI
 Japanese isinglass,1,NA,seaweed: agar/food,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 Japanese jack mackerel,0,NA,,,F
-Japanese kelp,1,NA,seaweed: was excluded,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Japanese kelp,0,NA,seaweed:,food use determined using Buschmann et al: https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175; Seaweed and Man ( also likely Saccharina japonica or kombu): https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22; food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 Japanese meagre,0,NA,,,F
 Japanese sea cucumber,0,NA,,,NS-INV
 Japanese seabass,0,Seabasses nei,,,F
@@ -198,7 +198,7 @@ Korean rockfish,0,NA,,,F
 Kuruma prawn,0,NA,,,SH
 Large yellow croaker,0,NA,,,F
 Largemouth black bass,0,Seabasses nei,,,F
-Laver (Nori),1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Laver (Nori),0,NA,seaweed,food use determined using Seaweed and Man (Porphyra or nori indicated as a high value food algae): https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22,AL
 Lebranche mullet,0,NA,,,F
 Lefteye flounders nei,0,NA,,,F
 Longfin yellowtail,0,NA,,,F
@@ -228,7 +228,7 @@ Natantian decapods nei,0,NA,,,CRUST
 New Zealand mussel,0,NA,,,BI
 Nile perch,1,NA,freshwater,,F
 Nile tilapia,1,NA,freshwater,,F
-Nori nei,1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Nori nei,0,NA,seaweed,food use determined using Seaweed and Man (Porphyra or nori indicated as a high value food algae): https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22,AL
 Northern quahog(=Hard clam),0,NA,,,BI
 Northern white shrimp,0,NA,,,SH
 Octopuses nei,0,NA,,,CEPH
@@ -292,7 +292,7 @@ Sargo breams nei,0,NA,,,F
 Scallops nei,0,NA,,,BI
 Scats,0,NA,,,F
 Sciaenas nei,0,NA,,,F
-Scorpionfishes nei,0,NA,,,F
+"Scorpionfishes, redfishes nei",0,NA,,,F
 Sea belt,1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 Sea cucumbers nei,0,NA,,,NS-INV
 Sea mussels nei,0,NA,,,BI
@@ -359,8 +359,8 @@ Two-spot red snapper,0,Snappers nei,,,F
 Variegated scallop,0,NA,,,BI
 Venus clams nei,0,"Clams, etc. nei",,,BI
 Waigieu seaperch,0,NA,,,F
-Wakame,1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
-Wakame nei,1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Wakame,0,NA,seaweed: food,food use determined using Buschmann et al (wakame is undaria): https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175; Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+Wakame nei,0,NA,seaweed: food,food use determined using Buschmann et al (wakame is undaria): https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175; Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 Warty gracilaria,1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
 Warty venus,0,NA,,,BI
 White seabream,0,NA,,,F
@@ -395,3 +395,8 @@ Giant trevally,0,NA,,,F
 Starry sturgeon,0,Sturgeons nei,,,F
 Speckled longfin eel,0,NA,,,F
 Spirulina nei,1,NA,seaweed,food use determined using Seaweed Industry Association: https://seaweedindustry.com and FAO: http://www.fao.org/docrep/006/y4765e/y4765e0b.htm,AL
+[Trochita spp],1,NA,,"Not a lot of information, mostly ecological studies, many southern Chileans just eat anything, might be super artisanal (pers comm. Camila Vargas)",MOLL
+Green mud crab,0,NA,,http://www.fao.org/fishery/culturedspecies/Scylla_serrata/en,CRUST
+Malabar blood snapper,0,NA,,http://www.fishbase.org/country/CountrySpeciesSummary.php?c_code=414&id=162,F
+Crimson snapper,0,NA,,http://www.fishbase.org/summary/1406,F
+[Dunaliella salina],1,NA,seaweed,"used in B-carotene, lutein, fatty acids, etc https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/dunaliella",AL
