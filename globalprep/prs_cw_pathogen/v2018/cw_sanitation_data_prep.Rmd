@@ -33,28 +33,69 @@ Deffinition of each variable according to the data source:
 
 "Safely managed": Use of improved facilities that are not shared with other households and where excreta are safely disposed of in situ or transported and treated offsite
 
-
 ***
 
 # Data Source [NOTE: can be copied from README.md in rawdata file]
-**Reference**: [citation for source data; website, literature, contact information. Version of data (if relevant). Screenshots if a series of menus had to be navigated to obtain the data.]
+**Reference**: 
+            https://washdata.org/data
+            Updated July 2017
 
-**Downloaded**: [date downloaded or received]
+**Downloaded**: Downloaded 5/1/2018
 
-**Description**:  [e.g., surface aragonite state]
+**Description**:  Percentage of the population that has access to improved facilities that are not shared with other households (At a basic level).
 
-**Native data resolution**: [e.g., 1 degree, 30 m, etc.]   
+Access to improved sanitation facilities is defined as the percentage of the population within a country with at least adequate access to excreta disposal facilities that can effectively prevent human, animal, and insect contact with excreta.
 
-**Time range**: [e.g., 1880-1899, monthly data provided for each year] 
+**Native data resolution**: country-wide average (not specific to the coastal region)
 
-**Format**:  [e.g. NetCDF]
+**Time range**: 2000 - 2015
+
+**Format**:  csv saved in git_annex in Mazu
 
 ***
   
 # Methods
 [R code used to generate the data. Or, alternatively, description of the code/data files used to generate the data.]
 
+Percentages (0-100) for each country were rescaled to 0-1 based on a maximum target of 100% of the population with access to improved sanitation, and a minimum value of 0.
+
 ***
 
 # Citation information  
 [citation information: include if these data will have their own specific citation.]
+
+
+#Setup
+
+```{r}
+##Packages
+library(ohicore) # devtools::install_github('ohi-science/ohicore') # may require uninstall and reinstall
+library(zoo)     # for na.locf: Last Observation Carried Forward
+
+#Sources to be able to read data???
+source('src/R/common.R')
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
+source('src/R/ohi_clean_fxns.R') # has functions: cbind_rgn(), sum_na()
+```
+
+#Import Raw data
+
+```{r}
+##Build file path
+goal     <- 'ohiprep_v2018/prs_cw_pathogen/v2018' #make sure it reflects the year of the assessment
+scenario <- 'v2018'
+dir_git  <- file.path('~/github/ohiprep_v2018', goal)
+dir_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/')
+dir_int  <- file.path(dir_git, scenario, 'int')
+
+
+sani_raw <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/JMP_2017_WLD.csv'), na.strings = c(NA, ''), skip = 3, stringsAsFactors = FALSE) 
+
+sani_raw <- read.csv(paste(dir_data, "JMP_2017_WLD.csv", sep = ""), na.strings = c(NA, ''), skip = 3, stringsAsFactors = FALSE)
+
+#ERROR
+#In file(file, "rt") :cannot open file '/home/shares/ohi/git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/JMP_2017_WLD.csv': No such file or directory
+
+```
+
+
