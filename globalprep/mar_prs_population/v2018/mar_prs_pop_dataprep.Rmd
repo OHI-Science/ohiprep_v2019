@@ -134,7 +134,7 @@ Raw datasets used in this data prep include: raw CIESE/CIAT population, UN popul
 ## eez raster used in creating 25 mile inland raster, sourced as "zones" from src/spatial_commons.R
 eez_raster <- zones;
 
-## reproject and resample density data (all tiffs in CIESEandCIAT_population/dYEAR folder, with 'density' in the name)
+## read in the raw density data to be reprojected and resampled
 raw <- list.files(file.path(path_raw_data, sprintf("CIESEandCIAT_population/%s", data_yr_gpw)), 
                   full.names = TRUE, pattern = "\\.tif$",
                   recursive = TRUE)
@@ -148,18 +148,18 @@ pop <- read.csv(file.path(path_raw_data, sprintf("UnitedNations_population/%s/UN
 
 ## Project, Resample, Interpolate
 
-Gridded world population densities from CIESE and CIAT needs to be projected into the World Mollweide coordinate reference system and resampled using nearest neighbor method to match the ocean raster (934.4789 x 934.4789 meter resolution); missing years must be filled by interpolation
+Gridded world population densities from CIESE and CIAT are projected into the World Mollweide coordinate reference system and resampled using nearest neighbor method to match the ocean raster (934.4789 x 934.4789 meter resolution); missing years must be filled by interpolation.
 
 ```{r manipulate spatial data}
-## year to numeric value, project to correct crs, resample, and overwrite the data with these updates
+## convert year to numeric, project raster, resample, and save human_density_year_mol.tif with these updates
 for(rast in raw){
-  yr <- as.numeric(as.character(str_sub(rast, -8, -5))) # eigth-to-last to fifth-to-last characters of filename give year
+  yr <- as.numeric(as.character(str_sub(rast, -8, -5))) # eigth-to-last thru fifth-to-last characters of filename give year
   raster(rast) %>%
     projectRaster(crs = crs(ocean), over=TRUE) %>%
     resample(ocean, method = 'ngb',
-    filename = file.path(path_mar_prs, sprintf("int/human_density_%s_mol.tif", yr)),
-    overwrite = TRUE) 
-  }
+             filename = file.path(path_mar_prs, sprintf("int/human_density_%s_mol.tif", yr)),
+             overwrite = TRUE)
+}
 ```
 
 ```{r functions for interpolation}
@@ -228,32 +228,34 @@ fiji <- regions %>%
   select(rgn_id, geometry)
 
 ## create the 25-mile inland raster and add Fiji
-inland <- sf::read_sf(dsn = file.path(dir_M, globalrgn_filepath), layer = "sp_inland25mi_gcs") %>%
+inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"), 
+                      layer = "sp_inland25mi_gcs") %>%
   select(rgn_id, geometry)
+
 inland <- st_transform(inland, st_crs(fiji))
 inland <- rbind(inland, fiji)
 
-## save shapefile for future reference
-if (!file.exists(paste0(spdata_filepath, "/", scenario_yr,"/EEZ_inland_50mi"))){
-  st_write(inland, dsn = file.path(dir_M, paste0(spdata_filepath, "/", scenario_yr), 
-                                   layer = "EEZ_inland_50mi"), driver="ESRI Shapefile")
-} 
+## save shapefile for future reference if it doesn't already exist
+if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_50mi"))){
+  st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_50mi"), 
+           layer = "EEZ_inland_50mi", driver="ESRI Shapefile")
+}
 
 inland_raster <- fasterize::fasterize(inland, eez_raster, field = 'rgn_id')
 
-## what does this do?
+## make sure all regions are included with reasonable area (number of cells) for each
 tmp <- raster::freq(inland_raster) 
 tmp2 <- data.frame(tmp) %>%
   dplyr::arrange(value)
 
-raster::merge(eez_raster, inland_raster, filename=file.path(dir_M, 
-                      "git-annex/globalprep/mar_prs_population/v2017/int/eez_25mi_inland.tif"))
+## merge 
+raster::merge(eez_raster, inland_raster, filename = file.path(path_mar_prs, "int/eez_25mi_inland.tif"))
+
 ```
 
 ## Create UN_population.csv for data checking later
 
 ```{r create un_population.csv}
-
 pop_gather <- pop %>%
   gather("year", "population", starts_with("X")) %>%
   mutate(population = gsub(" ", "", population)) %>%
@@ -268,19 +270,19 @@ pop_gather_rename <- pop_gather %>%
   mutate(country = ifelse(country=="China, Taiwan Province of China", "Taiwan", country)) %>%
   mutate(country = ifelse(country=="Dem. People's Republic of Korea", "North Korea", country))
   
+## organize the data by regions used in OHI
 pop_rgn <- name_2_rgn(df_in = pop_gather_rename, 
                       fld_name='country', 
                       flds_unique=c('year'))
-
 pop_rgn <- pop_rgn %>%
   group_by(rgn_id, year) %>%
   summarize(population = sum(population)) %>%
   data.frame()
-  
+
+## save wrangled UN population data  
 write.csv(pop_rgn, "globalprep/mar_prs_population/v2017/output/UN_population.csv", row.names=FALSE)
 
 ```
-
 
 # Tidy/Wrangle
 
@@ -308,7 +310,7 @@ write.csv(coastal_pop2, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi
 
 # Gapfilling
 
-No gapfilling was completed as part of this data prep methodology. ***Data sets are saved with "_gf" appended just to indicate they are finalized versions.***
+No gapfilling was completed as part of this data prep methodology. Datasets are saved with "_gf" appended just to indicate they are finalized versions.
 
 ```{r save prs_pop_density and mar_pop_25mi layers}
 
