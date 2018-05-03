@@ -687,20 +687,35 @@ write.csv(data, 'output/GenEsc.csv', row.names=FALSE)
 ```
 
 ## Data check
-Comparing this year's data to previous year's data. Expect small variation from year to year. Add a plot below test to view differences.
+Comparing this year's data to previous year's data. Expect small variation from year to year. Plot to view differences.
+
 ```{r}
-old <- read.csv("../v2017/output/GenEsc_v2016.csv") %>%
+
+old <- read.csv("../v2017/output/GenEsc.csv") %>%
+  filter(year == 2015) %>% # compare the most recent shared year between old and new
   select(rgn_id, prs_score_old=pressure_score)
 
 new <- read.csv("../v2018/output/GenEsc.csv") %>%
-  filter(year == 2016)
+  filter(year == 2015) %>% # compare the most recent shared year between old and new
+  select(rgn_id, prs_score_old=pressure_score)
 
-full_join(old, new, by="rgn_id")
+compare <- full_join(old, new, by="rgn_id")
+compare <- na.omit(compare)
+
+## Compare genetic escapes pressure scores
+plot(compare$prs_score_old.x, compare$prs_score_old.y)
 
 tmp_old <- read.csv("../v2017/raw/Truj_label_sust.csv")
 tmp_new <- read.csv("../v2018/raw/Truj_label_sust.csv")
 
 test <- full_join(tmp_new, tmp_old, by=c("country", "species_fao", "fao", "environment" ))
+
+## Compare new/old Mariculture sustainability scores
+plot(test$Maric_sustainability.x, test$Maric_sustainability.y)
+
+## Compare new/old genetic escapees scores
+plot(test$Genetic.escapees.x, test$Genetic.escapees.y)
+
 ```
 ***
 
