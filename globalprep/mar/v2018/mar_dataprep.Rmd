@@ -126,7 +126,7 @@ mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
 
 new.spp <- setdiff(mar$FAO_name, mar_sp$FAO_name)
 new.spp # check: if dim has 0 rows it means all match
-## if length(new.spp) >0 , hand check whether to keep (exclude seaweeds and species harvested for ornamental/medicinal), check if synonyms match Trujillo names
+## if there is a list of species, hand check species_list.csv to see whether to keep (exclude seaweeds and species harvested for ornamental/medicinal), check if synonyms match Trujillo names
 
 ## Remove species not relevant to mariculuture goal (i.e., non-food species)
 mar <- left_join (mar, mar_sp, by="FAO_name") 
@@ -360,7 +360,7 @@ sus_rgn <- bind_rows(sus_rgn, sus_no_rgn) %>%
 
 ```
 
-**Check to see where there are no matches in FAO spp with Trujillo sustainability data to the FAO mariculture species in the wrangled FAO Aquaculture Production data table**
+**Check to see where there are no matches between Trujillo sustainability FAO spp to the FAO mariculture species in the wrangled FAO Aquaculture Production data table**
 
 ```{r}
 
@@ -500,7 +500,7 @@ write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
 mar_harvest_tonnes_gf = mar_sus_final %>%
   select(rgn_id, taxa_code, year, tonnes=gapfill_fao)
 
-write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
+write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
 
 ## save sustainability scores data for 2012
 mar_sustainability_score = mar_sus_final %>% 
@@ -517,7 +517,7 @@ mar_sustainability_score_gf = mar_sus_final %>%
   select(rgn_id, taxa_code, sust_coeff = gapfill_sus) %>% 
   unique()
 
-write.csv(mar_sustainability_score, 'output/mar_sustainability_gf.csv', row.names=F)
+write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf.csv', row.names=F)
 
 ```
 
