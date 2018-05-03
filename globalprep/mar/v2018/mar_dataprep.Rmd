@@ -360,13 +360,14 @@ sus_rgn <- bind_rows(sus_rgn, sus_no_rgn) %>%
 
 ```
 
-**Check to see where there are no matches between Trujillo sustainability FAO spp to the FAO mariculture species in the wrangled FAO Aquaculture Production data table**
+**Check to see where there are discrepancies (no matches) between Trujillo sustainability FAO spp (sus_rgn) to the FAO mariculture species in the wrangled FAO Aquaculture Production data table (maric)**
 
 ```{r}
 
-setdiff(sus_rgn$species_fao, maric$species) # species that are no longer have mariculture industry or are not included due to being freshwater or non-food
+## Make sure same species are spelled the same in the two data tables (e.g. check that there are no extra spaces)
+sort(setdiff(sus_rgn$species_fao, maric$species)) # species that are no longer have mariculture industry or are not included due to being freshwater or non-food
 
-sort(setdiff(maric$species, sus_rgn$species_fao)) # species with no Trujillo data
+sort(setdiff(maric$species, sus_rgn$species_fao)) # FAO species with no Trujillo data - there will probably be a long list
 
 ```
 
