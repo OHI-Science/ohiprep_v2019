@@ -46,6 +46,8 @@ Mariculture Sustainability Index (Trujillo 2008)
 
 Trujillo, Pablo. 2008. “Using a Mariculture Sustainability Index to Rank Countries’ Performance.” In Fisheries Centre Research Reports, edited by Jackie Alder and Daniel Pauly. University of British Columbia, Vancouver, Canada: Fisheries Centre Research Reports. https://circle.ubc.ca/handle/2429/40933. 
 
+Original data table is located in the Trujillo 2008 paper saved in the OHI Zotero database.
+
 **Description**:  
 
 Original MSI rescaled from 1-10 to 0-1 for mariculture taxa groups.
