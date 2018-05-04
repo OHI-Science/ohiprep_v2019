@@ -16,7 +16,7 @@ pdf_document:
   toc: true
 ---
 
-[REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2018/mar_prs_pop_dataprep.html)
+[REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/res_gci/v2018/res_gci_dataprep.html)
 
 # Summary
 
@@ -27,7 +27,7 @@ pdf_document:
 **Downloaded**: May 4, 2018
 
 **Description**:
-A set of 12 socioeconomic indicators relevant to economic competitiveness and productivity; see [interactive map](https://www.weforum.org/reports/the-global-competitiveness-report-2017-2018). Report on the 2017-2018 global competitiveness index is located [here](http://www3.weforum.org/docs/GCR2017-2018/05FullReport/TheGlobalCompetitivenessReport2017%E2%80%932018.pdf).
+A set of 12 socioeconomic indicators relevant to economic competitiveness and productivity; see interactive [map](https://www.weforum.org/reports/the-global-competitiveness-report-2017-2018). Report on the 2017-2018 global competitiveness index is located [here](http://www3.weforum.org/docs/GCR2017-2018/05FullReport/TheGlobalCompetitivenessReport2017%E2%80%932018.pdf), and data can be downloaded [here](http://reports.weforum.org/global-competitiveness-index-2017-2018/downloads/).
 
 **Native data resolution**: Country scores
 
@@ -45,7 +45,7 @@ No updates were made to this methodology since the previous assessment.
 
 ### Load Libraries
 
-Load all relevant libraries, source common.R, and define frequently used pathnames. Change scenario and data years in file pathnames code chunk to reflect the most recent data (d) and current assessment year (v).
+Load all relevant libraries, source common.R, and define frequently used pathnames. Change scenario and data years in file pathnames code chunk to reflect the most recent data and current assessment year.
 
 ```{r setup, message=FALSE, warning=FALSE, verbose=FALSE}
 ## set options for all chunks in code
@@ -56,7 +56,7 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.width = 6, fig.height = 
 ```
 
 ```{r file paths}
-## source common.R file
+## source common.R
 source("../../../src/R/common.R")
 
 ## UPDATE THESE!
@@ -67,19 +67,14 @@ data_yr_gci <- "d2018" # change to reflect year of most recently downloaded data
 path_raw_data <- file.path(dir_M, "git-annex/globalprep/_raw_data")
 ```
 
-```{r packages}
-## load packages, installing them first where necessary
+```{r load packages, install if needed}
 if(!requireNamespace("ohicore", quietly = TRUE))
   devtools::install_github("ohi-science/ohicore")
 if(!requireNamespace("dplyr", quietly = TRUE))
   install.packages("tidyverse")
 
-library(ohicore)
-library(dplyr)
-library(readr)
-library(stringr)
-library(dplyr)
-library(tidyr)
+pkgs <- c("ohicore", "dplyr", "tidyr", "stringr", "readr")
+lapply(pkgs, require, character.only = TRUE)
 ```
 
 ### Import Raw Data
@@ -111,13 +106,13 @@ wef <- wef %>%
 
 # Gapfilling
 
-Gapfilling for this resilience layer consists of three steps:
+Gapfilling for this resilience layer consists of three main steps:
 
-1. If a region has only one value from 2010 onward, use that one value to gapfill other years
-2. Use a lm to gapfill years if there is > 1 missing year for a region
-3. Gapfill using UN georegions
+1. If a region has only one value from 2010 onward, use that value to gapfill other years
+2. Calculate and apply linear models to gapfill years if there is > 1 missing year for a region
+3. Use UN georegions
 
-### Gapfill, Part I
+### Gapfill Part I, Using Single Value or LM
 
 ```{r gapfill, pt I}
 wef_gf <- wef %>%
@@ -141,7 +136,7 @@ wef_gf <- wef_gf %>%
 filter(wef_gf, N==4) # check the data
 ```
 
-### Document Gapfilling I
+### Document Gapfilling Part I
 
 ```{r document gapfilling, pt I}
 wef_gf <- wef_gf %>%
@@ -186,7 +181,7 @@ head(wef_rgn, 10) # check
 
 ### Gapfill Part II, Using UN Georegions
 
-```{r gapfill II, using un georegions}
+```{r gapfill pt II, using un georegions}
 years <- data.frame(year = min(wef_rgn$year) : max(wef_rgn$year))
 
 wef_rgn_gf_un <- georegions %>% # georegions sourced from common.R
@@ -213,13 +208,13 @@ mod_gf_r2 <- lm(score ~ as.factor(r2), data = wef_rgn_gf_un, na.action = na.excl
 wef_rgn_gf_un$score_pred_r2 <- predict(mod_gf_r2, newdata = data.frame(r2 = wef_rgn_gf_un$r2))
 mod_gf_r1 <- lm(score ~ as.factor(r1), data = wef_rgn_gf_un, na.action = na.exclude)
 wef_rgn_gf_un$score_pred_r1 <- predict(mod_gf_r1, newdata = data.frame(r1 = wef_rgn_gf_un$r1))
-
 ```
 
 # Organize and Save
 
 ### Organize the Data
 ```{r organize data}
+## organize; including documentation of gapfilling part II (with un georegions)
 wef <- wef_rgn_gf_un %>%
   mutate(gapfill = ifelse((is.na(score) & !(is.na(score_pred_r1))), 1, gapfill)) %>%
   mutate(method = ifelse((is.na(score) & !(is.na(score_pred_r2))), "UN r2 georegion", method)) %>%
@@ -229,7 +224,7 @@ wef <- wef_rgn_gf_un %>%
   select(rgn_id, year, gapfill, method, score)
   
 summary(wef)
-length(unique(wef$rgn_id)) # check; should be 220 regions
+length(unique(wef$rgn_id)) # checks; should be 220 regions
 ```
 
 ### Uninhabited Regions
