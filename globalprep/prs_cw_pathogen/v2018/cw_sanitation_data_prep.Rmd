@@ -89,13 +89,34 @@ dir_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/')
 dir_int  <- file.path(dir_git, scenario, 'int')
 
 
-sani_raw <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/JMP_2017_WLD.csv'), na.strings = c(NA, ''), skip = 3, stringsAsFactors = FALSE) 
-
-sani_raw <- read.csv(paste(dir_data, "JMP_2017_WLD.csv", sep = ""), na.strings = c(NA, ''), skip = 3, stringsAsFactors = FALSE)
-
-#ERROR
-#In file(file, "rt") :cannot open file '/home/shares/ohi/git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/JMP_2017_WLD.csv': No such file or directory
+sani_raw <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/globalprep/prs_cw_pathogen/v2018/raw/JMP_2017_WLD.csv',  header = FALSE, sep = ",", na.strings = c(NA, ''), skip = 2, stringsAsFactors = FALSE) 
 
 ```
+#Data wrangling
+Selecting and naming the columns of interest
+```{r}
+sani <- sani_raw %>%
+  select(country = V1,
+         year = V3,
+         pop = V4,
+         basic = V6)
+
+#          imp_tot_ct     = Total.Improved..x1000. ,
+#          imp_tot_pct    = Total.Improved.... ,
+#          unimp_tot_ct   = Total.Unimproved..x1000. ,
+#          unimp_tot_pct  = Total.Unimproved....) %>%
+#   mutate(pop            = pop          * 1000,
+#          imp_tot_ct     = imp_tot_ct   * 1000,
+#          unimp_tot_ct   = unimp_tot_ct * 1000,
+#          country        = na.locf(country))      # use na.locf() function from zoo package to fill down for country names
+
+```
+
+
+
+
+
+
+
 
 
