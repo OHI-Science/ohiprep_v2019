@@ -1,0 +1,108 @@
+---
+title: "Data Prep for Global Competitiveness Index (GCI) Resilience"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+[REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2018/mar_prs_pop_dataprep.html)
+
+# Summary
+
+# Data Sources
+
+**Reference**: https://www.weforum.org/reports/the-global-competitiveness-report-2017-2018
+
+**Downloaded**: May 4, 2018
+
+**Description**:
+A set of 12 socioeconomic indicators relevant to economic competitiveness and productivity; see [interactive map](https://www.weforum.org/reports/the-global-competitiveness-report-2017-2018). Report on the 2017-2018 global competitiveness index is located [here](http://www3.weforum.org/docs/GCR2017-2018/05FullReport/TheGlobalCompetitivenessReport2017%E2%80%932018.pdf).
+
+**Native data resolution**: Country scores
+
+**Time range**: 2007-2018
+
+**Format**: Excel file
+
+# Updates from Previous Assessments
+
+No updates were made to this methodology since the previous assessment.
+
+***
+
+# Setup
+
+Load all relevant libraries, source common.R, and define frequently used pathnames. Change scenario and data years in file pathnames code chunk to reflect the most recent data (d) and current assessment year (v).
+
+```{r setup, message=FALSE, warning=FALSE, verbose=FALSE}
+## set options for all chunks in code
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.width = 6, fig.height = 4, fig.path = 'figs/')
+
+## comment out when knitting
+# setwd("globalprep/res_gci/")
+```
+
+```{r file paths}
+## source common.R file
+source("../../../src/R/common.R")
+
+## Update these!
+scenario_yr <- "v2018" # change to reflect assessment year!
+data_yr_gpw <- "d2017" # change to reflect year of most recently downloaded data!
+data_yr_un_pop <- "d2017" # change to reflect year of most recently downloaded data!
+
+## define commonly used file paths
+path_raw_data <- file.path(dir_M, "git-annex/globalprep/_raw_data")
+```
+
+```{r packages}
+## load packages, installing them first where necessary
+if(!requireNamespace("ohicore", quietly = TRUE))
+  devtools::install_github("ohi-science/ohicore")
+if(!requireNamespace("dplyr", quietly = TRUE))
+  install.packages("tidyverse")
+
+library(ohicore)
+library(dplyr)
+library(readr)
+library(stringr)
+library(dplyr)
+library(tidyr)
+```
+
+### Import Raw Data
+```{r import raw data}
+
+```
+
+
+# Methods and Calculations
+
+### Append or Extract by OHI Regions
+```{r to ohi regions, add region_ids}
+
+```
+
+
+### Calculate GCI Resilience Layer
+```{r calculate gci resilience}
+
+```
+
+
+# Gapfilling
+
+# Data Checks and/or Meta-Analysis
+
+***
