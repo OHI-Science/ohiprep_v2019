@@ -69,7 +69,7 @@ Load all relevant libraries including parallel processing packages, and define f
 
 ```{r setup, message=FALSE, warning=FALSE, verbose=FALSE}
 ## set options for all chunks in code
-knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.width = 6, fig.height = 4, fig.path = 'figs/')
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.path = 'figs/')
 
 ## comment out when knitting
 # setwd("globalprep/mar_prs_population/")
@@ -248,7 +248,7 @@ for(rast in den_raster){
   tmp <- raster(rast)
   calc(tmp, fun = function(x){x * (934.4789 * 934.4789 * 0.000001)},
        filename = file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", yr)),
-       overwrite=TRUE)
+       overwrite = TRUE)
   print(file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", yr))) # check
 }
 ```
@@ -258,7 +258,7 @@ for(rast in den_raster){
 ```{r create eez + 25-mile inland raster}
 ## re-add Fiji which appears to get cut: include all of Fiji land falling within 50 mile boundary
 fiji <- regions %>%
-  filter(rgn_type == "land" & rgn_id==18) %>%
+  filter(rgn_type == "land" & rgn_id == 18) %>%
   select(rgn_id, geometry)
 
 ## create the 25-mile inland raster and add Fiji
@@ -283,10 +283,10 @@ eez_25mi_inland <- raster::merge(eez_raster, inland_raster,
 
 ```{r extract population data from all population layers}
 ## stack rasters of population counts for all years, sum these, and save this as  a csv called coastal_pop
-pop_stack <- raster::stack(list.files(file.path(path_mar_prs, "int"), pattern = "count_\\d{4}_mol.tif$", full=TRUE))
+pop_stack <- raster::stack(list.files(file.path(path_mar_prs, "int"), pattern = "count_\\d{4}_mol.tif$", full = TRUE))
 coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland, fun="sum", progress="text")
 
-write.csv(coastal_pop, paste0(scenario_yr, "/int/coastal_pop_zonal_sums.csv"), row.names=FALSE)
+write.csv(coastal_pop, paste0(scenario_yr, "/int/coastal_pop_zonal_sums.csv"), row.names = FALSE)
 
 coastal_pop2 <- data.frame(coastal_pop) %>%
   tidyr::gather("year", "coastal_pop_25mi", -1) %>%
@@ -312,7 +312,7 @@ area <- data.frame(inland) %>%
   dplyr::summarize(area_km2 = sum(area_km2))
 
 ## save area data for the scenario year
-write.csv(area, "int/area_km2_25mi.csv", row.names=FALSE)
+write.csv(area, "int/area_km2_25mi.csv", row.names = FALSE)
 ```
 
 ### Calculate Mariculture Population Pressure
@@ -322,7 +322,7 @@ pop_rescaled <- coastal_pop2 %>%
   left_join(area, by="rgn_id") %>%
   mutate(density = popsum/area_km2) %>%
   mutate(ln_density = log(density + 1)) %>%
-  mutate(scalar = max(ln_density, na.rm=TRUE)) %>%
+  mutate(scalar = max(ln_density, na.rm = TRUE)) %>%
   mutate(dens_rescaled = ln_density/scalar) %>%
   mutate(dens_rescaled = ifelse(dens_rescaled > 1, 1, dens_rescaled))
 
@@ -377,18 +377,18 @@ pop_rgn <- pop_rgn %>%
   summarize(population = sum(population)) %>%
   data.frame()
 
-write.csv(pop_rgn, sprintf("%s/output/UN_population.csv", scenario_yr), row.names=FALSE)
+write.csv(pop_rgn, sprintf("%s/output/UN_population.csv", scenario_yr), row.names = FALSE)
 ```
 
 ### Compare `UN_population` with Calculated Count
 
 ```{r check full calculated population against latest UN population data}
-compare_yr <- substr(scenario_yr, 2,4)
+compare_yr <- substr(scenario_yr, 2, 4)
 
 ## sum counts regionally for the scenario year
 pop_rast <- raster(file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", compare_yr)))
 zones <- raster(file.path(dir_M,"git-annex/globalprep/spatial/v2017/regions_land_ocean.tif")) # correct?
-pop_counts <- zonal(pop_rast, zones, fun = "sum", na.rm=TRUE)
+pop_counts <- zonal(pop_rast, zones, fun = "sum", na.rm = TRUE)
 
 pop_UN <- pop_rgn %>%
   dplyr::filter(year == compare_yr) %>%
@@ -401,13 +401,13 @@ compare_pop <- data.frame(pop_counts) %>%
 
 ## check plot
 plot(log(compare_pop$pop_rast), log(compare_pop$pop_UN))
-abline(0,1, col="red")
+abline(0, 1, col="red")
 ```
 
 ### Compare to Previous Year
 
 ```{r quick comparison with previous year's data}
-prev_scen_yr <- paste0("v", as.numeric(substr(scenario_yr, 2, 4))-1)
+prev_scen_yr <- paste0("v", as.numeric(substr(scenario_yr, 2, 5)) -1)
 
 old <- read.csv(paste0(prev_scen_yr, "/output/mar_pop_25mi.csv")) %>%
   dplyr::select(rgn_id, year, popsum_old=popsum)
@@ -416,18 +416,18 @@ tmp <- coastal_pop2 %>%
   dplyr::left_join(old, by=c("rgn_id", "year"))
 
 plot(log(tmp$popsum), log(tmp$popsum_old))
-abline(0,1, col="red")
+abline(0, 1, col="red")
 ```
 
 ```{r check areas against previous year's}
 ## compare area with that calculated in previous year (should look very similar)
 old_area <- read.csv(paste0(prev_scen_yr, "/rgn_area_inland25mi.csv")) %>%
-  select(rgn_name, rgn_id, old_area_km2=area_km2) %>%
+  select(rgn_name, rgn_id, old_area_km2 = area_km2) %>%
   mutate(old_area_km2 = round(old_area_km2)) %>%
-  left_join(area, by="rgn_id")
+  left_join(area, by = "rgn_id")
 
 plot(old_area$old_area_km2, old_area$area_km2)
-abline(0,1, col="red")
+abline(0, 1, col = "red")
 
 summary(old_area)
 ```
