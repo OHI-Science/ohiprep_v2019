@@ -37,7 +37,7 @@ No updates were made to this methodology since the previous assessment.
 **Downloaded**: June 3 2016
 
 **Description**:
-Population counts and population density (both UN WPP adjusted). Population estimates for 2000, 2005, 2010, 2015, 2020, extrapolated from results of the 2010 Population and Housing Censuses which occurred between 2005 and 2014. Estimates adjusted to national level, historic and future, population predictions from the United Nation's World Population Prospects report are also included in the dataset. Documentation for gridded population of the world is located [here](http://sedac.ciesin.columbia.edu/downloads/docs/gpw-v4/gpw-v4-documentation.pdf).
+Population counts and population density (both UN WPP adjusted). Population estimates for 2000, 2005, 2010, 2015, 2020, extrapolated from results of the 2010 Population and Housing Censuses which occurred between 2005 and 2014. Estimates adjusted to national level, historic and future, population predictions from the United Nation's World Population Prospects (WPP) report are used. Documentation for gridded population of the world is located [here](http://sedac.ciesin.columbia.edu/downloads/docs/gpw-v4/gpw-v4-documentation.pdf).
 
 **Native data resolution**: 30 arc-seconds
 
@@ -80,12 +80,12 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.width = 6, fig.height = 
 source("../../../src/R/common.R")
 source("../../../src/R/spatial_common.R")
 
-## define commonly used file paths
-
+## Update these!
 scenario_yr <- "v2018" # change to reflect assessment year!
 data_yr_gpw <- "d2017" # change to reflect year of most recently downloaded data!
 data_yr_un_pop <- "d2017" # change to reflect year of most recently downloaded data!
 
+## define commonly used file paths
 path_raw_data <- file.path(dir_M, "git-annex/globalprep/_raw_data")
 path_mar_prs <- file.path(dir_M, "git-annex/globalprep/mar_prs_population", scenario_yr)
 ```
@@ -138,8 +138,9 @@ raw # check that this looks correct
 eez_raster <- zones; # sourced as "zones" from src/spatial_commons.R
 
 ## import raw, cleaned UN population data to be wrangled then used to confirm gpw-derived spatial population
-pop <- read.csv(file.path(path_raw_data, sprintf("UnitedNations_population/%s/UN_pop_clean.csv", data_yr_un_pop)),
-        strip.white = TRUE, stringsAsFactors = FALSE)
+pop <- read.csv(file.path(path_raw_data, 
+                          sprintf("UnitedNations_population/%s/UN_pop_clean.csv", data_yr_un_pop)), 
+                strip.white = TRUE, stringsAsFactors = FALSE)
 ```
 
 # Methods and Calculations
@@ -153,7 +154,6 @@ Gridded world population densities from CIESE and CIAT are projected into the Wo
 
 # cl <- makeCluster(5)
 # registerDoParallel(cl)
-# 
 # foreach(i = raw, .packages = c("raster", "rgdal", "stringr")) %dopar% {
 #   yr <- as.numeric(as.character(str_sub(i, -8, -5)))
 #   raster(i) %>%
@@ -162,7 +162,6 @@ Gridded world population densities from CIESE and CIAT are projected into the Wo
 #              filename = file.path(path_mar_prs, sprintf("int/human_density_%s_mol.tif", yr)),
 #              overwrite = TRUE)
 # }
-# 
 # stopCluster(cl)
 # closeAllConnections()
 
@@ -182,12 +181,12 @@ GWPv4 data is for years 2005, 2010, 2015, and 2020. Data for missing years must 
 
 ```{r functions for interpolation}
 ## define and apply function to calculate yearly change in population density
-files <- list.files(file.path(path_mar_prs, "int"), pattern = "density_\\d{4}_mol.tif", full = TRUE)
+files <- list.files(file.path(path_mar_prs, "int"), pattern = "density_\\d{4}_mol.tif$", full = TRUE)
 
 yearly_diff <- function(year_min, year_max, density_files = files){
   rast_diff <- stack(density_files[grep(year_max, density_files)], density_files[grep(year_min, density_files)]) %>%
     overlay(fun = function(x, y){(x - y)/5},
-            filename = file.path(path_mar_prs, sprintf("yearly_change_%s_to_%s.tif", year_min, year_max)),
+            filename = file.path(path_mar_prs, sprintf("int/yearly_change_%s_to_%s.tif", year_min, year_max)),
             overwrite = TRUE)
 }
 
@@ -250,6 +249,7 @@ for(rast in den_raster){
   calc(tmp, fun = function(x){x * (934.4789 * 934.4789 * 0.000001)},
        filename = file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", yr)),
        overwrite=TRUE)
+  print(file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", yr))) # check
 }
 ```
 
@@ -286,15 +286,15 @@ eez_25mi_inland <- raster::merge(eez_raster, inland_raster,
 pop_stack <- raster::stack(list.files(file.path(path_mar_prs, "int"), pattern = "count_\\d{4}_mol.tif$", full=TRUE))
 coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland, fun="sum", progress="text")
 
-write.csv(coastal_pop, paste0(path_mar_prs, "/int"), row.names=FALSE)
+write.csv(coastal_pop, paste0(scenario_yr, "/int/coastal_pop_zonal_sums.csv"), row.names=FALSE)
 
 coastal_pop2 <- data.frame(coastal_pop) %>%
   tidyr::gather("year", "coastal_pop_25mi", -1) %>%
   dplyr::select(rgn_id=zone, year=year, popsum=coastal_pop_25mi) %>%
-  dplyr::mutate(year = as.numeric(as.character(substring(year, 13, 16)))) %>%
+  dplyr::mutate(year = as.numeric(substring(year, 13, 16))) %>%
   dplyr::filter(rgn_id <= 250)
 
-write.csv(coastal_pop2, "output/mar_pop_25mi.csv", row.names = FALSE)
+write.csv(coastal_pop2, paste0(scenario_yr, "output/mar_pop_25mi.csv"), row.names = FALSE)
 ```
 
 ### Calculate Areas of EEZ + 25mi Inland Buffers
@@ -324,7 +324,7 @@ pop_rescaled <- coastal_pop2 %>%
   mutate(ln_density = log(density + 1)) %>%
   mutate(scalar = max(ln_density, na.rm=TRUE)) %>%
   mutate(dens_rescaled = ln_density/scalar) %>%
-  mutate(dens_rescaled = ifelse(dens_rescaled>1, 1, dens_rescaled))
+  mutate(dens_rescaled = ifelse(dens_rescaled > 1, 1, dens_rescaled))
 
 filter(pop_rescaled, is.na(area_km2)) # missing value is Antarctica...which is good!
 
