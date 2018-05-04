@@ -20,6 +20,12 @@ pdf_document:
 
 # Summary
 
+This document describes the steps for obtaining and wrangling Global Competitiveness Index data to create the li_gci layer, used in resilience calculations for multiple goals for the global assessment. The general data preparation calculations are summarized [here](http://ohi-science.org/ohi-global/layers#li_gci). For in-depth explanation and context see the livelihoods and economies subgoals [model summaries](http://ohi-science.org/ohi-global/goals.html#livelihoods__economies:_livelihoods).
+
+# Updates from Previous Assessments
+
+No updates were made to this methodology since the previous assessment.
+
 # Data Sources
 
 **Reference**: https://www.weforum.org/reports/the-global-competitiveness-report-2017-2018
@@ -27,17 +33,13 @@ pdf_document:
 **Downloaded**: May 4, 2018
 
 **Description**:
-A set of 12 socioeconomic indicators relevant to economic competitiveness and productivity; see interactive [map](https://www.weforum.org/reports/the-global-competitiveness-report-2017-2018). Report on the 2017-2018 global competitiveness index is located [here](http://www3.weforum.org/docs/GCR2017-2018/05FullReport/TheGlobalCompetitivenessReport2017%E2%80%932018.pdf), and data can be downloaded [here](http://reports.weforum.org/global-competitiveness-index-2017-2018/downloads/).
+A weighted index based on 12 socioeconomic factors relevant to economic competitiveness and productivity: institutions, infrastructure, macroeconomic environment, health and primary education, higher education and training, goods market efficiency, labor market efficiency, financial market development, technological readiness, market size, business sophistication, and innovation. See interactive [map](https://www.weforum.org/reports/the-global-competitiveness-report-2017-2018). Report on the 2017-2018 global competitiveness index is located [here](http://www3.weforum.org/docs/GCR2017-2018/05FullReport/TheGlobalCompetitivenessReport2017%E2%80%932018.pdf), and data can be downloaded [here](http://reports.weforum.org/global-competitiveness-index-2017-2018/downloads/).
 
 **Native data resolution**: Country scores
 
 **Time range**: 2007-2018
 
 **Format**: Excel file
-
-# Updates from Previous Assessments
-
-No updates were made to this methodology since the previous assessment.
 
 ***
 
@@ -112,7 +114,7 @@ Gapfilling for this resilience layer consists of three main steps:
 2. Calculate and apply linear models to gapfill years if there is > 1 missing year for a region
 3. Use UN georegions
 
-### Gapfill Part I, Using Single Value or LM
+### Gapfill Part I - Using Single Value or LM
 
 ```{r gapfill, pt I}
 wef_gf <- wef %>%
@@ -179,7 +181,7 @@ wef_rgn <- wef_rgn %>%
 head(wef_rgn, 10) # check
 ```
 
-### Gapfill Part II, Using UN Georegions
+### Gapfill Part II - Using UN Georegions
 
 ```{r gapfill pt II, using un georegions}
 years <- data.frame(year = min(wef_rgn$year) : max(wef_rgn$year))
@@ -242,6 +244,7 @@ wef <- wef %>%
 ```
 
 ### Gapfill North Korea
+
 ```{r gapfill north korea}
 ## appears to have been calculated at one time with real data; fill with the old data of 2.8
 wef <- wef[-which(wef$rgn_id==21),]
@@ -268,7 +271,8 @@ write.csv(res_data, "output/gci_res.csv", row.names=FALSE)
 ### Compare with Previous Years
 
 ```{r compare with previous year}
-old <- read.csv("../v2015/data/rgn_wef_gci_updated.csv") %>%
+previous_yr <- as.numeric(substr(scenario_yr, 2, 5)) - 1
+old <- read.csv(sprintf("../v%s/output/gci_res.csv", previous_yr)) %>%
   rename(old_score = score) %>%
   full_join(res_data, by = c("rgn_id", "year"))
 plot(old$old_score, old$resilience_score)
