@@ -21,11 +21,11 @@ Canada,Atlantic cod,,,Atlantic cod,,c_sp,actuals,0.23,1
 Canada,Atlantic salmon,"Atlantic, Northwest",,Atlantic salmon (Atl),,c_sp_fao,actuals,0.17,1
 Canada,Atlantic salmon,"Pacific, Northeast",,Atlantic salmon (Pac),,c_sp_fao,actuals,0.27,0.1
 Canada,Blue mussel,,,Blue mussel,,c_sp,actuals,0.93,1
-Canada,Coho(=Silver)salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.33,1
+Canada,Coho(=Silver) salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.33,1
 Canada,Pacific cupped oyster,,,Pacific cupped oyster,,c_sp,actuals,0.83,0.1
 Chile,Abalones nei,,,Abalones nei,,c_sp,actuals,0.67,0.1
 Chile,Atlantic salmon,,,Atlantic salmon,,c_sp,actuals,0.13,0.1
-Chile,Coho(=Silver)salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.27,0.1
+Chile,Coho(=Silver) salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.27,0.1
 Chile,Gracilaria seaweeds,,,Gracilaria seaweeds,,c_sp,actuals,0.9,1
 Chile,Pacific cupped oyster,,,Pacific cupped oyster,,c_sp,actuals,0.53,0.1
 China,Blood cockle,,,Blood cockle,,c_sp,actuals,0.67,1
@@ -50,7 +50,7 @@ Faroe Islands,Atlantic salmon,,,Atlantic salmon,,c_sp,actuals,0.43,1
 Finland,Atlantic salmon,,,Atlantic salmon,,c_sp,actuals,0.5,1
 France,Atlantic salmon,,,Atlantic salmon,,c_sp,actuals,0.37,1
 France,Blue mussel,,,Blue mussel,,c_sp,actuals,0.93,1
-France,Coho(=Silver)salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.37,0.1
+France,Coho(=Silver) salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.37,0.1
 France,European eel,,,European eel,,c_sp,actuals,0.43,1
 France,European flat oyster,,,European flat oyster,,c_sp,actuals,0.83,1
 France,European seabass,,,European seabass,,c_sp,actuals,0.5,1
@@ -100,7 +100,7 @@ Italy,Giant tiger prawn,,,Giant tiger prawn,,c_sp,actuals,0.3,0.1
 Italy,Gilthead seabream,,,Gilthead seabream,,c_sp,actuals,0.23,1
 Italy,Gracilaria seaweeds,,,Gracilaria seaweeds,,c_sp,actuals,0.9,1
 Italy,Kuruma prawn,,,Kuruma prawn,,c_sp,actuals,0.5,0.1
-Japan,Coho(=Silver)salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.37,1
+Japan,Coho(=Silver) salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.37,1
 Japan,Flathead grey mullet,,,Flathead grey mullet,,c_sp,actuals,0.43,1
 Japan,Kuruma prawn,,,Kuruma prawn,,c_sp,actuals,0.5,1
 Japan,Laver (Nori),,,Laver (Nori),,c_sp,actuals,0.73,1
@@ -295,7 +295,7 @@ United Kingdom,Pacific cupped oyster,,,Pacific cupped oyster,,c_sp,actuals,0.83,
 United States of America,Abalones nei,,,Abalones nei,,c_sp,actuals,0.5,1
 United States of America,Atlantic salmon,,,Atlantic salmon,,c_sp,actuals,0.37,1
 United States of America,Blue mussel,,,Blue mussel,,c_sp,actuals,0.93,1
-United States of America,Coho(=Silver)salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.37,1
+United States of America,Coho(=Silver) salmon,,,Coho(=Silver)salmon,,c_sp,actuals,0.37,1
 United States of America,Cupped oysters nei,,,Cupped oysters nei,,c_sp,actuals,1,0.5
 United States of America,European flat oyster,,,European flat oyster,,c_sp,actuals,0.83,0.1
 United States of America,Flat oysters nei,,,Flat oysters nei,,c_sp,actuals,0.87,0.5
@@ -328,7 +328,7 @@ NA,Carpet shells nei,,,Carpet shells nei,,species,sp_average,0.8,
 NA,Cephalopod,,,Cephalopod,CEPH,taxon,taxon_average,0.566666667,0.75
 NA,Chinook(=Spring=King) salmon,,,Chinook(=Spring=King)salmon,,species,genus_average,0.370833333,0.625
 NA,"Clams, etc. nei",,,"Clams, etc nei",,species,sp_average,0.766666667,
-NA,Coho(=Silver)salmon,,,Coho(=Silver)salmon,,species,sp_average,0.34,
+NA,Coho(=Silver) salmon,,,Coho(=Silver)salmon,,species,sp_average,0.34,
 NA,Common cuttlefish,,,Common cuttlefish,,species,sp_average,0.6,
 NA,Common edible cockle,,,Common edible cockle,,species,sp_average,0.733333333,
 NA,Common sole,,,Common sole,,species,sp_average,0.533333333,
