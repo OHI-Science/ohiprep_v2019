@@ -59,7 +59,7 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.width = 6, fig.height = 
 
 ```{r file paths}
 ## source common.R
-source("../../../src/R/common.R")
+source("../../src/R/common.R")
 
 ## UPDATE THESE!
 scenario_yr <- "v2018" # change to reflect assessment year
@@ -86,6 +86,9 @@ dir_wef  <- list.files(file.path(path_raw_data, sprintf("WEF-Economics/%s", data
                        pattern = "GCI_Dataset\\S{10}.csv$", 
                        full.names = TRUE)
 wef_raw <- read.csv(dir_wef, skip = 3, check.names = FALSE, stringsAsFactors = FALSE)
+
+dir_wef
+wef_raw[1:5,8:12] # check
 ```
 
 # Methods and Calculations
@@ -148,8 +151,6 @@ wef_gf <- wef_gf %>%
   mutate(score = ifelse(N == 1, gf_mean, score)) %>%
   mutate(score = ifelse(N < 7 & N > 1, gf_lm, score)) %>%
   select(year, country, score, gapfill, method)
-
-table(wef_gf$method, wef_gf$N) # intermediate check
 ```
 
 ### To OHI Regions
@@ -257,13 +258,12 @@ wef <- rbind(wef, nk)
 ```{r save the data}
 gf_data <- wef %>%
   select(rgn_id, year, gapfill, method)
-write.csv(gf_data, "output/gci_gf.csv", row.names=FALSE)
-
+write.csv(gf_data, sprintf("%s/output/gci_gf.csv", scenario_yr), row.names = FALSE)
 
 res_data <- wef %>%
   select(rgn_id, year, resilience_score = score) %>%
   mutate(resilience_score = resilience_score/7) # score ranges from 0-7
-write.csv(res_data, "output/gci_res.csv", row.names=FALSE)
+write.csv(res_data, sprintf("%s/output/gci_res.csv", scenario_yr), row.names = FALSE)
 ```
 
 # Additional Data Checks and/or Meta-Analysis
@@ -272,9 +272,10 @@ write.csv(res_data, "output/gci_res.csv", row.names=FALSE)
 
 ```{r compare with previous year}
 previous_yr <- as.numeric(substr(scenario_yr, 2, 5)) - 1
-old <- read.csv(sprintf("../v%s/output/gci_res.csv", previous_yr)) %>%
-  rename(old_score = score) %>%
-  full_join(res_data, by = c("rgn_id", "year"))
+old <- read.csv(sprintf("v%s/output/gci_res.csv", previous_yr)) 
+old <- old %>%
+  rename(old_score = resilience_score) %>%
+  left_join(res_data, by = c("rgn_id", "year"))
 plot(old$old_score, old$resilience_score)
 abline(0,1, col="red")
 ```
