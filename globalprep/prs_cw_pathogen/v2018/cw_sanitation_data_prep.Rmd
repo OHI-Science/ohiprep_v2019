@@ -23,6 +23,8 @@ pdf_document:
 [general description: What data are being generated? Why (what project, etc.)? Upstream/downstream processing information that might be helpful?  Other information?]
 
 This document describes the steps for wrangling the data for the pathogen pollution and pathogen pollution trend data layers for the 2018 global assessment.
+The percentage of the population with access to improved sanitation facilities (World Health Organization and United Nations Children’s Fund, Joint Monitoring Programme, 2011) was used in combination with measurements of coastal population as a proxy for pathogens in coastal waters. Access to improved sanitation facilities is defined as the percentage of the population in a country with at least adequate access to disposal facilities that can effectively prevent human, animal, and insect contact with excreta. These data are a country-wide average (not specific to the coastal region). Percentages (0-100) for each country were rescaled to 0-1 based on a maximum target of 100% of the population with access to improved sanitation, and a minimum value of 0.
+
 
 # Updates from previous assessment
 Data source (WHO-UNICEF) updated the way they reported the data. However, the 2018 assesment is calculated using the "At least Basic" data becuse it is consistent with what have been used in previous assesmentes and it is more complete. 
@@ -72,26 +74,25 @@ Percentages (0-100) for each country were rescaled to 0-1 based on a maximum tar
 library(ohicore) # devtools::install_github('ohi-science/ohicore') # may require uninstall and reinstall
 library(zoo)     # for na.locf: Last Observation Carried Forward
 
-#Sources to be able to read data???
-source('src/R/common.R')
-source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
-source('src/R/ohi_clean_fxns.R') # has functions: cbind_rgn(), sum_na()
 ```
 
-#Import Raw data
+#Import raw data
 
 ```{r}
-##Build file path
-goal     <- 'ohiprep_v2018/prs_cw_pathogen/v2018' #make sure it reflects the year of the assessment
-scenario <- 'v2018'
-dir_git  <- file.path('~/github/ohiprep_v2018', goal)
-dir_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WHO_UNICEF/d2018/')
-dir_int  <- file.path(dir_git, scenario, 'int')
+##Directly from Mazu
 
+##reads in the directory path to Mazu based on operating system
+source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R")
 
-sani_raw <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/globalprep/prs_cw_pathogen/v2018/raw/JMP_2017_WLD.csv',  header = FALSE, sep = ",", na.strings = c(NA, ''), skip = 2, stringsAsFactors = FALSE) 
+##Directory path looks like
+sani_raw_M <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2018/JMP_2017_WLD.csv"),  header = FALSE, sep = ",", na.strings = c(NA, ''), skip = 2, stringsAsFactors = FALSE, strip.white = TRUE)
+
+##From github
+sani_raw <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/globalprep/prs_cw_pathogen/v2018/raw/JMP_2017_WLD.csv',  header = FALSE, sep = ",", na.strings = c(NA, ''), skip = 2, stringsAsFactors = FALSE, strip.white = TRUE) #some of the data has spaces before or at the end, stripe.white removes this
 
 ```
+
+##Methods
 #Data wrangling
 Selecting and naming the columns of interest
 ```{r}
@@ -99,20 +100,32 @@ sani <- sani_raw %>%
   select(country = V1,
          year = V3,
          pop = V4,
-         basic = V6)
-
-#          imp_tot_ct     = Total.Improved..x1000. ,
-#          imp_tot_pct    = Total.Improved.... ,
-#          unimp_tot_ct   = Total.Unimproved..x1000. ,
-#          unimp_tot_pct  = Total.Unimproved....) %>%
-#   mutate(pop            = pop          * 1000,
-#          imp_tot_ct     = imp_tot_ct   * 1000,
-#          unimp_tot_ct   = unimp_tot_ct * 1000,
-#          country        = na.locf(country))      # use na.locf() function from zoo package to fill down for country names
-
+         improve_pct = V6) %>%
+  mutate(pop = str_remove(pop, pattern = " ")) %>%
+  mutate_at(.vars = c("pop", "improve_pct"), .funs = as.numeric)%>%
+  mutate(pop = pop * 1000,
+          basic_tot = improve_pct/100 * pop)
+  
 ```
 
+Select and scale percentage of population with access to improved sanitation ()
 
+```{r}
+sani_improved <- sani %>%
+   select(country, year, access_pct = improve_pct) %>%
+   mutate(access_pct = access_pct/100)
+ summary(sani_improved); head(sani_improved)
+```
+
+Add rgn_id
+
+```{r}
+rgn_sani <- name_2_rgn(sani_improved, 
+                        fld_name     = 'country',
+                        flds_unique  = c('country','year'))
+
+#Note t self: Figure out what to do with regions that havr funny cahracters and are not able to be read by the function
+```
 
 
 
