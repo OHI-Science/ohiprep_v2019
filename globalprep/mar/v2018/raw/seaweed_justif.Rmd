@@ -1,0 +1,41 @@
+---
+title: "Seaweed Species List"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+***
+
+## Chondracanthus chamissoi
+
+**FAO Production Region:** Peru
+
+**Exclude value:** 1
+
+**Naming**: NA
+
+[Vasquez and Vega 2001](https://www.researchgate.net/publication/226813687_Chondracanthus_chamissoi_Rhodophyta_Gigartinales_in_northern_Chile_Ecological_aspects_for_management_of_wild_populations) is a study in Chile that indicate that *Chondracanthus chamissoi* is used as both food and carageenan. This [Wikipedia page](https://es.wikipedia.org/wiki/Chondracanthus_chamissoi) indicates that *C. chamissoi* is highly consumed in Peru, but we could not find more sources to corroborate that. In Chile, this species is primarily carageenan-producing product [(Bulboa et al 2005)](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2109.2005.01321.x).
+
+<br>
+
+## Porphyra columbina
+**FAO Production Region:** Chile
+
+**Exclude value:** 0
+
+**Naming**: Now called [Pyropia columbina](https://repositorio.uc.cl/bitstream/handle/11534/13311/Differential%20gene%20expression%20in%20Pyropia%20columbina%20(Bangiales,%20Rhodophyta)%20under%20natural%20hydration%20and%20desiccation%20conditions.pdf?sequence=1), known as *luche* in Chile.
+
+While *Pyropia columbina* can be used as a feed additive for fish diets [(Lozano et al 2016)](http://repositorio.uchile.cl/bitstream/handle/2250/139325/Red-macroalgae-Pyropia-columbina-and-Gracilaria-chilensis.pdf?sequence=1), this species is categorized as an edible seaweed in a paper titled Seaweed and Man (Buchholz et al 2012). Historically it has been used for food and medicinal purposes. From this paper, it is unclear what it is currently used as in Chile, but some may be used for medicinal purposes by indigenous people. Further investigation into the use of *P. columbina*, or *luche*, in Chile reveals that it might be commonly eaten in southern Chile in empanadas, sauteed with potatoes, etc [(Eating Chilean blog)](http://eatingchile.blogspot.com/2010/04/seaweed-cochayuyo-and-luche.html).
+
+<br>
+
+## Spirulina maxima
+**FAO Production Region:** Senegal
+
+**Exclude value:** 1
+
+**Naming**:
+
+*Spirulina maxima* is used as a [food additive](https://www.ncbi.nlm.nih.gov/pubmed/9777014), [fish meal](https://onlinelibrary.wiley.com/doi/abs/10.1046/j.1365-2109.1998.29100709.x), and as a [dietary supplement](https://en.wikipedia.org/wiki/Spirulina_(dietary_supplement)).
