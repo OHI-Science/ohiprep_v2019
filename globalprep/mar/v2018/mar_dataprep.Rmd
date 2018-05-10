@@ -19,7 +19,7 @@ output:
 This analysis converts FAO mariculture data into data used to calculate the OHI global mariculture status score.  This also calculates the genetic escapee from mariculture pressure data.
 
 # Updates from previous assessment
-New year of FAO mariculture yield data for 2016. No changes to sustainability. Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
+New year of FAO mariculture yield data for 2016. Included some seaweed species for the 2018 assessment (see species_list.csv). No changes to sustainability. Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
 
 
 ***
@@ -123,12 +123,13 @@ Update species name in the `raw/species_list.csv` file with names in the `mar` d
 
 ```{r}
 
-mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-  select(FAO_name, exclude, alias, Taxon_code)
+## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.
+#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+#  select(FAO_name, exclude, alias, Taxon_code)
 #mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
 #  select(FAO_name, exclude_no_seaweed, alias, Taxon_code)
-#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-#  select(FAO_name, exclude_no_nei, alias, Taxon_code)
+mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+  select(FAO_name, exclude_no_nei, alias, Taxon_code)
 
 new.spp <- setdiff(mar$FAO_name, mar_sp$FAO_name)
 new.spp # check: if dim has 0 rows it means all match
@@ -366,7 +367,7 @@ sus_rgn <- bind_rows(sus_rgn, sus_no_rgn) %>%
 
 ```
 
-**Check to see where there are discrepancies (no matches) between Trujillo sustainability FAO spp (sus_rgn) to the FAO mariculture species in the wrangled FAO Aquaculture Production data table (maric)**
+**Check that the non-matches between Trujillo sustainability FAO spp (sus_rgn) and the FAO mariculture species in the wrangled FAO Aquaculture Production data table (maric) are not due to spelling errors or slightly different names. We want to include as many species that have sustainability scores as possible**
 
 ```{r}
 
@@ -682,7 +683,7 @@ write.csv(genEscapes_gf, 'output/GenEsc_gf.csv', row.names=FALSE)
 Obtain escapee data layers from `genEscapes`
 ```{r}
 # create the escapee data layers:
-    data <- genEscapes %>%
+data <- genEscapes %>%
     select(rgn_id, year, pressure_score = genEscapes)
 ```
 
@@ -722,5 +723,44 @@ plot(test$Maric_sustainability.x, test$Maric_sustainability.y)
 plot(test$Genetic.escapees.x, test$Genetic.escapees.y)
 
 ```
+
+
+## Data Check
+Compare the three exclusion methods for seaweed species.
+
+*Method 1:Exclude some seaweed species (`exclude`)
+*Method 2 (original): Exclude all seaweed species (`exclude_no_sw`)
+*Method 3: Exclude all seaweed nei species (`exclude_no_nei`)
+
+```{r}
+
+## Read in the three different versions of wrangled data
+exclude <- read.csv("../v2018/output/GenEsc.csv") %>%
+  filter(year == 2015) %>% # compare the most recent shared year between old and new
+  select(rgn_id, prs_score_old=pressure_score)
+
+exclude_no_sw <- read.csv("../v2018/output/GenEsc.csv") %>%
+  filter(year == 2015) %>% # compare the most recent shared year between old and new
+  select(rgn_id, prs_score_old=pressure_score)
+
+exclude_no_nei <- read.csv("../v2018/output/GenEsc.csv") %>%
+  filter(year == 2015) %>% # compare the most recent shared year between old and new
+  select(rgn_id, prs_score_old=pressure_score)
+
+## Compare exclusion method 1 with original exclusion method
+compare <- full_join(exclude, exclude_no_sw, by="rgn_id")
+compare <- na.omit(compare)
+## Compare genetic escapes pressure scores
+plot(compare$prs_score_old.x, compare$prs_score_old.y)
+
+## Compare exclusion method 3 with original exclusion method
+compare <- full_join(exclude_no_nei, exclude_no_sw, by="rgn_id")
+compare <- na.omit(compare)
+## Compare genetic escapes pressure scores
+plot(compare$prs_score_old.x, compare$prs_score_old.y)
+
+```
+
+
 ***
 
