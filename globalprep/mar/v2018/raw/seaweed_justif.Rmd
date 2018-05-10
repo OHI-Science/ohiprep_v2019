@@ -92,7 +92,7 @@ While *Pyropia columbina* can be used as a feed additive for fish diets [(Lozano
 ## Aquatic plants nei
 **FAO Production Region:** NA
 
-**Exclude value:** NA
+**Exclude value:** 1
 
 **Naming:** NA
 
@@ -555,10 +555,50 @@ Green seaweeds are mostly used for non-food products. While some seaweed is used
 
 <br>
 
-##
+## Coarse seagrape
 
-**FAO Production Region:** 
+**FAO Production Region:** Cook Islands
+
+**Exclude value:** 0
+
+**Naming**: *Caulerpa spp.*, rimu
+
+From the [FAO Manual on Seaweed Culture](http://www.fao.org/docrep/field/003/ac417e/AC417E00.htm): Many *Caulerpa spp.* are used as food in the form of fresh vegetables. The primary use of this species seems to be for food as it's described as highly valued due to its "delicate, light taste, soft and succulent texture."
+
+The [Ministry of Marine Resources Government of the Cook Islands](https://spccfpstore1.blob.core.windows.net/digitallibrary-docs/files/88/8824bd3fd3cd8612e947eb8257e50c95.pdf?sv=2015-12-11&sr=b&sig=DrP8Q7fZlTwWVDh43O6kLr3KhZGuViZKLeHWCGMydCw%3D&se=2018-10-30T20%3A45%3A25Z&sp=r&rscc=public%2C%20max-age%3D864000%2C%20max-stale%3D86400&rsct=application%2Fpdf&rscd=inline%3B%20filename%3D%22Anon_00_CookIslands_BasicInfo.pdf%22) provided a booklet on marine resources that indicate seagrapes as a popular food source.
+
+<br>
+
+## [Sargassum spp]
+
+**FAO Production Region:** Mexico
 
 **Exclude value:** 1
 
 **Naming**: 
+
+*Sargassum spp* are likely produced in Mexico for feeds, fuels, and chemicals due to the high concentration of alginate in its tissues [(Kim et al 2016)](https://www.e-algae.org/journal/view.php?number=2819).
+
+<br>
+
+## Spirulina nei
+
+**FAO Production Region:** Spain
+
+**Exclude value:** 1
+
+**Naming**: NA
+
+*Spirulina spp.* is used as a [food additive](https://www.ncbi.nlm.nih.gov/pubmed/9777014), [fish meal](https://onlinelibrary.wiley.com/doi/abs/10.1046/j.1365-2109.1998.29100709.x), and as a [dietary supplement](https://en.wikipedia.org/wiki/Spirulina_(dietary_supplement)).
+
+<br>
+
+## [Dunaliella salina]
+
+**FAO Production Region:** Spain
+
+**Exclude value:** 1
+
+**Naming**: 
+
+*Dunaliella salina* is used in B-carotene, lutein, fatty acids, etc [(Soto 2015)](https://www.sciencedirect.com/science/article/pii/B9780128007761000388).
