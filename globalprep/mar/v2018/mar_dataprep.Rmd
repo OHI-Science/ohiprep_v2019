@@ -124,12 +124,12 @@ Update species name in the `raw/species_list.csv` file with names in the `mar` d
 ```{r}
 
 ## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.
-#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-#  select(FAO_name, exclude, alias, Taxon_code)
+mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+  select(FAO_name, exclude, alias, Taxon_code)
 #mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
 #  select(FAO_name, exclude_no_seaweed, alias, Taxon_code)
-mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-  select(FAO_name, exclude_no_nei, alias, Taxon_code)
+#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+#  select(FAO_name, exclude_no_nei, alias, Taxon_code)
 
 new.spp <- setdiff(mar$FAO_name, mar_sp$FAO_name)
 new.spp # check: if dim has 0 rows it means all match
@@ -758,6 +758,13 @@ compare <- full_join(exclude_no_nei, exclude_no_sw, by="rgn_id")
 compare <- na.omit(compare)
 ## Compare genetic escapes pressure scores
 plot(compare$prs_score_old.x, compare$prs_score_old.y)
+
+## Compare exclusion method 1 with method 3
+compare <- full_join(exclude_no_nei, exclude, by="rgn_id")
+compare <- na.omit(compare)
+## Compare genetic escapes pressure scores
+plot(compare$prs_score_old.x, compare$prs_score_old.y)
+
 
 ```
 
