@@ -1,0 +1,604 @@
+---
+title: "Seaweed Species List"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+***
+
+```{r echo=FALSE, message=FALSE, results='hide'}
+
+## load libraries, set directories
+library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(tidyverse)
+
+## comment out when knitting
+# setwd("globalprep/mar/v2018")
+
+
+## Load FAO-specific user-defined functions
+source('../mar_fxs.R') # functions specific to mariculture dealing with compound countries
+source('../../../../src/R/fao_fxn.R') # function for cleaning FAO files
+source('../../../../src/R/common.R') # directory locations
+
+```
+
+
+```{r echo=FALSE, message=FALSE, results='hide'}
+## Load Tidied Mariculture Data with All Species for Visualization Checks
+mar <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_mariculture/d2018/FAO_GlobalAquacultureProduction_Quantity_1950_2016.csv'), check.names=FALSE, stringsAsFactors=FALSE) ; head(mar) 
+
+mar <- mar %>%
+  rename(country = `Country (Country)`,
+         FAO_name = `Species (ASFIS species)`, 
+         fao = `Aquaculture area (FAO major fishing area)`, 
+         environment = `Environment (Environment)`)
+table(mar$environment)  
+
+## include only marine environments
+mar <- mar %>%
+filter(environment %in% c("Brackishwater", "Marine"))  
+
+## convert to long format and clean FAO codes:
+## for some reason, I can't provide the data range in gather programatically!
+mar <- mar %>%
+  select(-Unit) 
+
+mar <- mar %>%
+  gather(key="year", value="value", num_range("",1950:2016)) %>%
+    fao_clean_data() 
+```
+
+
+## Chondracanthus chamissoi
+
+**FAO Production Region:** Peru
+
+**Exclude value:** 0
+
+**Naming**: NA
+
+[Vasquez and Vega 2001](https://www.researchgate.net/publication/226813687_Chondracanthus_chamissoi_Rhodophyta_Gigartinales_in_northern_Chile_Ecological_aspects_for_management_of_wild_populations) is a study in Chile that indicate that *Chondracanthus chamissoi* is used as both food and carageenan. This [Wikipedia page](https://es.wikipedia.org/wiki/Chondracanthus_chamissoi) indicates that *C. chamissoi* is highly consumed in Peru, wherease in Chile, this species is primarily a carageenan-producing product [(Bulboa et al 2005)](https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2109.2005.01321.x). While the primary use of this species is not so clear-cut, we have one more paper that identifies *C. chamissoi* as a human food product [(Fig 1. in Buschmann et al 2017)](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175), so we chose to include it.
+
+<br>
+
+## Porphyra columbina
+**FAO Production Region:** Chile
+
+**Exclude value:** 0
+
+**Naming**: Now called [Pyropia columbina](https://repositorio.uc.cl/bitstream/handle/11534/13311/Differential%20gene%20expression%20in%20Pyropia%20columbina%20(Bangiales,%20Rhodophyta)%20under%20natural%20hydration%20and%20desiccation%20conditions.pdf?sequence=1), known as *luche* in Chile.
+
+While *Pyropia columbina* can be used as a feed additive for fish diets [(Lozano et al 2016)](http://repositorio.uchile.cl/bitstream/handle/2250/139325/Red-macroalgae-Pyropia-columbina-and-Gracilaria-chilensis.pdf?sequence=1), this species is categorized as an edible seaweed in a paper titled Seaweed and Man (Buchholz et al 2012). Historically it has been used for food and medicinal purposes. From this paper, it is unclear what it is currently used as in Chile, but some may be used for medicinal purposes by indigenous people. Further investigation into the use of *P. columbina*, or *luche*, in Chile reveals that it might be commonly eaten in southern Chile in empanadas, sauteed with potatoes, etc [(Eating Chilean blog)](http://eatingchile.blogspot.com/2010/04/seaweed-cochayuyo-and-luche.html).
+
+<br>
+
+## Spirulina maxima
+**FAO Production Region:** Senegal
+
+**Exclude value:** 1
+
+**Naming**: NA
+
+*Spirulina maxima* is used as a [food additive](https://www.ncbi.nlm.nih.gov/pubmed/9777014), [fish meal](https://onlinelibrary.wiley.com/doi/abs/10.1046/j.1365-2109.1998.29100709.x), and as a [dietary supplement](https://en.wikipedia.org/wiki/Spirulina_(dietary_supplement)).
+
+<br>
+
+## Aquatic plants nei
+**FAO Production Region:** NA
+
+**Exclude value:** 1
+
+**Naming:** NA
+
+No longer a species name in the FAO mariculture production dataset. 
+
+<br>
+
+## Babberlocks
+**FAO Production Region:** Ireland, Norway
+
+**Exclude value:** 0
+
+**Naming**: [Winged Kelp](http://www.fao.org/docrep/006/y4765e/y4765e0b.htm), [Alaria esculenta](https://en.wikipedia.org/wiki/Alaria_esculenta)
+
+From the [FAO Chapter "Seaweeds Used as Food"](http://www.fao.org/docrep/006/y4765e/y4765e0b.htm): babberlocks, or *Alaria esculenta*, is eaten fresh or cooked in Ireland, Scotland, and Iceland. It can be found in Norway as well. Babberlocks is considered the kelp species with the best protein supply and is rich in vitamins and trace metals.
+
+<br>
+
+## Bright green nori
+**FAO Production Region:** China
+
+**Exclude value:** 0
+
+**Naming**: NA
+
+Green nori is an important algae species for human consumption [Buchholz et al 2012](https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22).
+
+<br>
+
+## Brown seaweeds
+
+**FAO Production Region:** Various (mostly Rep. of Korea)
+
+**Exclude value:** 0
+
+**Naming**: Laminaria (kombu), Undaria (wakame), Hizikia are the top seaweed genus used as food
+
+Determining whether to include or exclude this category was not as clear-cut. According to [FAO](http://www.fao.org/3/a-y4765e.pdf), the Republic of Korea is one of the three largest consumers of seaweed as food. Brown seaweeds are primarily used for food or providing raw material for making alginate, with the latter sourced from wild harvested seaweed. The lower market value of alginate and higher costs of cultivating brown seaweeds doesn't make it feasible to use farmed brown seaweeds for alginate. Furthermore, when we plot the production per country, the FAO estimated annual production for the Republic of Korea is significantly higher than all other countries included in the dataset, so it may make most sense to count this category of species towards the goal calculation.
+
+#### Brown Seaweed Production per country
+
+```{r echo=FALSE}
+
+brown <- mar %>% filter(FAO_name == "Brown seaweeds") %>% 
+  drop_na() %>% 
+  group_by(year,country,environment) %>% 
+  summarize(total = sum(value)) %>% 
+  ungroup()
+
+#Plot 
+ggplot(brown, aes(x=year, y = total)) +
+  geom_line(aes(color=country)) +
+  theme_minimal() +
+  ylab("Mariculture Production (tonnes)") +
+  xlab("Year")
+
+```
+
+<br>
+
+## Caulerpa seaweeds
+
+**FAO Production Region:** Philippines
+
+**Exclude value:** 0
+
+**Naming**: *C. lentillifera*, [sea grapes, green caviar](http://eol.org/pages/911967/overview)
+
+From the [FAO Manual on Seaweed Culture](http://www.fao.org/docrep/field/003/ac417e/AC417E00.htm): Many *Caulerpa spp.* are used as food in the form of fresh vegetables, but only *Caulerpa lentillifera* is cultivated in the Philippines. The primary use of this species seems to be for food as its described as highly valued due to its "delicate, light taste, soft and succulent texture."
+
+<br>
+
+## Dulse
+
+**FAO Production Region:** Ireland
+
+**Exclude value:** 0
+
+**Naming**: *C. lentillifera*, [sea grapes, green caviar](http://eol.org/pages/911967/overview)
+
+A strain of dulse that has been cultivated at [Oregon State University](http://today.oregonstate.edu/archives/2015/jul/osu-researchers-discover-unicorn-%E2%80%93-seaweed-tastes-bacon) has been described as tasting like bacon. [Mahadevan 2015](https://www.sciencedirect.com/science/article/pii/B9780124186972000131) also discusses the various uses of dulse from condiments for bread, as a dried snack food, and added to soup and salad. Ireland has likely been consuming this seaweed species since more than five millenia ago.
+
+<br>
+
+## Elkhorn sea moss
+
+**FAO Production Region:** Various (mostly Philippines, followed by Malaysia)
+
+**Exclude value:** 1
+
+**Naming**: *Kappaphycus alvarezii*
+
+The primary use of Elkhorn sea moss, or *K. alvarezii*, is carageenan [(Buschmann et al 2017)](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175).
+
+#### Elkhorn Sea Moss Production per country
+
+```{r echo=FALSE}
+
+elk <- mar %>% filter(FAO_name == "Elkhorn sea moss") %>%
+  drop_na() %>% 
+  group_by(year,country,environment) %>% 
+  summarize(total = sum(value)) %>% 
+#  filter(total > 25000) %>% # Can more clearly see which countries are producing the most
+  ungroup()
+
+#Plot 
+ggplot(elk, aes(x=year, y=total)) +
+  geom_line(aes(color=country)) +
+  theme_minimal() +
+  ylab("Mariculture Production (tonnes)") +
+  xlab("Year")
+
+```
+
+<br>
+
+## Eucheuma seaweeds nei
+
+**FAO Production Region:** Various (mostly Indonesia)
+
+**Exclude value:** 1
+
+**Naming**:
+
+The primary use of *Euchema spp.* is carageenan [(Buschmann et al 2017,](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175) [Buchholz et al 2012)](https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22).
+
+#### Euchema Production per country
+
+```{r echo=FALSE}
+
+euch <- mar %>% filter(FAO_name == "Eucheuma seaweeds nei") %>%
+  drop_na() %>% 
+  group_by(year,country,environment) %>% 
+  summarize(total = sum(value)) %>% 
+#  filter(total > 2500000) %>% # Can more clearly see which countries are producing the most
+  ungroup()
+
+#Plot 
+ggplot(euch, aes(x=year, y=total)) +
+  geom_line(aes(color=country)) +
+  theme_minimal() +
+  ylab("Mariculture Production (tonnes)") +
+  xlab("Year")
+
+```
+
+<br>
+
+## Fragile codium
+
+**FAO Production Region:** Republic of Korea
+
+**Exclude value:** 1
+
+**Naming**: codium fragile
+
+The use of this species is not as clear-cut. Codium fragile (Suringar) Hariot has been reported to be used in Oriental medicine [(Lee et al 2017)](https://www.ncbi.nlm.nih.gov/pubmed/28738499). It has a high market value in Korea and is classified as an edible seaweed used as an additive in kimchi, a commonly eaten appetizer [(Hwang et al 2007)](https://link.springer.com/content/pdf/10.1007%2F978-1-4020-9619-8.pdf). Despite the contribution to human food products, we choose to exclude this category, because it is only an additive (we may choose to change this exclusion value). However, the [Buschmann et al 2017](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175) paper categorizes codium fragile's primary use as skin care products.
+
+<br>
+
+## Fusiform sargassum
+
+**FAO Production Region:** China
+
+**Exclude value:** 0
+
+**Naming**: [Hijiki, *Sargassum fusiforme*](http://www.uniprot.org/taxonomy/590727)
+
+This species (*Sargassum fusiforme*) is primarily used in food [(Bushmann et al 2017)](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175). See Fig 1 in the [Buschmann et al 2017](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175) paper for a break-down of major seaweed species or genera and their primary uses.
+
+<br>
+
+## Gelidium seaweeds
+
+**FAO Production Region:** Rep of Korea
+
+**Exclude value:** 1
+
+**Naming**: NA
+
+Most of agar production comes from *Gracilaria spp.* or *Gelidium spp.*, but the latter is also consumed as food in Korea [(FAO](http://www.fao.org/3/a-y4765e.pdf), [Delaney et al 2016)](https://www.sciencedirect.com/science/article/pii/B9780128027721000026). We chose to exclude this species, given that the overwhelming amount of this genus is used in agar.
+
+<br>
+
+## Giant kelp
+
+**FAO Production Region:** Chile
+
+**Exclude value:** 1
+
+**Naming**: NA
+
+According to the [FAO](http://www.fao.org/3/a-y4765e.pdf), giant kelp produced in Chile are mostly bought by processors that turn it into alginate.
+
+<br>
+
+## Gracilaria seaweeds
+
+**FAO Production Region:** Various (Mostly China and Indonesia)
+
+**Exclude value:** 1
+
+**Naming**: NA
+
+Amongst the seaweed genus, *Gracilaria spp.* is a major source of agar production [(Buschmann et al 2017](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175), [Buchholz et al 2012)](https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22).
+
+#### Gracilaria Production per country
+
+```{r echo=FALSE}
+
+grac <- mar %>% filter(FAO_name == "Gracilaria seaweeds") %>%
+  drop_na() %>% 
+  group_by(year,country,environment) %>% 
+  summarize(total = sum(value)) %>% 
+# filter(total > 500000) %>% # Can more clearly see which countries are producing the most
+  ungroup()
+
+#Plot 
+ggplot(grac, aes(x=year, y=total)) +
+  geom_line(aes(color=country)) +
+  theme_minimal() +
+  ylab("Mariculture Production (tonnes)") +
+  xlab("Year")
+
+```
+
+<br>
+
+## Green laver
+
+**FAO Production Region:** Rep of Korea
+
+**Exclude value:** 0
+
+**Naming**: Green nori
+
+The primary use of green laver is food [(Buchholz et al 2012)](https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22). Of green algae, green nori is a relatively new crop that has been a very important food product.
+
+<br>
+
+## Harpoon seaweeds
+
+**FAO Production Region:** France
+
+**Exclude value:** 1
+
+**Naming**: [*Asparagopsis armata*, Red Harpoon](https://www.roscara.com/wild-irish-seaweed-asparagopsis-armata/)
+
+Harpoon seaweeds are likely used in cosmetics [(Kraan & Barrington 2005,](https://link.springer.com/content/pdf/10.1007%2Fs10811-005-2799-5.pdf) [Roscara)](https://www.roscara.com/wild-irish-seaweed-asparagopsis-armata/). Furthermore, 75% of seaweed produced in France is [processed](http://www.netalgae.eu/uploadedfiles/11-09-12_poster_wp1_en.pdf), so the chances of this category having a non-food use is very high.
+
+<br>
+
+## Japanese isinglass
+
+**FAO Production Region:** China
+
+**Exclude value:** 1
+
+**Naming**: *Gelidium spp*
+
+Japanese isinglass is a type of *Gelidium* seaweed, whose primary use is for agar [(FAO](http://www.fao.org/3/a-y4765e.pdf) [, Whittaker 1910)](https://ajph.aphapublications.org/doi/pdf/10.2105/AJPH.1.9.632).
+
+<br>
+
+## Japanese kelp
+
+**FAO Production Region:** China, Japan, Rep. of Korea
+
+**Exclude value:** 0
+
+**Naming**: *Saccharina japonica*, kombu
+
+Japanese kelp is primarily used for human consumption [(Buschmann et al 2017)](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175). Other names for Japanese kelp are likely *S. japonica* and kombu, an important edible seaweed in Asia [(Buchholz et al 2012)](https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22).
+
+<br>
+
+## Kelp nei
+
+**FAO Production Region:** Not in FAO data
+
+**Exclude value:** 1
+
+**Naming**: NA
+
+No description.
+
+<br>
+
+## Laver (Nori)
+
+**FAO Production Region:** Various Asian countries
+
+**Exclude value:** 0
+
+**Naming**: NA
+
+Laver or nori is a high value edible seaweed food product [(Buchholz et al 2012)](https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22).
+
+<br>
+
+## Mozuku
+
+**FAO Production Region:** Tonga
+
+**Exclude value:** 0
+
+**Naming**: NA
+
+According to a Tonga government website, this species is primarily used in food. Most of mozuku produced in tonga is shipped to the Japanese market for the food market; smaller amounts are shipped elsewhere for use in homeopathic purposes [(Tongafish.gov)](http://www.tongafish.gov.to/images/documents/Management%20Plans/Approved%20Seaweed%20Management%20Plan%202012-2013.pdf). 
+
+<br>
+
+## Nori nei
+
+**FAO Production Region:** China
+
+**Exclude value:** 0
+
+**Naming**: *Pyropia spp.*
+
+Nori is a high-value seaweed used in the human food market [(Buchholz et al 2012)](https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22).
+
+<br>
+
+## Red seaweeds
+
+**FAO Production Region:** Indonesia, Portugal
+
+**Exclude value:** 1
+
+**Naming**: NA
+
+Red algae in Indonesia and Portugal are mostly agar-containing seaweeds [(FAO)](http://www.fao.org/3/a-y4765e.pdf).
+
+<br>
+
+## Sea belt
+
+**FAO Production Region:** Denmark, Norway, Spain
+
+**Exclude value:** 1
+
+**Naming**: *Saccharina latissima*, sugar kelp
+
+This species is mostly used for processed agar in Norway [(SINTEF)](https://www.innovasjonnorge.no/contentassets/95273c625e1c4b4caf8b4d0a36020dc0/2014-sintef---seaweed-in-the-bioeconomy.pdf). There is a food market growing, but it is still rather small. Some of the markets for this species are biofuels, feed supplements, and chemical derivations [(Forbord et al 2012)](https://link.springer.com/article/10.1007/s10811-011-9784-y).
+
+<br>
+
+## Seaweeds nei
+
+**FAO Production Region:** Various (mostly China)
+
+**Exclude value:** 0
+
+**Naming**: NA
+
+Production by weight is overwhelmingly from China (see plot below). Given that over 80% of seaweed produced in aquaculture systems are used for human consumption, we chose to include this generalized FAO species cateogry in goal calculations.
+
+#### Seaweeds nei Production per country
+```{r echo=FALSE}
+
+sea <- mar %>% filter(FAO_name == "Seaweeds nei") %>% 
+  drop_na() %>% 
+  group_by(year,country,environment) %>% 
+  summarize(total = sum(value)) %>% 
+  ungroup()
+
+#Plot 
+ggplot(sea, aes(x=year, y = total)) +
+  geom_line(aes(color=country)) +
+  theme_minimal() +
+  ylab("Mariculture Production (tonnes)") +
+  xlab("Year")
+
+```
+
+<br>
+
+## Spiny eucheuma
+
+**FAO Production Region:** Various
+
+**Exclude value:** 1
+
+**Naming**: *Euchema spp.*
+
+Spiny eucheuma is primarily used as carageenan [(Buschmann et al 2017,](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175) [Buchholz et al 2012)](https://link.springer.com/chapter/10.1007/978-3-642-28451-9_22). 
+
+<br>
+
+## Tangle
+
+**FAO Production Region:** Ireland
+
+**Exclude value:** 1
+
+**Naming**: [*Laminaria digitata*](http://www.irishseaweeds.com/kelp-laminaria-digitata/)
+
+Tangle, or *L. digitata*, is primarily used in the [biotech sector,](http://www.bim.ie/our-work/projects/developing,irish,seaweed,farming,for,high,value,products/) [organic fertiliser, and as alginate](http://www.irishseaweeds.com/kelp-laminaria-digitata/).
+
+<br>
+
+## Wakame
+
+**FAO Production Region:** Various
+
+**Exclude value:** 0
+
+**Naming**: [*Undaria spp.*](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175)
+
+Wakame is primarily used as food [(Buschmann et al 2017)](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175).
+
+<br>
+
+## Wakame nei
+
+**FAO Production Region:** France
+
+**Exclude value:** 0
+
+**Naming**: [*Undaria spp.*](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175) 
+
+Wakame is primarily used as food [(Buschmann et al 2017)](https://www.tandfonline.com/doi/full/10.1080/09670262.2017.1365175).
+
+<br>
+
+## Warty gracilaria
+
+**FAO Production Region:** Taiwan
+
+**Exclude value:** 1
+
+**Naming**: [*Gracilaria verrucosa*(old), *Gracilaria gracilis*](http://www.fao.org/fishery/culturedspecies/Gracilaria_spp/en)
+
+The warty *Gracilaria* is primary used as an agar product [(FAO)](http://www.fao.org/fishery/culturedspecies/Gracilaria_spp/en).
+
+<br>
+
+## Giant kelps nei
+
+**FAO Production Region:** Peru
+
+**Exclude value:** 1
+
+**Naming**: 
+
+Giant kelp produced in Chile are mostly bought by processors that turn it in alginate. While this species data is from Peru, we assume that the seaweed use is similar to that of Chile, given that the primary components of giant kelp are high in alginate [(FAO)](http://www.fao.org/3/a-y4765e.pdf).
+
+<br>
+
+## Green seaweeds
+
+**FAO Production Region:** Portugal, Spain
+
+**Exclude value:** 1
+
+**Naming**: 
+
+Green seaweeds are mostly used for non-food products. While some seaweed is used as food it is sitll underutilized or growing slowly in Portugal [(Soares et al 2017)](http://iopscience.iop.org/article/10.1088/1757-899X/231/1/012126/pdf).
+
+<br>
+
+## Coarse seagrape
+
+**FAO Production Region:** Cook Islands
+
+**Exclude value:** 0
+
+**Naming**: *Caulerpa spp.*, rimu
+
+From the [FAO Manual on Seaweed Culture](http://www.fao.org/docrep/field/003/ac417e/AC417E00.htm): Many *Caulerpa spp.* are used as food in the form of fresh vegetables. The primary use of this species seems to be for food as it's described as highly valued due to its "delicate, light taste, soft and succulent texture."
+
+The [Ministry of Marine Resources Government of the Cook Islands](https://spccfpstore1.blob.core.windows.net/digitallibrary-docs/files/88/8824bd3fd3cd8612e947eb8257e50c95.pdf?sv=2015-12-11&sr=b&sig=DrP8Q7fZlTwWVDh43O6kLr3KhZGuViZKLeHWCGMydCw%3D&se=2018-10-30T20%3A45%3A25Z&sp=r&rscc=public%2C%20max-age%3D864000%2C%20max-stale%3D86400&rsct=application%2Fpdf&rscd=inline%3B%20filename%3D%22Anon_00_CookIslands_BasicInfo.pdf%22) provided a booklet on marine resources that indicate seagrapes as a popular food source.
+
+<br>
+
+## [Sargassum spp]
+
+**FAO Production Region:** Mexico
+
+**Exclude value:** 1
+
+**Naming**: 
+
+*Sargassum spp* are likely produced in Mexico for feeds, fuels, and chemicals due to the high concentration of alginate in its tissues [(Kim et al 2016)](https://www.e-algae.org/journal/view.php?number=2819).
+
+<br>
+
+## Spirulina nei
+
+**FAO Production Region:** Spain
+
+**Exclude value:** 1
+
+**Naming**: NA
+
+*Spirulina spp.* is used as a [food additive](https://www.ncbi.nlm.nih.gov/pubmed/9777014), [fish meal](https://onlinelibrary.wiley.com/doi/abs/10.1046/j.1365-2109.1998.29100709.x), and as a [dietary supplement](https://en.wikipedia.org/wiki/Spirulina_(dietary_supplement)).
+
+<br>
+
+## [Dunaliella salina]
+
+**FAO Production Region:** Spain
+
+**Exclude value:** 1
+
+**Naming**: 
+
+*Dunaliella salina* is used in B-carotene, lutein, fatty acids, etc [(Soto 2015)](https://www.sciencedirect.com/science/article/pii/B9780128007761000388).
