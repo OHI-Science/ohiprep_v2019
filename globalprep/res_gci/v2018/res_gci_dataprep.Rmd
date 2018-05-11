@@ -195,7 +195,7 @@ years <- data.frame(year = min(wef_rgn$year) : max(wef_rgn$year))
 
 wef_rgn_gf_un <- georegions %>% # georegions sourced from common.R
   merge(years) %>%
-  left_join(wef_rgn) # joining adds in missing regions; will be gapfilled by methods below
+  left_join(wef_rgn) # this joining adds in missing regions; will be gapfilled by methods below
 
 ## compare models to select a gapfilling method (which set of georegions to use)
 mod1 <- lm(score ~ as.factor(r2), data = wef_rgn_gf_un)
@@ -239,7 +239,6 @@ wef_gf2 <- wef_rgn_gf_un %>%
   
 summary(wef_gf2)
 length(unique(wef_gf2$rgn_id)) # checks; should be 220 regions
-unique(wef_gf2[is.na(wef_gf2$score),"rgn_id"]) # regions missing scores
 ```
 
 ### Uninhabited Regions
@@ -254,6 +253,9 @@ wef <- wef_gf2 %>%
   mutate(score = ifelse(rgn_id %in% uninhab$rgn_id, NA, score)) %>%
   mutate(gapfill = ifelse(rgn_id %in% uninhab$rgn_id, NA, gapfill)) %>%
   mutate(method = ifelse(rgn_id %in% uninhab$rgn_id, NA, method))
+
+unique(wef[is.na(wef$score),"rgn_id"]) # regions missing scores
+uninhab$rgn_id # check this set and above set of rgn_ids equal
 ```
 
 ### Gapfill North Korea
@@ -277,7 +279,6 @@ wef <- rbind(wef, nk)
 res_data <- wef %>%
   select(rgn_id, year, resilience_score = score) %>%
   mutate(resilience_score = resilience_score/7) # score ranges from 0-7, normalize to range of 0-1
-unique(res_data[is.na(res_data$resilience_score),"rgn_id"]) # check; should be all and only uninhabited regions
 write.csv(res_data, "output/gci_res.csv", row.names = FALSE)
 
 gf_data <- wef %>%
