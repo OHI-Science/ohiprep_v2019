@@ -24,7 +24,7 @@ This document describes the steps for obtaining and wrangling Global Competitive
 
 # Updates from Previous Assessments
 
-No updates were made to this methodology since the previous assessment.
+Slight change to gapfilling for North Korea. Score was previously assigned to be 2.8, which was the minimum score calculated in the 2014 assessment. Now score is assigned to be the minimum value from recent 6 years of global data (non-gapfilled data). No other updates to the methodology were made.
 
 # Data Sources
 
@@ -146,11 +146,11 @@ filter(wef_gf, N==4) # check the data: filter by a few different N and countries
 N_max <- max(wef_gf$N) # assumes at least one region with all years of data
 
 wef_gf <- wef_gf %>%
-  mutate(gapfill = ifelse(N < N_max, 1, 0)) %>%
-  mutate(method = ifelse(N == 1, "within region: one value all years", NA)) %>%
-  mutate(method = ifelse(N < N_max & N > 1, "within region: lm", method)) %>%
-  mutate(score = ifelse(N == 1, gf_mean, score)) %>%
-  mutate(score = ifelse(N < N_max & N > 1, gf_lm, score)) %>%
+  mutate(gapfill = ifelse(N < N_max & is.na(score), 1, 0)) %>%
+  mutate(method = ifelse(gapfill == 1 & N == 1, "within region: one value all years", NA)) %>%
+  mutate(method = ifelse(gapfill == 1 & N < N_max & N > 1, "within region: lm", method)) %>%
+  mutate(score = ifelse(gapfill == 1 & N == 1, gf_mean, score)) %>%
+  mutate(score = ifelse(gapfill == 1 & N < N_max & N > 1, gf_lm, score)) %>%
   select(year, country, score, gapfill, method)
 
 summary(wef_gf)
@@ -261,8 +261,13 @@ wef <- wef_gf2 %>%
 ```{r gapfill north korea}
 ## appears to have been calculated at one time with real data; fill with the old value of 2.8
 ## gapfilled using un regions r2 above, but replace score (special case)
+nk_gf <- wef %>% 
+  filter(gapfill == 0) %>% 
+  filter(year >= max(year)-5) %>%
+  summarize(score = min(score))
+
 wef <- wef[-which(wef$rgn_id == 21),]
-nk <- data.frame(year = min(wef$year):max(wef$year), rgn_id = 21, gapfill = 1, method = "previous score", score = 2.8)
+nk <- data.frame(rgn_id = 21, year = min(wef$year):max(wef$year), gapfill = 1, method = "min from recent 6 years of global data", score = nk_gf)
 wef <- rbind(wef, nk)
 ```
 
@@ -291,6 +296,7 @@ old <- old %>%
   rename(old_score = resilience_score) %>%
   left_join(res_data, by = c("rgn_id", "year"))
 plot(old$old_score, old$resilience_score)
+# identify(old$old_score, old$resilience_score, labels = old$rgn_id) # to look at outliers
 abline(0,1, col="red")
 ```
 
