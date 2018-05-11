@@ -22,13 +22,14 @@ pdf_document:
 # Summary
 [general description: What data are being generated? Why (what project, etc.)? Upstream/downstream processing information that might be helpful?  Other information?]
 
-This document describes the steps for wrangling the data for the pathogen pollution and pathogen pollution trend data layers for the 2018 global assessment.
+This document describes the steps for preparing the pathogen pollution and pathogen pollution trend data layers for the 2018 global assessment.
 The percentage of the population with access to improved sanitation facilities (World Health Organization and United Nations Children’s Fund, Joint Monitoring Programme, 2011) was used in combination with measurements of coastal population as a proxy for pathogens in coastal waters. Access to improved sanitation facilities is defined as the percentage of the population in a country with at least adequate access to disposal facilities that can effectively prevent human, animal, and insect contact with excreta. These data are a country-wide average (not specific to the coastal region). Percentages (0-100) for each country were rescaled to 0-1 based on a maximum target of 100% of the population with access to improved sanitation, and a minimum value of 0.
 
 
 # Updates from previous assessment
-Data source (WHO-UNICEF) updated the way they reported the data. However, the 2018 assesment is calculated using the "At least Basic" data becuse it is consistent with what have been used in previous assesmentes and it is more complete. 
-Consider for future assesments: make the "Safely managed" data more complete, and reconsider whether these data would be better to use.
+Data source (WHO-UNICEF) updated the way they reported the data. However, the 2018 assesment is calculated using the "At least Basic" data becuse it is consistent with what have been used in previous assesmentes and the data is more complete. 
+
+**Consider for future assesments: make the "Safely managed" data more complete, and reconsider whether these data would be better to use.
 
 Deffinition of each variable according to the data source:
 "At leasr basic": Use of improved facilities that are not shared with other households.
@@ -52,7 +53,7 @@ Access to improved sanitation facilities is defined as the percentage of the pop
 
 **Time range**: 2000 - 2015
 
-**Format**:  csv saved in git_annex in Mazu
+**Format**:  csv saved in github (Also find the raw data in Maxu: git_annex/globalprep/raw_data/WHO_UNICEFF)
 
 ***
   
@@ -70,9 +71,13 @@ Percentages (0-100) for each country were rescaled to 0-1 based on a maximum tar
 #Setup
 
 ```{r}
+## set working directory; comment out for knitting
+# setwd("~/github/ohiprep_v2018/globalprep/prs_cw_pathogen/v2018")
+
 ##Packages
 library(ohicore) # devtools::install_github('ohi-science/ohicore') # may require uninstall and reinstall
 library(zoo)     # for na.locf: Last Observation Carried Forward
+library(tidyverse)
 
 ```
 
@@ -81,10 +86,13 @@ library(zoo)     # for na.locf: Last Observation Carried Forward
 ```{r}
 ##Directly from Mazu
 
-##reads in the directory path to Mazu based on operating system
+#CHECK TO SEE IS I NEED THIS
+##reads in the directory path to Mazu based on operating system 
 source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R")
+source('../../../src/R/common.R')
 
-##Directory path looks like
+
+##From Mazu
 sani_raw_M <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2018/JMP_2017_WLD.csv"),  header = FALSE, sep = ",", na.strings = c(NA, ''), skip = 2, stringsAsFactors = FALSE, strip.white = TRUE)
 
 ##From github
@@ -92,41 +100,117 @@ sani_raw <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v201
 
 ```
 
-##Methods
-#Data wrangling
-Selecting and naming the columns of interest
+#Methods
+
+##Data wrangling
+Selecting and naming the columns of interest. Scale the percentagepercentage of population with access to improved sanitation to popoportions (from 0-1). Transform population and percentage into a numeric variable.
+
+
 ```{r}
 sani <- sani_raw %>%
   select(country = V1,
          year = V3,
          pop = V4,
-         improve_pct = V6) %>%
-  mutate(pop = str_remove(pop, pattern = " ")) %>%
-  mutate_at(.vars = c("pop", "improve_pct"), .funs = as.numeric)%>%
+         basic_pct = V6) %>%
+  mutate(pop = str_remove_all(pop, pattern = " ")) %>%
+  mutate_at(.vars = c("pop", "basic_pct"), .funs = as.numeric)%>%
   mutate(pop = pop * 1000,
-          basic_tot = improve_pct/100 * pop)
-  
+          basic_prop = basic_pct/100)
+
 ```
 
-Select and scale percentage of population with access to improved sanitation ()
+
+Change names of regions to match names in ohicore and fileter out regions that are not part of the OHI assesment or do not have data.
+
+If after running 'name_2_rgn' (see next r chunk), there are other coastal regions that are not identified. They must be checked and see what is the proper way to include them (or not include them).
 
 ```{r}
+
 sani_improved <- sani %>%
-   select(country, year, access_pct = improve_pct) %>%
-   mutate(access_pct = access_pct/100)
- summary(sani_improved); head(sani_improved)
+   mutate(country = ifelse(str_detect(country,"Cura\\Sao"), "Curacao", country))%>% 
+   mutate(country = ifelse(str_detect(country,"R\\Sunion"), "Reunion", country)) %>% 
+   mutate(country = ifelse(str_detect(country, "C\\Ste d\\SIvoire"), "Ivory Coast", country)) %>% 
+   mutate(country=ifelse(str_detect(country,"Hong Kong"), "Hong Kong", country)) %>% 
+   mutate(country=ifelse(str_detect(country,"Macao"), "Macao", country))
+
+##Caribbean Netherlands are in a lowe resolution than hte OHI regions. They include:Bonaire, Sint Eustatius, Saba. However, there is no data Caribbean Netherlands so it is filter out.
+sani_improved <- sani_improved %>% 
+  filter(country!= 'Caribbean Netherlands')
+
+##If there was data for Caribbean Netherlands this is how to use the data of this region for Bonaire, Sint Eustatius, Saba
+
+# CN <- filter(sani_improved, country=="Caribbean Netherlands") %>%
+#   rename(country_old = country)
+# CN_subregions <- data.frame(country_old = "Caribbean Netherlands",
+#                             country = c("Bonaire", "Sint Eustatius", "Saba")) %>%
+#   left_join(Carribean_neth) %>%
+#   select(-country_old)
+# sani_improved <- sani_improved %>%
+#   filter(country != "Carribean Netherlands") %>%
+#   rbind(CN_subregions)  
+
+#Channel Islands correspond to OHI regions of Guernsey and Jersey. Here the data reported for Channel Islands is used for these two regions.
+
+CI <- filter(sani_improved, country=="Channel Islands") %>%
+  rename(country_old = country)
+CI_subregions <- data.frame(country_old = "Channel Islands",
+                            country = c("Guernsey", "Jersey")) %>%
+  left_join(CI) %>%
+  select(-country_old)
+
+sani_improved <- sani_improved %>%
+  filter(country != "Channel Islands") %>%
+  rbind(CI_subregions)  
+
 ```
 
-Add rgn_id
+Add rgn_id. 
 
 ```{r}
 rgn_sani <- name_2_rgn(sani_improved, 
                         fld_name     = 'country',
-                        flds_unique  = c('country','year'))
+                        flds_unique  = c('country','year')) 
 
-#Note t self: Figure out what to do with regions that havr funny cahracters and are not able to be read by the function
+##Warning: These data were removed for not having any match in the lookup tables.
+## Check list to make sure all countries removed are not of interest for the OHI global assesment. In this case West Bank and Gaza Strip is not considered because it is a disputed area and Isle of Man is not consider an OHI region.
+
+##Check for duplicate regions.
+table(rgn_sani$rgn_id) #for this analysis regions which are duplicated are? rgn_id = 209, 140, 116, 13
+
+## Each region has 16 years of data in this case. if there are regions with more than 16 values is because in this database they are resported in a higher resolution than the OHI global assesment (eg: China, Hong Kong and Macao are just one region for the OHI global). For these regions a weighted average will be calculated as its final score.
+
+
+##Finalizing the first part of the sanitation preparation by calculating weighted means for the duplicated regions.
+
+final_sani <- rgn_sani %>% 
+  group_by(rgn_id, rgn_name, year) %>% 
+  summarise(basic_sani_prop= weighted.mean(basic_prop, pop, na.rm = TRUE))
+
+##Check for duplicate regions. If weighed average where included then all rgn_id have 16 values of data.
+table(rgn_sani$rgn_id)
+
 ```
 
+#Gapfilling 1
+Use a linear model within country data to estimate missing years.
+
+
+
+#Gapfilling 2
+
+Georegional gapfilling for regions that do not have data
+
+with gapfill_georegions.r 
+
+QUESTION!! Where are all this files, have this files been updated in: https://github.com/OHI-Science/ohi-global/tree/draft/eez/layers
+
+```{r}
+georegions <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/layers/rgn_georegions.csv') %>% 
+  spread(level, georgn_id)
+
+
+sani_georigion_gp <- 
+```
 
 
 
