@@ -55,7 +55,7 @@
 58,2010,1,"UN r2 georegion"
 59,2010,0,NA
 60,2010,1,"UN r2 georegion"
-61,2010,0,NA
+61,2010,1,"within region: lm"
 62,2010,0,NA
 63,2010,1,"UN r2 georegion"
 64,2010,0,NA
@@ -91,7 +91,7 @@
 96,2010,1,"within region: lm"
 97,2010,1,"within region: lm"
 98,2010,1,"UN r2 georegion"
-99,2010,0,NA
+99,2010,1,"within region: lm"
 100,2010,1,"UN r2 georegion"
 101,2010,0,NA
 102,2010,0,NA
@@ -127,7 +127,7 @@
 134,2010,0,NA
 135,2010,0,NA
 136,2010,0,NA
-137,2010,0,NA
+137,2010,1,"within region: lm"
 138,2010,0,NA
 139,2010,0,NA
 140,2010,1,"UN r2 georegion"
@@ -181,7 +181,7 @@
 192,2010,1,"UN r2 georegion"
 193,2010,1,"UN r2 georegion"
 194,2010,1,"within region: lm"
-195,2010,0,NA
+195,2010,1,"within region: lm"
 196,2010,0,NA
 197,2010,0,NA
 198,2010,1,"within region: lm"
@@ -210,7 +210,7 @@
 227,2010,1,"UN r2 georegion"
 228,2010,1,"UN r2 georegion"
 231,2010,1,"within region: lm"
-232,2010,0,NA
+232,2010,1,"within region: lm"
 237,2010,1,"UN r2 georegion"
 244,2010,1,"UN r2 georegion"
 245,2010,1,"UN r2 georegion"
@@ -274,7 +274,7 @@
 58,2011,1,"UN r2 georegion"
 59,2011,0,NA
 60,2011,1,"UN r2 georegion"
-61,2011,0,NA
+61,2011,1,"within region: lm"
 62,2011,0,NA
 63,2011,1,"UN r2 georegion"
 64,2011,0,NA
@@ -310,7 +310,7 @@
 96,2011,1,"within region: lm"
 97,2011,1,"within region: lm"
 98,2011,1,"UN r2 georegion"
-99,2011,0,NA
+99,2011,1,"within region: lm"
 100,2011,1,"UN r2 georegion"
 101,2011,0,NA
 102,2011,0,NA
@@ -346,7 +346,7 @@
 134,2011,0,NA
 135,2011,0,NA
 136,2011,0,NA
-137,2011,0,NA
+137,2011,1,"within region: lm"
 138,2011,0,NA
 139,2011,0,NA
 140,2011,1,"UN r2 georegion"
@@ -400,7 +400,7 @@
 192,2011,1,"UN r2 georegion"
 193,2011,1,"UN r2 georegion"
 194,2011,1,"within region: lm"
-195,2011,0,NA
+195,2011,1,"within region: lm"
 196,2011,0,NA
 197,2011,0,NA
 198,2011,1,"within region: lm"
@@ -429,7 +429,7 @@
 227,2011,1,"UN r2 georegion"
 228,2011,1,"UN r2 georegion"
 231,2011,1,"within region: lm"
-232,2011,0,NA
+232,2011,1,"within region: lm"
 237,2011,1,"UN r2 georegion"
 244,2011,1,"UN r2 georegion"
 245,2011,1,"UN r2 georegion"
@@ -493,7 +493,7 @@
 58,2012,1,"UN r2 georegion"
 59,2012,0,NA
 60,2012,1,"UN r2 georegion"
-61,2012,1,"UN r2 georegion"
+61,2012,1,"within region: lm"
 62,2012,0,NA
 63,2012,1,"UN r2 georegion"
 64,2012,0,NA
@@ -529,7 +529,7 @@
 96,2012,1,"within region: lm"
 97,2012,1,"within region: lm"
 98,2012,1,"UN r2 georegion"
-99,2012,0,NA
+99,2012,1,"within region: lm"
 100,2012,1,"UN r2 georegion"
 101,2012,0,NA
 102,2012,0,NA
@@ -565,7 +565,7 @@
 134,2012,0,NA
 135,2012,0,NA
 136,2012,0,NA
-137,2012,0,NA
+137,2012,1,"within region: lm"
 138,2012,0,NA
 139,2012,0,NA
 140,2012,1,"UN r2 georegion"
@@ -619,7 +619,7 @@
 192,2012,1,"UN r2 georegion"
 193,2012,1,"UN r2 georegion"
 194,2012,1,"within region: lm"
-195,2012,0,NA
+195,2012,1,"within region: lm"
 196,2012,0,NA
 197,2012,0,NA
 198,2012,1,"within region: lm"
@@ -648,7 +648,7 @@
 227,2012,1,"UN r2 georegion"
 228,2012,1,"UN r2 georegion"
 231,2012,1,"within region: lm"
-232,2012,0,NA
+232,2012,1,"within region: lm"
 237,2012,1,"UN r2 georegion"
 244,2012,1,"UN r2 georegion"
 245,2012,1,"UN r2 georegion"
@@ -712,7 +712,7 @@
 58,2013,1,"UN r2 georegion"
 59,2013,0,NA
 60,2013,1,"UN r2 georegion"
-61,2013,0,NA
+61,2013,1,"within region: lm"
 62,2013,0,NA
 63,2013,1,"UN r2 georegion"
 64,2013,0,NA
@@ -748,7 +748,7 @@
 96,2013,1,"within region: lm"
 97,2013,1,"within region: lm"
 98,2013,1,"UN r2 georegion"
-99,2013,0,NA
+99,2013,1,"within region: lm"
 100,2013,1,"UN r2 georegion"
 101,2013,0,NA
 102,2013,0,NA
@@ -784,7 +784,7 @@
 134,2013,0,NA
 135,2013,0,NA
 136,2013,0,NA
-137,2013,0,NA
+137,2013,1,"within region: lm"
 138,2013,0,NA
 139,2013,0,NA
 140,2013,1,"UN r2 georegion"
@@ -838,7 +838,7 @@
 192,2013,1,"UN r2 georegion"
 193,2013,1,"UN r2 georegion"
 194,2013,1,"within region: lm"
-195,2013,0,NA
+195,2013,1,"within region: lm"
 196,2013,0,NA
 197,2013,0,NA
 198,2013,1,"within region: lm"
@@ -867,7 +867,7 @@
 227,2013,1,"UN r2 georegion"
 228,2013,1,"UN r2 georegion"
 231,2013,1,"within region: lm"
-232,2013,0,NA
+232,2013,1,"within region: lm"
 237,2013,1,"UN r2 georegion"
 244,2013,1,"UN r2 georegion"
 245,2013,1,"UN r2 georegion"
@@ -931,7 +931,7 @@
 58,2014,1,"UN r2 georegion"
 59,2014,0,NA
 60,2014,1,"UN r2 georegion"
-61,2014,0,NA
+61,2014,1,"within region: lm"
 62,2014,0,NA
 63,2014,1,"UN r2 georegion"
 64,2014,0,NA
@@ -967,7 +967,7 @@
 96,2014,1,"within region: lm"
 97,2014,1,"within region: lm"
 98,2014,1,"UN r2 georegion"
-99,2014,1,"UN r2 georegion"
+99,2014,1,"within region: lm"
 100,2014,1,"UN r2 georegion"
 101,2014,0,NA
 102,2014,0,NA
@@ -1003,7 +1003,7 @@
 134,2014,0,NA
 135,2014,0,NA
 136,2014,0,NA
-137,2014,1,"UN r2 georegion"
+137,2014,1,"within region: lm"
 138,2014,0,NA
 139,2014,0,NA
 140,2014,1,"UN r2 georegion"
@@ -1057,7 +1057,7 @@
 192,2014,1,"UN r2 georegion"
 193,2014,1,"UN r2 georegion"
 194,2014,1,"within region: lm"
-195,2014,0,NA
+195,2014,1,"within region: lm"
 196,2014,0,NA
 197,2014,0,NA
 198,2014,1,"within region: lm"
@@ -1086,7 +1086,7 @@
 227,2014,1,"UN r2 georegion"
 228,2014,1,"UN r2 georegion"
 231,2014,1,"within region: lm"
-232,2014,1,"UN r2 georegion"
+232,2014,1,"within region: lm"
 237,2014,1,"UN r2 georegion"
 244,2014,1,"UN r2 georegion"
 245,2014,1,"UN r2 georegion"
@@ -1150,7 +1150,7 @@
 58,2015,1,"UN r2 georegion"
 59,2015,0,NA
 60,2015,1,"UN r2 georegion"
-61,2015,0,NA
+61,2015,1,"within region: lm"
 62,2015,0,NA
 63,2015,1,"UN r2 georegion"
 64,2015,0,NA
@@ -1186,7 +1186,7 @@
 96,2015,1,"within region: lm"
 97,2015,1,"within region: lm"
 98,2015,1,"UN r2 georegion"
-99,2015,0,NA
+99,2015,1,"within region: lm"
 100,2015,1,"UN r2 georegion"
 101,2015,0,NA
 102,2015,0,NA
@@ -1222,7 +1222,7 @@
 134,2015,0,NA
 135,2015,0,NA
 136,2015,0,NA
-137,2015,0,NA
+137,2015,1,"within region: lm"
 138,2015,0,NA
 139,2015,0,NA
 140,2015,1,"UN r2 georegion"
@@ -1276,7 +1276,7 @@
 192,2015,1,"UN r2 georegion"
 193,2015,1,"UN r2 georegion"
 194,2015,1,"within region: lm"
-195,2015,0,NA
+195,2015,1,"within region: lm"
 196,2015,0,NA
 197,2015,0,NA
 198,2015,1,"within region: lm"
@@ -1305,7 +1305,7 @@
 227,2015,1,"UN r2 georegion"
 228,2015,1,"UN r2 georegion"
 231,2015,1,"within region: lm"
-232,2015,0,NA
+232,2015,1,"within region: lm"
 237,2015,1,"UN r2 georegion"
 244,2015,1,"UN r2 georegion"
 245,2015,1,"UN r2 georegion"
@@ -1369,7 +1369,7 @@
 58,2016,1,"UN r2 georegion"
 59,2016,0,NA
 60,2016,1,"UN r2 georegion"
-61,2016,0,NA
+61,2016,1,"within region: lm"
 62,2016,0,NA
 63,2016,1,"UN r2 georegion"
 64,2016,0,NA
@@ -1405,7 +1405,7 @@
 96,2016,1,"within region: lm"
 97,2016,1,"within region: lm"
 98,2016,1,"UN r2 georegion"
-99,2016,0,NA
+99,2016,1,"within region: lm"
 100,2016,1,"UN r2 georegion"
 101,2016,0,NA
 102,2016,0,NA
@@ -1441,7 +1441,7 @@
 134,2016,0,NA
 135,2016,0,NA
 136,2016,0,NA
-137,2016,0,NA
+137,2016,1,"within region: lm"
 138,2016,0,NA
 139,2016,0,NA
 140,2016,1,"UN r2 georegion"
@@ -1495,7 +1495,7 @@
 192,2016,1,"UN r2 georegion"
 193,2016,1,"UN r2 georegion"
 194,2016,1,"within region: lm"
-195,2016,0,NA
+195,2016,1,"within region: lm"
 196,2016,0,NA
 197,2016,0,NA
 198,2016,1,"within region: lm"
@@ -1524,7 +1524,7 @@
 227,2016,1,"UN r2 georegion"
 228,2016,1,"UN r2 georegion"
 231,2016,1,"within region: lm"
-232,2016,0,NA
+232,2016,1,"within region: lm"
 237,2016,1,"UN r2 georegion"
 244,2016,1,"UN r2 georegion"
 245,2016,1,"UN r2 georegion"
@@ -1588,7 +1588,7 @@
 58,2017,1,"UN r2 georegion"
 59,2017,0,NA
 60,2017,1,"UN r2 georegion"
-61,2017,0,NA
+61,2017,1,"within region: lm"
 62,2017,0,NA
 63,2017,1,"UN r2 georegion"
 64,2017,0,NA
@@ -1624,7 +1624,7 @@
 96,2017,1,"within region: lm"
 97,2017,1,"within region: lm"
 98,2017,1,"UN r2 georegion"
-99,2017,0,NA
+99,2017,1,"within region: lm"
 100,2017,1,"UN r2 georegion"
 101,2017,0,NA
 102,2017,0,NA
@@ -1660,7 +1660,7 @@
 134,2017,0,NA
 135,2017,0,NA
 136,2017,0,NA
-137,2017,0,NA
+137,2017,1,"within region: lm"
 138,2017,0,NA
 139,2017,0,NA
 140,2017,1,"UN r2 georegion"
@@ -1714,7 +1714,7 @@
 192,2017,1,"UN r2 georegion"
 193,2017,1,"UN r2 georegion"
 194,2017,1,"within region: lm"
-195,2017,1,"UN r2 georegion"
+195,2017,1,"within region: lm"
 196,2017,0,NA
 197,2017,0,NA
 198,2017,1,"within region: lm"
@@ -1743,7 +1743,7 @@
 227,2017,1,"UN r2 georegion"
 228,2017,1,"UN r2 georegion"
 231,2017,1,"within region: lm"
-232,2017,0,NA
+232,2017,1,"within region: lm"
 237,2017,1,"UN r2 georegion"
 244,2017,1,"UN r2 georegion"
 245,2017,1,"UN r2 georegion"
