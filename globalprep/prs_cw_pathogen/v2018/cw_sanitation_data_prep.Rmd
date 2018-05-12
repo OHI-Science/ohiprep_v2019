@@ -189,6 +189,10 @@ final_sani <- rgn_sani %>%
 ##Check for duplicate regions. If weighed average where included then all rgn_id have 16 values of data.
 table(rgn_sani$rgn_id)
 
+check <- final_sani %>% 
+  filter(is.na(basic_sani_prop))
+
+
 ```
 
 #Gapfilling 1
@@ -197,22 +201,96 @@ Use a linear model within country data to estimate missing years.
 
 
 #Gapfilling 2
-
 Georegional gapfilling for regions that do not have data
 
-with gapfill_georegions.r 
-
-QUESTION!! Where are all this files, have this files been updated in: https://github.com/OHI-Science/ohi-global/tree/draft/eez/layers
+Note to self: Haven't run this code but it is spotential way to gapfill by georegions (based on `tr_data proep`)
+This gapfill will be relevant for Gibraltar rgn_id 60 and Wester Sahara rg_id 63
 
 ```{r}
-georegions <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/layers/rgn_georegions.csv') %>% 
-  spread(level, georgn_id)
+#Bring from ohicore packege georegions and georegions lables as variables
+georegions       <- georegions
+georegion_labels <- georegion_labels
 
 
-sani_georigion_gp <- 
+sani_georgn_gf <- final_sani %>%
+  left_join(georegions, by = 'rgn_id') %>%
+  left_join(georegion_labels, by = 'rgn_id') %>%
+  select(-r0)
+  
+
+# Calculate two different gapfill columns using r2 and r1
+sani_georgn_gf <- sani_georgn_gf %>%
+  group_by(year, r2) %>%
+  mutate(basic_sani_r2 = mean(basic_sani_prop, na.rm=TRUE)) %>%
+  ungroup() %>%
+  group_by(year, r1) %>%
+  mutate(basic_sani_r2 = mean(basic_sani_prop, na.rm=TRUE)) %>%
+  ungroup()
+
+# first gapfill with r2, if no value available use r1; create column indicating whether value was gapfilled and if so, by what method.
+sani_georgn_gf <- sani_georgn_gf %>%
+  mutate(basic_sani_all = ifelse(is.na(basic_sani_prop), basic_sani_r2, basic_sani_prop)) %>%
+  mutate(basic_sani_all = ifelse(is.na(basic_sani_all), basic_sani_r1, basic_sani_all)) %>% 
+  mutate(gapfilled = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_all), "gapfilled", NA)) %>%
+  mutate(method = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r2), "UN georegion (r2)", NA)) %>%
+  mutate(method = ifelse(is.na(basic_sani_prop) & is.na(basic_sani_r2) & !is.na(basic_sani_r1), "UN georegion (r1)", method))
+
 ```
 
 
+#Save gapfilled data
+
+```{r}
+sani_complete <- sani_georgn_gf %>% 
+  select(rgn_id, year, basic_sani_all) %>% 
+  arrange(rgn_id, year)
+
+#write.csv()
+```
+
+
+#Model Trend
+2017 update for new ohi-global framework
+
+```{r}
+
+#copied from update_2017.R
+
+data <- data.frame()
+
+for (year in 2012:2015){ # year = 2012
+  trend <- read.csv(sprintf("globalprep/prs_cw_pathogen/v2016/output/pathogens_popdensity25mi_trend_%sa.csv", year))
+  
+  trend <- trend %>%
+    mutate(year = year) %>%
+    select(rgn_id, year, trend)
+  
+  data <- rbind(data, trend)
+  
+}
+
+write.csv(data, "globalprep/prs_cw_pathogen/v2016/output/pathogens_popdensity25mi_trend_updated.csv",
+          row.names=FALSE)
+
+
+# pressure data
+data <- data.frame()
+
+for (year in 2012:2015){ # year = 2012
+  path_data <- read.csv(sprintf("globalprep/prs_cw_pathogen/v2015/data/po_pathogens_popdensity25mi_%sa.csv", year))
+  
+  path_data <- path_data %>%
+    mutate(year = year) %>%
+    select(rgn_id, year, pressure_score)
+  
+  data <- rbind(data, path_data)
+  
+}
+
+write.csv(data, "globalprep/prs_cw_pathogen/v2016/output/pathogens_popdensity25mi_updated.csv",
+          row.names=FALSE)
+
+```
 
 
 
