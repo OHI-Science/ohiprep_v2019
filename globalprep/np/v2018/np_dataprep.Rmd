@@ -66,12 +66,12 @@ Read and process FAO commodities value and quantity data.
 ## NOTE: This can be run as a loop, but the "value" and "quant" datasets need to be run individually to make sure
 ## there are no problems (after this check, they can be looped for effeciency)
 
-dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2016')
+dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2018')
 
 files <- list.files(dir_fao_data, pattern=glob2rx('*.csv'), full.names=T)
 
 ## To compare to old data:
-# dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2014/raw')
+# dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2016/raw')
  
 # files <- list.files(dir_fao_data, pattern=glob2rx('*.csv'), full.names=T)
 
@@ -79,23 +79,24 @@ for (f in files){ # f = files[1]
   cat(sprintf('\n\n\n====\nfile: %s\n', basename(f)))
   
   
-  d <- read.csv(f, check.names=FALSE, strip.white=TRUE, stringsAsFactors = FALSE) # , stringsAsFactors=T
-  
-## Include only the "Exports" data:
-  d <- d %>%
-    filter(`Trade flow (Trade flow)` == "Exports")
+d <- read.csv(f, check.names=FALSE, strip.white=TRUE, stringsAsFactors = FALSE) # , stringsAsFactors=T
+
   
 ## Specifies that units are tonnes if we are reading in the Commodities Quantity data csv, and usd if we are reading in the Commodities Value data csv
-  units <- c('tonnes','usd')[str_detect(f, c('quant','value'))] # using American English, lowercase
+units <- c('tonnes','usd')[str_detect(f, c('quant','value'))] # using American English, lowercase
 
 ## gather into long format and clean up FAO-specific data foibles
 ## warning: attributes are not identical across measure variables; they will be dropped: this is fine
-    m <- d %>% 
-      rename(country   = `Country (Country)`,
-             commodity = `Commodity (Commodity)`,
-             trade     = `Trade flow (Trade flow)`) %>%
-      gather(year, value, -country, -commodity, -trade, -Unit)
-    
+m <- d %>% 
+  rename(country   = `Country (Country)`,
+         commodity = `Commodity (Commodity)`,
+         trade     = `Trade flow (Trade flow)`) %>%
+  gather(year, value, -country, -commodity, -trade, -Unit)
+
+## Include only the "Exports" data:
+m <- m %>%
+  filter(trade == "Exports")
+
     m <- m %>%
     fao_clean_data() %>%  
       # swaps out FAO-specific codes. NOTE: optional parameter 'sub_0_0' can be

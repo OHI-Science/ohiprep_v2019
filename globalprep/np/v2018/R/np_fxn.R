@@ -6,7 +6,7 @@
 ### Provenance:
 ###  Apr2015: created by Casey O'Hara (oharac)
 
-np_commodity_lookup <- np_function(data, com2prod) {
+np_commodity_lookup <- function(data, com2prod) {
 ### check for commodities in data frame m not found in lookup, per 
 ### product by keyword.  Prints results, nothing returned.
 ###   note: mammal oils excluded per supplemental info, Nature 2012
@@ -25,7 +25,7 @@ np_commodity_lookup <- np_function(data, com2prod) {
     prod <- names(keywords)[i]
     keyword <- keywords[i]
     d_missing_l <- setdiff(
-      commodities[str_detect(commodities, ignore.case(keyword))], 
+      commodities[str_detect(commodities, fixed(keyword, ignore_case=T))], 
       subset(com2prod, product==prod, commodity, drop=T))
     if (length(d_missing_l) > 0) {
       cat(sprintf("\nMISSING in the lookup the following commodites in product='%s' having keyword='%s' in data file %s:\n    %s\n", 
