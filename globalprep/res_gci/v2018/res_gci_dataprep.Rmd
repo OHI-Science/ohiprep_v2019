@@ -24,7 +24,7 @@ This document describes the steps for obtaining and wrangling Global Competitive
 
 # Updates from Previous Assessments
 
-No updates were made to this methodology since the previous assessment.
+Slight change to gapfilling for North Korea. Score was previously assigned to be 2.8, which was the minimum score calculated in the 2014 assessment. Now score is assigned to be the minimum value from recent 6 years of global data (non-gapfilled data). No other updates to the methodology were made.
 
 # Data Sources
 
@@ -53,17 +53,17 @@ Load all relevant libraries, source common.R, and define frequently used pathnam
 ## set options for all chunks in code
 knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.width = 6, fig.height = 4, fig.path = 'figs/')
 
+## UPDATE THESE!
+scenario_yr <- "v2018" # change to reflect assessment year
+data_yr_gci <- "d2018" # change to reflect year of most recently downloaded data
+
 ## comment out when knitting
-# setwd("globalprep/res_gci/")
+# setwd(paste0("globalprep/res_gci/", scenario_yr))
 ```
 
 ```{r file paths}
 ## source common.R
-source("../../src/R/common.R")
-
-## UPDATE THESE!
-scenario_yr <- "v2018" # change to reflect assessment year
-data_yr_gci <- "d2018" # change to reflect year of most recently downloaded data
+source("../../../src/R/common.R")
 
 ## define commonly used file paths
 path_raw_data <- file.path(dir_M, "git-annex/globalprep/_raw_data")
@@ -105,7 +105,7 @@ wef <- wef %>%
   mutate(score = as.numeric(value)) %>% # global competitiveness index score
   mutate(year = as.numeric(as.character(substring(year, 1, 4)))) %>%
   select(year, country, score) %>%
-  filter(year >= 2010) # view to check
+  filter(year >= 2010)
 ```
 
 # Gapfilling
@@ -135,9 +135,9 @@ wef_gf <- wef_gf %>%
     gf_lm <- predict(mod, newdata = .[c('year')])
     data.frame(., gf_lm) # fill with linear model if more than 1 missing year for a region
   }) %>%
-  ungroup()
+  ungroup() # warning message bc some linear models predicted on just 1 year of data, but that's OK
 
-filter(wef_gf, N==4) # check the data, filter by a few different N and countries
+filter(wef_gf, N==4) # check the data: filter by a few different N and countries
 ```
 
 ### Document Gapfilling Part I
@@ -146,12 +146,15 @@ filter(wef_gf, N==4) # check the data, filter by a few different N and countries
 N_max <- max(wef_gf$N) # assumes at least one region with all years of data
 
 wef_gf <- wef_gf %>%
-  mutate(gapfill = ifelse(N < N_max, 1, 0)) %>%
-  mutate(method = ifelse(N == 1, "within region: one value all years", NA)) %>%
-  mutate(method = ifelse(N < N_max & N > 1, "within region: lm", method)) %>%
-  mutate(score = ifelse(N == 1, gf_mean, score)) %>%
-  mutate(score = ifelse(N < N_max & N > 1, gf_lm, score)) %>%
+  mutate(gapfill = ifelse(N < N_max & is.na(score), 1, 0)) %>%
+  mutate(method = ifelse(gapfill == 1 & N == 1, "within region: one value all years", NA)) %>%
+  mutate(method = ifelse(gapfill == 1 & N < N_max & N > 1, "within region: lm", method)) %>%
+  mutate(score = ifelse(gapfill == 1 & N == 1, gf_mean, score)) %>%
+  mutate(score = ifelse(gapfill == 1 & N < N_max & N > 1, gf_lm, score)) %>%
   select(year, country, score, gapfill, method)
+
+summary(wef_gf)
+length(unique(wef_gf$country)) # 159 countries (2018 assessment)
 ```
 
 ### To OHI Regions
@@ -167,7 +170,7 @@ wef_rgn <- name_2_rgn(df_in = wef,
                        flds_unique=c('country','year'))
 
 table(wef_rgn$rgn_id)
-filter(wef_rgn, rgn_id == 209)
+filter(wef_rgn, rgn_id == 209) # region 209 is China
 
 weight_data <- data.frame(country = c("China", "Hong Kong SAR"),
                           population = c(1379000000, 7347000))
@@ -181,17 +184,18 @@ wef_rgn <- wef_rgn %>%
   select(rgn_id, rgn_name, year, gapfill, method, score)
 
 head(wef_rgn, 10) # check
+summary(wef_rgn)
+setdiff(seq(1, 250), unique(wef_rgn$rgn_id)) # missing regions...
 ```
 
 ### Gapfill Part II - Using UN Georegions
 
 ```{r gapfill pt II, using un georegions}
 years <- data.frame(year = min(wef_rgn$year) : max(wef_rgn$year))
-summary(wef_rgn) # 2018 assessment, no NAs in scores column for data configured to OHI regions so no georegion gapfilling
 
 wef_rgn_gf_un <- georegions %>% # georegions sourced from common.R
   merge(years) %>%
-  left_join(wef_rgn)
+  left_join(wef_rgn) # this joining adds in missing regions; will be gapfilled by methods below
 
 ## compare models to select a gapfilling method (which set of georegions to use)
 mod1 <- lm(score ~ as.factor(r2), data = wef_rgn_gf_un)
@@ -214,7 +218,9 @@ wef_rgn_gf_un$score_pred_r2 <- predict(mod_gf_r2, newdata = data.frame(r2 = wef_
 mod_gf_r1 <- lm(score ~ as.factor(r1), data = wef_rgn_gf_un, na.action = na.exclude)
 wef_rgn_gf_un$score_pred_r1 <- predict(mod_gf_r1, newdata = data.frame(r1 = wef_rgn_gf_un$r1))
 
-head(wef_rgn_gf_un)
+head(wef_rgn_gf_un) # checks
+summary(wef_rgn_gf_un)
+
 ```
 
 # Organize and Save
@@ -222,16 +228,17 @@ head(wef_rgn_gf_un)
 ### Organize the Data
 ```{r organize data}
 ## incorporate gapfilling part II (with un georegions) including documentation
-wef <- wef_rgn_gf_un %>%
+## running this line by line is helpful
+wef_gf2 <- wef_rgn_gf_un %>%
   mutate(gapfill = ifelse((is.na(score) & !(is.na(score_pred_r1))), 1, gapfill)) %>%
   mutate(method = ifelse((is.na(score) & !(is.na(score_pred_r2))), "UN r2 georegion", method)) %>%
-  mutate(method = ifelse((is.na(score) & is.na(score_pred_r2) & !is.na(score_pred_r1)), "UN r1 georegion", method)) %>%
+  mutate(method = ifelse((is.na(score) & is.na(score_pred_r2) & !is.na(score_pred_r1)), "UN r1 georegion", method)) %>% # helpful to view here
   mutate(score = ifelse(is.na(score), score_pred_r2, score)) %>%
   mutate(score = ifelse(is.na(score), score_pred_r1, score)) %>%
   select(rgn_id, year, gapfill, method, score)
   
-summary(wef)
-length(unique(wef$rgn_id)) # checks; should be 220 regions
+summary(wef_gf2)
+length(unique(wef_gf2$rgn_id)) # checks; should be 220 regions
 ```
 
 ### Uninhabited Regions
@@ -239,35 +246,44 @@ length(unique(wef$rgn_id)) # checks; should be 220 regions
 These regions will receive an NA for their score (when established population is < 100 people). 
 
 ```{r uninhabited regions}
-uninhab <- read.csv("../../src/LookupTables/rgn_uninhabited_islands.csv") %>%
+uninhab <- read.csv("../../../src/LookupTables/rgn_uninhabited_islands.csv") %>%
   filter(is.na(est_population) | est_population < 100)
 
-wef <- wef %>%
+wef <- wef_gf2 %>%
   mutate(score = ifelse(rgn_id %in% uninhab$rgn_id, NA, score)) %>%
   mutate(gapfill = ifelse(rgn_id %in% uninhab$rgn_id, NA, gapfill)) %>%
   mutate(method = ifelse(rgn_id %in% uninhab$rgn_id, NA, method))
+
+unique(wef[is.na(wef$score),"rgn_id"]) # regions missing scores
+uninhab$rgn_id # check this set and above set of rgn_ids equal
 ```
 
 ### Gapfill North Korea
 
 ```{r gapfill north korea}
 ## appears to have been calculated at one time with real data; fill with the old value of 2.8
-wef <- wef[-which(wef$rgn_id==21),]
-nk <- data.frame(year = min(wef$year):max(wef$year), rgn_id = 21, gapfill = 1, method = "previous score", score = 2.8)
+## gapfilled using un regions r2 above, but replace score (special case)
+nk_gf <- wef %>% 
+  filter(gapfill == 0) %>% 
+  filter(year >= max(year)-5) %>%
+  summarize(score = min(score))
+
+wef <- wef[-which(wef$rgn_id == 21),]
+nk <- data.frame(rgn_id = 21, year = min(wef$year):max(wef$year), gapfill = 1, method = "min from recent 6 years of global data", score = nk_gf)
 wef <- rbind(wef, nk)
 ```
 
 ### Save Data
 
 ```{r save the data}
-gf_data <- wef %>%
-  select(rgn_id, year, gapfill, method)
-write.csv(gf_data, sprintf("%s/output/gci_gf.csv", scenario_yr), row.names = FALSE)
-
 res_data <- wef %>%
   select(rgn_id, year, resilience_score = score) %>%
   mutate(resilience_score = resilience_score/7) # score ranges from 0-7, normalize to range of 0-1
-write.csv(res_data, sprintf("%s/output/gci_res.csv", scenario_yr), row.names = FALSE)
+write.csv(res_data, "output/gci_res.csv", row.names = FALSE)
+
+gf_data <- wef %>%
+  select(rgn_id, year, gapfill, method)
+write.csv(gf_data, "output/gci_gf.csv", row.names = FALSE)
 ```
 
 # Additional Data Checks and/or Meta-Analysis
@@ -276,11 +292,12 @@ write.csv(res_data, sprintf("%s/output/gci_res.csv", scenario_yr), row.names = F
 
 ```{r compare with previous year}
 previous_yr <- as.numeric(substr(scenario_yr, 2, 5)) - 1
-old <- read.csv(sprintf("v%s/output/gci_res.csv", previous_yr)) 
+old <- read.csv(sprintf("../v%s/output/gci_res.csv", previous_yr)) 
 old <- old %>%
   rename(old_score = resilience_score) %>%
   left_join(res_data, by = c("rgn_id", "year"))
 plot(old$old_score, old$resilience_score)
+# identify(old$old_score, old$resilience_score, labels = old$rgn_id) # to look at outliers
 abline(0,1, col="red")
 ```
 
