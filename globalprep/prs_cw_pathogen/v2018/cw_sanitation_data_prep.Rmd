@@ -14,6 +14,8 @@ output:
       in_header: '../../../src/templates/ohi_hdr.html'
 pdf_document:
   toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 [REFERENCE RMD FILE:
@@ -175,7 +177,7 @@ rgn_sani <- name_2_rgn(sani_improved,
 ## Check list to make sure all countries removed are not of interest for the OHI global assesment. In this case West Bank and Gaza Strip is not considered because it is a disputed area and Isle of Man is not consider an OHI region.
 
 ##Check for duplicate regions.
-table(rgn_sani$rgn_id) #for this analysis regions which are duplicated are? rgn_id = 209, 140, 116, 13
+sort(table(rgn_sani$rgn_id)) #for this analysis regions which are duplicated are? rgn_id = 209, 140, 116, 13
 
 ## Each region has 16 years of data in this case. if there are regions with more than 16 values is because in this database they are resported in a higher resolution than the OHI global assesment (eg: China, Hong Kong and Macao are just one region for the OHI global). For these regions a weighted average will be calculated as its final score.
 
@@ -187,19 +189,56 @@ final_sani <- rgn_sani %>%
   summarise(basic_sani_prop= weighted.mean(basic_prop, pop, na.rm = TRUE))
 
 ##Check for duplicate regions. If weighed average where included then all rgn_id have 16 values of data.
-table(rgn_sani$rgn_id)
-
-check <- final_sani %>% 
-  filter(is.na(basic_sani_prop))
-
+sort(table(final_sani$rgn_id))
 
 ```
 
-#Gapfilling 1
+#Gapfilling
+
+Get an idea of what needs to be gapfilled.
+```{r check}
+sani_gf <- final_sani %>% 
+  group_by(rgn_id, rgn_name) %>%
+  mutate(gf_count = sum(is.na(basic_sani_prop)))
+
+summary(sani_gf)
+filter(sani_gf, gf_count>0) %>% 
+  select(rgn_id, rgn_name, gf_count) %>% 
+  unique() %>%
+  data.frame()
+
+# Some regions have no data, let's filter those out
+# number of years of data
+years_data <- mean(table(sani_gf$rgn_id))
+
+sani_gf <- sani_gf %>%
+  filter(gf_count != years_data)
+
+```
+
+## Gapfilling 1: Linear model
 Use a linear model within country data to estimate missing years.
 
+```{r gf_lm}
 
+sani_gf_lm <- sani_gf %>%
+  group_by(rgn_id, rgn_name) %>%
+  do({
+    mod <- lm(basic_sani_prop ~ year, data = .)
+    gf_lm <- predict(mod, newdata = .[c('year')])
+    data.frame(., gf_lm)
+  }) %>%
+  ungroup()
 
+summary(sani_gf_lm)
+
+sani_gf_lm <- sani_gf_lm %>%
+  mutate(gf_lm = ifelse(gf_lm > 1, 1, gf_lm)) %>% # constrain predictions to <1 
+  mutate(method = ifelse(is.na(basic_sani_prop), "lm prediction", NA)) %>%
+  mutate(basic_sani_prop = ifelse(is.na(basic_sani_prop), gf_lm, basic_sani_prop)) %>%
+  select(rgn_id, rgn_name, year, basic_sani_prop, gf_count)
+
+```
 #Gapfilling 2
 Georegional gapfilling for regions that do not have data
 
