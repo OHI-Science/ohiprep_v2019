@@ -13,6 +13,7 @@ np_commodity_lookup <- function(data, com2prod) {
 ###   Powder and waste of shells?
 
   commodities <- sort(as.character(unique(data$commodity)))
+  
   keywords <- c(
     'sponges'     = 'sponge', 
     'fish_oil'    = 'oil', 
@@ -20,6 +21,7 @@ np_commodity_lookup <- function(data, com2prod) {
     'ornamentals' = 'ornamental', 
     'corals'      = 'coral', 
     'shells'      = 'shell')
+  
   for (i in 1:length(keywords)) { 
     # i=1
     prod <- names(keywords)[i]
@@ -27,6 +29,7 @@ np_commodity_lookup <- function(data, com2prod) {
     d_missing_l <- setdiff(
       commodities[str_detect(commodities, fixed(keyword, ignore_case=T))], 
       subset(com2prod, product==prod, commodity, drop=T))
+    
     if (length(d_missing_l) > 0) {
       cat(sprintf("\nMISSING in the lookup the following commodites in product='%s' having keyword='%s' in data file %s:\n    %s\n", 
                   prod, keyword, basename(f), paste(d_missing_l, collapse='\n    ')))

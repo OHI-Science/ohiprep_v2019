@@ -2,7 +2,7 @@ product,commodity
 sponges,Natural sponges nei
 sponges,Natural sponges other than raw
 sponges,Natural sponges raw
-fish_oil,"Alaska pollack oil, nei"
+fish_oil,"Alaska pollock oil, nei"
 fish_oil,Anchoveta oil
 fish_oil,Capelin oil
 fish_oil,"Clupeoid oils, nei"
@@ -29,20 +29,13 @@ seaweeds,Agar agar in powder
 seaweeds,Agar agar in strips
 seaweeds,Agar agar nei
 seaweeds,Carrageen (Chondrus crispus)
-seaweeds,Green laver
-seaweeds,Hizikia fusiforme (brown algae)
 seaweeds,Kelp
 seaweeds,Kelp meal
-seaweeds,"Laver, dry"
-seaweeds,"Laver, nei"
 seaweeds,"Other brown algae (laminaria, eisenia/ecklonia)"
-seaweeds,Other edible seaweeds
 seaweeds,Other inedible seaweeds
 seaweeds,"Seaweeds and other algae, unfit for human consumption, nei"
-seaweeds,"Seaweeds and other algae, fit for human consumption, nei"
 seaweeds,Other red algae
 seaweeds,Other seaweeds and aquatic plants and products thereof
-seaweeds,Undaria pinnafitida (brown algae)
 ornamentals,Ornamental saltwater fish
 ornamentals,Ornamental fish nei
 corals,Coral and the like
