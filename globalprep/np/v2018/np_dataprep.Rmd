@@ -98,11 +98,8 @@ for (f in files){ # f = files[1]
     filter(trade == "Exports")
 
   m <- m %>%
-    fao_clean_data() %>%  
-    # swaps out FAO-specific codes. NOTE: optional parameter 'sub_0_0' can be
-    # passed to control how a '0 0' code is interpreted.
-    select(-trade, -Unit) %>%                   
-  # eliminate 'trade' column
+    fao_clean_data() %>%  # swaps out FAO-specific codes. NOTE: optional parameter 'sub_0_0' can be passed to control how a '0 0' code is interpreted.
+    select(-trade, -Unit) %>% # eliminate 'trade' column
   arrange(country, commodity, is.na(value), year)
 
   
@@ -144,7 +141,7 @@ for (f in files){ # f = files[1]
     
   
   ## combine composite regions
-  ## This function provides a way to maintain NA values when both variables are NA (rather   than turning to zero values)
+  ## When summarizing the dataset, this function provides a modified way to sum the value column while maintaining NA values when both variables are NA (rather than turning to zero values). The function will sum non-NA values normally.
   sum_function <- function(x) {
     if (sum(is.na(x)) == length(x)) 
       return(NA)
@@ -169,17 +166,18 @@ Combining the quantity and value data and a bit of cleaning to remove data prior
 ```{r}
 
 h_tonnes <- read.csv('int/tonnes.csv')
-#h_tonnes_old <- read.csv('../v2014_test/intermediate/tonnes.csv')
-h_usd    <- read.csv('int/usd.csv')
+# h_tonnes_old <- read.csv('../v2014_test/intermediate/tonnes.csv')
 
-### concatenates h_tonnes and h_usd data
-### h includes rgn_name, rgn_id, commodity, product, year, tonnes, usd.
+h_usd <- read.csv('int/usd.csv')
+
+## concatenates h_tonnes and h_usd data
+## h includes rgn_name, rgn_id, commodity, product, year, tonnes, usd.
 h <- h_usd %>%
     full_join(h_tonnes, by=c('rgn_name', 'rgn_id', 'commodity', 'product', 'year')) %>%
     mutate(commodity = as.character(commodity)) %>%
     arrange(rgn_id, product, commodity, year)
 
-### clips out years prior to first reporting year, for each commodity per region
+## clips out years prior to first reporting year, for each commodity per region
 h <- h %>% np_harvest_preclip
 
 ```
