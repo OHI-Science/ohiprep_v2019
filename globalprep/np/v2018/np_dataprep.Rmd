@@ -64,7 +64,7 @@ Read and process FAO commodities value and quantity data.
 ```{r}
 
 ## NOTE: This can be run as a loop, but the "value" and "quant" datasets need to be run individually to make sure
-## there are no problems (after this check, they can be looped for effeciency)
+## there are no problems (after this check, they can be looped for efficiency)
 
 dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2018')
 
@@ -79,86 +79,83 @@ for (f in files){ # f = files[1]
   cat(sprintf('\n\n\n====\nfile: %s\n', basename(f)))
   
   
-d <- read.csv(f, check.names=FALSE, strip.white=TRUE, stringsAsFactors = FALSE) # , stringsAsFactors=T
+  d <- read.csv(f, check.names=FALSE, strip.white=TRUE, stringsAsFactors = FALSE) #          stringsAsFactors=T
 
   
-## Specifies that units are tonnes if we are reading in the Commodities Quantity data csv, and usd if we are reading in the Commodities Value data csv
-units <- c('tonnes','usd')[str_detect(f, c('quant','value'))] # using American English, lowercase
+  ## Specifies that units are tonnes if we are reading in the Commodities Quantity data      csv, and usd if we are reading in the Commodities Value data csv
+  units <- c('tonnes','usd')[str_detect(f, c('quant','value'))] # using American English,    lowercase
 
-## gather into long format and clean up FAO-specific data foibles
-## warning: attributes are not identical across measure variables; they will be dropped: this is fine
-m <- d %>% 
-  rename(country   = `Country (Country)`,
-         commodity = `Commodity (Commodity)`,
-         trade     = `Trade flow (Trade flow)`) %>%
-  gather(year, value, -country, -commodity, -trade, -Unit)
-
-## Include only the "Exports" data:
-m <- m %>%
-  filter(trade == "Exports")
-
-    m <- m %>%
-    fao_clean_data() %>%  
-      # swaps out FAO-specific codes. NOTE: optional parameter 'sub_0_0' can be
-      # passed to control how a '0 0' code is interpreted.
-      select(-trade, -Unit)   %>%                   
-      # eliminate 'trade' column
-    arrange(country, commodity, is.na(value), year)
-
+  ## gather into long format and clean up FAO-specific data foibles
+  ## warning: attributes are not identical across measure variables; they will be dropped:   this is fine
+  m <- d %>% 
+    rename(country   = `Country (Country)`,
+           commodity = `Commodity (Commodity)`,
+           trade     = `Trade flow (Trade flow)`) %>%
+    gather(year, value, -country, -commodity, -trade, -Unit)
   
-## Products join: attach product categories from com2prod, and
-##   filter out all entries that do not match a product category.
-## Note: commodity_lookup is user-defined function to compare 
-##   commodities in data vs commodities in lookup table
-
-## load lookup for converting commodities to products
-  com2prod <- read.csv('raw/commodities2products.csv', na.strings='')
-  
-## version used in 2015: use when testing....
-## com2prod <- read.csv('../v2014_test/commodities2products.csv', na.strings='')
-  
-## Check the current commodity-to-product lookup table.  If necessary, make changes to "raw/commodities2products.csv"
-     np_commodity_lookup(m, com2prod)
-  
-## inner_join will attach product names to matching commodities according to
-## lookup table 'com2prod', and eliminate all commodities that do not appear in the lookup table.
+  ## Include only the "Exports" data:
   m <- m %>%
-    inner_join(com2prod, by='commodity')
+    filter(trade == "Exports")
+
+  m <- m %>%
+    fao_clean_data() %>%  # swaps out FAO-specific codes. NOTE: optional parameter 'sub_0_0' can be passed to control how a '0 0' code is interpreted.
+    select(-trade, -Unit) %>% # eliminate 'trade' column
+  arrange(country, commodity, is.na(value), year)
+
   
+  ## Products join: attach product categories from com2prod, and
+  ##   filter out all entries that do not match a product category.
+  ## Note: commodity_lookup is user-defined function to compare 
+  ##   commodities in data vs commodities in lookup table
   
-  ### Special case: user-defined function deals with 
-  ###   breaking up Antilles into separate reported rgns
+  ## load lookup for converting commodities to products
+  com2prod <- read.csv('raw/commodities2products.csv', na.strings='')
+    
+  ## version used in 2015: use when testing....
+  ## com2prod <- read.csv('../v2014_test/commodities2products.csv', na.strings='')
+    
+  ## Check the current commodity-to-product lookup table.  If necessary, make changes to     "raw/commodities2products.csv"
+  np_commodity_lookup(m, com2prod)
+    
+  ## inner_join will attach product names to matching commodities according to
+  ## lookup table 'com2prod', and eliminate all commodities that do not appear in the lookup table.
+  m <- m %>%
+      inner_join(com2prod, by='commodity')
+    
+    
+  ## Special case: user-defined function deals with 
+  ##   breaking up Antilles into separate reported rgns
   m <- np_split_antilles(m)
-  
-  ### Some changes to region names that aren't working
+    
+  ## Some changes to region names that aren't working
   m <- m %>%
     mutate(country = ifelse(country == "C\xf4te d'Ivoire", "Ivory Coast", country)) %>%
     mutate(country = ifelse(country == "Cura\xe7ao","Curacao", country)) %>%
     mutate(country = ifelse(country == "R\xe9union", "Reunion", country))
-             
+               
+    
+  m_rgn <- name_2_rgn(df_in = m,
+                      fld_name='country', 
+                      flds_unique=c('commodity', 'product', 'year'))
+    
+    
   
-  m_rgn <- name_2_rgn(df_in = m, 
-                       fld_name='country', 
-                       flds_unique=c('commodity', 'product', 'year'))
-  
-  
-  
-    ### combine composite regions
-   # This function provides a way to maintain NA values when both variables are NA (rather than turning to zero values)
-    sum_function <- function(x) {
-      if (sum(is.na(x)) == length(x)) 
-        return(NA)
-      return(sum(x, na.rm = T))}
+  ## combine composite regions
+  ## When summarizing the dataset, this function provides a modified way to sum the value column while maintaining NA values when both variables are NA (rather than turning to zero values). The function will sum non-NA values normally.
+  sum_function <- function(x) {
+    if (sum(is.na(x)) == length(x)) 
+      return(NA)
+    return(sum(x, na.rm = T))}
   
   m_rgn <- m_rgn %>%
     group_by(rgn_id, rgn_name, commodity, product, year) %>%
     summarize(value = sum_function(value)) %>%
     ungroup()
 
-  ### units: rename value field to units based on filename
+  ## units: rename value field to units based on filename
   names(m_rgn)[names(m_rgn) == 'value'] <- units  
   
-  ### output to .csv
+  ## output to .csv
   harvest_out <- sprintf('int/%s.csv', units)
   write.csv(m_rgn, harvest_out, row.names = FALSE, na = '')
 }
@@ -169,17 +166,18 @@ Combining the quantity and value data and a bit of cleaning to remove data prior
 ```{r}
 
 h_tonnes <- read.csv('int/tonnes.csv')
-#h_tonnes_old <- read.csv('../v2014_test/intermediate/tonnes.csv')
-h_usd    <- read.csv('int/usd.csv')
+# h_tonnes_old <- read.csv('../v2014_test/intermediate/tonnes.csv')
 
-### concatenates h_tonnes and h_usd data
-### h includes rgn_name, rgn_id, commodity, product, year, tonnes, usd.
+h_usd <- read.csv('int/usd.csv')
+
+## concatenates h_tonnes and h_usd data
+## h includes rgn_name, rgn_id, commodity, product, year, tonnes, usd.
 h <- h_usd %>%
     full_join(h_tonnes, by=c('rgn_name', 'rgn_id', 'commodity', 'product', 'year')) %>%
     mutate(commodity = as.character(commodity)) %>%
     arrange(rgn_id, product, commodity, year)
 
-### clips out years prior to first reporting year, for each commodity per region
+## clips out years prior to first reporting year, for each commodity per region
 h <- h %>% np_harvest_preclip
 
 ```
