@@ -177,27 +177,28 @@ rgn_sani <- name_2_rgn(sani_improved,
 ## Check list to make sure all countries removed are not of interest for the OHI global assesment. In this case West Bank and Gaza Strip is not considered because it is a disputed area and Isle of Man is not consider an OHI region.
 
 ##Check for duplicate regions.
-sort(table(rgn_sani$rgn_id)) #for this analysis regions which are duplicated are? rgn_id = 209, 140, 116, 13
+sort(table(rgn_sani$rgn_id)) #for this analysis regions which are duplicated are: rgn_id = 209, 140, 116, 13
 
 ## Each region has 16 years of data in this case. if there are regions with more than 16 values is because in this database they are resported in a higher resolution than the OHI global assesment (eg: China, Hong Kong and Macao are just one region for the OHI global). For these regions a weighted average will be calculated as its final score.
 
 
 ##Finalizing the first part of the sanitation preparation by calculating weighted means for the duplicated regions.
 
-final_sani <- rgn_sani %>% 
+sani_final <- rgn_sani %>% 
   group_by(rgn_id, rgn_name, year) %>% 
   summarise(basic_sani_prop= weighted.mean(basic_prop, pop, na.rm = TRUE))
 
 ##Check for duplicate regions. If weighed average where included then all rgn_id have 16 values of data.
-sort(table(final_sani$rgn_id))
+sort(table(sani_final$rgn_id))
 
 ```
 
 #Gapfilling
 
 Get an idea of what needs to be gapfilled.
+
 ```{r check}
-sani_gf <- final_sani %>% 
+sani_gf <- sani_final %>% 
   group_by(rgn_id, rgn_name) %>%
   mutate(gf_count = sum(is.na(basic_sani_prop)))
 
@@ -207,7 +208,8 @@ filter(sani_gf, gf_count>0) %>%
   unique() %>%
   data.frame()
 
-# Some regions have no data, let's filter those out
+# Some regions have no data. Filter those out to be gapfiled latter.
+
 # number of years of data
 years_data <- mean(table(sani_gf$rgn_id))
 
@@ -235,44 +237,49 @@ summary(sani_gf_lm)
 sani_gf_lm <- sani_gf_lm %>%
   mutate(gf_lm = ifelse(gf_lm > 1, 1, gf_lm)) %>% # constrain predictions to <1 
   mutate(method = ifelse(is.na(basic_sani_prop), "lm prediction", NA)) %>%
-  mutate(basic_sani_prop = ifelse(is.na(basic_sani_prop), gf_lm, basic_sani_prop)) %>%
-  select(rgn_id, rgn_name, year, basic_sani_prop, gf_count)
-
+  mutate(basic_sani_prop = ifelse(is.na(basic_sani_prop), gf_lm, basic_sani_prop))
 ```
+
+
 #Gapfilling 2
 Georegional gapfilling for regions that do not have data
 
-Note to self: Haven't run this code but it is spotential way to gapfill by georegions (based on `tr_data proep`)
-This gapfill will be relevant for Gibraltar rgn_id 60 and Wester Sahara rg_id 63
+For this year assesment, this gapfill will be relevant for Gibraltar (rgn_id 60) and Wester Sahara (rg_id 63).
 
 ```{r}
 #Bring from ohicore packege georegions and georegions lables as variables
 georegions       <- georegions
 georegion_labels <- georegion_labels
 
-
-sani_georgn_gf <- final_sani %>%
+sani_georgn_gf <- sani_final %>%
   left_join(georegions, by = 'rgn_id') %>%
   left_join(georegion_labels, by = 'rgn_id') %>%
-  select(-r0)
+  select(-r0) %>%
+  group_by(rgn_id, rgn_name) %>%
+  mutate(gf_count = sum(is.na(basic_sani_prop))) %>% 
+  ungroup()
   
-
 # Calculate two different gapfill columns using r2 and r1
 sani_georgn_gf <- sani_georgn_gf %>%
   group_by(year, r2) %>%
   mutate(basic_sani_r2 = mean(basic_sani_prop, na.rm=TRUE)) %>%
   ungroup() %>%
   group_by(year, r1) %>%
-  mutate(basic_sani_r2 = mean(basic_sani_prop, na.rm=TRUE)) %>%
+  mutate(basic_sani_r1 = mean(basic_sani_prop, na.rm=TRUE)) %>%
   ungroup()
 
 # first gapfill with r2, if no value available use r1; create column indicating whether value was gapfilled and if so, by what method.
 sani_georgn_gf <- sani_georgn_gf %>%
-  mutate(basic_sani_all = ifelse(is.na(basic_sani_prop), basic_sani_r2, basic_sani_prop)) %>%
-  mutate(basic_sani_all = ifelse(is.na(basic_sani_all), basic_sani_r1, basic_sani_all)) %>% 
-  mutate(gapfilled = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_all), "gapfilled", NA)) %>%
+  mutate(basic_sani_georgn = ifelse(is.na(basic_sani_prop), basic_sani_r2, basic_sani_prop)) %>%
+  mutate(basic_sani_georgn = ifelse(is.na(basic_sani_georgn), basic_sani_r1, basic_sani_georgn)) %>% 
+  mutate(gapfilled = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_georgn), "gapfilled", NA)) %>%
   mutate(method = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r2), "UN georegion (r2)", NA)) %>%
   mutate(method = ifelse(is.na(basic_sani_prop) & is.na(basic_sani_r2) & !is.na(basic_sani_r1), "UN georegion (r1)", method))
+
+
+##Filter regions that were gapfilled with georegion method
+rgn_gf2 <- sani_georgn_gf %>%
+  filter(gf_count == years_data)
 
 ```
 
@@ -280,11 +287,15 @@ sani_georgn_gf <- sani_georgn_gf %>%
 #Save gapfilled data
 
 ```{r}
-sani_complete <- sani_georgn_gf %>% 
-  select(rgn_id, year, basic_sani_all) %>% 
-  arrange(rgn_id, year)
+sani_complete <- sani_gf_lm %>%
+  full_join(rgn_gf2, by = NULL) %>% 
+  arrange(rgn_id, year) %>% 
+  mutate(basic_sani_all= ifelse(is.na(basic_sani_prop),basic_sani_georgn,  basic_sani_prop)) %>% 
+  select(rgn_id, rgn_name, year,basic_sani_all, method)
 
-#write.csv()
+#Save data
+write.csv(sani_complete, "intermediate/sani_complete_gf.csv", row.names=FALSE)
+
 ```
 
 
@@ -296,7 +307,6 @@ sani_complete <- sani_georgn_gf %>%
 #copied from update_2017.R
 
 data <- data.frame()
-
 for (year in 2012:2015){ # year = 2012
   trend <- read.csv(sprintf("globalprep/prs_cw_pathogen/v2016/output/pathogens_popdensity25mi_trend_%sa.csv", year))
   
