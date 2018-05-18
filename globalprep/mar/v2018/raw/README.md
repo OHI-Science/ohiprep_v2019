@@ -15,7 +15,7 @@ taxon - OHI assigned taxon for species_Truj categories that are very broad and c
 match_type - describes the level of specificity per observation (e.g. taxon, c_sp, c_sp_env, c_sp_fao, species)
 gapfill - recorded gapfill method
 Maric_sustainability - scaled MSI
-Genetic escapees - 
+Genetic escapees - score originally from Trujillo paper are rescaled from 0-10 to 0-1, where 1 is the highest score. This is based on whether the species being cultured is native or introduced
 
 
 ## Notes:
