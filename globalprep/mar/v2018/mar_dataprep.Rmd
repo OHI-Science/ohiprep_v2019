@@ -331,8 +331,9 @@ Used to estimate total mariculture yield per country.
 
 ```{r}
 
-#write.csv(maric, 'output/MAR_FP_data.csv', row.names=FALSE)
-write.csv(maric, 'output/MAR_FP_data_no_seaweed.csv', row.names=FALSE)
+write.csv(maric, 'output/MAR_FP_data.csv', row.names=FALSE)
+# write.csv(maric, 'output/MAR_FP_data_no_seaweed.csv', row.names=FALSE)
+# write.csv(maric, 'output/MAR_FP_data_no_nei.csv', row.names=FALSE)
 
 ```
 
@@ -504,15 +505,17 @@ mar_harvest_tonnes = mar_sus_final %>%
 
 anyDuplicated(mar_harvest_tonnes) # check for duplications
 
-# write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
-write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_seaweed.csv', row.names=F)
+write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
+# write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_seaweed.csv', row.names=F)
+# write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_nei.csv', row.names=F)
 
 ## save gapfill data for mariculture harvest
 mar_harvest_tonnes_gf = mar_sus_final %>%
   select(rgn_id, taxa_code, year, tonnes=gapfill_fao)
 
-# write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
-write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_seaweed.csv', row.names=F)
+write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
+# write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_seaweed.csv', row.names=F)
+# write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_nei.csv', row.names=F)
 
 
 ## save sustainability scores data for 2012
@@ -523,16 +526,18 @@ mar_sustainability_score = mar_sus_final %>%
 
 anyDuplicated(mar_sustainability_score)
 
-# write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F)
-write.csv(mar_sustainability_score, 'output/mar_sustainability_no_seaweed.csv', row.names=F)
+write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F)
+#write.csv(mar_sustainability_score, 'output/mar_sustainability_no_seaweed.csv', row.names=F)
+#write.csv(mar_sustainability_score, 'output/mar_sustainability_no_nei.csv', row.names=F)
 
 ## save gapfill data for sustainability scores
 mar_sustainability_score_gf = mar_sus_final %>% 
   select(rgn_id, taxa_code, sust_coeff = gapfill_sus) %>% 
   unique()
 
-# write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf.csv', row.names=F)
-write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_seaweed.csv', row.names=F)
+write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf.csv', row.names=F)
+#write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_seaweed.csv', row.names=F)
+#write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_nei.csv', row.names=F)
 
 ```
 
@@ -685,6 +690,8 @@ genEscapes_gf <- tonnes_esc %>%
 ## Save gapfill data
 ```{r}
 write.csv(genEscapes_gf, 'output/GenEsc_gf.csv', row.names=FALSE)
+#write.csv(genEscapes_gf, 'output/GenEsc_gf_no_seaweed.csv', row.names=FALSE)
+#write.csv(genEscapes_gf, 'output/GenEsc_gf_no_nei.csv', row.names=FALSE)
 ```
 
 Obtain escapee data layers from `genEscapes`
@@ -697,6 +704,8 @@ data <- genEscapes %>%
 ## Save escapee pressure layer 
 ```{r}
 write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
+#write.csv(data, 'output/GenEsc_no_seaweed.csv', row.names=FALSE)  
+#write.csv(data, 'output/GenEsc_no_nei.csv', row.names=FALSE)  
 ```
 
 ## Data check
