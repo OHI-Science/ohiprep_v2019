@@ -242,22 +242,21 @@ sani_gf_lm <- sani_gf_lm %>%
 
 
 #Gapfilling 2
-Georegional gapfilling for regions that do not have data
+Georegional gapfilling for regions that do not have data.
 
-For this year assesment, this gapfill will be relevant for Gibraltar (rgn_id 60) and Wester Sahara (rg_id 63).
 
-```{r}
+```{r gf georgn}
 #Bring from ohicore packege georegions and georegions lables as variables
 georegions       <- georegions
 georegion_labels <- georegion_labels
 
-sani_georgn_gf <- sani_final %>%
-  left_join(georegions, by = 'rgn_id') %>%
+year <- min(sani_gf_lm$year):max(sani_gf_lm$year)
+
+sani_georgn_gf <- georegions%>%
+  expand(year, georegions)%>%
+  left_join(sani_gf_lm, by = c('rgn_id', 'year')) %>%
   left_join(georegion_labels, by = 'rgn_id') %>%
-  select(-r0) %>%
-  group_by(rgn_id, rgn_name) %>%
-  mutate(gf_count = sum(is.na(basic_sani_prop))) %>% 
-  ungroup()
+  select(-r0)
   
 # Calculate two different gapfill columns using r2 and r1
 sani_georgn_gf <- sani_georgn_gf %>%
@@ -266,22 +265,23 @@ sani_georgn_gf <- sani_georgn_gf %>%
   ungroup() %>%
   group_by(year, r1) %>%
   mutate(basic_sani_r1 = mean(basic_sani_prop, na.rm=TRUE)) %>%
-  ungroup()
+  ungroup()%>%
+  arrange(rgn_id, year)
 
-# first gapfill with r2, if no value available use r1; create column indicating whether value was gapfilled and if so, by what method.
+
+##First gapfill with r2, if no value available use r1; create column indicating whether value was gapfilled and if so, by what method.
 sani_georgn_gf <- sani_georgn_gf %>%
-  mutate(basic_sani_georgn = ifelse(is.na(basic_sani_prop), basic_sani_r2, basic_sani_prop)) %>%
-  mutate(basic_sani_georgn = ifelse(is.na(basic_sani_georgn), basic_sani_r1, basic_sani_georgn)) %>% 
-  mutate(gapfilled = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_georgn), "gapfilled", NA)) %>%
-  mutate(method = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r2), "UN georegion (r2)", NA)) %>%
-  mutate(method = ifelse(is.na(basic_sani_prop) & is.na(basic_sani_r2) & !is.na(basic_sani_r1), "UN georegion (r1)", method))
-
-
-##Filter regions that were gapfilled with georegion method
-rgn_gf2 <- sani_georgn_gf %>%
-  filter(gf_count == years_data)
+  mutate(method = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r2) & is.na(method) , "UN georegion (r2)", method)) %>%
+  mutate(method = ifelse(is.na(basic_sani_prop) & is.na(basic_sani_r2) & !is.na(basic_sani_r1) & is.na(method), "UN georegion (r1)", method))%>%
+  mutate(basic_sani_prop= ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r2), basic_sani_r2, basic_sani_prop)) %>%
+  mutate(basic_sani_prop = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r1), basic_sani_r1, basic_sani_prop))%>%
+  select(rgn_id,year, basic_sani_prop, method)
 
 ```
+
+#Gapfill 3 - Regions with Administrative countries?????
+There are 7 regions still with no data. All of them have an administrative country.
+Should we gapfill using th administrative country data?
 
 
 #Save gapfilled data
@@ -299,6 +299,22 @@ write.csv(sani_complete, "intermediate/sani_complete_gf.csv", row.names=FALSE)
 ```
 
 
+#Standarizing Sanitation data by population
+```{r}
+population <- read.csv("../../mar_prs_population/v2018/output/mar_pop_25mi.csv")%>%
+  arrange(rgn_id, year)
+
+##Keep an eye on not populated regions. They will have the highest score
+pop_0 <- population%>%
+  filter(popsum==0)
+sort(table(pop_0$rgn_id))
+
+sanitation <- sani_complete
+
+```
+
+
+
 #Model Trend
 2017 update for new ohi-global framework
 
@@ -308,7 +324,7 @@ write.csv(sani_complete, "intermediate/sani_complete_gf.csv", row.names=FALSE)
 
 data <- data.frame()
 for (year in 2012:2015){ # year = 2012
-  trend <- read.csv(sprintf("globalprep/prs_cw_pathogen/v2016/output/pathogens_popdensity25mi_trend_%sa.csv", year))
+  trend <- read.csv(sprintf("globalprep/mar_prs_population/v2018/output/mar_pop25mi_trend_%sa.csv", year))
   
   trend <- trend %>%
     mutate(year = year) %>%
@@ -318,7 +334,7 @@ for (year in 2012:2015){ # year = 2012
   
 }
 
-write.csv(data, "globalprep/prs_cw_pathogen/v2016/output/pathogens_popdensity25mi_trend_updated.csv",
+write.csv(data, "globalprep/prs_cw_pathogen/v2018/output/pathogens_popdensity25mi_trend_updated.csv",
           row.names=FALSE)
 
 
