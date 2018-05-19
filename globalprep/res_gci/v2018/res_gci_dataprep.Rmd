@@ -220,7 +220,6 @@ wef_rgn_gf_un$score_pred_r1 <- predict(mod_gf_r1, newdata = data.frame(r1 = wef_
 
 head(wef_rgn_gf_un) # checks
 summary(wef_rgn_gf_un)
-
 ```
 
 # Organize and Save
@@ -228,11 +227,11 @@ summary(wef_rgn_gf_un)
 ### Organize the Data
 ```{r organize data}
 ## incorporate gapfilling part II (with un georegions) including documentation
-## running this line by line is helpful
+## running this line by line is helpful and view between each line; esp after last mutate(method = ...)
 wef_gf2 <- wef_rgn_gf_un %>%
   mutate(gapfill = ifelse((is.na(score) & !(is.na(score_pred_r1))), 1, gapfill)) %>%
   mutate(method = ifelse((is.na(score) & !(is.na(score_pred_r2))), "UN r2 georegion", method)) %>%
-  mutate(method = ifelse((is.na(score) & is.na(score_pred_r2) & !is.na(score_pred_r1)), "UN r1 georegion", method)) %>% # helpful to view here
+  mutate(method = ifelse((is.na(score) & is.na(score_pred_r2) & !is.na(score_pred_r1)), "UN r1 georegion", method)) %>%
   mutate(score = ifelse(is.na(score), score_pred_r2, score)) %>%
   mutate(score = ifelse(is.na(score), score_pred_r1, score)) %>%
   select(rgn_id, year, gapfill, method, score)
@@ -269,7 +268,8 @@ nk_gf <- wef %>%
   summarize(score = min(score))
 
 wef <- wef[-which(wef$rgn_id == 21),]
-nk <- data.frame(rgn_id = 21, year = min(wef$year):max(wef$year), gapfill = 1, method = "min from recent 6 years of global data", score = nk_gf)
+nk <- data.frame(rgn_id = 21, year = min(wef$year):max(wef$year), gapfill = 1, 
+                 method = "min from recent 6 years of global data", score = nk_gf)
 wef <- rbind(wef, nk)
 ```
 

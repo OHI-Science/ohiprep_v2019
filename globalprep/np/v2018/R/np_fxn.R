@@ -461,7 +461,7 @@ np_datacheck <- function(h) {
 add_georegion_id <- function(k) {
 ### Code from Melanie to attach a georegional id tag to dataframe k.
   
-  key <- read.csv("../../../../ohi-global/eez2014/layers/cntry_rgn.csv")
+  key <- read.csv("../../../../ohi-global/eez/layers/cntry_rgn.csv")
   dups <- key$rgn_id[duplicated(key$rgn_id)]
   key[key$rgn_id %in% dups, ]
   

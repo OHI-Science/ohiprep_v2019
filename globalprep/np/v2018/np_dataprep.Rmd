@@ -196,35 +196,35 @@ Summary of gapfilling that is performed:
 ```{r}  
 
 h <- h %>% np_harvest_gapflag  
-### Adds flag for required gap-filling, based upon NAs in data. 
-### NOTE: Does not perform any gap-filling.
-### At this point, h includes: 
-###   rgn_name   rgn_id   commodity   product   year   tonnes   usd   gapfill
-### 'gapfill' will be in (zerofill, endfill, tbd, none)
+## Adds flag for required gap-filling, based upon NAs in data. 
+## NOTE: Does not perform any gap-filling.
+## At this point, h includes: 
+## rgn_name   rgn_id   commodity   product   year   tonnes   usd   gapfill
+## 'gapfill' will be in (zerofill, endfill, tbd, none)
 
 data_check <- h %>% np_datacheck()
-### for each commodity within each region, creates (but doesn't save...) summary info:
-###   num_years:        the length of the data series for this commodity in this region
-###   usd_unique_nz:    (or 'tns') number of unique non-zero values for usd or tonnes 
-###   usd_na & tns_na:  number of NA occurrences
-###   paired_obs:       number of non-zero paired observations
-###   usd_unique_pairs: (or 'tns') within set of paired observations, count of unique usd and tonnes
-###   unique_pairs:     lesser of usd_unique_pairs and tns_unique_pairs
-###   count_no_data:    number of paired NAs - years with no value reported
+## for each commodity within each region, creates (but doesn't save...) summary info:
+##   num_years:        the length of the data series for this commodity in this region
+##   usd_unique_nz:    (or 'tns') number of unique non-zero values for usd or tonnes 
+##   usd_na & tns_na:  number of NA occurrences
+##   paired_obs:       number of non-zero paired observations
+##   usd_unique_pairs: (or 'tns') within set of paired observations, count of unique usd and tonnes
+##   unique_pairs:     lesser of usd_unique_pairs and tns_unique_pairs
+##   count_no_data:    number of paired NAs - years with no value reported
 
 h <- h %>% np_zerofill
-### for post-reporting years with NA for both tonnes and USD, fill zero - 
-### assumes that non-reporting indicates zero harvest to report.
-### Also cross-fills zeros where one side is 0, other is NA (not flagged as gapfill)
+## for post-reporting years with NA for both tonnes and USD, fill zero - 
+## assumes that non-reporting indicates zero harvest to report.
+## Also cross-fills zeros where one side is 0, other is NA (not flagged as gapfill)
 
-h <- h %>% np_lowdata_filter()
-### Exclude commodities (within a region) that have few non-zero data points.
-### Optional parameter with default: nonzero_h_yr_min = 4
-### NOTE: This filter has consequences for the regression, but also has meaning in terms of 
-###       not inflicting a penalty on regions trying, and then stopping, an experimental harvest.
+h1 <- h %>% np_lowdata_filter()
+## Exclude commodities (within a region) that have few non-zero data points.
+## Optional parameter with default: nonzero_h_yr_min = 4
+## NOTE: This filter has consequences for the regression, but also has meaning in terms of 
+## not inflicting a penalty on regions trying, and then stopping, an experimental harvest.
 
 h <- h %>% add_georegion_id()
-### Melanie's script to add a georegional ID tag based on country keys and IDs.
+## Melanie's script to add a georegional ID tag based on country keys and IDs.
 
 
 h <- h %>% np_regr_fill(years_back = 10, vars = 'td', scope = 'rgn_id')

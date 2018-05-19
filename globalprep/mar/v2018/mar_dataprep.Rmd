@@ -13,7 +13,7 @@ output:
     toc: true
 ---
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2017/mar_dataprep.html]
+[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2017/mar_dataprep.html]?bro
 
 # Summary
 This analysis converts FAO mariculture data into data used to calculate the OHI global mariculture status score.  This also calculates the genetic escapee from mariculture pressure data.
@@ -124,9 +124,9 @@ Update species name in the `raw/species_list.csv` file with names in the `mar` d
 ```{r}
 
 ## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.
-mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+ mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
   select(FAO_name, exclude, alias, Taxon_code)
-#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+# mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
 #  select(FAO_name, exclude_no_seaweed, alias, Taxon_code)
 #mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
 #  select(FAO_name, exclude_no_nei, alias, Taxon_code)
@@ -138,6 +138,7 @@ new.spp # check: if dim has 0 rows it means all match
 ## Remove species not relevant to mariculuture goal (i.e., non-food species)
 mar <- left_join (mar, mar_sp, by="FAO_name") 
 mar <- filter (mar, exclude==0) 
+# mar <- filter (mar, exclude_no_seaweed==0) 
 
 
 ## change names using species alias or FAO species name (global changes)
@@ -331,6 +332,8 @@ Used to estimate total mariculture yield per country.
 ```{r}
 
 write.csv(maric, 'output/MAR_FP_data.csv', row.names=FALSE)
+# write.csv(maric, 'output/MAR_FP_data_no_seaweed.csv', row.names=FALSE)
+# write.csv(maric, 'output/MAR_FP_data_no_nei.csv', row.names=FALSE)
 
 ```
 
@@ -503,12 +506,17 @@ mar_harvest_tonnes = mar_sus_final %>%
 anyDuplicated(mar_harvest_tonnes) # check for duplications
 
 write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
+# write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_seaweed.csv', row.names=F)
+# write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_nei.csv', row.names=F)
 
 ## save gapfill data for mariculture harvest
 mar_harvest_tonnes_gf = mar_sus_final %>%
   select(rgn_id, taxa_code, year, tonnes=gapfill_fao)
 
 write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
+# write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_seaweed.csv', row.names=F)
+# write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_nei.csv', row.names=F)
+
 
 ## save sustainability scores data for 2012
 mar_sustainability_score = mar_sus_final %>% 
@@ -519,6 +527,8 @@ mar_sustainability_score = mar_sus_final %>%
 anyDuplicated(mar_sustainability_score)
 
 write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F)
+#write.csv(mar_sustainability_score, 'output/mar_sustainability_no_seaweed.csv', row.names=F)
+#write.csv(mar_sustainability_score, 'output/mar_sustainability_no_nei.csv', row.names=F)
 
 ## save gapfill data for sustainability scores
 mar_sustainability_score_gf = mar_sus_final %>% 
@@ -526,6 +536,8 @@ mar_sustainability_score_gf = mar_sus_final %>%
   unique()
 
 write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf.csv', row.names=F)
+#write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_seaweed.csv', row.names=F)
+#write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_nei.csv', row.names=F)
 
 ```
 
@@ -678,6 +690,8 @@ genEscapes_gf <- tonnes_esc %>%
 ## Save gapfill data
 ```{r}
 write.csv(genEscapes_gf, 'output/GenEsc_gf.csv', row.names=FALSE)
+#write.csv(genEscapes_gf, 'output/GenEsc_gf_no_seaweed.csv', row.names=FALSE)
+#write.csv(genEscapes_gf, 'output/GenEsc_gf_no_nei.csv', row.names=FALSE)
 ```
 
 Obtain escapee data layers from `genEscapes`
@@ -690,6 +704,8 @@ data <- genEscapes %>%
 ## Save escapee pressure layer 
 ```{r}
 write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
+#write.csv(data, 'output/GenEsc_no_seaweed.csv', row.names=FALSE)  
+#write.csv(data, 'output/GenEsc_no_nei.csv', row.names=FALSE)  
 ```
 
 ## Data check
