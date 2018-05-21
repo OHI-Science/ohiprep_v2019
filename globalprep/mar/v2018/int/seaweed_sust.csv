@@ -1,19 +1,18 @@
-"country","species_fao","fao","environment","species_Truj","taxon","match_type","gapfill","Maric_sustainability","Genetic.escapees"
-"Chile","Gracilaria seaweeds","","","Gracilaria seaweeds","","c_sp","actuals",0.9,1
-"China","Laver (Nori)","","","Laver (Nori)","","c_sp","actuals",0.67,1
-"Italy","Gracilaria seaweeds","","","Gracilaria seaweeds","","c_sp","actuals",0.9,1
-"Japan","Laver (Nori)","","","Laver (Nori)","","c_sp","actuals",0.73,1
-"Korea, Dem. People's Rep","Gracilaria seaweeds","","","Gracilaria seaweeds","","c_sp","actuals",0.83,0.5
-"Korea, Dem. People's Rep","Laver (Nori)","","","Laver (Nori)","","c_sp","actuals",0.67,1
-"Korea, Republic of","Laver (Nori)","","","Laver (Nori)","","c_sp","actuals",0.73,1
-"Namibia","Gracilaria seaweeds","","","Gracilaria seaweeds","","c_sp","actuals",0.8,1
-"Peru","Gracilaria seaweeds","","","Gracilaria seaweeds","","c_sp","actuals",0.83,1
-"Philippines","Gracilaria seaweeds","","","Gracilaria seaweeds","","c_sp","actuals",0.83,1
-"Russian Federation","Brown seaweeds","","","Brown seaweeds","","c_sp","actuals",0.93,1
-"South Africa","Aquatic plants nei","","","Aquatic plants nei","","c_sp","actuals",0.87,0.7
-"South Africa","Gracilaria seaweeds","","","Gracilaria seaweeds","","c_sp","actuals",0.87,1
-"Taiwan Province of China","Laver (Nori)","","","Laver (Nori)","","c_sp","actuals",0.67,1
-"Ukraine","Aquatic plants nei","","","Aquatic plants nei","","c_sp","actuals",0.8,1
-"Viet Nam","Gracilaria seaweeds","","","Gracilaria seaweeds","","c_sp","actuals",0.83,1
-NA,"Gracilaria seaweeds","","","Gracilaria seaweeds","","species","sp_average",0.85,NA
-NA,"Laver (Nori)","","","Laver (Nori)","","species","sp_average",0.693333333,NA
+country,species_fao,fao,environment,species_Truj,taxon,match_type,gapfill,Maric_sustainability,Genetic.escapees
+NA,Laver (Nori),,,Laver (Nori),,species,sp_average,0.693333333,1
+NA,Nori nei,,,Laver (Nori),,species,sp_average,0.693333333,1
+NA,Bright green nori,,,Laver (Nori),,species,sp_average,0.693333333,1
+NA,Green laver,,,Laver (Nori),,species,sp_average,0.693333333,1
+NA,Brown seaweeds,,,Brown seaweeds,,species,sp_average,0.93,1
+NA,[Chondracanthus chamissoi],,,[Chondracanthus chamissoi],AL,taxon,taxon_average,0.83,0.95
+NA,[Porphyra columbina],,,[Porphyra columbina],AL,taxon,taxon_average,0.83,0.95
+NA,Babberlocks,,,Babberlocks,AL,taxon,taxon_average,0.83,0.95
+NA,Caulerpa seaweeds,,,Caulerpa seaweeds,AL,taxon,taxon_average,0.83,0.95
+NA,Coarse seagrape,,,Coarse seagrape,AL,taxon,taxon_average,0.83,0.95
+NA,Dulse,,,Dulse,AL,taxon,taxon_average,0.83,0.95
+NA,Fusiform sargassum,,,Fusiform sargassum,AL,taxon,taxon_average,0.83,0.95
+NA,Japanese kelp,,,Japanese kelp,AL,taxon,taxon_average,0.83,0.95
+NA,Mozuku,,,Mozuku,AL,taxon,taxon_average,0.83,0.95
+NA,Seaweeds nei,,,Seaweeds nei,AL,taxon,taxon_average,0.83,0.95
+NA,Wakame,,,Wakame,AL,taxon,taxon_average,0.83,0.95
+NA,Wakame nei,,,Wakame nei,AL,taxon,taxon_average,0.83,0.95
