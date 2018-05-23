@@ -250,14 +250,23 @@ Georegional gapfilling for regions that do not have data.
 georegions       <- georegions
 georegion_labels <- georegion_labels
 
-year <- min(sani_gf_lm$year):max(sani_gf_lm$year)
-
 sani_georgn_gf <- georegions%>%
   expand(year, georegions)%>%
   left_join(sani_gf_lm, by = c('rgn_id', 'year')) %>%
   left_join(georegion_labels, by = 'rgn_id') %>%
   select(-r0)
-  
+
+#Identify inhabitaed regions
+rgn_inhab <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/LookupTables/rgn_uninhabited_islands.csv')
+
+rgn_inhab <- rgn_inhab %>% 
+  mutate(inhab = 1) %>% 
+  select(rgn_id, inhab)
+
+sani_georgn_gf <- sani_georgn_gf %>% 
+  left_join(rgn_inhab, by= 'rgn_id')
+
+
 # Calculate two different gapfill columns using r2 and r1
 sani_georgn_gf <- sani_georgn_gf %>%
   group_by(year, r2) %>%
@@ -273,28 +282,31 @@ sani_georgn_gf <- sani_georgn_gf %>%
 sani_georgn_gf <- sani_georgn_gf %>%
   mutate(method = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r2) & is.na(method) , "UN georegion (r2)", method)) %>%
   mutate(method = ifelse(is.na(basic_sani_prop) & is.na(basic_sani_r2) & !is.na(basic_sani_r1) & is.na(method), "UN georegion (r1)", method))%>%
+  mutate(method = ifelse(is.na(inhab), method, 'inhab')) %>% 
   mutate(basic_sani_prop= ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r2), basic_sani_r2, basic_sani_prop)) %>%
   mutate(basic_sani_prop = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r1), basic_sani_r1, basic_sani_prop))%>%
-  select(rgn_id,year, basic_sani_prop, method)
+  mutate(basic_sani_prop = ifelse(is.na(inhab), basic_sani_prop, 1)) %>% #all inhabitated regions are given the maximun score 1.
+  select(rgn_id, year, basic_sani_prop, method, inhab)
+
+#See regions that have not been gapfilled
+filter(sani_georgn_gf, is.na(basic_sani_prop)) %>% 
+  select(rgn_id, basic_sani_prop) %>% 
+  unique() %>%
+  data.frame()
+#Check for inhabited rigions
+filter(sani_georgn_gf, !is.na(inhab)) %>% 
+  select(rgn_id, basic_sani_prop, method) %>% 
+  unique() %>%
+  data.frame()
 
 ```
-
-#Gapfill 3 - Regions with Administrative countries?????
-There are 7 regions still with no data. All of them have an administrative country.
-Should we gapfill using th administrative country data?
 
 
 #Save gapfilled data
 
 ```{r}
-sani_complete <- sani_gf_lm %>%
-  full_join(rgn_gf2, by = NULL) %>% 
-  arrange(rgn_id, year) %>% 
-  mutate(basic_sani_all= ifelse(is.na(basic_sani_prop),basic_sani_georgn,  basic_sani_prop)) %>% 
-  select(rgn_id, rgn_name, year,basic_sani_all, method)
-
 #Save data
-write.csv(sani_complete, "intermediate/sani_complete_gf.csv", row.names=FALSE)
+write.csv(sani_georgn_gf, "intermediate/sani_georgn_gf.csv", row.names=FALSE)
 
 ```
 
@@ -305,11 +317,20 @@ population <- read.csv("../../mar_prs_population/v2018/output/mar_pop_25mi.csv")
   arrange(rgn_id, year)
 
 ##Keep an eye on not populated regions. They will have the highest score
+#Note: there is a difference between the list of islands with no population in the mar_pop_25mi dataset witht the nhabit list in github. In the mar_pop_25mi, rgn_id 144 - Jan Mayen is not identified as a pop_0 region qhile in the github list it is.
+
+#identify inhabited regions (popsum=0)
 pop_0 <- population%>%
   filter(popsum==0)
 sort(table(pop_0$rgn_id))
 
-sanitation <- sani_complete
+#Min and max year of data
+minyear <- min(sani_georgn_gf$year)
+maxyear <- max(sani_georgn_gf$year)
+
+#standarization: convert proportion with acces to sanitation to proportion without access to sanitation (poopers! lack of access*population density)
+
+san
 
 ```
 
