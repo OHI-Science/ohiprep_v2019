@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Thu May 24 13:05:03 2018 by isu" />
+<meta name="author" content="Compiled on Thu May 24 15:18:45 2018 by isu" />
 
 
 <title>OHI: Natural Products</title>
@@ -143,7 +143,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">OHI: Natural Products</h1>
-<h4 class="author"><em><em>Compiled on Thu May 24 13:05:03 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu May 24 15:18:45 2018 by isu</em></em></h4>
 
 </div>
 
@@ -153,9 +153,17 @@ $(document).ready(function () {
 <li><a href="#updates-from-previous-assessment"><span class="toc-section-number">2</span> Updates from previous assessment</a></li>
 <li><a href="#data-source"><span class="toc-section-number">3</span> Data Source</a></li>
 <li><a href="#methods"><span class="toc-section-number">4</span> Methods</a></li>
-<li><a href="#fao-commodities-value-and-quantity"><span class="toc-section-number">5</span> FAO Commodities: Value and Quantity</a></li>
-<li><a href="#gapfilling"><span class="toc-section-number">6</span> Gapfilling</a></li>
-<li><a href="#final-data-preparation"><span class="toc-section-number">7</span> Final data preparation</a></li>
+<li><a href="#import-raw-data-fao-commodities"><span class="toc-section-number">5</span> Import Raw Data: FAO Commodities</a></li>
+<li><a href="#data-wrangle"><span class="toc-section-number">6</span> Data Wrangle</a></li>
+<li><a href="#gapfilling"><span class="toc-section-number">7</span> Gapfilling</a></li>
+<li><a href="#final-data-wranglng"><span class="toc-section-number">8</span> Final Data Wranglng</a><ul>
+<li><a href="#summarize-values"><span class="toc-section-number">8.1</span> Summarize values</a></li>
+<li><a href="#quick-data-check"><span class="toc-section-number">8.2</span> Quick Data Check</a></li>
+<li><a href="#calculate-rolling-averages"><span class="toc-section-number">8.3</span> Calculate Rolling Averages</a></li>
+<li><a href="#score-harvest-relative-to-peaks"><span class="toc-section-number">8.4</span> Score Harvest Relative to Peaks</a></li>
+<li><a href="#save-data-layer"><span class="toc-section-number">8.5</span> Save data layer</a></li>
+<li><a href="#final-data-check"><span class="toc-section-number">8.6</span> Final data check</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -199,7 +207,9 @@ $(document).ready(function () {
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     as.Date, as.Date.numeric</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## comment out when knitting
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+
+## comment out when knitting
 <span class="co">#setwd(&quot;globalprep/np/v2018&quot;)</span>
 
 
@@ -208,9 +218,9 @@ $(document).ready(function () {
 <span class="kw">source</span>(<span class="st">'../../../src/R/common.R'</span>) <span class="co"># directory locations</span>
 <span class="kw">source</span>(<span class="st">'R/np_fxn.R'</span>)</code></pre></div>
 </div>
-<div id="fao-commodities-value-and-quantity" class="section level1">
-<h1><span class="header-section-number">5</span> FAO Commodities: Value and Quantity</h1>
-<p>Read and process FAO commodities value and quantity data.</p>
+<div id="import-raw-data-fao-commodities" class="section level1">
+<h1><span class="header-section-number">5</span> Import Raw Data: FAO Commodities</h1>
+<p>Simultaneously read and process FAO commodities value and quantity data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## <span class="al">NOTE</span>: This can be run as a loop, but the &quot;value&quot; and &quot;quant&quot; datasets need to be run individually to make sure
 ## there are no problems (after this check, they can be looped for efficiency)
 
@@ -549,6 +559,9 @@ files &lt;-<span class="st"> </span><span class="kw">list.files</span>(dir_fao_d
 ##  [7] &quot;Russian Federation&quot;    &quot;Serbia and Montenegro&quot;
 ##  [9] &quot;Sudan&quot;                 &quot;Sudan (former)&quot;       
 ## [11] &quot;Un. Sov. Soc. Rep.&quot;</code></pre>
+</div>
+<div id="data-wrangle" class="section level1">
+<h1><span class="header-section-number">6</span> Data Wrangle</h1>
 <p>Combining the quantity and value data and a bit of cleaning to remove data prior to first reporting year for each commodity and region.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h_tonnes &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'int/tonnes.csv'</span>)
 <span class="co"># h_tonnes_old &lt;- read.csv('../v2014_test/intermediate/tonnes.csv')</span>
@@ -566,7 +579,7 @@ h &lt;-<span class="st"> </span>h_usd <span class="op">%&gt;%</span>
 h &lt;-<span class="st"> </span>h <span class="op">%&gt;%</span><span class="st"> </span>np_harvest_preclip</code></pre></div>
 </div>
 <div id="gapfilling" class="section level1">
-<h1><span class="header-section-number">6</span> Gapfilling</h1>
+<h1><span class="header-section-number">7</span> Gapfilling</h1>
 <p>See issue #397 for details and debate and pretty graphs. Summary of gapfilling that is performed:</p>
 <ul>
 <li>Zero-fill: for observations with NAs for both values (tonnes &amp; usd), fill both as zero. Also cross-fills zeros where one value is zero, other is NA.</li>
@@ -635,8 +648,10 @@ h_gap &lt;-<span class="st"> </span>h <span class="op">%&gt;%</span>
 
 <span class="kw">write.csv</span>(h_gap, <span class="st">'output/np_harvest_tonnes_gf.csv'</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">na =</span> <span class="st">''</span>)</code></pre></div>
 </div>
-<div id="final-data-preparation" class="section level1">
-<h1><span class="header-section-number">7</span> Final data preparation</h1>
+<div id="final-data-wranglng" class="section level1">
+<h1><span class="header-section-number">8</span> Final Data Wranglng</h1>
+<div id="summarize-values" class="section level2">
+<h2><span class="header-section-number">8.1</span> Summarize values</h2>
 <p>Summarize each product per country per year, e.g., all corals in Albania in 2011. And, do some error checking.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h_prod &lt;-<span class="st"> </span>h_comm <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(rgn_name, rgn_id, product, year) <span class="op">%&gt;%</span>
@@ -644,1675 +659,144 @@ h_gap &lt;-<span class="st"> </span>h <span class="op">%&gt;%</span>
             <span class="dt">usd =</span> <span class="kw">sum</span>(usd, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))
           
 ## Error-checking and table exports
-<span class="kw">stopifnot</span>(<span class="kw">sum</span>(<span class="kw">duplicated</span>(h_prod[ , <span class="kw">c</span>(<span class="st">'rgn_id'</span>, <span class="st">'product'</span>, <span class="st">'year'</span>)])) <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)
-
-### Check: wide with all commmodities and product subtotal for comparison with input data
-h_x_tonnes &lt;-<span class="st"> </span>h_comm <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="kw">stopifnot</span>(<span class="kw">sum</span>(<span class="kw">duplicated</span>(h_prod[ , <span class="kw">c</span>(<span class="st">'rgn_id'</span>, <span class="st">'product'</span>, <span class="st">'year'</span>)])) <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)</code></pre></div>
+</div>
+<div id="quick-data-check" class="section level2">
+<h2><span class="header-section-number">8.2</span> Quick Data Check</h2>
+<p>Look at wide format with all commmodities and product subtotal (where commodity column value is “Z_TOTAL”), compared with the input data prior to summing.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h_x_tonnes &lt;-<span class="st"> </span>h_comm <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">bind_rows</span>(<span class="kw">mutate</span>(h_prod, <span class="dt">commodity=</span><span class="st">'Z_TOTAL'</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(rgn_name, rgn_id, commodity, product, year, tonnes) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">arrange</span>(rgn_name, product, commodity, year) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">spread</span>(year, tonnes)
+
 h_x_usd &lt;-<span class="st"> </span>h_comm <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">bind_rows</span>(<span class="kw">mutate</span>(h_prod, <span class="dt">commodity=</span><span class="st">'Z_TOTAL'</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(rgn_name, rgn_id, commodity, product, year, usd) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">arrange</span>(rgn_name, product, commodity, year) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">spread</span>(year, usd)
+
+## Check a random country and commodity
+australia &lt;-<span class="st"> </span>h_x_usd <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(product <span class="op">==</span><span class="st"> &quot;ornamentals&quot;</span>, rgn_name <span class="op">==</span><span class="st"> &quot;Australia&quot;</span>) 
+australia</code></pre></div>
+<pre><code>## # A tibble: 3 x 44
+##   rgn_name  rgn_id commodity    product `1976` `1977` `1978` `1979` `1980`
+##   &lt;fct&gt;      &lt;int&gt; &lt;chr&gt;        &lt;fct&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Australia     16 Ornamental … orname…     NA     NA     NA     NA     NA
+## 2 Australia     16 Ornamental … orname…     NA     NA     NA     NA     NA
+## 3 Australia     16 Z_TOTAL      orname…     NA     NA     NA     NA     NA
+## # ... with 35 more variables: `1981` &lt;dbl&gt;, `1982` &lt;dbl&gt;, `1983` &lt;dbl&gt;,
+## #   `1984` &lt;dbl&gt;, `1985` &lt;dbl&gt;, `1986` &lt;dbl&gt;, `1987` &lt;dbl&gt;, `1988` &lt;dbl&gt;,
+## #   `1989` &lt;dbl&gt;, `1990` &lt;dbl&gt;, `1991` &lt;dbl&gt;, `1992` &lt;dbl&gt;, `1993` &lt;dbl&gt;,
+## #   `1994` &lt;dbl&gt;, `1995` &lt;dbl&gt;, `1996` &lt;dbl&gt;, `1997` &lt;dbl&gt;, `1998` &lt;dbl&gt;,
+## #   `1999` &lt;dbl&gt;, `2000` &lt;dbl&gt;, `2001` &lt;dbl&gt;, `2002` &lt;dbl&gt;, `2003` &lt;dbl&gt;,
+## #   `2004` &lt;dbl&gt;, `2005` &lt;dbl&gt;, `2006` &lt;dbl&gt;, `2007` &lt;dbl&gt;, `2008` &lt;dbl&gt;,
+## #   `2009` &lt;dbl&gt;, `2010` &lt;dbl&gt;, `2011` &lt;dbl&gt;, `2012` &lt;dbl&gt;, `2013` &lt;dbl&gt;,
+## #   `2014` &lt;dbl&gt;, `2015` &lt;dbl&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Can open up in Excel to compare subtotals per country-product-year
 <span class="kw">write.csv</span>(h_x_tonnes, <span class="st">'int/np_harvest_tonnes_wide.csv'</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">na =</span> <span class="st">'NA'</span>)
 <span class="kw">write.csv</span>(h_x_usd,    <span class="st">'int/np_harvest_usd_wide.csv'</span>,    <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">na =</span> <span class="st">'NA'</span>)</code></pre></div>
+</div>
+<div id="calculate-rolling-averages" class="section level2">
+<h2><span class="header-section-number">8.3</span> Calculate Rolling Averages</h2>
 <p>Determine rolling averages for tonnes and USD in order to determine peak values. This is based upon total harvests by product group, not individual commodity.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">year_max &lt;-<span class="st"> </span><span class="kw">max</span>(h_prod<span class="op">$</span>year)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Find max year in the summarized data table</span>
+year_max &lt;-<span class="st"> </span><span class="kw">max</span>(h_prod<span class="op">$</span>year)
 
-
-j &lt;-<span class="st"> </span>h_prod <span class="op">%&gt;%</span>
+roll_prod &lt;-<span class="st"> </span>h_prod <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">arrange</span>(rgn_id, product, year) <span class="op">%&gt;%</span>
-<span class="st">   </span><span class="kw">group_by</span>(rgn_id, product) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(rgn_id, product) <span class="op">%&gt;%</span>
 <span class="st">        </span><span class="kw">mutate</span>(
           <span class="dt">tonnes_rollmean =</span> <span class="kw">rollapply</span>(tonnes, <span class="dt">width=</span><span class="dv">4</span>, <span class="dt">FUN=</span>mean, <span class="dt">align=</span><span class="st">'right'</span>, <span class="dt">partial=</span><span class="ot">TRUE</span>, <span class="dt">na.rm=</span><span class="ot">FALSE</span>),
           <span class="dt">usd_rollmean    =</span> <span class="kw">rollapply</span>(   usd, <span class="dt">width=</span><span class="dv">4</span>, <span class="dt">FUN=</span>mean, <span class="dt">align=</span><span class="st">'right'</span>, <span class="dt">partial=</span><span class="ot">TRUE</span>, <span class="dt">na.rm=</span><span class="ot">FALSE</span>)) <span class="op">%&gt;%</span>
 <span class="st">        </span><span class="kw">rename</span>(
-          <span class="dt">tonnes_orig =</span> tonnes, ### prevent overwriting of reported and gapfilled values
-          <span class="dt">usd_orig    =</span> usd) <span class="op">%&gt;%</span><span class="st">    </span>### prevent overwriting of reported and gapfilled values
-<span class="st">    </span><span class="kw">mutate</span>(
-      <span class="dt">tonnes =</span> <span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(tonnes_rollmean), tonnes_rollmean, tonnes),
-      <span class="dt">usd    =</span> <span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(   usd_rollmean),    usd_rollmean,    usd)) <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">select</span>(rgn_id, rgn_name, product, year, tonnes, usd, tonnes_orig, usd_orig)</code></pre></div>
+          <span class="dt">tonnes_orig =</span> tonnes, <span class="co"># prevent overwriting of reported and gapfilled values</span>
+          <span class="dt">usd_orig    =</span> usd) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># prevent overwriting of reported and gapfilled values</span>
+<span class="st">  </span><span class="kw">mutate</span>(
+      <span class="dt">tonnes =</span> <span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(tonnes_rollmean), tonnes_rollmean, tonnes_orig),
+      <span class="dt">usd    =</span> <span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(usd_rollmean),    usd_rollmean,    usd_orig)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(rgn_id, rgn_name, product, year, tonnes, usd, tonnes_orig, usd_orig)</code></pre></div>
+</div>
+<div id="score-harvest-relative-to-peaks" class="section level2">
+<h2><span class="header-section-number">8.4</span> Score Harvest Relative to Peaks</h2>
 <p>Score harvest (tonnes and usd) relative to peaks. Output values as .csvs. Perform this for all given scenarios, using a for loop.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">buffer  &lt;-<span class="st">  </span><span class="fl">0.35</span> 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">buffer  &lt;-<span class="st">  </span><span class="fl">0.35</span> <span class="co"># 35% buffer (from OHI Methods)</span>
 recent_years  &lt;-<span class="st">  </span><span class="dv">10</span>
 
-j &lt;-<span class="st"> </span>j <span class="op">%&gt;%</span>
+## Find peak harvest per region-product and apply conservative buffer (scale down)
+## Find max USD value over the last 10 years
+peak_prod &lt;-<span class="st"> </span>roll_prod <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">group_by</span>(rgn_id, product) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">tonnes_peak =</span> <span class="kw">max</span>(tonnes, <span class="dt">na.rm=</span>T)  <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>buffer)) <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">usd_peak =</span> <span class="kw">max</span>(   usd[year <span class="op">&gt;=</span><span class="st"> </span>(year_max <span class="op">-</span><span class="st"> </span>recent_years)], <span class="dt">na.rm=</span>T)) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="dt">usd_peak =</span> <span class="kw">max</span>(usd[year <span class="op">&gt;=</span><span class="st"> </span>(year_max <span class="op">-</span><span class="st"> </span>recent_years)], <span class="dt">na.rm=</span>T)) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">ungroup</span>() 
 
-### all years (within a region) have the same usd_peak values, but some years don't have all the products. Use the most recent year as this is considered the most current product list. 
-j_weights &lt;-<span class="st"> </span>j <span class="op">%&gt;%</span>
-<span class="st">    </span><span class="kw">filter</span>(year<span class="op">==</span><span class="dv">2013</span>) <span class="op">%&gt;%</span>
+## for each product, all years (within a region) have the same usd_peak values, but some years don't have all the products. Use the most recent year as this is considered the most current product list. 
+prod_weights &lt;-<span class="st"> </span>peak_prod <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">filter</span>(year<span class="op">==</span>year_max) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="kw">group_by</span>(rgn_id) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">mutate</span>(
-      <span class="dt">usd_peak_allproducts    =</span> <span class="kw">sum</span>(usd_peak, <span class="dt">na.rm=</span>T),
+      <span class="dt">usd_peak_allproducts =</span> <span class="kw">sum</span>(usd_peak, <span class="dt">na.rm=</span>T),
       <span class="dt">prod_weight =</span> usd_peak <span class="op">/</span><span class="st"> </span>usd_peak_allproducts) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="dv">2013</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> year_max) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">select</span>(rgn_id, year, product, <span class="dt">weight =</span> prod_weight)
 
 ## Determine relative status:
-  j &lt;-<span class="st"> </span>j <span class="op">%&gt;%</span><span class="st"> </span>
+  smooth_prod &lt;-<span class="st"> </span>peak_prod <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">tonnes_rel =</span> <span class="kw">ifelse</span>(tonnes <span class="op">&gt;=</span><span class="st"> </span>tonnes_peak, <span class="dv">1</span>, tonnes <span class="op">/</span><span class="st"> </span>tonnes_peak))</code></pre></div>
-<p>Write .csv files.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">### Write entire data frame to .csv:
-<span class="kw">write.csv</span>(j, <span class="st">'int/np_harvest_smoothed_data.csv'</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">na =</span> <span class="st">''</span>)
+</div>
+<div id="save-data-layer" class="section level2">
+<h2><span class="header-section-number">8.5</span> Save data layer</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Write entire data frame to .csv:
+<span class="kw">write.csv</span>(smooth_prod, <span class="st">'int/np_harvest_smoothed_data.csv'</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">na =</span> <span class="st">''</span>)
 
-### Write individual data layers:
-### Write NP weights layer also used to calculate pressures and resilience:
-<span class="kw">write.csv</span>(j_weights, <span class="st">'output/np_harvest_weights_from_usd.csv'</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">na =</span> <span class="st">''</span>)
+## Write individual data layers:
+## Write NP weights layer also used to calculate pressures and resilience:
+<span class="kw">write.csv</span>(prod_weights, <span class="st">'output/np_harvest_weights_from_usd.csv'</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">na =</span> <span class="st">''</span>)
 
-tonnes &lt;-<span class="st"> </span>j <span class="op">%&gt;%</span>
+## Save tonnes data
+tonnes &lt;-<span class="st"> </span>smooth_prod <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(rgn_id, product, year, tonnes) 
 <span class="kw">write.csv</span>(tonnes, <span class="st">'output/np_harvest_tonnes.csv'</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">na =</span> <span class="st">''</span>)
 
-tonnes_rel &lt;-<span class="st"> </span>j <span class="op">%&gt;%</span>
+## Save relative tonnes data
+tonnes_rel &lt;-<span class="st"> </span>smooth_prod <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(rgn_id, product, year, tonnes_rel) 
 <span class="kw">write.csv</span>(tonnes_rel, <span class="st">'output/np_harvest_tonnes_rel.csv'</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">na =</span> <span class="st">''</span>)</code></pre></div>
+</div>
+<div id="final-data-check" class="section level2">
+<h2><span class="header-section-number">8.6</span> Final data check</h2>
 <p>Comparing against last year’s data</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Replique de Congo, due to revision of 2011 data for ornamentals (and only one product that isn't a big producer)
 new &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/tonnes.csv&quot;</span>)
-old &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../v2014_test/intermediate/tonnes.csv&quot;</span>)
+old &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../v2016/int/tonnes.csv&quot;</span>) <span class="co"># CHANGE YEAR</span>
 
-<span class="kw">filter</span>(new, rgn_id<span class="op">==</span><span class="dv">115</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(commodity, year)</code></pre></div>
-<pre><code>##     rgn_id           rgn_name
-## 1      115 Dominican Republic
-## 2      115 Dominican Republic
-## 3      115 Dominican Republic
-## 4      115 Dominican Republic
-## 5      115 Dominican Republic
-## 6      115 Dominican Republic
-## 7      115 Dominican Republic
-## 8      115 Dominican Republic
-## 9      115 Dominican Republic
-## 10     115 Dominican Republic
-## 11     115 Dominican Republic
-## 12     115 Dominican Republic
-## 13     115 Dominican Republic
-## 14     115 Dominican Republic
-## 15     115 Dominican Republic
-## 16     115 Dominican Republic
-## 17     115 Dominican Republic
-## 18     115 Dominican Republic
-## 19     115 Dominican Republic
-## 20     115 Dominican Republic
-## 21     115 Dominican Republic
-## 22     115 Dominican Republic
-## 23     115 Dominican Republic
-## 24     115 Dominican Republic
-## 25     115 Dominican Republic
-## 26     115 Dominican Republic
-## 27     115 Dominican Republic
-## 28     115 Dominican Republic
-## 29     115 Dominican Republic
-## 30     115 Dominican Republic
-## 31     115 Dominican Republic
-## 32     115 Dominican Republic
-## 33     115 Dominican Republic
-## 34     115 Dominican Republic
-## 35     115 Dominican Republic
-## 36     115 Dominican Republic
-## 37     115 Dominican Republic
-## 38     115 Dominican Republic
-## 39     115 Dominican Republic
-## 40     115 Dominican Republic
-## 41     115 Dominican Republic
-## 42     115 Dominican Republic
-## 43     115 Dominican Republic
-## 44     115 Dominican Republic
-## 45     115 Dominican Republic
-## 46     115 Dominican Republic
-## 47     115 Dominican Republic
-## 48     115 Dominican Republic
-## 49     115 Dominican Republic
-## 50     115 Dominican Republic
-## 51     115 Dominican Republic
-## 52     115 Dominican Republic
-## 53     115 Dominican Republic
-## 54     115 Dominican Republic
-## 55     115 Dominican Republic
-## 56     115 Dominican Republic
-## 57     115 Dominican Republic
-## 58     115 Dominican Republic
-## 59     115 Dominican Republic
-## 60     115 Dominican Republic
-## 61     115 Dominican Republic
-## 62     115 Dominican Republic
-## 63     115 Dominican Republic
-## 64     115 Dominican Republic
-## 65     115 Dominican Republic
-## 66     115 Dominican Republic
-## 67     115 Dominican Republic
-## 68     115 Dominican Republic
-## 69     115 Dominican Republic
-## 70     115 Dominican Republic
-## 71     115 Dominican Republic
-## 72     115 Dominican Republic
-## 73     115 Dominican Republic
-## 74     115 Dominican Republic
-## 75     115 Dominican Republic
-## 76     115 Dominican Republic
-## 77     115 Dominican Republic
-## 78     115 Dominican Republic
-## 79     115 Dominican Republic
-## 80     115 Dominican Republic
-## 81     115 Dominican Republic
-## 82     115 Dominican Republic
-## 83     115 Dominican Republic
-## 84     115 Dominican Republic
-## 85     115 Dominican Republic
-## 86     115 Dominican Republic
-## 87     115 Dominican Republic
-## 88     115 Dominican Republic
-## 89     115 Dominican Republic
-## 90     115 Dominican Republic
-## 91     115 Dominican Republic
-## 92     115 Dominican Republic
-## 93     115 Dominican Republic
-## 94     115 Dominican Republic
-## 95     115 Dominican Republic
-## 96     115 Dominican Republic
-## 97     115 Dominican Republic
-## 98     115 Dominican Republic
-## 99     115 Dominican Republic
-## 100    115 Dominican Republic
-## 101    115 Dominican Republic
-## 102    115 Dominican Republic
-## 103    115 Dominican Republic
-## 104    115 Dominican Republic
-## 105    115 Dominican Republic
-## 106    115 Dominican Republic
-## 107    115 Dominican Republic
-## 108    115 Dominican Republic
-## 109    115 Dominican Republic
-## 110    115 Dominican Republic
-## 111    115 Dominican Republic
-## 112    115 Dominican Republic
-## 113    115 Dominican Republic
-## 114    115 Dominican Republic
-## 115    115 Dominican Republic
-## 116    115 Dominican Republic
-## 117    115 Dominican Republic
-## 118    115 Dominican Republic
-## 119    115 Dominican Republic
-## 120    115 Dominican Republic
-## 121    115 Dominican Republic
-## 122    115 Dominican Republic
-## 123    115 Dominican Republic
-## 124    115 Dominican Republic
-## 125    115 Dominican Republic
-## 126    115 Dominican Republic
-## 127    115 Dominican Republic
-## 128    115 Dominican Republic
-## 129    115 Dominican Republic
-## 130    115 Dominican Republic
-## 131    115 Dominican Republic
-## 132    115 Dominican Republic
-## 133    115 Dominican Republic
-## 134    115 Dominican Republic
-## 135    115 Dominican Republic
-## 136    115 Dominican Republic
-## 137    115 Dominican Republic
-## 138    115 Dominican Republic
-## 139    115 Dominican Republic
-## 140    115 Dominican Republic
-## 141    115 Dominican Republic
-## 142    115 Dominican Republic
-## 143    115 Dominican Republic
-## 144    115 Dominican Republic
-## 145    115 Dominican Republic
-## 146    115 Dominican Republic
-## 147    115 Dominican Republic
-## 148    115 Dominican Republic
-## 149    115 Dominican Republic
-## 150    115 Dominican Republic
-## 151    115 Dominican Republic
-## 152    115 Dominican Republic
-## 153    115 Dominican Republic
-## 154    115 Dominican Republic
-## 155    115 Dominican Republic
-## 156    115 Dominican Republic
-## 157    115 Dominican Republic
-## 158    115 Dominican Republic
-## 159    115 Dominican Republic
-## 160    115 Dominican Republic
-## 161    115 Dominican Republic
-## 162    115 Dominican Republic
-## 163    115 Dominican Republic
-## 164    115 Dominican Republic
-## 165    115 Dominican Republic
-## 166    115 Dominican Republic
-## 167    115 Dominican Republic
-## 168    115 Dominican Republic
-## 169    115 Dominican Republic
-## 170    115 Dominican Republic
-## 171    115 Dominican Republic
-## 172    115 Dominican Republic
-## 173    115 Dominican Republic
-## 174    115 Dominican Republic
-## 175    115 Dominican Republic
-## 176    115 Dominican Republic
-## 177    115 Dominican Republic
-## 178    115 Dominican Republic
-## 179    115 Dominican Republic
-## 180    115 Dominican Republic
-## 181    115 Dominican Republic
-## 182    115 Dominican Republic
-## 183    115 Dominican Republic
-## 184    115 Dominican Republic
-## 185    115 Dominican Republic
-## 186    115 Dominican Republic
-## 187    115 Dominican Republic
-## 188    115 Dominican Republic
-## 189    115 Dominican Republic
-## 190    115 Dominican Republic
-## 191    115 Dominican Republic
-## 192    115 Dominican Republic
-## 193    115 Dominican Republic
-## 194    115 Dominican Republic
-## 195    115 Dominican Republic
-## 196    115 Dominican Republic
-## 197    115 Dominican Republic
-## 198    115 Dominican Republic
-## 199    115 Dominican Republic
-## 200    115 Dominican Republic
-## 201    115 Dominican Republic
-## 202    115 Dominican Republic
-## 203    115 Dominican Republic
-## 204    115 Dominican Republic
-## 205    115 Dominican Republic
-## 206    115 Dominican Republic
-## 207    115 Dominican Republic
-## 208    115 Dominican Republic
-## 209    115 Dominican Republic
-## 210    115 Dominican Republic
-## 211    115 Dominican Republic
-## 212    115 Dominican Republic
-## 213    115 Dominican Republic
-## 214    115 Dominican Republic
-## 215    115 Dominican Republic
-## 216    115 Dominican Republic
-## 217    115 Dominican Republic
-## 218    115 Dominican Republic
-## 219    115 Dominican Republic
-## 220    115 Dominican Republic
-## 221    115 Dominican Republic
-## 222    115 Dominican Republic
-## 223    115 Dominican Republic
-## 224    115 Dominican Republic
-## 225    115 Dominican Republic
-## 226    115 Dominican Republic
-## 227    115 Dominican Republic
-## 228    115 Dominican Republic
-## 229    115 Dominican Republic
-## 230    115 Dominican Republic
-## 231    115 Dominican Republic
-## 232    115 Dominican Republic
-## 233    115 Dominican Republic
-## 234    115 Dominican Republic
-## 235    115 Dominican Republic
-## 236    115 Dominican Republic
-## 237    115 Dominican Republic
-## 238    115 Dominican Republic
-## 239    115 Dominican Republic
-## 240    115 Dominican Republic
-## 241    115 Dominican Republic
-## 242    115 Dominican Republic
-## 243    115 Dominican Republic
-## 244    115 Dominican Republic
-## 245    115 Dominican Republic
-## 246    115 Dominican Republic
-## 247    115 Dominican Republic
-## 248    115 Dominican Republic
-## 249    115 Dominican Republic
-## 250    115 Dominican Republic
-## 251    115 Dominican Republic
-## 252    115 Dominican Republic
-## 253    115 Dominican Republic
-## 254    115 Dominican Republic
-## 255    115 Dominican Republic
-## 256    115 Dominican Republic
-## 257    115 Dominican Republic
-## 258    115 Dominican Republic
-## 259    115 Dominican Republic
-## 260    115 Dominican Republic
-## 261    115 Dominican Republic
-## 262    115 Dominican Republic
-## 263    115 Dominican Republic
-## 264    115 Dominican Republic
-## 265    115 Dominican Republic
-## 266    115 Dominican Republic
-## 267    115 Dominican Republic
-## 268    115 Dominican Republic
-## 269    115 Dominican Republic
-## 270    115 Dominican Republic
-## 271    115 Dominican Republic
-## 272    115 Dominican Republic
-## 273    115 Dominican Republic
-## 274    115 Dominican Republic
-## 275    115 Dominican Republic
-## 276    115 Dominican Republic
-## 277    115 Dominican Republic
-## 278    115 Dominican Republic
-## 279    115 Dominican Republic
-## 280    115 Dominican Republic
-## 281    115 Dominican Republic
-## 282    115 Dominican Republic
-## 283    115 Dominican Republic
-## 284    115 Dominican Republic
-## 285    115 Dominican Republic
-## 286    115 Dominican Republic
-## 287    115 Dominican Republic
-## 288    115 Dominican Republic
-## 289    115 Dominican Republic
-## 290    115 Dominican Republic
-## 291    115 Dominican Republic
-## 292    115 Dominican Republic
-## 293    115 Dominican Republic
-## 294    115 Dominican Republic
-## 295    115 Dominican Republic
-## 296    115 Dominican Republic
-## 297    115 Dominican Republic
-## 298    115 Dominican Republic
-## 299    115 Dominican Republic
-## 300    115 Dominican Republic
-## 301    115 Dominican Republic
-## 302    115 Dominican Republic
-## 303    115 Dominican Republic
-## 304    115 Dominican Republic
-## 305    115 Dominican Republic
-## 306    115 Dominican Republic
-## 307    115 Dominican Republic
-## 308    115 Dominican Republic
-## 309    115 Dominican Republic
-## 310    115 Dominican Republic
-## 311    115 Dominican Republic
-## 312    115 Dominican Republic
-## 313    115 Dominican Republic
-## 314    115 Dominican Republic
-## 315    115 Dominican Republic
-## 316    115 Dominican Republic
-## 317    115 Dominican Republic
-## 318    115 Dominican Republic
-## 319    115 Dominican Republic
-## 320    115 Dominican Republic
-## 321    115 Dominican Republic
-## 322    115 Dominican Republic
-## 323    115 Dominican Republic
-## 324    115 Dominican Republic
-## 325    115 Dominican Republic
-## 326    115 Dominican Republic
-## 327    115 Dominican Republic
-## 328    115 Dominican Republic
-## 329    115 Dominican Republic
-## 330    115 Dominican Republic
-## 331    115 Dominican Republic
-## 332    115 Dominican Republic
-## 333    115 Dominican Republic
-## 334    115 Dominican Republic
-## 335    115 Dominican Republic
-## 336    115 Dominican Republic
-## 337    115 Dominican Republic
-## 338    115 Dominican Republic
-## 339    115 Dominican Republic
-## 340    115 Dominican Republic
-## 341    115 Dominican Republic
-## 342    115 Dominican Republic
-## 343    115 Dominican Republic
-## 344    115 Dominican Republic
-## 345    115 Dominican Republic
-## 346    115 Dominican Republic
-## 347    115 Dominican Republic
-## 348    115 Dominican Republic
-## 349    115 Dominican Republic
-## 350    115 Dominican Republic
-## 351    115 Dominican Republic
-## 352    115 Dominican Republic
-## 353    115 Dominican Republic
-## 354    115 Dominican Republic
-## 355    115 Dominican Republic
-## 356    115 Dominican Republic
-## 357    115 Dominican Republic
-## 358    115 Dominican Republic
-## 359    115 Dominican Republic
-## 360    115 Dominican Republic
-##                                                      commodity     product
-## 1                                                Agar agar nei    seaweeds
-## 2                                                Agar agar nei    seaweeds
-## 3                                                Agar agar nei    seaweeds
-## 4                                                Agar agar nei    seaweeds
-## 5                                                Agar agar nei    seaweeds
-## 6                                                Agar agar nei    seaweeds
-## 7                                                Agar agar nei    seaweeds
-## 8                                                Agar agar nei    seaweeds
-## 9                                                Agar agar nei    seaweeds
-## 10                                               Agar agar nei    seaweeds
-## 11                                               Agar agar nei    seaweeds
-## 12                                               Agar agar nei    seaweeds
-## 13                                               Agar agar nei    seaweeds
-## 14                                               Agar agar nei    seaweeds
-## 15                                               Agar agar nei    seaweeds
-## 16                                               Agar agar nei    seaweeds
-## 17                                               Agar agar nei    seaweeds
-## 18                                               Agar agar nei    seaweeds
-## 19                                               Agar agar nei    seaweeds
-## 20                                               Agar agar nei    seaweeds
-## 21                                               Agar agar nei    seaweeds
-## 22                                               Agar agar nei    seaweeds
-## 23                                               Agar agar nei    seaweeds
-## 24                                               Agar agar nei    seaweeds
-## 25                                               Agar agar nei    seaweeds
-## 26                                               Agar agar nei    seaweeds
-## 27                                               Agar agar nei    seaweeds
-## 28                                               Agar agar nei    seaweeds
-## 29                                               Agar agar nei    seaweeds
-## 30                                               Agar agar nei    seaweeds
-## 31                                               Agar agar nei    seaweeds
-## 32                                               Agar agar nei    seaweeds
-## 33                                               Agar agar nei    seaweeds
-## 34                                               Agar agar nei    seaweeds
-## 35                                               Agar agar nei    seaweeds
-## 36                                               Agar agar nei    seaweeds
-## 37                                               Agar agar nei    seaweeds
-## 38                                               Agar agar nei    seaweeds
-## 39                                               Agar agar nei    seaweeds
-## 40                                               Agar agar nei    seaweeds
-## 41                                          Coral and the like      corals
-## 42                                          Coral and the like      corals
-## 43                                          Coral and the like      corals
-## 44                                          Coral and the like      corals
-## 45                                          Coral and the like      corals
-## 46                                          Coral and the like      corals
-## 47                                          Coral and the like      corals
-## 48                                          Coral and the like      corals
-## 49                                          Coral and the like      corals
-## 50                                          Coral and the like      corals
-## 51                                          Coral and the like      corals
-## 52                                          Coral and the like      corals
-## 53                                          Coral and the like      corals
-## 54                                          Coral and the like      corals
-## 55                                          Coral and the like      corals
-## 56                                          Coral and the like      corals
-## 57                                          Coral and the like      corals
-## 58                                          Coral and the like      corals
-## 59                                          Coral and the like      corals
-## 60                                          Coral and the like      corals
-## 61                                          Coral and the like      corals
-## 62                                          Coral and the like      corals
-## 63                                          Coral and the like      corals
-## 64                                          Coral and the like      corals
-## 65                                          Coral and the like      corals
-## 66                                          Coral and the like      corals
-## 67                                          Coral and the like      corals
-## 68                                          Coral and the like      corals
-## 69                                          Coral and the like      corals
-## 70                                          Coral and the like      corals
-## 71                                          Coral and the like      corals
-## 72                                          Coral and the like      corals
-## 73                                          Coral and the like      corals
-## 74                                          Coral and the like      corals
-## 75                                          Coral and the like      corals
-## 76                                          Coral and the like      corals
-## 77                                          Coral and the like      corals
-## 78                                          Coral and the like      corals
-## 79                                          Coral and the like      corals
-## 80                                          Coral and the like      corals
-## 81                                         Fish body oils, nei    fish_oil
-## 82                                         Fish body oils, nei    fish_oil
-## 83                                         Fish body oils, nei    fish_oil
-## 84                                         Fish body oils, nei    fish_oil
-## 85                                         Fish body oils, nei    fish_oil
-## 86                                         Fish body oils, nei    fish_oil
-## 87                                         Fish body oils, nei    fish_oil
-## 88                                         Fish body oils, nei    fish_oil
-## 89                                         Fish body oils, nei    fish_oil
-## 90                                         Fish body oils, nei    fish_oil
-## 91                                         Fish body oils, nei    fish_oil
-## 92                                         Fish body oils, nei    fish_oil
-## 93                                         Fish body oils, nei    fish_oil
-## 94                                         Fish body oils, nei    fish_oil
-## 95                                         Fish body oils, nei    fish_oil
-## 96                                         Fish body oils, nei    fish_oil
-## 97                                         Fish body oils, nei    fish_oil
-## 98                                         Fish body oils, nei    fish_oil
-## 99                                         Fish body oils, nei    fish_oil
-## 100                                        Fish body oils, nei    fish_oil
-## 101                                        Fish body oils, nei    fish_oil
-## 102                                        Fish body oils, nei    fish_oil
-## 103                                        Fish body oils, nei    fish_oil
-## 104                                        Fish body oils, nei    fish_oil
-## 105                                        Fish body oils, nei    fish_oil
-## 106                                        Fish body oils, nei    fish_oil
-## 107                                        Fish body oils, nei    fish_oil
-## 108                                        Fish body oils, nei    fish_oil
-## 109                                        Fish body oils, nei    fish_oil
-## 110                                        Fish body oils, nei    fish_oil
-## 111                                        Fish body oils, nei    fish_oil
-## 112                                        Fish body oils, nei    fish_oil
-## 113                                        Fish body oils, nei    fish_oil
-## 114                                        Fish body oils, nei    fish_oil
-## 115                                        Fish body oils, nei    fish_oil
-## 116                                        Fish body oils, nei    fish_oil
-## 117                                        Fish body oils, nei    fish_oil
-## 118                                        Fish body oils, nei    fish_oil
-## 119                                        Fish body oils, nei    fish_oil
-## 120                                        Fish body oils, nei    fish_oil
-## 121                                       Fish liver oils, nei    fish_oil
-## 122                                       Fish liver oils, nei    fish_oil
-## 123                                       Fish liver oils, nei    fish_oil
-## 124                                       Fish liver oils, nei    fish_oil
-## 125                                       Fish liver oils, nei    fish_oil
-## 126                                       Fish liver oils, nei    fish_oil
-## 127                                       Fish liver oils, nei    fish_oil
-## 128                                       Fish liver oils, nei    fish_oil
-## 129                                       Fish liver oils, nei    fish_oil
-## 130                                       Fish liver oils, nei    fish_oil
-## 131                                       Fish liver oils, nei    fish_oil
-## 132                                       Fish liver oils, nei    fish_oil
-## 133                                       Fish liver oils, nei    fish_oil
-## 134                                       Fish liver oils, nei    fish_oil
-## 135                                       Fish liver oils, nei    fish_oil
-## 136                                       Fish liver oils, nei    fish_oil
-## 137                                       Fish liver oils, nei    fish_oil
-## 138                                       Fish liver oils, nei    fish_oil
-## 139                                       Fish liver oils, nei    fish_oil
-## 140                                       Fish liver oils, nei    fish_oil
-## 141                                       Fish liver oils, nei    fish_oil
-## 142                                       Fish liver oils, nei    fish_oil
-## 143                                       Fish liver oils, nei    fish_oil
-## 144                                       Fish liver oils, nei    fish_oil
-## 145                                       Fish liver oils, nei    fish_oil
-## 146                                       Fish liver oils, nei    fish_oil
-## 147                                       Fish liver oils, nei    fish_oil
-## 148                                       Fish liver oils, nei    fish_oil
-## 149                                       Fish liver oils, nei    fish_oil
-## 150                                       Fish liver oils, nei    fish_oil
-## 151                                       Fish liver oils, nei    fish_oil
-## 152                                       Fish liver oils, nei    fish_oil
-## 153                                       Fish liver oils, nei    fish_oil
-## 154                                       Fish liver oils, nei    fish_oil
-## 155                                       Fish liver oils, nei    fish_oil
-## 156                                       Fish liver oils, nei    fish_oil
-## 157                                       Fish liver oils, nei    fish_oil
-## 158                                       Fish liver oils, nei    fish_oil
-## 159                                       Fish liver oils, nei    fish_oil
-## 160                                       Fish liver oils, nei    fish_oil
-## 161                                        Natural sponges nei     sponges
-## 162                                        Natural sponges nei     sponges
-## 163                                        Natural sponges nei     sponges
-## 164                                        Natural sponges nei     sponges
-## 165                                        Natural sponges nei     sponges
-## 166                                        Natural sponges nei     sponges
-## 167                                        Natural sponges nei     sponges
-## 168                                        Natural sponges nei     sponges
-## 169                                        Natural sponges nei     sponges
-## 170                                        Natural sponges nei     sponges
-## 171                                        Natural sponges nei     sponges
-## 172                                        Natural sponges nei     sponges
-## 173                                        Natural sponges nei     sponges
-## 174                                        Natural sponges nei     sponges
-## 175                                        Natural sponges nei     sponges
-## 176                                        Natural sponges nei     sponges
-## 177                                        Natural sponges nei     sponges
-## 178                                        Natural sponges nei     sponges
-## 179                                        Natural sponges nei     sponges
-## 180                                        Natural sponges nei     sponges
-## 181                                        Natural sponges nei     sponges
-## 182                                        Natural sponges nei     sponges
-## 183                                        Natural sponges nei     sponges
-## 184                                        Natural sponges nei     sponges
-## 185                                        Natural sponges nei     sponges
-## 186                                        Natural sponges nei     sponges
-## 187                                        Natural sponges nei     sponges
-## 188                                        Natural sponges nei     sponges
-## 189                                        Natural sponges nei     sponges
-## 190                                        Natural sponges nei     sponges
-## 191                                        Natural sponges nei     sponges
-## 192                                        Natural sponges nei     sponges
-## 193                                        Natural sponges nei     sponges
-## 194                                        Natural sponges nei     sponges
-## 195                                        Natural sponges nei     sponges
-## 196                                        Natural sponges nei     sponges
-## 197                                        Natural sponges nei     sponges
-## 198                                        Natural sponges nei     sponges
-## 199                                        Natural sponges nei     sponges
-## 200                                        Natural sponges nei     sponges
-## 201                                        Ornamental fish nei ornamentals
-## 202                                        Ornamental fish nei ornamentals
-## 203                                        Ornamental fish nei ornamentals
-## 204                                        Ornamental fish nei ornamentals
-## 205                                        Ornamental fish nei ornamentals
-## 206                                        Ornamental fish nei ornamentals
-## 207                                        Ornamental fish nei ornamentals
-## 208                                        Ornamental fish nei ornamentals
-## 209                                        Ornamental fish nei ornamentals
-## 210                                        Ornamental fish nei ornamentals
-## 211                                        Ornamental fish nei ornamentals
-## 212                                        Ornamental fish nei ornamentals
-## 213                                        Ornamental fish nei ornamentals
-## 214                                        Ornamental fish nei ornamentals
-## 215                                        Ornamental fish nei ornamentals
-## 216                                        Ornamental fish nei ornamentals
-## 217                                        Ornamental fish nei ornamentals
-## 218                                        Ornamental fish nei ornamentals
-## 219                                        Ornamental fish nei ornamentals
-## 220                                        Ornamental fish nei ornamentals
-## 221                                        Ornamental fish nei ornamentals
-## 222                                        Ornamental fish nei ornamentals
-## 223                                        Ornamental fish nei ornamentals
-## 224                                        Ornamental fish nei ornamentals
-## 225                                        Ornamental fish nei ornamentals
-## 226                                        Ornamental fish nei ornamentals
-## 227                                        Ornamental fish nei ornamentals
-## 228                                        Ornamental fish nei ornamentals
-## 229                                        Ornamental fish nei ornamentals
-## 230                                        Ornamental fish nei ornamentals
-## 231                                        Ornamental fish nei ornamentals
-## 232                                        Ornamental fish nei ornamentals
-## 233                                        Ornamental fish nei ornamentals
-## 234                                        Ornamental fish nei ornamentals
-## 235                                        Ornamental fish nei ornamentals
-## 236                                        Ornamental fish nei ornamentals
-## 237                                        Ornamental fish nei ornamentals
-## 238                                        Ornamental fish nei ornamentals
-## 239                                        Ornamental fish nei ornamentals
-## 240                                        Ornamental fish nei ornamentals
-## 241                                  Ornamental saltwater fish ornamentals
-## 242                                  Ornamental saltwater fish ornamentals
-## 243                                  Ornamental saltwater fish ornamentals
-## 244                                  Ornamental saltwater fish ornamentals
-## 245                                  Ornamental saltwater fish ornamentals
-## 246                                  Ornamental saltwater fish ornamentals
-## 247                                  Ornamental saltwater fish ornamentals
-## 248                                  Ornamental saltwater fish ornamentals
-## 249                                  Ornamental saltwater fish ornamentals
-## 250                                  Ornamental saltwater fish ornamentals
-## 251                                  Ornamental saltwater fish ornamentals
-## 252                                  Ornamental saltwater fish ornamentals
-## 253                                  Ornamental saltwater fish ornamentals
-## 254                                  Ornamental saltwater fish ornamentals
-## 255                                  Ornamental saltwater fish ornamentals
-## 256                                  Ornamental saltwater fish ornamentals
-## 257                                  Ornamental saltwater fish ornamentals
-## 258                                  Ornamental saltwater fish ornamentals
-## 259                                  Ornamental saltwater fish ornamentals
-## 260                                  Ornamental saltwater fish ornamentals
-## 261                                  Ornamental saltwater fish ornamentals
-## 262                                  Ornamental saltwater fish ornamentals
-## 263                                  Ornamental saltwater fish ornamentals
-## 264                                  Ornamental saltwater fish ornamentals
-## 265                                  Ornamental saltwater fish ornamentals
-## 266                                  Ornamental saltwater fish ornamentals
-## 267                                  Ornamental saltwater fish ornamentals
-## 268                                  Ornamental saltwater fish ornamentals
-## 269                                  Ornamental saltwater fish ornamentals
-## 270                                  Ornamental saltwater fish ornamentals
-## 271                                  Ornamental saltwater fish ornamentals
-## 272                                  Ornamental saltwater fish ornamentals
-## 273                                  Ornamental saltwater fish ornamentals
-## 274                                  Ornamental saltwater fish ornamentals
-## 275                                  Ornamental saltwater fish ornamentals
-## 276                                  Ornamental saltwater fish ornamentals
-## 277                                  Ornamental saltwater fish ornamentals
-## 278                                  Ornamental saltwater fish ornamentals
-## 279                                  Ornamental saltwater fish ornamentals
-## 280                                  Ornamental saltwater fish ornamentals
-## 281     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 282     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 283     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 284     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 285     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 286     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 287     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 288     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 289     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 290     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 291     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 292     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 293     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 294     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 295     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 296     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 297     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 298     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 299     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 300     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 301     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 302     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 303     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 304     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 305     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 306     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 307     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 308     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 309     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 310     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 311     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 312     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 313     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 314     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 315     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 316     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 317     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 318     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 319     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 320     Other seaweeds and aquatic plants and products thereof    seaweeds
-## 321 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 322 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 323 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 324 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 325 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 326 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 327 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 328 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 329 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 330 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 331 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 332 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 333 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 334 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 335 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 336 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 337 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 338 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 339 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 340 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 341 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 342 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 343 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 344 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 345 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 346 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 347 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 348 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 349 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 350 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 351 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 352 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 353 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 354 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 355 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 356 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 357 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 358 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 359 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-## 360 Seaweeds and other algae, unfit for human consumption, nei    seaweeds
-##     year tonnes
-## 1   1976     NA
-## 2   1977     NA
-## 3   1978     NA
-## 4   1979     NA
-## 5   1980     NA
-## 6   1981     NA
-## 7   1982     NA
-## 8   1983     NA
-## 9   1984     NA
-## 10  1985     NA
-## 11  1986     NA
-## 12  1987     NA
-## 13  1988     NA
-## 14  1989     NA
-## 15  1990     NA
-## 16  1991     NA
-## 17  1992     NA
-## 18  1993     NA
-## 19  1994     NA
-## 20  1995     NA
-## 21  1996     NA
-## 22  1997     NA
-## 23  1998     NA
-## 24  1999     NA
-## 25  2000     NA
-## 26  2001     NA
-## 27  2002     NA
-## 28  2003     NA
-## 29  2004     NA
-## 30  2005    0.1
-## 31  2006    0.0
-## 32  2007    0.1
-## 33  2008    1.0
-## 34  2009    0.0
-## 35  2010    0.0
-## 36  2011    0.0
-## 37  2012    7.0
-## 38  2013    1.0
-## 39  2014    2.0
-## 40  2015    1.0
-## 41  1976    0.0
-## 42  1977     NA
-## 43  1978     NA
-## 44  1979     NA
-## 45  1980     NA
-## 46  1981     NA
-## 47  1982     NA
-## 48  1983     NA
-## 49  1984     NA
-## 50  1985     NA
-## 51  1986     NA
-## 52  1987     NA
-## 53  1988     NA
-## 54  1989     NA
-## 55  1990     NA
-## 56  1991     NA
-## 57  1992     NA
-## 58  1993     NA
-## 59  1994     NA
-## 60  1995     NA
-## 61  1996     NA
-## 62  1997   37.0
-## 63  1998    0.1
-## 64  1999   19.0
-## 65  2000    2.0
-## 66  2001    0.0
-## 67  2002    0.1
-## 68  2003   21.0
-## 69  2004    0.1
-## 70  2005   15.0
-## 71  2006   37.0
-## 72  2007    0.1
-## 73  2008    0.1
-## 74  2009    0.0
-## 75  2010    3.0
-## 76  2011   10.0
-## 77  2012    0.1
-## 78  2013    0.0
-## 79  2014    0.0
-## 80  2015    0.0
-## 81  1976     NA
-## 82  1977     NA
-## 83  1978     NA
-## 84  1979     NA
-## 85  1980     NA
-## 86  1981     NA
-## 87  1982     NA
-## 88  1983    0.1
-## 89  1984    0.1
-## 90  1985     NA
-## 91  1986     NA
-## 92  1987     NA
-## 93  1988     NA
-## 94  1989     NA
-## 95  1990     NA
-## 96  1991     NA
-## 97  1992     NA
-## 98  1993     NA
-## 99  1994     NA
-## 100 1995     NA
-## 101 1996     NA
-## 102 1997    0.1
-## 103 1998    1.0
-## 104 1999    0.1
-## 105 2000    1.0
-## 106 2001    0.1
-## 107 2002    0.1
-## 108 2003    0.1
-## 109 2004     NA
-## 110 2005     NA
-## 111 2006    0.1
-## 112 2007     NA
-## 113 2008     NA
-## 114 2009     NA
-## 115 2010     NA
-## 116 2011    0.1
-## 117 2012    4.0
-## 118 2013    0.1
-## 119 2014    0.0
-## 120 2015    1.0
-## 121 1976     NA
-## 122 1977     NA
-## 123 1978     NA
-## 124 1979     NA
-## 125 1980     NA
-## 126 1981     NA
-## 127 1982     NA
-## 128 1983     NA
-## 129 1984     NA
-## 130 1985     NA
-## 131 1986     NA
-## 132 1987     NA
-## 133 1988     NA
-## 134 1989     NA
-## 135 1990     NA
-## 136 1991     NA
-## 137 1992     NA
-## 138 1993     NA
-## 139 1994     NA
-## 140 1995     NA
-## 141 1996     NA
-## 142 1997     NA
-## 143 1998     NA
-## 144 1999    0.1
-## 145 2000     NA
-## 146 2001    0.1
-## 147 2002     NA
-## 148 2003    0.1
-## 149 2004     NA
-## 150 2005    0.1
-## 151 2006    0.0
-## 152 2007    0.0
-## 153 2008    2.0
-## 154 2009    0.1
-## 155 2010    0.0
-## 156 2011    0.0
-## 157 2012    0.0
-## 158 2013    0.0
-## 159 2014    0.0
-## 160 2015    0.0
-## 161 1976     NA
-## 162 1977     NA
-## 163 1978     NA
-## 164 1979     NA
-## 165 1980     NA
-## 166 1981     NA
-## 167 1982     NA
-## 168 1983     NA
-## 169 1984     NA
-## 170 1985     NA
-## 171 1986     NA
-## 172 1987     NA
-## 173 1988     NA
-## 174 1989     NA
-## 175 1990     NA
-## 176 1991     NA
-## 177 1992     NA
-## 178 1993     NA
-## 179 1994     NA
-## 180 1995     NA
-## 181 1996     NA
-## 182 1997     NA
-## 183 1998     NA
-## 184 1999     NA
-## 185 2000     NA
-## 186 2001     NA
-## 187 2002     NA
-## 188 2003     NA
-## 189 2004    0.1
-## 190 2005    0.0
-## 191 2006    0.0
-## 192 2007    0.0
-## 193 2008    0.0
-## 194 2009    0.0
-## 195 2010    0.0
-## 196 2011    0.0
-## 197 2012    0.0
-## 198 2013    0.0
-## 199 2014    0.0
-## 200 2015    0.0
-## 201 1976    0.0
-## 202 1977     NA
-## 203 1978     NA
-## 204 1979    0.1
-## 205 1980     NA
-## 206 1981     NA
-## 207 1982     NA
-## 208 1983     NA
-## 209 1984     NA
-## 210 1985     NA
-## 211 1986     NA
-## 212 1987     NA
-## 213 1988     NA
-## 214 1989     NA
-## 215 1990     NA
-## 216 1991     NA
-## 217 1992     NA
-## 218 1993     NA
-## 219 1994     NA
-## 220 1995    0.1
-## 221 1996     NA
-## 222 1997     NA
-## 223 1998     NA
-## 224 1999     NA
-## 225 2000     NA
-## 226 2001     NA
-## 227 2002   33.0
-## 228 2003   36.0
-## 229 2004   19.0
-## 230 2005   48.0
-## 231 2006   20.0
-## 232 2007   62.0
-## 233 2008   45.0
-## 234 2009   40.0
-## 235 2010   44.0
-## 236 2011   45.0
-## 237 2012     NA
-## 238 2013    0.0
-## 239 2014    0.0
-## 240 2015    0.0
-## 241 1976     NA
-## 242 1977     NA
-## 243 1978     NA
-## 244 1979     NA
-## 245 1980     NA
-## 246 1981     NA
-## 247 1982     NA
-## 248 1983     NA
-## 249 1984     NA
-## 250 1985     NA
-## 251 1986     NA
-## 252 1987     NA
-## 253 1988     NA
-## 254 1989     NA
-## 255 1990     NA
-## 256 1991     NA
-## 257 1992     NA
-## 258 1993     NA
-## 259 1994     NA
-## 260 1995     NA
-## 261 1996     NA
-## 262 1997     NA
-## 263 1998     NA
-## 264 1999     NA
-## 265 2000     NA
-## 266 2001     NA
-## 267 2002     NA
-## 268 2003     NA
-## 269 2004     NA
-## 270 2005     NA
-## 271 2006     NA
-## 272 2007     NA
-## 273 2008     NA
-## 274 2009     NA
-## 275 2010     NA
-## 276 2011     NA
-## 277 2012    8.0
-## 278 2013    0.0
-## 279 2014    0.1
-## 280 2015    0.1
-## 281 1976     NA
-## 282 1977     NA
-## 283 1978     NA
-## 284 1979     NA
-## 285 1980     NA
-## 286 1981     NA
-## 287 1982     NA
-## 288 1983     NA
-## 289 1984     NA
-## 290 1985     NA
-## 291 1986     NA
-## 292 1987     NA
-## 293 1988     NA
-## 294 1989     NA
-## 295 1990     NA
-## 296 1991     NA
-## 297 1992     NA
-## 298 1993     NA
-## 299 1994     NA
-## 300 1995     NA
-## 301 1996     NA
-## 302 1997     NA
-## 303 1998     NA
-## 304 1999     NA
-## 305 2000     NA
-## 306 2001     NA
-## 307 2002     NA
-## 308 2003    0.1
-## 309 2004    0.0
-## 310 2005    0.0
-## 311 2006    0.0
-## 312 2007    0.1
-## 313 2008    0.0
-## 314 2009    0.0
-## 315 2010    0.0
-## 316 2011    0.0
-## 317 2012    0.0
-## 318 2013    0.0
-## 319 2014    0.0
-## 320 2015    0.0
-## 321 1976    0.0
-## 322 1977     NA
-## 323 1978     NA
-## 324 1979     NA
-## 325 1980     NA
-## 326 1981     NA
-## 327 1982     NA
-## 328 1983     NA
-## 329 1984     NA
-## 330 1985     NA
-## 331 1986     NA
-## 332 1987     NA
-## 333 1988     NA
-## 334 1989     NA
-## 335 1990     NA
-## 336 1991     NA
-## 337 1992     NA
-## 338 1993     NA
-## 339 1994     NA
-## 340 1995     NA
-## 341 1996     NA
-## 342 1997     NA
-## 343 1998     NA
-## 344 1999     NA
-## 345 2000     NA
-## 346 2001     NA
-## 347 2002     NA
-## 348 2003     NA
-## 349 2004     NA
-## 350 2005     NA
-## 351 2006     NA
-## 352 2007     NA
-## 353 2008     NA
-## 354 2009     NA
-## 355 2010     NA
-## 356 2011     NA
-## 357 2012     NA
-## 358 2013     NA
-## 359 2014     NA
-## 360 2015    0.1</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(old, rgn_id<span class="op">==</span><span class="dv">115</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(commodity, year)</code></pre></div>
-<pre><code>##     rgn_id                                              commodity
-## 1      115                                          Agar agar nei
-## 2      115                                          Agar agar nei
-## 3      115                                          Agar agar nei
-## 4      115                                          Agar agar nei
-## 5      115                                          Agar agar nei
-## 6      115                                          Agar agar nei
-## 7      115                                          Agar agar nei
-## 8      115                                          Agar agar nei
-## 9      115                                          Agar agar nei
-## 10     115                                          Agar agar nei
-## 11     115                                          Agar agar nei
-## 12     115                                          Agar agar nei
-## 13     115                                          Agar agar nei
-## 14     115                                          Agar agar nei
-## 15     115                                          Agar agar nei
-## 16     115                                          Agar agar nei
-## 17     115                                          Agar agar nei
-## 18     115                                          Agar agar nei
-## 19     115                                          Agar agar nei
-## 20     115                                          Agar agar nei
-## 21     115                                          Agar agar nei
-## 22     115                                          Agar agar nei
-## 23     115                                          Agar agar nei
-## 24     115                                          Agar agar nei
-## 25     115                                          Agar agar nei
-## 26     115                                          Agar agar nei
-## 27     115                                          Agar agar nei
-## 28     115                                          Agar agar nei
-## 29     115                                          Agar agar nei
-## 30     115                                          Agar agar nei
-## 31     115                                          Agar agar nei
-## 32     115                                          Agar agar nei
-## 33     115                                          Agar agar nei
-## 34     115                                          Agar agar nei
-## 35     115                                          Agar agar nei
-## 36     115                                          Agar agar nei
-## 37     115                                     Coral and the like
-## 38     115                                     Coral and the like
-## 39     115                                     Coral and the like
-## 40     115                                     Coral and the like
-## 41     115                                     Coral and the like
-## 42     115                                     Coral and the like
-## 43     115                                     Coral and the like
-## 44     115                                     Coral and the like
-## 45     115                                     Coral and the like
-## 46     115                                     Coral and the like
-## 47     115                                     Coral and the like
-## 48     115                                     Coral and the like
-## 49     115                                     Coral and the like
-## 50     115                                     Coral and the like
-## 51     115                                     Coral and the like
-## 52     115                                     Coral and the like
-## 53     115                                     Coral and the like
-## 54     115                                     Coral and the like
-## 55     115                                     Coral and the like
-## 56     115                                     Coral and the like
-## 57     115                                     Coral and the like
-## 58     115                                     Coral and the like
-## 59     115                                     Coral and the like
-## 60     115                                     Coral and the like
-## 61     115                                     Coral and the like
-## 62     115                                     Coral and the like
-## 63     115                                     Coral and the like
-## 64     115                                     Coral and the like
-## 65     115                                     Coral and the like
-## 66     115                                     Coral and the like
-## 67     115                                     Coral and the like
-## 68     115                                     Coral and the like
-## 69     115                                     Coral and the like
-## 70     115                                     Coral and the like
-## 71     115                                     Coral and the like
-## 72     115                                     Coral and the like
-## 73     115                                    Fish body oils, nei
-## 74     115                                    Fish body oils, nei
-## 75     115                                    Fish body oils, nei
-## 76     115                                    Fish body oils, nei
-## 77     115                                    Fish body oils, nei
-## 78     115                                    Fish body oils, nei
-## 79     115                                    Fish body oils, nei
-## 80     115                                    Fish body oils, nei
-## 81     115                                    Fish body oils, nei
-## 82     115                                    Fish body oils, nei
-## 83     115                                    Fish body oils, nei
-## 84     115                                    Fish body oils, nei
-## 85     115                                    Fish body oils, nei
-## 86     115                                    Fish body oils, nei
-## 87     115                                    Fish body oils, nei
-## 88     115                                    Fish body oils, nei
-## 89     115                                    Fish body oils, nei
-## 90     115                                    Fish body oils, nei
-## 91     115                                    Fish body oils, nei
-## 92     115                                    Fish body oils, nei
-## 93     115                                    Fish body oils, nei
-## 94     115                                    Fish body oils, nei
-## 95     115                                    Fish body oils, nei
-## 96     115                                    Fish body oils, nei
-## 97     115                                    Fish body oils, nei
-## 98     115                                    Fish body oils, nei
-## 99     115                                    Fish body oils, nei
-## 100    115                                    Fish body oils, nei
-## 101    115                                    Fish body oils, nei
-## 102    115                                    Fish body oils, nei
-## 103    115                                    Fish body oils, nei
-## 104    115                                    Fish body oils, nei
-## 105    115                                    Fish body oils, nei
-## 106    115                                    Fish body oils, nei
-## 107    115                                    Fish body oils, nei
-## 108    115                                    Fish body oils, nei
-## 109    115                                   Fish liver oils, nei
-## 110    115                                   Fish liver oils, nei
-## 111    115                                   Fish liver oils, nei
-## 112    115                                   Fish liver oils, nei
-## 113    115                                   Fish liver oils, nei
-## 114    115                                   Fish liver oils, nei
-## 115    115                                   Fish liver oils, nei
-## 116    115                                   Fish liver oils, nei
-## 117    115                                   Fish liver oils, nei
-## 118    115                                   Fish liver oils, nei
-## 119    115                                   Fish liver oils, nei
-## 120    115                                   Fish liver oils, nei
-## 121    115                                   Fish liver oils, nei
-## 122    115                                   Fish liver oils, nei
-## 123    115                                   Fish liver oils, nei
-## 124    115                                   Fish liver oils, nei
-## 125    115                                   Fish liver oils, nei
-## 126    115                                   Fish liver oils, nei
-## 127    115                                   Fish liver oils, nei
-## 128    115                                   Fish liver oils, nei
-## 129    115                                   Fish liver oils, nei
-## 130    115                                   Fish liver oils, nei
-## 131    115                                   Fish liver oils, nei
-## 132    115                                   Fish liver oils, nei
-## 133    115                                   Fish liver oils, nei
-## 134    115                                   Fish liver oils, nei
-## 135    115                                   Fish liver oils, nei
-## 136    115                                   Fish liver oils, nei
-## 137    115                                   Fish liver oils, nei
-## 138    115                                   Fish liver oils, nei
-## 139    115                                   Fish liver oils, nei
-## 140    115                                   Fish liver oils, nei
-## 141    115                                   Fish liver oils, nei
-## 142    115                                   Fish liver oils, nei
-## 143    115                                   Fish liver oils, nei
-## 144    115                                   Fish liver oils, nei
-## 145    115                                    Natural sponges nei
-## 146    115                                    Natural sponges nei
-## 147    115                                    Natural sponges nei
-## 148    115                                    Natural sponges nei
-## 149    115                                    Natural sponges nei
-## 150    115                                    Natural sponges nei
-## 151    115                                    Natural sponges nei
-## 152    115                                    Natural sponges nei
-## 153    115                                    Natural sponges nei
-## 154    115                                    Natural sponges nei
-## 155    115                                    Natural sponges nei
-## 156    115                                    Natural sponges nei
-## 157    115                                    Natural sponges nei
-## 158    115                                    Natural sponges nei
-## 159    115                                    Natural sponges nei
-## 160    115                                    Natural sponges nei
-## 161    115                                    Natural sponges nei
-## 162    115                                    Natural sponges nei
-## 163    115                                    Natural sponges nei
-## 164    115                                    Natural sponges nei
-## 165    115                                    Natural sponges nei
-## 166    115                                    Natural sponges nei
-## 167    115                                    Natural sponges nei
-## 168    115                                    Natural sponges nei
-## 169    115                                    Natural sponges nei
-## 170    115                                    Natural sponges nei
-## 171    115                                    Natural sponges nei
-## 172    115                                    Natural sponges nei
-## 173    115                                    Natural sponges nei
-## 174    115                                    Natural sponges nei
-## 175    115                                    Natural sponges nei
-## 176    115                                    Natural sponges nei
-## 177    115                                    Natural sponges nei
-## 178    115                                    Natural sponges nei
-## 179    115                                    Natural sponges nei
-## 180    115                                    Natural sponges nei
-## 181    115                                    Ornamental fish nei
-## 182    115                                    Ornamental fish nei
-## 183    115                                    Ornamental fish nei
-## 184    115                                    Ornamental fish nei
-## 185    115                                    Ornamental fish nei
-## 186    115                                    Ornamental fish nei
-## 187    115                                    Ornamental fish nei
-## 188    115                                    Ornamental fish nei
-## 189    115                                    Ornamental fish nei
-## 190    115                                    Ornamental fish nei
-## 191    115                                    Ornamental fish nei
-## 192    115                                    Ornamental fish nei
-## 193    115                                    Ornamental fish nei
-## 194    115                                    Ornamental fish nei
-## 195    115                                    Ornamental fish nei
-## 196    115                                    Ornamental fish nei
-## 197    115                                    Ornamental fish nei
-## 198    115                                    Ornamental fish nei
-## 199    115                                    Ornamental fish nei
-## 200    115                                    Ornamental fish nei
-## 201    115                                    Ornamental fish nei
-## 202    115                                    Ornamental fish nei
-## 203    115                                    Ornamental fish nei
-## 204    115                                    Ornamental fish nei
-## 205    115                                    Ornamental fish nei
-## 206    115                                    Ornamental fish nei
-## 207    115                                    Ornamental fish nei
-## 208    115                                    Ornamental fish nei
-## 209    115                                    Ornamental fish nei
-## 210    115                                    Ornamental fish nei
-## 211    115                                    Ornamental fish nei
-## 212    115                                    Ornamental fish nei
-## 213    115                                    Ornamental fish nei
-## 214    115                                    Ornamental fish nei
-## 215    115                                    Ornamental fish nei
-## 216    115                                    Ornamental fish nei
-## 217    115 Other seaweeds and aquatic plants and products thereof
-## 218    115 Other seaweeds and aquatic plants and products thereof
-## 219    115 Other seaweeds and aquatic plants and products thereof
-## 220    115 Other seaweeds and aquatic plants and products thereof
-## 221    115 Other seaweeds and aquatic plants and products thereof
-## 222    115 Other seaweeds and aquatic plants and products thereof
-## 223    115 Other seaweeds and aquatic plants and products thereof
-## 224    115 Other seaweeds and aquatic plants and products thereof
-## 225    115 Other seaweeds and aquatic plants and products thereof
-## 226    115 Other seaweeds and aquatic plants and products thereof
-## 227    115 Other seaweeds and aquatic plants and products thereof
-## 228    115 Other seaweeds and aquatic plants and products thereof
-## 229    115 Other seaweeds and aquatic plants and products thereof
-## 230    115 Other seaweeds and aquatic plants and products thereof
-## 231    115 Other seaweeds and aquatic plants and products thereof
-## 232    115 Other seaweeds and aquatic plants and products thereof
-## 233    115 Other seaweeds and aquatic plants and products thereof
-## 234    115 Other seaweeds and aquatic plants and products thereof
-## 235    115 Other seaweeds and aquatic plants and products thereof
-## 236    115 Other seaweeds and aquatic plants and products thereof
-## 237    115 Other seaweeds and aquatic plants and products thereof
-## 238    115 Other seaweeds and aquatic plants and products thereof
-## 239    115 Other seaweeds and aquatic plants and products thereof
-## 240    115 Other seaweeds and aquatic plants and products thereof
-## 241    115 Other seaweeds and aquatic plants and products thereof
-## 242    115 Other seaweeds and aquatic plants and products thereof
-## 243    115 Other seaweeds and aquatic plants and products thereof
-## 244    115 Other seaweeds and aquatic plants and products thereof
-## 245    115 Other seaweeds and aquatic plants and products thereof
-## 246    115 Other seaweeds and aquatic plants and products thereof
-## 247    115 Other seaweeds and aquatic plants and products thereof
-## 248    115 Other seaweeds and aquatic plants and products thereof
-## 249    115 Other seaweeds and aquatic plants and products thereof
-## 250    115 Other seaweeds and aquatic plants and products thereof
-## 251    115 Other seaweeds and aquatic plants and products thereof
-## 252    115 Other seaweeds and aquatic plants and products thereof
-##         product year tonnes           rgn_name
-## 1      seaweeds 1976     NA Dominican Republic
-## 2      seaweeds 1977     NA Dominican Republic
-## 3      seaweeds 1978     NA Dominican Republic
-## 4      seaweeds 1979     NA Dominican Republic
-## 5      seaweeds 1980     NA Dominican Republic
-## 6      seaweeds 1981     NA Dominican Republic
-## 7      seaweeds 1982     NA Dominican Republic
-## 8      seaweeds 1983     NA Dominican Republic
-## 9      seaweeds 1984     NA Dominican Republic
-## 10     seaweeds 1985     NA Dominican Republic
-## 11     seaweeds 1986     NA Dominican Republic
-## 12     seaweeds 1987     NA Dominican Republic
-## 13     seaweeds 1988     NA Dominican Republic
-## 14     seaweeds 1989     NA Dominican Republic
-## 15     seaweeds 1990     NA Dominican Republic
-## 16     seaweeds 1991     NA Dominican Republic
-## 17     seaweeds 1992     NA Dominican Republic
-## 18     seaweeds 1993     NA Dominican Republic
-## 19     seaweeds 1994     NA Dominican Republic
-## 20     seaweeds 1995     NA Dominican Republic
-## 21     seaweeds 1996     NA Dominican Republic
-## 22     seaweeds 1997     NA Dominican Republic
-## 23     seaweeds 1998     NA Dominican Republic
-## 24     seaweeds 1999     NA Dominican Republic
-## 25     seaweeds 2000     NA Dominican Republic
-## 26     seaweeds 2001     NA Dominican Republic
-## 27     seaweeds 2002     NA Dominican Republic
-## 28     seaweeds 2003     NA Dominican Republic
-## 29     seaweeds 2004     NA Dominican Republic
-## 30     seaweeds 2005   25.0 Dominican Republic
-## 31     seaweeds 2006    0.0 Dominican Republic
-## 32     seaweeds 2007    0.1 Dominican Republic
-## 33     seaweeds 2008    1.0 Dominican Republic
-## 34     seaweeds 2009    0.0 Dominican Republic
-## 35     seaweeds 2010    0.0 Dominican Republic
-## 36     seaweeds 2011    0.0 Dominican Republic
-## 37       corals 1976     NA Dominican Republic
-## 38       corals 1977     NA Dominican Republic
-## 39       corals 1978     NA Dominican Republic
-## 40       corals 1979     NA Dominican Republic
-## 41       corals 1980     NA Dominican Republic
-## 42       corals 1981     NA Dominican Republic
-## 43       corals 1982     NA Dominican Republic
-## 44       corals 1983     NA Dominican Republic
-## 45       corals 1984     NA Dominican Republic
-## 46       corals 1985     NA Dominican Republic
-## 47       corals 1986     NA Dominican Republic
-## 48       corals 1987     NA Dominican Republic
-## 49       corals 1988     NA Dominican Republic
-## 50       corals 1989     NA Dominican Republic
-## 51       corals 1990     NA Dominican Republic
-## 52       corals 1991     NA Dominican Republic
-## 53       corals 1992     NA Dominican Republic
-## 54       corals 1993     NA Dominican Republic
-## 55       corals 1994     NA Dominican Republic
-## 56       corals 1995     NA Dominican Republic
-## 57       corals 1996     NA Dominican Republic
-## 58       corals 1997   37.0 Dominican Republic
-## 59       corals 1998    0.1 Dominican Republic
-## 60       corals 1999   19.0 Dominican Republic
-## 61       corals 2000    2.0 Dominican Republic
-## 62       corals 2001    0.0 Dominican Republic
-## 63       corals 2002    0.1 Dominican Republic
-## 64       corals 2003   21.0 Dominican Republic
-## 65       corals 2004    0.1 Dominican Republic
-## 66       corals 2005   15.0 Dominican Republic
-## 67       corals 2006   37.0 Dominican Republic
-## 68       corals 2007    0.1 Dominican Republic
-## 69       corals 2008    0.1 Dominican Republic
-## 70       corals 2009    0.0 Dominican Republic
-## 71       corals 2010    3.0 Dominican Republic
-## 72       corals 2011   10.0 Dominican Republic
-## 73     fish_oil 1976    0.1 Dominican Republic
-## 74     fish_oil 1977     NA Dominican Republic
-## 75     fish_oil 1978     NA Dominican Republic
-## 76     fish_oil 1979     NA Dominican Republic
-## 77     fish_oil 1980     NA Dominican Republic
-## 78     fish_oil 1981     NA Dominican Republic
-## 79     fish_oil 1982     NA Dominican Republic
-## 80     fish_oil 1983    0.1 Dominican Republic
-## 81     fish_oil 1984    0.1 Dominican Republic
-## 82     fish_oil 1985     NA Dominican Republic
-## 83     fish_oil 1986     NA Dominican Republic
-## 84     fish_oil 1987     NA Dominican Republic
-## 85     fish_oil 1988     NA Dominican Republic
-## 86     fish_oil 1989     NA Dominican Republic
-## 87     fish_oil 1990     NA Dominican Republic
-## 88     fish_oil 1991     NA Dominican Republic
-## 89     fish_oil 1992     NA Dominican Republic
-## 90     fish_oil 1993     NA Dominican Republic
-## 91     fish_oil 1994     NA Dominican Republic
-## 92     fish_oil 1995     NA Dominican Republic
-## 93     fish_oil 1996     NA Dominican Republic
-## 94     fish_oil 1997    0.1 Dominican Republic
-## 95     fish_oil 1998    1.0 Dominican Republic
-## 96     fish_oil 1999    0.1 Dominican Republic
-## 97     fish_oil 2000    1.0 Dominican Republic
-## 98     fish_oil 2001    0.1 Dominican Republic
-## 99     fish_oil 2002    0.1 Dominican Republic
-## 100    fish_oil 2003    0.1 Dominican Republic
-## 101    fish_oil 2004    0.0 Dominican Republic
-## 102    fish_oil 2005    0.0 Dominican Republic
-## 103    fish_oil 2006    0.1 Dominican Republic
-## 104    fish_oil 2007    0.0 Dominican Republic
-## 105    fish_oil 2008    0.0 Dominican Republic
-## 106    fish_oil 2009    0.0 Dominican Republic
-## 107    fish_oil 2010    0.0 Dominican Republic
-## 108    fish_oil 2011    0.1 Dominican Republic
-## 109    fish_oil 1976     NA Dominican Republic
-## 110    fish_oil 1977     NA Dominican Republic
-## 111    fish_oil 1978     NA Dominican Republic
-## 112    fish_oil 1979     NA Dominican Republic
-## 113    fish_oil 1980     NA Dominican Republic
-## 114    fish_oil 1981     NA Dominican Republic
-## 115    fish_oil 1982     NA Dominican Republic
-## 116    fish_oil 1983     NA Dominican Republic
-## 117    fish_oil 1984     NA Dominican Republic
-## 118    fish_oil 1985     NA Dominican Republic
-## 119    fish_oil 1986     NA Dominican Republic
-## 120    fish_oil 1987     NA Dominican Republic
-## 121    fish_oil 1988     NA Dominican Republic
-## 122    fish_oil 1989     NA Dominican Republic
-## 123    fish_oil 1990     NA Dominican Republic
-## 124    fish_oil 1991     NA Dominican Republic
-## 125    fish_oil 1992     NA Dominican Republic
-## 126    fish_oil 1993     NA Dominican Republic
-## 127    fish_oil 1994     NA Dominican Republic
-## 128    fish_oil 1995     NA Dominican Republic
-## 129    fish_oil 1996     NA Dominican Republic
-## 130    fish_oil 1997     NA Dominican Republic
-## 131    fish_oil 1998     NA Dominican Republic
-## 132    fish_oil 1999    0.1 Dominican Republic
-## 133    fish_oil 2000     NA Dominican Republic
-## 134    fish_oil 2001    0.1 Dominican Republic
-## 135    fish_oil 2002     NA Dominican Republic
-## 136    fish_oil 2003    0.1 Dominican Republic
-## 137    fish_oil 2004     NA Dominican Republic
-## 138    fish_oil 2005    4.0 Dominican Republic
-## 139    fish_oil 2006    0.0 Dominican Republic
-## 140    fish_oil 2007    0.0 Dominican Republic
-## 141    fish_oil 2008    2.0 Dominican Republic
-## 142    fish_oil 2009    0.1 Dominican Republic
-## 143    fish_oil 2010    0.0 Dominican Republic
-## 144    fish_oil 2011    0.0 Dominican Republic
-## 145     sponges 1976     NA Dominican Republic
-## 146     sponges 1977     NA Dominican Republic
-## 147     sponges 1978     NA Dominican Republic
-## 148     sponges 1979     NA Dominican Republic
-## 149     sponges 1980     NA Dominican Republic
-## 150     sponges 1981     NA Dominican Republic
-## 151     sponges 1982     NA Dominican Republic
-## 152     sponges 1983     NA Dominican Republic
-## 153     sponges 1984     NA Dominican Republic
-## 154     sponges 1985     NA Dominican Republic
-## 155     sponges 1986     NA Dominican Republic
-## 156     sponges 1987     NA Dominican Republic
-## 157     sponges 1988     NA Dominican Republic
-## 158     sponges 1989     NA Dominican Republic
-## 159     sponges 1990     NA Dominican Republic
-## 160     sponges 1991     NA Dominican Republic
-## 161     sponges 1992     NA Dominican Republic
-## 162     sponges 1993     NA Dominican Republic
-## 163     sponges 1994     NA Dominican Republic
-## 164     sponges 1995     NA Dominican Republic
-## 165     sponges 1996     NA Dominican Republic
-## 166     sponges 1997     NA Dominican Republic
-## 167     sponges 1998     NA Dominican Republic
-## 168     sponges 1999     NA Dominican Republic
-## 169     sponges 2000     NA Dominican Republic
-## 170     sponges 2001     NA Dominican Republic
-## 171     sponges 2002     NA Dominican Republic
-## 172     sponges 2003     NA Dominican Republic
-## 173     sponges 2004    0.1 Dominican Republic
-## 174     sponges 2005    0.0 Dominican Republic
-## 175     sponges 2006    0.0 Dominican Republic
-## 176     sponges 2007    0.0 Dominican Republic
-## 177     sponges 2008    0.0 Dominican Republic
-## 178     sponges 2009    0.0 Dominican Republic
-## 179     sponges 2010    0.0 Dominican Republic
-## 180     sponges 2011    0.0 Dominican Republic
-## 181 ornamentals 1976     NA Dominican Republic
-## 182 ornamentals 1977     NA Dominican Republic
-## 183 ornamentals 1978     NA Dominican Republic
-## 184 ornamentals 1979    0.1 Dominican Republic
-## 185 ornamentals 1980     NA Dominican Republic
-## 186 ornamentals 1981     NA Dominican Republic
-## 187 ornamentals 1982     NA Dominican Republic
-## 188 ornamentals 1983     NA Dominican Republic
-## 189 ornamentals 1984     NA Dominican Republic
-## 190 ornamentals 1985     NA Dominican Republic
-## 191 ornamentals 1986     NA Dominican Republic
-## 192 ornamentals 1987     NA Dominican Republic
-## 193 ornamentals 1988     NA Dominican Republic
-## 194 ornamentals 1989     NA Dominican Republic
-## 195 ornamentals 1990     NA Dominican Republic
-## 196 ornamentals 1991     NA Dominican Republic
-## 197 ornamentals 1992     NA Dominican Republic
-## 198 ornamentals 1993     NA Dominican Republic
-## 199 ornamentals 1994     NA Dominican Republic
-## 200 ornamentals 1995    0.1 Dominican Republic
-## 201 ornamentals 1996     NA Dominican Republic
-## 202 ornamentals 1997     NA Dominican Republic
-## 203 ornamentals 1998     NA Dominican Republic
-## 204 ornamentals 1999     NA Dominican Republic
-## 205 ornamentals 2000     NA Dominican Republic
-## 206 ornamentals 2001     NA Dominican Republic
-## 207 ornamentals 2002   33.0 Dominican Republic
-## 208 ornamentals 2003   36.0 Dominican Republic
-## 209 ornamentals 2004   19.0 Dominican Republic
-## 210 ornamentals 2005   48.0 Dominican Republic
-## 211 ornamentals 2006   20.0 Dominican Republic
-## 212 ornamentals 2007   62.0 Dominican Republic
-## 213 ornamentals 2008   45.0 Dominican Republic
-## 214 ornamentals 2009   40.0 Dominican Republic
-## 215 ornamentals 2010   44.0 Dominican Republic
-## 216 ornamentals 2011   45.0 Dominican Republic
-## 217    seaweeds 1976     NA Dominican Republic
-## 218    seaweeds 1977     NA Dominican Republic
-## 219    seaweeds 1978     NA Dominican Republic
-## 220    seaweeds 1979     NA Dominican Republic
-## 221    seaweeds 1980     NA Dominican Republic
-## 222    seaweeds 1981     NA Dominican Republic
-## 223    seaweeds 1982     NA Dominican Republic
-## 224    seaweeds 1983     NA Dominican Republic
-## 225    seaweeds 1984     NA Dominican Republic
-## 226    seaweeds 1985     NA Dominican Republic
-## 227    seaweeds 1986     NA Dominican Republic
-## 228    seaweeds 1987     NA Dominican Republic
-## 229    seaweeds 1988     NA Dominican Republic
-## 230    seaweeds 1989     NA Dominican Republic
-## 231    seaweeds 1990     NA Dominican Republic
-## 232    seaweeds 1991     NA Dominican Republic
-## 233    seaweeds 1992     NA Dominican Republic
-## 234    seaweeds 1993     NA Dominican Republic
-## 235    seaweeds 1994     NA Dominican Republic
-## 236    seaweeds 1995     NA Dominican Republic
-## 237    seaweeds 1996     NA Dominican Republic
-## 238    seaweeds 1997     NA Dominican Republic
-## 239    seaweeds 1998     NA Dominican Republic
-## 240    seaweeds 1999     NA Dominican Republic
-## 241    seaweeds 2000     NA Dominican Republic
-## 242    seaweeds 2001     NA Dominican Republic
-## 243    seaweeds 2002     NA Dominican Republic
-## 244    seaweeds 2003    0.1 Dominican Republic
-## 245    seaweeds 2004    0.0 Dominican Republic
-## 246    seaweeds 2005    0.0 Dominican Republic
-## 247    seaweeds 2006    0.0 Dominican Republic
-## 248    seaweeds 2007    0.1 Dominican Republic
-## 249    seaweeds 2008    0.0 Dominican Republic
-## 250    seaweeds 2009    0.0 Dominican Republic
-## 251    seaweeds 2010    0.0 Dominican Republic
-## 252    seaweeds 2011    0.0 Dominican Republic</code></pre>
+## Take a look at Dominican Republic
+new_c &lt;-<span class="st"> </span><span class="kw">filter</span>(new, rgn_id<span class="op">==</span><span class="dv">115</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(commodity, year)
+old_c &lt;-<span class="st"> </span><span class="kw">filter</span>(old, rgn_id<span class="op">==</span><span class="dv">115</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(commodity, year)
+
+<span class="kw">require</span>(gridExtra)</code></pre></div>
+<pre><code>## Loading required package: gridExtra</code></pre>
+<pre><code>## 
+## Attaching package: 'gridExtra'</code></pre>
+<pre><code>## The following object is masked from 'package:dplyr':
+## 
+##     combine</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plot1 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(new_c, <span class="kw">aes</span>(<span class="dt">x=</span>year, <span class="dt">y=</span>tonnes))<span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color=</span>product)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Dominican Republic Commodities&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_bw</span>()
+plot2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>(old_c, <span class="kw">aes</span>(<span class="dt">x=</span>year, <span class="dt">y=</span>tonnes))<span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color=</span>product)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Dominican Republic Commodities&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_bw</span>()
+<span class="kw">grid.arrange</span>(plot1, plot2, <span class="dt">ncol=</span><span class="dv">2</span>)</code></pre></div>
+<pre><code>## Warning: Removed 253 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 211 rows containing missing values (geom_point).</code></pre>
+<p><img src="data:image/png;base64,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7LPPvvbaa8pUjz76qDK28WzUtVnSO++8U3nX15gxY+THyRSSJM2dO/e7777zuG9FRUVufu+3Npubcvi4atUq+QFLm6V4++235TykZcuW3notNuoc8d0dxHfiuweI7w0E8f0aiO+8xM6FF1544Y033rAuMZlMubm5Nudjhg8fvnz5cvuzkq+88kpycnJqampFRcXQoUP/8pe/jBgxomXLlvn5+Vu2bPn888+NRqMQIjg4uLqTQJq2aNGiHj16FBYWpqend+3adezYsX369Gnbtm1GRsZ//vOf9evXy9WmTp2qfFOkT58+vr6+VVVVJSUlvXv3HjZsWEJCgsFgSE9P37Nnj/zoV3x8vLxBrlu3bsSIEXfcccekSZO8tIjOREdHywMHDx60Ln/kkUdWr169efNmSZJeeOGF5OTkESNGyK+x/eOPPxYvXiw/q6bT6RYuXOjwVLf8E23dujUxMXHkyJE33HBDWFjY4cOHly5dqgTpyZMn33jjjdZTDRgw4J133hFCpKen9+rV69VXX01KSqqsrDx48OCiRYt+/fXX5s2bt23bVjnnau+66647ceJESkpKYmLi008/3atXL0mSDhw4sGTJkqysLLnOnDlzlAeTPOPBauOmmTNn5ufnv/fee0KICxcu3H///a1btx42bFi7du3CwsIKCgqOHj26efNm5TJRs2bN1q5da/NGnMazUXu8pHq9funSpf3795ckKSMjo2fPng8//PDtt98eERFx7ty5r7/+evfu3UKIG2+8UXm/t5vCwsKKiopMJlP//v2TkpIqKiq++uor55N4vLk99NBDr732WkVFRUlJycCBAx977LFbb701KiqqtLT07NmzK1eulJdCCPHss88q7zaDhhDfa4P4Lg8Q32uE+N5AEN81H98lOFLd01n2QkND582bV1VVVV1TZ86ccd5aWFjYTz/9ZD+h8vzPggULHLYs3zoihMjMzLQfqzxINmDAAOvyGTNmyOVLlixxp9yaEjBSU1PdnHb37t3K6y4dGj58uM2v9+abbzqpP2jQoMLCQuXRFyFEly5d6mQpXFLedDJt2jR36v/jH/+Q6+t0ul27dlmPys/PVx7ZcsjX13fZsmU2DSqf4oyPj1+wYIGTye+///6KigqbyS0Wy7hx46qbJCwsbO/evX/+85+FEP7+/tYTZmZmKguu3L/n0HPPPWexWGzm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YAI08AAAAAAAmAANPAAAAAAAJkADDwAAAACACdDAAwAAAABgAjTwAAAAAACYAA08AAAAAAAmQAMPAAAAAIAJ0MADAAAAAGACNPAAAAAAAJgADTwAAAAAACZAAw8AAAAAgAnQwAMAAAAAYAI08AAAAAAAmAANPAAAAAAAJkADDwAAAACACdDAAwAAAABgAjTwAAAAAACYAA08AAAAAAAmQAMPAAAAAIAJWCKdAADgiDSn7s1TdZ+Q4yXrQEWyRTohAADQbdR3HDUaeADojbQGvfFfbleuT6iHRySriJ5hdZxpk2OkiKYGAACOEvUd3UQDDwC9jlqpVT/u0hr0toO6VzhXed271OTbo5VEajwAACZDfUf38R14AOhldFH3Yku76t5KrdbqX20J42wVFRV33nnnhAkTHA5Henr68ccf/+677+r6/2ZftGiRJElVVVWrVq069dRTExMT4+Li5syZ8/rrr7cN8/vqq68uueSSMWPG2O32gQMHXn755bt3724b8Oqrr0qS9Oc//9nlct17771Dhgyx2+0jRoz41a9+VVdX1zZS1/U333xzzpw5DocjJSXl3HPP3bdv3zvvvCNJ0sMPP9w2Mi8v7+qrr87Ozo6Kiho8ePCll166efPmrj5NAAB6FvVdCEF97zYaeADoXTx7VG+hFihgd5CA0B06dGjixIl//vOft23bFh8f39TU9M0335x77rl/+tOf2kW+++678+fP/+KLL3w+X1NT0+rVqy+55JJbbrmlbczjjz8+f/78119/fefOnXFxccXFxa+88srEiRM//fTT9k/B4zn55JMXL14shBgwYMC+ffsee+yxs846S1XV1pg77rjjoosuWr16tdfr9Xq977777rRp03bs2NHuoZYvXz5+/Phly5YVFRUlJiYWFBS89tpr06ZNe+21147iaQIA0EOo737U926igQeA3sW90xc8ZlfwmFDcd999paWlCxcuLCkpOXToUH19/V//+lchxG9+8xun09k28pZbbhk1atTGjRsbGhoqKiruvvtuIcTSpUu//fZbf0B+fv5dd90lhPj1r39dW1tbWVlZUlLy05/+1O12X3vttS0tPziqsGTJkqKioo0bNx44cCAvL+/TTz9VFOXrr79evXq1P2DNmjWPP/64zWZbtmxZfX19bW3tl19+abfbH3zwwbaP43Q6L7/8cqfTefPN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" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">new &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/usd.csv&quot;</span>)
 <span class="kw">filter</span>(new, rgn_id<span class="op">==</span><span class="dv">100</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">arrange</span>(commodity, year)</code></pre></div>
@@ -3818,6 +2302,7 @@ old</code></pre></div>
 ## 10    110  shells 2009 51.500000
 ## 11    110  shells 2010 43.500000
 ## 12    110  shells 2011 70.750000</code></pre>
+</div>
 </div>
 
 
