@@ -309,17 +309,17 @@ year_max <- max(h_prod$year)
 
 j <- h_prod %>%
   arrange(rgn_id, product, year) %>%
-   group_by(rgn_id, product) %>%
+  group_by(rgn_id, product) %>%
         mutate(
           tonnes_rollmean = rollapply(tonnes, width=4, FUN=mean, align='right', partial=TRUE, na.rm=FALSE),
           usd_rollmean    = rollapply(   usd, width=4, FUN=mean, align='right', partial=TRUE, na.rm=FALSE)) %>%
         rename(
           tonnes_orig = tonnes, # prevent overwriting of reported and gapfilled values
           usd_orig    = usd) %>% # prevent overwriting of reported and gapfilled values
-    mutate(
-      tonnes = ifelse(!is.na(tonnes_rollmean), tonnes_rollmean, tonnes),
-      usd    = ifelse(!is.na(   usd_rollmean),    usd_rollmean,    usd)) %>%
-    select(rgn_id, rgn_name, product, year, tonnes, usd, tonnes_orig, usd_orig)
+  mutate(
+      tonnes = ifelse(!is.na(tonnes_rollmean), tonnes_rollmean, tonnes_orig),
+      usd    = ifelse(!is.na(usd_rollmean),    usd_rollmean,    usd_orig)) %>%
+  select(rgn_id, rgn_name, product, year, tonnes, usd, tonnes_orig, usd_orig)
 
 ```
 
