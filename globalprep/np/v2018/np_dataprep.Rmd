@@ -19,26 +19,26 @@ output:
 This analysis converts FAO commodities data into data layers used to calculate OHI 2018 global natural products scores.  
 
 #Updates from previous assessment
-New year of FAO data (1976-2013), but no changes to general methods.
+New year of FAO data (1976-2015), but no changes to general methods.
 
 ***
 
 #Data Source 
 **Reference**:      
     http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
-     Release date: March 2016 
-FAO raw commodities quantity 1976_2013
-FAO raw commodities value 1976_2013
+     Release date: November 2017 
+FAO raw commodities quantity 1976_2015
+FAO raw commodities value 1976_2015
 
-**Downloaded**: July 29 2016
+**Downloaded**: May 12 2018
 
 **Description**:  Quantity (tonnes) and value (USD) of raw commodities (Exports only) for each country, taxa, year.  The FAO data is subset to include commodities in these categories: shells, corals, ornamental fish, fish oil, seaweed and plants, sponges (see: raw/commodities2products.csv for details).
 
-**Time range**: 1976-2013 
+**Time range**: 1976-2015
 
 ***
   
-#Methods
+# Methods
 ```{r}
 ## load libraries, set directories
 library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
@@ -58,9 +58,9 @@ source('R/np_fxn.R')
 
 ```
 
-# FAO Commodities: Value and Quantity
+# Import Raw Data: FAO Commodities
 
-Read and process FAO commodities value and quantity data.
+Simultaneously read and process FAO commodities value and quantity data.
 ```{r}
 
 ## NOTE: This can be run as a loop, but the "value" and "quant" datasets need to be run individually to make sure
@@ -162,6 +162,7 @@ for (f in files){ # f = files[1]
 
 ```
 
+# Data Wrangle
 Combining the quantity and value data and a bit of cleaning to remove data prior to first reporting year for each commodity and region.
 ```{r}
 
@@ -217,7 +218,7 @@ h <- h %>% np_zerofill
 ## assumes that non-reporting indicates zero harvest to report.
 ## Also cross-fills zeros where one side is 0, other is NA (not flagged as gapfill)
 
-h1 <- h %>% np_lowdata_filter()
+h <- h %>% np_lowdata_filter()
 ## Exclude commodities (within a region) that have few non-zero data points.
 ## Optional parameter with default: nonzero_h_yr_min = 4
 ## NOTE: This filter has consequences for the regression, but also has meaning in terms of 
@@ -230,23 +231,23 @@ h <- h %>% add_georegion_id()
 h <- h %>% np_regr_fill(years_back = 10, vars = 'td', scope = 'rgn_id')
 h <- h %>% np_regr_fill(vars = 'tdy', scope = 'georgn_id')
 h <- h %>% np_regr_fill(vars = 'tdy', scope = 'global')
-### np_regr_fill() is a generalized regression gapfill function.  Parameters (with defaults):
-### * years_back=50 (int):     This determines how far back in the time series to include within the regression.
-### * min_paired_obs=4 (int):  This determines how many paired observations are required to attempt a regression.
-### * scope = 'rgn_id' (str):  ('rgn_id', 'georgn_id', 'global') Determines grouping scale for regression.
-### * vars = 'tdy' (str):      ('td', 'tdy') Determines model: (tonnes ~ usd) or (tonnes ~ usd + year) [and vice versa]
+## np_regr_fill() is a generalized regression gapfill function.  Parameters (with defaults):
+## * years_back=50 (int):     This determines how far back in the time series to include within the regression.
+## * min_paired_obs=4 (int):  This determines how many paired observations are required to attempt a regression.
+## * scope = 'rgn_id' (str):  ('rgn_id', 'georgn_id', 'global') Determines grouping scale for regression.
+## * vars = 'tdy' (str):      ('td', 'tdy') Determines model: (tonnes ~ usd) or (tonnes ~ usd + year) [and vice versa]
 
 
 h <- h %>% np_end_fill()
-### For final year of data, if both usd and tonnes originally reported as NA, pull forward
-### values for usd and tonnes from the previous year.  This should happen after regression fill.
+## For final year of data, if both usd and tonnes originally reported as NA, pull forward
+## values for usd and tonnes from the previous year.  This should happen after regression fill.
 
 h_comm <- h
-### Store commodity-level data, before moving on to the product-level smoothing.
+## Store commodity-level data, before moving on to the product-level smoothing.
 
 
-### Output gapfilling report to .csv files.
-### Very few usd gapfilling, and none in recent years (data used to weight contributions), so will ignore this: gapfill=="r2_u_gr"
+## Output gapfilling report to .csv files.
+## Very few usd gapfilling, and none in recent years (data used to weight contributions), so will ignore this: gapfill=="r2_u_gr"
 h_gap <- h %>%
   mutate(gapfill = ifelse(gapfill == "r2_u_gr", "none", gapfill)) %>%   # focusing only on tonnes gapfilling
   select(rgn_id, commodity, product, year, gapfill)
@@ -255,9 +256,9 @@ write.csv(h_gap, 'output/np_harvest_tonnes_gf.csv', row.names = FALSE, na = '')
 
 ```
 
-# Final data preparation
+# Final Data Wranglng
 
-Summarize each product per country per year, e.g., all corals in Albania in 2011.  And, do some error checking.
+Summarize each product per country per year, e.g., all corals in Albania in 2011. And, do some error checking.
 ```{r}
 
 h_prod <- h_comm %>%
@@ -265,47 +266,60 @@ h_prod <- h_comm %>%
   summarize(tonnes = sum(tonnes, na.rm = TRUE), 
             usd = sum(usd, na.rm = TRUE))
           
-### Error-checking and table exports
+## Error-checking and table exports
 stopifnot(sum(duplicated(h_prod[ , c('rgn_id', 'product', 'year')])) == 0)
+```
 
-### Check: wide with all commmodities and product subtotal for comparison with input data
+## Data Check
+
+Look at wide format with all commmodities and product subtotal (where commodity column value is "Z_TOTAL"), compared with the input data prior to summing.
+
+```{r}
+
 h_x_tonnes <- h_comm %>% 
   bind_rows(mutate(h_prod, commodity='Z_TOTAL')) %>%
   select(rgn_name, rgn_id, commodity, product, year, tonnes) %>%
   arrange(rgn_name, product, commodity, year) %>%
   spread(year, tonnes)
+
 h_x_usd <- h_comm %>% 
   bind_rows(mutate(h_prod, commodity='Z_TOTAL')) %>%
   select(rgn_name, rgn_id, commodity, product, year, usd) %>%
   arrange(rgn_name, product, commodity, year) %>%
   spread(year, usd)
+
+## Check a random country and commodity
+australia <- h_x_usd %>% filter(product == "ornamentals", rgn_name == "Australia") 
+australia
+
+## Can open up in Excel to compare subtotals per country-product-year
 write.csv(h_x_tonnes, 'int/np_harvest_tonnes_wide.csv', row.names = FALSE, na = 'NA')
 write.csv(h_x_usd,    'int/np_harvest_usd_wide.csv',    row.names = FALSE, na = 'NA')
 
 ```
 
 
-
+## Determine Peak Values
 Determine rolling averages for tonnes and USD in order to determine peak values.  This is based upon total harvests by product group, not individual commodity.  
 
 ```{r}
 
+# Find max year in the summarized data table
 year_max <- max(h_prod$year)
-
 
 j <- h_prod %>%
   arrange(rgn_id, product, year) %>%
-   group_by(rgn_id, product) %>%
+  group_by(rgn_id, product) %>%
         mutate(
           tonnes_rollmean = rollapply(tonnes, width=4, FUN=mean, align='right', partial=TRUE, na.rm=FALSE),
           usd_rollmean    = rollapply(   usd, width=4, FUN=mean, align='right', partial=TRUE, na.rm=FALSE)) %>%
         rename(
-          tonnes_orig = tonnes, ### prevent overwriting of reported and gapfilled values
-          usd_orig    = usd) %>%    ### prevent overwriting of reported and gapfilled values
-    mutate(
-      tonnes = ifelse(!is.na(tonnes_rollmean), tonnes_rollmean, tonnes),
-      usd    = ifelse(!is.na(   usd_rollmean),    usd_rollmean,    usd)) %>%
-    select(rgn_id, rgn_name, product, year, tonnes, usd, tonnes_orig, usd_orig)
+          tonnes_orig = tonnes, # prevent overwriting of reported and gapfilled values
+          usd_orig    = usd) %>% # prevent overwriting of reported and gapfilled values
+  mutate(
+      tonnes = ifelse(!is.na(tonnes_rollmean), tonnes_rollmean, tonnes_orig),
+      usd    = ifelse(!is.na(usd_rollmean),    usd_rollmean,    usd_orig)) %>%
+  select(rgn_id, rgn_name, product, year, tonnes, usd, tonnes_orig, usd_orig)
 
 ```
 
