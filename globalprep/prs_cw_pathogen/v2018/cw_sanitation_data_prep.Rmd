@@ -105,7 +105,7 @@ sani_raw <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v201
 #Methods
 
 ##Data wrangling
-Selecting and naming the columns of interest. Scale the percentagepercentage of population with access to improved sanitation to popoportions (from 0-1). Transform population and percentage into a numeric variable.
+Selecting and naming the columns of interest. Scale the percentage of population with access to improved sanitation to popoportions (from 0-1). Transform population and percentage into a numeric variable.
 
 
 ```{r}
@@ -135,7 +135,8 @@ sani_improved <- sani %>%
    mutate(country=ifelse(str_detect(country,"Hong Kong"), "Hong Kong", country)) %>% 
    mutate(country=ifelse(str_detect(country,"Macao"), "Macao", country))
 
-##Caribbean Netherlands are in a lowe resolution than hte OHI regions. They include:Bonaire, Sint Eustatius, Saba. However, there is no data Caribbean Netherlands so it is filter out.
+##For 2018 assesment
+##Caribbean Netherlands are in a lowe resolution than hte OHI regions. They include: Bonaire, Sint Eustatius, Saba. However, there is no data Caribbean Netherlands so it is filter out.
 sani_improved <- sani_improved %>% 
   filter(country!= 'Caribbean Netherlands')
 
@@ -174,12 +175,12 @@ rgn_sani <- name_2_rgn(sani_improved,
                         flds_unique  = c('country','year')) 
 
 ##Warning: These data were removed for not having any match in the lookup tables.
-## Check list to make sure all countries removed are not of interest for the OHI global assesment. In this case West Bank and Gaza Strip is not considered because it is a disputed area and Isle of Man is not consider an OHI region.
+## Check list in warning to make sure all countries removed are not of interest for the OHI global assesment. In this case West Bank and Gaza Strip is not considered because it is a disputed area and Isle of Man is not consider an OHI region.
 
 ##Check for duplicate regions.
 sort(table(rgn_sani$rgn_id)) #for this analysis regions which are duplicated are: rgn_id = 209, 140, 116, 13
 
-## Each region has 16 years of data in this case. if there are regions with more than 16 values is because in this database they are resported in a higher resolution than the OHI global assesment (eg: China, Hong Kong and Macao are just one region for the OHI global). For these regions a weighted average will be calculated as its final score.
+## Each region has 16 years of data in this case. If there are regions with more than 16 values is because in this database they are resported in a higher resolution than the OHI global assesment (eg: China, Hong Kong and Macao are just one region for the OHI global). For these regions a weighted average will be calculated as its final score.
 
 
 ##Finalizing the first part of the sanitation preparation by calculating weighted means for the duplicated regions.
@@ -195,9 +196,10 @@ sort(table(sani_final$rgn_id))
 
 #Gapfilling
 
-Get an idea of what needs to be gapfilled.
+First step is to get an idea of what needs to be gapfilled.
 
 ```{r check}
+
 sani_gf <- sani_final %>% 
   group_by(rgn_id, rgn_name) %>%
   mutate(gf_count = sum(is.na(basic_sani_prop)))
@@ -208,9 +210,9 @@ filter(sani_gf, gf_count>0) %>%
   unique() %>%
   data.frame()
 
-# Some regions have no data. Filter those out to be gapfiled latter.
+##Some regions have no data. Filter those out to be gapfiled latter.
 
-# number of years of data
+##Define number of years of data
 years_data <- mean(table(sani_gf$rgn_id))
 
 sani_gf <- sani_gf %>%
@@ -241,14 +243,17 @@ sani_gf_lm <- sani_gf_lm %>%
 ```
 
 
-#Gapfilling 2
+##Gapfilling 2
+
 Georegional gapfilling for regions that do not have data.
 
 
 ```{r gf georgn}
-#Bring from ohicore packege georegions and georegions lables as variables
+##Bring from ohicore packege georegions and georegions lables as variables
 georegions       <- georegions
 georegion_labels <- georegion_labels
+
+year <- min(sani_gf_lm$year):max(sani_gf_lm$year) #defines the year range
 
 sani_georgn_gf <- georegions%>%
   expand(year, georegions)%>%
@@ -256,7 +261,7 @@ sani_georgn_gf <- georegions%>%
   left_join(georegion_labels, by = 'rgn_id') %>%
   select(-r0)
 
-#Identify inhabitaed regions
+##Identify inhabitaed regions
 rgn_inhab <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/LookupTables/rgn_uninhabited_islands.csv')
 
 rgn_inhab <- rgn_inhab %>% 
@@ -267,7 +272,7 @@ sani_georgn_gf <- sani_georgn_gf %>%
   left_join(rgn_inhab, by= 'rgn_id')
 
 
-# Calculate two different gapfill columns using r2 and r1
+##Calculate two different gapfill columns using r2 and r1
 sani_georgn_gf <- sani_georgn_gf %>%
   group_by(year, r2) %>%
   mutate(basic_sani_r2 = mean(basic_sani_prop, na.rm=TRUE)) %>%
@@ -288,12 +293,13 @@ sani_georgn_gf <- sani_georgn_gf %>%
   mutate(basic_sani_prop = ifelse(is.na(inhab), basic_sani_prop, 1)) %>% #all inhabitated regions are given the maximun score 1.
   select(rgn_id, year, basic_sani_prop, method, inhab)
 
-#See regions that have not been gapfilled
+##See regions that have not been gapfilled
 filter(sani_georgn_gf, is.na(basic_sani_prop)) %>% 
   select(rgn_id, basic_sani_prop) %>% 
   unique() %>%
   data.frame()
-#Check for inhabited rigions
+
+##Check for inhabited rigions
 filter(sani_georgn_gf, !is.na(inhab)) %>% 
   select(rgn_id, basic_sani_prop, method) %>% 
   unique() %>%
@@ -317,7 +323,7 @@ population <- read.csv("../../mar_prs_population/v2018/output/mar_pop_25mi.csv")
   arrange(rgn_id, year)
 
 ##Keep an eye on not populated regions. They will have the highest score
-#Note: there is a difference between the list of islands with no population in the mar_pop_25mi dataset witht the nhabit list in github. In the mar_pop_25mi, rgn_id 144 - Jan Mayen is not identified as a pop_0 region qhile in the github list it is.
+#Note: there is a difference between the list of islands with no population in the mar_pop_25mi dataset witht the nhabit list in github. In the mar_pop_25mi, rgn_id 144 - Jan Mayen is not identified as a pop_0 region while in the github list it is.
 
 #identify inhabited regions (popsum=0)
 pop_0 <- population%>%
@@ -330,7 +336,24 @@ maxyear <- max(sani_georgn_gf$year)
 
 #standarization: convert proportion with acces to sanitation to proportion without access to sanitation (poopers! lack of access*population density)
 
-san
+unsani_pop <- sani_georgn_gf %>%  
+    filter(year %in% minyear:maxyear) %>% 
+    select(rgn_id, year, basic_sani_prop) %>%
+    left_join(population %>%
+                filter(year %in% minyear:maxyear), 
+              by=c('rgn_id', 'year')) %>%
+    mutate(propWO_x_pop     = (1 - basic_sani_prop) * popsum, # this is the population density of people without access
+           propWO_x_pop_log = log(propWO_x_pop + 1))          # log is important because the skew was high otherwise
+
+#Rescale to calculate score. Pressure is rescaled to 110% of max 'poopers' within past five years.
+unsani_pop <- unsani_pop %>%
+    mutate(pressure_score = propWO_x_pop_log / (1.1 * max(propWO_x_pop_log, na.rm = TRUE)))
+
+#(havent saved)
+#Save data pressure scores (ps)
+#write.csv(unsani_pop, "intermediate/unsani_pop_ps.csv", row.names=FALSE)
+
+
 
 ```
 
