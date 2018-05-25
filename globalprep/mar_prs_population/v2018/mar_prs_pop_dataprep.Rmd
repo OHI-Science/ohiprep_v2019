@@ -77,8 +77,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.heigh
 
 ```{r file paths}
 ## source common and spatial common files
-source("../../../src/R/common.R")
-source("../../../src/R/spatial_common.R")
+source("../../src/R/common.R")
+source("../../src/R/spatial_common.R")
 
 ## Update these!
 scenario_yr <- "v2018" # change to reflect assessment year!
@@ -152,27 +152,26 @@ Gridded world population densities from CIESE and CIAT are projected into the Wo
 ```{r manipulate spatial data}
 ## convert year to numeric, project raster, resample, and save human_density_year_mol.tifs with these updates
 
-# cl <- makeCluster(5)
-# registerDoParallel(cl)
-# foreach(i = raw, .packages = c("raster", "rgdal", "stringr")) %dopar% {
-#   yr <- as.numeric(as.character(str_sub(i, -8, -5)))
-#   raster(i) %>%
+cl <- makeCluster(10)
+registerDoParallel(cl)
+foreach(i = raw, .packages = c("raster", "rgdal", "stringr")) %dopar% {
+  yr <- as.numeric(as.character(str_sub(i, -8, -5)))
+  raster::raster(i) %>%
+    raster::projectRaster(crs = crs(ocean), res = res(ocean), over = TRUE, method = "ngb",
+                          filename = file.path(path_mar_prs, sprintf("int/human_density_%s_mol.tif", yr)),
+                          overwrite = TRUE) # ... actually taking TOO LONG, NOT FINISHED AN HOUR LATER...
+}
+stopCluster(cl)
+closeAllConnections()
+
+# for(rast in raw){
+#   yr <- as.numeric(as.character(str_sub(rast, -8, -5)))
+#   raster(rast) %>%
 #     projectRaster(crs = crs(ocean), over=TRUE) %>%
 #     resample(ocean, method = 'ngb',
 #              filename = file.path(path_mar_prs, sprintf("int/human_density_%s_mol.tif", yr)),
 #              overwrite = TRUE)
 # }
-# stopCluster(cl)
-# closeAllConnections()
-
-for(rast in raw){
-  yr <- as.numeric(as.character(str_sub(rast, -8, -5)))
-  raster(rast) %>%
-    projectRaster(crs = crs(ocean), over=TRUE) %>%
-    resample(ocean, method = 'ngb',
-             filename = file.path(path_mar_prs, sprintf("int/human_density_%s_mol.tif", yr)),
-             overwrite = TRUE)
-}
 ```
 
 ### Interpolate between Years
@@ -195,7 +194,6 @@ yearly_diff(year_min = 2005, year_max = 2010)
 yearly_diff(year_min = 2010, year_max = 2015)
 yearly_diff(year_min = 2015, year_max = 2020)
 
-
 ## define and apply function to interpolate population densities for years between years in dataset
 yearly_interpolate <- function(year, start_raster, yearly_change){
   stack(start_raster, yearly_change) %>%
@@ -213,44 +211,42 @@ for(i in c(2000, 2005, 2010, 2015)){
   yearly_interpolate(i, start_raster = files[grep(sprintf("density_%s_mol",i), files)],
                      yearly_change = files[grep(sprintf("change_%s_to_%s", i, i+5), files)])
 }
-
 ```
 
 ### Convert Density to Population Counts
 
-Density data are converted to population by multiplying density times the area of the cell (934.4789 x 934.4789m) and converting to square km from square meters, to get people per square km. GWPv4 provides both densities and population counts, but, we derive population counts from density because **(?)**
+Density data are converted to population by multiplying density times the area of the cell (934.4789 x 934.4789m) and converting to square km from square meters, to get people per square km. GWPv4 provides both densities and population counts. However, we derive population counts from density because the density data is independent of raster scale, so we can reproject/resample and it will still be correct. Change the scale using count data, and it is necessaary to correct by dividing by cell area otherwise the values become meaningless; it is easier to just start with density.
 
 ```{r convert density data to population count}
 
 den_raster <- list.files(file.path(path_mar_prs, "int"), pattern = "density_\\d{4}_mol.tif$", full = TRUE)
 den_raster # check to make sure this looks correct; all and only density tifs in folder
 
-# cl <- makeCluster(length(den_raster))
-# registerDoParallel(cl)
-# 
-# foreach(i = den_raster, .packages = c("raster", "rgdal", "stringr")) %dopar% {
-#   nm <- basename(i)
+cl <- makeCluster(length(den_raster))
+registerDoParallel(cl)
+
+foreach(i = den_raster, .packages = c("raster", "rgdal", "stringr")) %dopar% {
+  nm <- basename(i)
+  yr <- stringr::str_sub(nm, -12, -9)
+  cat(nm)
+  tmp <- raster::raster(i)
+  raster::calc(tmp, fun = function(x){x * (934.4789 * 934.4789 * 0.000001)},
+       filename = file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", yr)),
+       overwrite=TRUE)
+}
+stopCluster(cl)
+closeAllConnections()
+
+# for(rast in den_raster){
+#   nm <- basename(rast)
 #   yr <- str_sub(nm, -12, -9)
 #   cat(nm)
-#   tmp <- raster(i)
+#   tmp <- raster(rast)
 #   calc(tmp, fun = function(x){x * (934.4789 * 934.4789 * 0.000001)},
 #        filename = file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", yr)),
-#        overwrite=TRUE)
+#        overwrite = TRUE)
+#   print(file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", yr))) # check
 # }
-# 
-# stopCluster(cl)
-# closeAllConnections()
-
-for(rast in den_raster){
-  nm <- basename(rast)
-  yr <- str_sub(nm, -12, -9)
-  cat(nm)
-  tmp <- raster(rast)
-  calc(tmp, fun = function(x){x * (934.4789 * 934.4789 * 0.000001)},
-       filename = file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", yr)),
-       overwrite = TRUE)
-  print(file.path(path_mar_prs, sprintf("int/human_count_%s_mol.tif", yr))) # check
-}
 ```
 
 ## Create EEZ + 25-mile Inland Raster
@@ -258,19 +254,19 @@ for(rast in den_raster){
 ```{r create eez + 25-mile inland raster}
 ## re-add Fiji which appears to get cut: include all of Fiji land falling within 50 mile boundary
 fiji <- regions %>%
-  filter(rgn_type == "land" & rgn_id == 18) %>%
-  select(rgn_id, geometry)
+  dplyr::filter(rgn_type == "land" & rgn_id == 18) %>%
+  dplyr::select(rgn_id, geometry)
 
 ## create the 25-mile inland raster and add Fiji
 inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"), 
                       layer = "sp_inland25mi_gcs") %>% select(rgn_id, geometry)
-inland <- st_transform(inland, st_crs(fiji))
+inland <- sf::st_transform(inland, st_crs(fiji))
 inland <- rbind(inland, fiji)
 
 ## save shapefile for future reference if it doesn't already exist
 if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_50mi"))){
-  st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_50mi"), 
-           layer = "EEZ_inland_50mi", driver="ESRI Shapefile")
+  sf::st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_50mi"), 
+           layer = "EEZ_inland_50mi", driver = "ESRI Shapefile")
 }
 
 ## create new object merging eez and rasterized 25mile inland buffer
@@ -281,17 +277,18 @@ eez_25mi_inland <- raster::merge(eez_raster, inland_raster,
 
 ### Append or Extract by OHI Regions
 
+Stack rasters of population counts for each year, sum within regions (using eez_25mi_inland) for each year, and save this as `coastal_pop_zonal_sums.csv` in the intermediate folder. Gather this into long format dataframe, and save as `output/mar_pop_25mi.csv`.
+
 ```{r extract population data from all population layers}
-## stack rasters of population counts for all years, sum these, and save this as  a csv called coastal_pop
-pop_stack <- raster::stack(list.files(file.path(path_mar_prs, "int"), pattern = "count_\\d{4}_mol.tif$", full = TRUE))
-coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland, fun="sum", progress="text")
+pop_stack <- raster::stack(list.files(file.path(path_mar_prs, "int"), pattern = "count_\\d{4}_mol.tif$", full = TRUE)) # stack
+coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland, fun="sum", progress="text") # sum within zones (regions as specified by eez_25mi_inland)
 
 write.csv(coastal_pop, paste0(scenario_yr, "/int/coastal_pop_zonal_sums.csv"), row.names = FALSE)
 
 coastal_pop2 <- data.frame(coastal_pop) %>%
   tidyr::gather("year", "coastal_pop_25mi", -1) %>%
-  dplyr::select(rgn_id=zone, year=year, popsum=coastal_pop_25mi) %>%
-  dplyr::mutate(year = as.numeric(substring(year, 13, 16))) %>%
+  dplyr::select(rgn_id = zone, year = year, popsum = coastal_pop_25mi) %>%
+  dplyr::mutate(year = as.numeric(substring(year, 13, 16))) %>% # extract numeric portion of year_####
   dplyr::filter(rgn_id <= 250)
 
 write.csv(coastal_pop2, paste0(scenario_yr, "output/mar_pop_25mi.csv"), row.names = FALSE)
@@ -303,12 +300,12 @@ write.csv(coastal_pop2, paste0(scenario_yr, "output/mar_pop_25mi.csv"), row.name
 inland$area_km2 <- st_area(inland)
 
 area <- data.frame(inland) %>%
-  select(rgn_id, area_km2) %>%
-  mutate(area_km2 = round(area_km2/1000000)) %>%
-  mutate(area_km2 = as.numeric(as.character(gsub(" m^2", "", area_km2)))) %>%
-  filter(rgn_id <= 250) %>%
-  filter(rgn_id != 213) %>%
-  group_by(rgn_id) %>%
+  dplyr::select(rgn_id, area_km2) %>%
+  dplyr::mutate(area_km2 = round(area_km2/1000000)) %>%
+  dplyr::mutate(area_km2 = as.numeric(as.character(gsub(" m^2", "", area_km2)))) %>%
+  dplyr::filter(rgn_id <= 250) %>%
+  dplyr::filter(rgn_id != 213) %>%
+  dplyr::group_by(rgn_id) %>%
   dplyr::summarize(area_km2 = sum(area_km2))
 
 ## save area data for the scenario year
@@ -329,7 +326,7 @@ pop_rescaled <- coastal_pop2 %>%
 filter(pop_rescaled, is.na(area_km2)) # missing value is Antarctica...which is good!
 
 pressure_data <- pop_rescaled %>%
-  select(rgn_id, year, pressure_score = dens_rescaled)
+  dplyr::select(rgn_id, year, pressure_score = dens_rescaled)
 
 write.csv(pressure_data, sprintf("%s/output/prs_pop_density.csv", scenario_yr), row.names = FALSE)
 ```
@@ -340,11 +337,11 @@ No gapfilling was completed as part of this data prep methodology. Datasets are 
 
 ```{r save prs_pop_density and mar_pop_25mi layers}
 prs <- read.csv("globalprep/mar_prs_population/v2017/output/prs_pop_density.csv") %>%
-  mutate(pressure_score = 0)
+  dplyr::mutate(pressure_score = 0)
 write.csv(prs, "globalprep/mar_prs_population/v2017/output/prs_pop_density_gf.csv", row.names = FALSE)
 
 mar <- read.csv("globalprep/mar_prs_population/v2017/output/mar_pop_25mi.csv") %>%
-  mutate(popsum = 0)
+  dplyr::mutate(popsum = 0)
 write.csv(mar, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi_gf.csv", row.names = FALSE)
 ```
 
@@ -354,18 +351,18 @@ write.csv(mar, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi_gf.csv",
 
 ```{r create un_population.csv}
 pop_gather <- pop %>%
-  gather("year", "population", starts_with("X")) %>%
-  mutate(population = gsub(" ", "", population)) %>%
-  mutate(year = gsub("X", "", year)) %>%
-  mutate(population = as.numeric(as.character(population)) * 1000)
+  tidyr::gather("year", "population", starts_with("X")) %>%
+  dplyr::mutate(population = gsub(" ", "", population)) %>%
+  dplyr::mutate(year = gsub("X", "", year)) %>%
+  dplyr::mutate(population = as.numeric(as.character(population)) * 1000)
 
 ## ignore Jersey and Guernsey (Channel Islands) for now
 pop_gather_rename <- pop_gather %>%
-  mutate(country = ifelse(str_detect(country,"C\\Ste d'Ivoire"), "Cote d'Ivoire", country)) %>%
-  mutate(country = ifelse(str_detect(country,"R\\Sunion"), "Reunion", country)) %>%
-  mutate(country = ifelse(str_detect(country,"Cura\\Sao"), "Curacao", country)) %>%
-  mutate(country = ifelse(country=="China, Taiwan Province of China", "Taiwan", country)) %>%
-  mutate(country = ifelse(country=="Dem. People's Republic of Korea", "North Korea", country))
+  dplyr::mutate(country = ifelse(str_detect(country,"C\\Ste d'Ivoire"), "Cote d'Ivoire", country)) %>%
+  dplyr::mutate(country = ifelse(str_detect(country,"R\\Sunion"), "Reunion", country)) %>%
+  dplyr::mutate(country = ifelse(str_detect(country,"Cura\\Sao"), "Curacao", country)) %>%
+  dplyr::mutate(country = ifelse(country=="China, Taiwan Province of China", "Taiwan", country)) %>%
+  dplyr::mutate(country = ifelse(country=="Dem. People's Republic of Korea", "North Korea", country))
   
 ## organize the data into regions used in OHI, and save
 pop_rgn <- name_2_rgn(df_in = pop_gather_rename, 
@@ -373,8 +370,8 @@ pop_rgn <- name_2_rgn(df_in = pop_gather_rename,
                       flds_unique=c('year'))
 
 pop_rgn <- pop_rgn %>%
-  group_by(rgn_id, year) %>%
-  summarize(population = sum(population)) %>%
+  dplyr::group_by(rgn_id, year) %>%
+  dplyr::summarize(population = sum(population)) %>%
   data.frame()
 
 write.csv(pop_rgn, sprintf("%s/output/UN_population.csv", scenario_yr), row.names = FALSE)
@@ -422,9 +419,9 @@ abline(0, 1, col="red")
 ```{r check areas against previous year's}
 ## compare area with that calculated in previous year (should look very similar)
 old_area <- read.csv(paste0(prev_scen_yr, "/rgn_area_inland25mi.csv")) %>%
-  select(rgn_name, rgn_id, old_area_km2 = area_km2) %>%
-  mutate(old_area_km2 = round(old_area_km2)) %>%
-  left_join(area, by = "rgn_id")
+  dplyr::select(rgn_name, rgn_id, old_area_km2 = area_km2) %>%
+  dplyr::mutate(old_area_km2 = round(old_area_km2)) %>%
+  dplyr::left_join(area, by = "rgn_id")
 
 plot(old_area$old_area_km2, old_area$area_km2)
 abline(0, 1, col = "red")
@@ -433,4 +430,3 @@ summary(old_area)
 ```
 
 ***
-
