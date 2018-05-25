@@ -335,7 +335,7 @@ buffer  <-  0.35 # 35% buffer (from OHI Methods)
 recent_years  <-  10
 
 ## Find peak harvest per region-product and apply conservative buffer (scale down)
-## Find max USD value over the last 10 years
+## Find max USD value over the last 10 years 
 peak_prod <- roll_prod %>%
     group_by(rgn_id, product) %>%
     mutate(tonnes_peak = max(tonnes, na.rm=T)  * (1 - buffer)) %>%
