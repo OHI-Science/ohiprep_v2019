@@ -46,6 +46,7 @@ library(dplyr)
 library(stringr)
 library(tidyr)
 library(zoo)  
+library(ggplot2)
 
 ## comment out when knitting
 #setwd("globalprep/np/v2018")
@@ -258,6 +259,7 @@ write.csv(h_gap, 'output/np_harvest_tonnes_gf.csv', row.names = FALSE, na = '')
 
 # Final Data Wranglng
 
+## Summarize values
 Summarize each product per country per year, e.g., all corals in Albania in 2011. And, do some error checking.
 ```{r}
 
@@ -270,7 +272,7 @@ h_prod <- h_comm %>%
 stopifnot(sum(duplicated(h_prod[ , c('rgn_id', 'product', 'year')])) == 0)
 ```
 
-## Data Check
+## Quick Data Check
 
 Look at wide format with all commmodities and product subtotal (where commodity column value is "Z_TOTAL"), compared with the input data prior to summing.
 
@@ -299,7 +301,7 @@ write.csv(h_x_usd,    'int/np_harvest_usd_wide.csv',    row.names = FALSE, na = 
 ```
 
 
-## Determine Peak Values
+## Calculate Rolling Averages
 Determine rolling averages for tonnes and USD in order to determine peak values.  This is based upon total harvests by product group, not individual commodity.  
 
 ```{r}
@@ -307,7 +309,7 @@ Determine rolling averages for tonnes and USD in order to determine peak values.
 # Find max year in the summarized data table
 year_max <- max(h_prod$year)
 
-j <- h_prod %>%
+roll_prod <- h_prod %>%
   arrange(rgn_id, product, year) %>%
   group_by(rgn_id, product) %>%
         mutate(
@@ -323,104 +325,182 @@ j <- h_prod %>%
 
 ```
 
+## Score Harvest Relative to Peaks
+
 Score harvest (tonnes and usd) relative to peaks. Output values as .csvs. Perform this for all given scenarios, using a for loop.
 
 ```{r}
 
-buffer  <-  0.35 
+buffer  <-  0.35 # 35% buffer (from OHI Methods)
 recent_years  <-  10
 
-j <- j %>%
+## Find peak harvest per region-product and apply conservative buffer (scale down)
+## Find max USD value over the last 10 years 
+peak_prod <- roll_prod %>%
     group_by(rgn_id, product) %>%
     mutate(tonnes_peak = max(tonnes, na.rm=T)  * (1 - buffer)) %>%
-    mutate(usd_peak = max(   usd[year >= (year_max - recent_years)], na.rm=T)) %>%
+    mutate(usd_peak = max(usd[year >= (year_max - recent_years)], na.rm=T)) %>%
     ungroup() 
 
-### all years (within a region) have the same usd_peak values, but some years don't have all the products. Use the most recent year as this is considered the most current product list. 
-j_weights <- j %>%
-    filter(year==2013) %>%
+## for each product, all years (within a region) have the same usd_peak values, but some years don't have all the products. Use the most recent year as this is considered the most current product list. 
+prod_weights <- peak_prod %>%
+    filter(year==year_max) %>% 
     group_by(rgn_id) %>%
     mutate(
-      usd_peak_allproducts    = sum(usd_peak, na.rm=T),
+      usd_peak_allproducts = sum(usd_peak, na.rm=T),
       prod_weight = usd_peak / usd_peak_allproducts) %>%
     ungroup() %>%
-  mutate(year = 2013) %>%
+  mutate(year = year_max) %>% 
   select(rgn_id, year, product, weight = prod_weight)
 
 ## Determine relative status:
-  j <- j %>% 
+  smooth_prod <- peak_prod %>% 
     mutate(tonnes_rel = ifelse(tonnes >= tonnes_peak, 1, tonnes / tonnes_peak))
   
 ```
 
-Write .csv files.
+## Save data layer
 
 ```{r}
 
-### Write entire data frame to .csv:
-write.csv(j, 'int/np_harvest_smoothed_data.csv', row.names = FALSE, na = '')
+## Write entire data frame to .csv:
+write.csv(smooth_prod, 'int/np_harvest_smoothed_data.csv', row.names = FALSE, na = '')
 
-### Write individual data layers:
-### Write NP weights layer also used to calculate pressures and resilience:
-write.csv(j_weights, 'output/np_harvest_weights_from_usd.csv', row.names = FALSE, na = '')
+## Write individual data layers:
+## Write NP weights layer also used to calculate pressures and resilience:
+write.csv(prod_weights, 'output/np_harvest_weights_from_usd.csv', row.names = FALSE, na = '')
 
-tonnes <- j %>%
+## Save tonnes data
+tonnes <- smooth_prod %>%
   select(rgn_id, product, year, tonnes) 
 write.csv(tonnes, 'output/np_harvest_tonnes.csv', row.names = FALSE, na = '')
 
-tonnes_rel <- j %>%
+## Save relative tonnes data
+tonnes_rel <- smooth_prod %>%
   select(rgn_id, product, year, tonnes_rel) 
 write.csv(tonnes_rel, 'output/np_harvest_tonnes_rel.csv', row.names = FALSE, na = '')
 
 
 ```
 
+## Final data check
+
 Comparing against last year's data
 ```{r}
 
+## Look at Commodities TONNES
 ## Replique de Congo, due to revision of 2011 data for ornamentals (and only one product that isn't a big producer)
 new <- read.csv("int/tonnes.csv")
-old <- read.csv("../v2014_test/intermediate/tonnes.csv")
+old <- read.csv("../v2016/int/tonnes.csv") # CHANGE YEAR
 
-filter(new, rgn_id==115) %>%
-  arrange(commodity, year)
-filter(old, rgn_id==115) %>%
-  arrange(commodity, year)
+## Take a look at Dominican Republic
+new_c <- filter(new, rgn_id==115) %>%
+  arrange(commodity, year) %>%
+  filter(year >= year_max - 5)
+old_c <- filter(old, rgn_id==115) %>%
+  arrange(commodity, year) %>%
+  filter(year >= year_max - 5)
 
+require(gridExtra)
+plot1 <- ggplot(old_c, aes(x=year, y=tonnes))+
+  geom_point(aes(color=product)) +
+  ggtitle("Dominican Republic Commodities (old)") +
+  theme_bw()
+plot2 <- ggplot(new_c, aes(x=year, y=tonnes))+
+  geom_point(aes(color=product)) +
+  ggtitle("Dominican Republic Commodities (new)") +
+  theme_bw()
+grid.arrange(plot1, plot2, ncol=2)
+
+## Look at tonnes for Senegal
+new_c <- filter(new, rgn_id==66) %>%
+  arrange(commodity, year) %>% 
+  filter(year >= year_max - 10)
+old_c <- filter(old, rgn_id==66) %>%
+  arrange(commodity, year) %>% 
+  filter(year >= year_max - 10)
+
+plot1 <- ggplot(old_c, aes(x=year, y=tonnes))+
+  geom_point() +
+  ggtitle("old") +
+  theme_bw()
+plot2 <- ggplot(new_c, aes(x=year, y=tonnes))+
+  geom_point() +
+  ggtitle("new") +
+  theme_bw()
+grid.arrange(plot1, plot2, ncol=2)
+
+
+
+## Commodities USD value
 new <- read.csv("int/usd.csv")
-filter(new, rgn_id==100) %>%
-  arrange(commodity, year)
-old <- read.csv("../v2014_test/intermediate/usd.csv")
-filter(old, rgn_id==100) %>%
-  arrange(commodity, year)
+old <- read.csv("../v2016/int/usd.csv") # CHANGE YEAR
 
+## Look at Republique du Congo
+new_c <- filter(new, rgn_id==100) %>%
+  arrange(commodity, year) %>%
+  filter(year >= year_max - 10)
+old_c <- filter(old, rgn_id==100) %>%
+  arrange(commodity, year) %>%
+  filter(year >= year_max - 10)
+
+plot1 <- ggplot(old_c, aes(x=year, y=usd))+
+  geom_point(aes(color=product)) +
+  ggtitle("old") +
+  theme_bw()
+plot2 <- ggplot(new_c, aes(x=year, y=usd))+
+  geom_point(aes(color=product)) +
+  ggtitle("new") +
+  theme_bw()
+grid.arrange(plot1, plot2, ncol=2)
+
+## Look at Bahamas
+new_c <- filter(new, rgn_id==110) %>%
+  arrange(commodity, year) %>% 
+  filter(year >= year_max - 5)
+old_c <- filter(old, rgn_id==110) %>%
+  arrange(commodity, year) %>% 
+  filter(year >= year_max - 5)
+
+plot1 <- ggplot(old_c, aes(x=year, y=usd))+
+  geom_point(aes(color=product)) +
+  ggtitle("old") +
+  theme_bw()
+plot2 <- ggplot(new_c, aes(x=year, y=usd))+
+  geom_point(aes(color=product)) +
+  ggtitle("new") +
+  theme_bw()
+grid.arrange(plot1, plot2, ncol=2)
+
+
+
+## Look at final smoothed data for Republique du Congo
 new <- read.csv('output/np_harvest_tonnes.csv')
-filter(new, rgn_id==100)
-old <- read.csv('../v2014_test/data/np_harvest_tonnes_eez2014_test-year_max_2011.csv')
-filter(old, rgn_id==100)
+new_c <- filter(new, rgn_id==100)
+old <- read.csv('../v2016/output/np_harvest_tonnes.csv') # CHANGE YEAR
+old_c <- filter(old, rgn_id==100)
+
+plot1 <- ggplot(old_c, aes(x=year, y=tonnes))+
+  geom_point() +
+  ggtitle("old") +
+  theme_bw()
+plot2 <- ggplot(new_c, aes(x=year, y=tonnes))+
+  geom_point() +
+  ggtitle("new") +
+  theme_bw()
+grid.arrange(plot1, plot2, ncol=2)
 
 
-## 
-new <- read.csv("int/tonnes.csv")
-old <- read.csv("../v2014_test/intermediate/tonnes.csv")
 
-filter(new, rgn_id==66) %>%
-  arrange(commodity, year)
-filter(old, rgn_id==66) %>%
-  arrange(commodity, year)
 
-new <- read.csv("int/usd.csv")
-filter(new, rgn_id==110) %>%
-  arrange(commodity, year)
-old <- read.csv("../v2014_test/intermediate/usd.csv")
-filter(old, rgn_id==110) %>%
-  arrange(commodity, year)
 
+## Look at Bahamas
 new <- read.csv('output/np_harvest_tonnes.csv') %>%
 filter(rgn_id==110)
 new
-
-old <- read.csv('../v2014_test/data/np_harvest_tonnes_eez2014_test-year_max_2011.csv') %>%
+old <- read.csv('../v2016/output/np_harvest_tonnes.csv') %>%
 filter(rgn_id==110)
 old
+
+
 ```
