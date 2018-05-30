@@ -336,9 +336,6 @@ pop_0 <- population%>%
   filter(popsum==0)
 sort(table(pop_0$rgn_id))
 
-#Min and max year of data to calculte pressure scores
-#maxyear <- max(sani_georgn_gf$year)
-#minyear <- 
 
 #standarization: convert proportion with acces to sanitation to proportion without access to sanitation (poopers! lack of access*population density)
 
@@ -363,15 +360,15 @@ ref_calc <- unsani_pop %>%
   .$ref
 ref_value <- 18.26
 
-unsani_pop <- unsani_pop %>%
+unsani_prs <- unsani_pop %>%
     mutate(pressure_score = propWO_x_pop_log / ref_value) %>% 
   mutate(pressure_score = ifelse(pressure_score>1, 1, pressure_score)) %>% 
   select(rgn_id, year, pressure_score)
   
-summary(unsani_pop)
+summary(unsani_prs)
 
-.#Save data pressure scores (ps)
-write.csv(unsani_pop, "output/po_pathogen_popdensity25mi.csv", row.names=FALSE)
+#Save data pressure scores 
+write.csv(unsani_prs, "output/po_pathogen_popdensity25mi.csv", row.names=FALSE)
 ```
 
 
@@ -383,15 +380,17 @@ Data years (annual change in pressure), times 5.
 
  
 ```{r trend}
-##NEEDS A LOOP TO CALCULATE THE TREND
+##NEEDS A LOOP TO CALCULATE THE TREND?
 
-adj_trend_year <- minyear
+#Min and max year of data to calculte trend
+maxyear <- max(unsani_prs$year)
+minyear <- maxyear-4
 
-sani_prs_mdl <- unsani_pop %>%
+unsani_prs_mdl <- unsani_prs %>%
     filter(!is.na(pressure_score)) %>% # lm can't handle NAs!!
     group_by(rgn_id) %>%
     do(mdl = lm(pressure_score ~ year, data=.),
-       adjust_trend = .$pressure_score[.$year == adj_trend_year]) %>%
+       adjust_trend = .$pressure_score[.$year == minyear]) %>%
     summarize(rgn_id, trend = ifelse(coef(mdl)['year']==0, 0,  coef(mdl)['year']/adjust_trend * 5)) %>%
     ungroup() %>%
     mutate(trend = ifelse(trend>1, 1, trend)) %>%
@@ -399,17 +398,20 @@ sani_prs_mdl <- unsani_pop %>%
     mutate(trend = round(trend, 2)) %>%
     select(rgn_id, trend)
 
-summary(sani_prs_mdl)
+summary(unsani_prs_mdl)
 
-
+#Save trend data
+write.csv(unsani_prs_mdl, "output/po_pathogen_popdensity25mi_trend.csv", row.names=FALSE)
 ```
+
+
 
 #Compare to previous years
 
 ```{r}
-new <- read.csv("/output/pathogens_popdensity25mi_trend_2018a.csv")
+new <- read.csv("output/po_pathogen_popdensity25mi_trend.csv")
 
-old <- read.csv("../v2016/data/pathogens_popdensity25mi_trend_updated.csv") %>%
+old <- read.csv("../v2016/output/pathogens_popdensity25mi_trend_updated.csv") %>%
   select(rgn_id, old_trend = trend) %>%
   left_join(new, by='rgn_id')
 plot(old$old_trend, old$trend, ylab = "new trend", xlab = "old trend")
