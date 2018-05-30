@@ -48,29 +48,29 @@ The directory structure is illustrated below; not all directory levels are shown
 
 /nsidc0051_gsfc_nasateam_seaice
 
-    . . /final-gsfc
+. . /final-gsfc
     
-    . . . . /browse
+. . . . /browse
     
-    . . . . . . /north
+. . . . . . /north
     
-    . . . . . . . . /daily
+. . . . . . . . /daily
     
-    . . . . . . . . . . /year
+. . . . . . . . . . /year
     
-    . . . . . . . . /monthly
+. . . . . . . . /monthly
     
-    . . . . . . /south
+. . . . . . /south
     
-    . . . . /north
+. . . . /north
     
-    . . . . . . /daily
+. . . . . . /daily
     
-    . . . . . . . . /year
+. . . . . . . . /year
     
-    . . . . . . /monthly
+. . . . . . /monthly
     
-    . . . . /south
+. . . . /south
 
 For complete documentation and more information about data access, please see:
 
