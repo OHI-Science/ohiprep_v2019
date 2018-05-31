@@ -363,7 +363,7 @@ NA,Japanese carpet shell,,,Japanese carpet shell,,species,genus_average,0.841666
 NA,John's snapper,,,John's snapper,,species,genus_average,0.433333333,0.5
 NA,Korean mussel,,,Korean mussel,,species,genus_average,0.8,0.5
 NA,Kuruma prawn,,,Kuruma prawn,,species,sp_average,0.444444444,
-NA,Laver (Nori),,,Laver (Nori),,species,sp_average,0.693333333,
+NA,Laver (Nori),,,Laver (Nori),,species,sp_average,0.693333333,1
 NA,Marine crustaceans nei,,,Marine crustaceans nei,,species,sp_average,0.3,
 NA,Marine fishes nei,,,Marine fishes nei,,species,sp_average,0.477777778,
 NA,Marine molluscs nei,,,Marine molluscs nei,,species,sp_average,0.533333333,
@@ -412,3 +412,7 @@ NA,Urchin,,,Urchin,URCH,taxon,taxon_average,0.5,0.5
 NA,Whiteleg shrimp,,,Whiteleg shrimp,,species,sp_average,0.374509804,
 NA,Yellowfin tuna,,,Yellowfin tuna,,species,sp_average,0.1,
 NA,Yesso scallop,,,Yesso scallop,,species,sp_average,0.833333333,
+NA,Nori nei,,,Laver (Nori),,species,sp_average,0.693333333,1
+NA,Brown seaweeds,,,Brown seaweeds,,species,sp_average,0.93,1
+NA,Edible seaweeds,,,Edible seaweeds,AL,taxon,taxon_average,0.83,0.95
+,,,,,,,,,

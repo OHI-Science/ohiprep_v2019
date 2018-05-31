@@ -395,22 +395,16 @@ old <- read.csv("../v2016/int/tonnes.csv") # CHANGE YEAR
 
 ## Take a look at Dominican Republic
 new_c <- filter(new, rgn_id==115) %>%
-  arrange(commodity, year) %>%
-  filter(year >= year_max - 5)
+  arrange(commodity, year) 
 old_c <- filter(old, rgn_id==115) %>%
-  arrange(commodity, year) %>%
-  filter(year >= year_max - 5)
+  arrange(commodity, year)
 
-require(gridExtra)
-plot1 <- ggplot(old_c, aes(x=year, y=tonnes))+
-  geom_point(aes(color=product)) +
-  ggtitle("Dominican Republic Commodities (old)") +
-  theme_bw()
-plot2 <- ggplot(new_c, aes(x=year, y=tonnes))+
-  geom_point(aes(color=product)) +
-  ggtitle("Dominican Republic Commodities (new)") +
-  theme_bw()
-grid.arrange(plot1, plot2, ncol=2)
+compare <- old_c %>% 
+left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
+
+plot(compare$tonnes.x, compare$tonnes.y)
+abline(0,1, col="red")
+
 
 ## Look at tonnes for Senegal
 new_c <- filter(new, rgn_id==66) %>%
@@ -419,6 +413,8 @@ new_c <- filter(new, rgn_id==66) %>%
 old_c <- filter(old, rgn_id==66) %>%
   arrange(commodity, year) %>% 
   filter(year >= year_max - 10)
+
+
 
 plot1 <- ggplot(old_c, aes(x=year, y=tonnes))+
   geom_point() +
@@ -443,6 +439,13 @@ new_c <- filter(new, rgn_id==100) %>%
 old_c <- filter(old, rgn_id==100) %>%
   arrange(commodity, year) %>%
   filter(year >= year_max - 10)
+
+compare <- old_c %>%
+  left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
+
+plot(compare$usd.x,compare$usd.y)
+abline(0,1, col="red")
+
 
 plot1 <- ggplot(old_c, aes(x=year, y=usd))+
   geom_point(aes(color=product)) +
@@ -474,24 +477,15 @@ grid.arrange(plot1, plot2, ncol=2)
 
 
 
-## Look at final smoothed data for Republique du Congo
+## Look at final smoothed tonnes data for Republique du Congo
+## Rolling average changes values slightly - make sure new data is not too different from previous year
 new <- read.csv('output/np_harvest_tonnes.csv')
-new_c <- filter(new, rgn_id==100)
+new_c <- filter(new, rgn_id==100) %>% rename(tonnes_new = tonnes)
 old <- read.csv('../v2016/output/np_harvest_tonnes.csv') # CHANGE YEAR
 old_c <- filter(old, rgn_id==100)
 
-plot1 <- ggplot(old_c, aes(x=year, y=tonnes))+
-  geom_point() +
-  ggtitle("old") +
-  theme_bw()
-plot2 <- ggplot(new_c, aes(x=year, y=tonnes))+
-  geom_point() +
-  ggtitle("new") +
-  theme_bw()
-grid.arrange(plot1, plot2, ncol=2)
-
-
-
+compare <- old_c %>%
+  left_join(new_c, by = c("year","rgn_id","product"))
 
 
 ## Look at Bahamas
