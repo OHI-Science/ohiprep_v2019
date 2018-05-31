@@ -259,9 +259,9 @@ sani_georgn_gf <- georegions%>%
   expand(year, georegions)%>%
   left_join(sani_gf_lm, by = c('rgn_id', 'year')) %>%
   left_join(georegion_labels, by = 'rgn_id') %>%
-  select(-r0)
+  select(-r0) #r0 is the world 
 
-##Identify inhabitaed regions
+##Identify inhabitaed regions according to table in github
 rgn_inhab <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/LookupTables/rgn_uninhabited_islands.csv')
 
 rgn_inhab <- rgn_inhab %>% 
@@ -283,27 +283,34 @@ sani_georgn_gf <- sani_georgn_gf %>%
   arrange(rgn_id, year)
 
 
-##First gapfill with r2, if no value available use r1; create column indicating whether value was gapfilled and if so, by what method.
+##First gapfill with r2, if no value available use r1; create column indicating whether value was gapfilled and if so, by what method. Give NA to inhabited regions
 sani_georgn_gf <- sani_georgn_gf %>%
   mutate(method = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r2) & is.na(method) , "UN georegion (r2)", method)) %>%
   mutate(method = ifelse(is.na(basic_sani_prop) & is.na(basic_sani_r2) & !is.na(basic_sani_r1) & is.na(method), "UN georegion (r1)", method))%>%
   mutate(method = ifelse(is.na(inhab), method, 'inhab')) %>% 
   mutate(basic_sani_prop= ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r2), basic_sani_r2, basic_sani_prop)) %>%
   mutate(basic_sani_prop = ifelse(is.na(basic_sani_prop) & !is.na(basic_sani_r1), basic_sani_r1, basic_sani_prop))%>%
-  mutate(basic_sani_prop = ifelse(is.na(inhab), basic_sani_prop, 1)) %>% #all inhabitated regions are given the maximun score 1.
   select(rgn_id, year, basic_sani_prop, method, inhab)
 
-##See regions that have not been gapfilled
+##See regions that have not been gapfilled. 
 filter(sani_georgn_gf, is.na(basic_sani_prop)) %>% 
   select(rgn_id, basic_sani_prop) %>% 
   unique() %>%
-  data.frame()
+  data.frame() #NA values for inhabitated regions. 
 
 ##Check for inhabited rigions
 filter(sani_georgn_gf, !is.na(inhab)) %>% 
   select(rgn_id, basic_sani_prop, method) %>% 
   unique() %>%
-  data.frame()
+  data.frame() #NOTE: Some of the inhabited regions have been gapfilled!
+
+
+#Fill in all inhabited in rgn_inhab with max sanitation prop
+sani_complete <- sani_georgn_gf %>% 
+  mutate(basic_sani_prop = ifelse(is.na(inhab), basic_sani_prop, 1)) %>% 
+  select(rgn_id, year, basic_sani_prop, method)
+
+summary(sani_complete)
 
 ```
 
@@ -312,7 +319,7 @@ filter(sani_georgn_gf, !is.na(inhab)) %>%
 
 ```{r}
 #Save data
-write.csv(sani_georgn_gf, "intermediate/sani_georgn_gf.csv", row.names=FALSE)
+write.csv(sani_complete, "intermediate/sani_complete.csv", row.names=FALSE)
 
 ```
 
@@ -322,85 +329,93 @@ write.csv(sani_georgn_gf, "intermediate/sani_georgn_gf.csv", row.names=FALSE)
 population <- read.csv("../../mar_prs_population/v2018/output/mar_pop_25mi.csv")%>%
   arrange(rgn_id, year)
 
-##Keep an eye on not populated regions. They will have the highest score
-#Note: there is a difference between the list of islands with no population in the mar_pop_25mi dataset witht the nhabit list in github. In the mar_pop_25mi, rgn_id 144 - Jan Mayen is not identified as a pop_0 region while in the github list it is.
+#Note: there is a difference between the list of islands with no population in the mar_pop_25mi dataset witht the inhabit list in github. In the mar_pop_25mi, rgn_id 144 - Jan Mayen is not identified as a pop_0 region while in the github list it is. Population data also considers Antartica (rgn_id213)
 
 #identify inhabited regions (popsum=0)
 pop_0 <- population%>%
   filter(popsum==0)
 sort(table(pop_0$rgn_id))
 
-#Min and max year of data
-minyear <- min(sani_georgn_gf$year)
-maxyear <- max(sani_georgn_gf$year)
 
 #standarization: convert proportion with acces to sanitation to proportion without access to sanitation (poopers! lack of access*population density)
 
-unsani_pop <- sani_georgn_gf %>%  
-    filter(year %in% minyear:maxyear) %>% 
+unsani_pop <- sani_complete %>%  
     select(rgn_id, year, basic_sani_prop) %>%
-    left_join(population %>%
-                filter(year %in% minyear:maxyear), 
+    left_join(population, 
               by=c('rgn_id', 'year')) %>%
     mutate(propWO_x_pop     = (1 - basic_sani_prop) * popsum, # this is the population density of people without access
-           propWO_x_pop_log = log(propWO_x_pop + 1))          # log is important because the skew was high otherwise
-
-#Rescale to calculate score. Pressure is rescaled to 110% of max 'poopers' within past five years.
-unsani_pop <- unsani_pop %>%
-    mutate(pressure_score = propWO_x_pop_log / (1.1 * max(propWO_x_pop_log, na.rm = TRUE)))
-
-#(havent saved)
-#Save data pressure scores (ps)
-#write.csv(unsani_pop, "intermediate/unsani_pop_ps.csv", row.names=FALSE)
-
-
+           propWO_x_pop_log = log(propWO_x_pop + 1)) # log is important because the skew was high otherwise
 
 ```
 
+#Pressure Score
+
+```{r pressure}
+#Pressure score is calculated by using the 99th quantile as a reference point
+
+#Calculate refernce point
+ref_calc <- unsani_pop %>% 
+  filter(year %in% 2000:2009) %>% 
+  summarise(ref= quantile(propWO_x_pop_log, probs=c(0.99), na.rm = T)) %>% 
+  .$ref
+ref_value <- 18.26
+
+unsani_prs <- unsani_pop %>%
+    mutate(pressure_score = propWO_x_pop_log / ref_value) %>% 
+  mutate(pressure_score = ifelse(pressure_score>1, 1, pressure_score)) %>% 
+  select(rgn_id, year, pressure_score)
+  
+summary(unsani_prs)
+
+#Save data pressure scores 
+write.csv(unsani_prs, "output/po_pathogen_popdensity25mi.csv", row.names=FALSE)
+```
 
 
 #Model Trend
-2017 update for new ohi-global framework
 
-```{r}
-
-#copied from update_2017.R
-
-data <- data.frame()
-for (year in 2012:2015){ # year = 2012
-  trend <- read.csv(sprintf("globalprep/mar_prs_population/v2018/output/mar_pop25mi_trend_%sa.csv", year))
-  
-  trend <- trend %>%
-    mutate(year = year) %>%
-    select(rgn_id, year, trend)
-  
-  data <- rbind(data, trend)
-  
-}
-
-write.csv(data, "globalprep/prs_cw_pathogen/v2018/output/pathogens_popdensity25mi_trend_updated.csv",
-          row.names=FALSE)
+Trend is slope of linear regression of pressure scores over the past five 
+Data years (annual change in pressure), times 5. 
 
 
-# pressure data
-data <- data.frame()
+ 
+```{r trend}
+##NEEDS A LOOP TO CALCULATE THE TREND?
 
-for (year in 2012:2015){ # year = 2012
-  path_data <- read.csv(sprintf("globalprep/prs_cw_pathogen/v2015/data/po_pathogens_popdensity25mi_%sa.csv", year))
-  
-  path_data <- path_data %>%
-    mutate(year = year) %>%
-    select(rgn_id, year, pressure_score)
-  
-  data <- rbind(data, path_data)
-  
-}
+#Min and max year of data to calculte trend
+maxyear <- max(unsani_prs$year)
+minyear <- maxyear-4
 
-write.csv(data, "globalprep/prs_cw_pathogen/v2016/output/pathogens_popdensity25mi_updated.csv",
-          row.names=FALSE)
+unsani_prs_mdl <- unsani_prs %>%
+    filter(!is.na(pressure_score)) %>% # lm can't handle NAs!!
+    group_by(rgn_id) %>%
+    do(mdl = lm(pressure_score ~ year, data=.),
+       adjust_trend = .$pressure_score[.$year == minyear]) %>%
+    summarize(rgn_id, trend = ifelse(coef(mdl)['year']==0, 0,  coef(mdl)['year']/adjust_trend * 5)) %>%
+    ungroup() %>%
+    mutate(trend = ifelse(trend>1, 1, trend)) %>%
+    mutate(trend = ifelse(trend<(-1), (-1), trend)) %>%
+    mutate(trend = round(trend, 2)) %>%
+    select(rgn_id, trend)
 
+summary(unsani_prs_mdl)
+
+#Save trend data
+write.csv(unsani_prs_mdl, "output/po_pathogen_popdensity25mi_trend.csv", row.names=FALSE)
 ```
 
 
+
+#Compare to previous years
+
+```{r}
+new <- read.csv("output/po_pathogen_popdensity25mi_trend.csv")
+
+old <- read.csv("../v2016/output/pathogens_popdensity25mi_trend_updated.csv") %>%
+  select(rgn_id, old_trend = trend) %>%
+  left_join(new, by='rgn_id')
+plot(old$old_trend, old$trend, ylab = "new trend", xlab = "old trend")
+abline(0,1, col="red")
+```
 
 
