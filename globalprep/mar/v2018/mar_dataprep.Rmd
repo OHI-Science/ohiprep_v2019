@@ -19,7 +19,11 @@ output:
 This analysis converts FAO mariculture data into data used to calculate the OHI global mariculture status score.  This also calculates the genetic escapee from mariculture pressure data.
 
 # Updates from previous assessment
-New year of FAO mariculture yield data for 2016. Included some seaweed species for the 2018 assessment (see species_list.csv). No changes to sustainability. Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
+
+* New year of FAO mariculture yield data for 2016. 
+* Included edible seaweed species for the 2018 assessment (see species_list.csv). 
+* Added a row for Edible seaweeds taxa in Truj_label_sust.csv using the average of all seaweed species provided by Trujillo. 
+* Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
 
 
 ***
@@ -82,8 +86,6 @@ Mariculture production in tonnes.
 ```{r}
 
 mar <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_mariculture/d2018/FAO_GlobalAquacultureProduction_Quantity_1950_2016.csv'), check.names=FALSE, stringsAsFactors=FALSE) ; head(mar) 
-
-# mar <- read.csv('D:/git-annex/globalprep/_raw_data/FAO_mariculture/d2017/FAO_GlobalAquacultureProduction_Quantity_1950_2015.csv', check.names=FALSE, stringsAsFactors=FALSE) ; head(mar) 
 
 ```
 
@@ -292,7 +294,7 @@ See how may NA values were converted to 0
 
 ```{r}
 table(mar_rgn_gf$gap_0_fill)
-## 3743 of these out of 26778+3743 cases had NA values converted to 0
+## 2671 of these out of 26479+2671 cases had NA values converted to 0
 
 ```
 
@@ -473,7 +475,7 @@ mar_sus_gf = mar_sus_gf %>%
 
 **Take a look at the wrangled data**
 ```{r}
-summary(mar_sus_gf) # no NA's in Sust_gf_taxon column
+summary(mar_sus_gf) # should be no NA's in Sust_gf_taxon column
 table(mar_sus_gf$gapfill) 
 ```
 
@@ -493,12 +495,6 @@ mar_sus_final = mar_sus_gf %>%
   mutate(Sust = ifelse(is.na(Sust), Sust_gf_taxon, Sust)) %>% # gapfill with taxon level
   mutate(taxa_code = paste(species, species_code, sep="_")) %>%
   select(rgn_id, species, species_code, taxa_code, year, gapfill_sus = gapfill, gapfill_fao = gap_0_fill, tonnes=value, Sust)
-
-## Remove duplicates
-# mar_sus_final <- mar_sus_final %>%
-#  group_by(rgn_id, species, species_code, taxa_code, year, gapfill_sus, gapfill_fao, tonnes, Sust) %>%
-#  unique() %>%
-#  ungroup()
 
 ```
 
@@ -663,16 +659,9 @@ tonnes_esc = mar_esc_gf %>%
 
 **Take a look at the summary
 ```{r}
+
 summary(tonnes_esc)
-
-## Check for duplicates
-#anyDuplicated(tonnes_esc)
-## Remove duplicates
-# tonnes_esc <- tonnes_esc %>%
-#  group_by(rgn_id, species, species_code, year, gapfill_escapees, tonnes, Escapees) %>%
-#  unique() %>%
-#  ungroup()
-
+anyDuplicated(tonnes_esc) # check for duplicates
 
 ```
 
@@ -730,6 +719,7 @@ Comparing this year's data to previous year's data. Expect small variation from 
 
 ```{r}
 
+## Compare genetic escapes pressure scores
 old <- read.csv("../v2017/output/GenEsc.csv") %>%
   filter(year == 2015) %>% # compare the most recent shared year between old and new
   select(rgn_id, prs_score_old=pressure_score)
@@ -741,19 +731,23 @@ new <- read.csv("../v2018/output/GenEsc.csv") %>%
 compare <- full_join(old, new, by="rgn_id")
 compare <- na.omit(compare)
 
-## Compare genetic escapes pressure scores
 plot(compare$prs_score_old.x, compare$prs_score_old.y)
+abline(0,1,col="red")
 
+
+## Compare new/old Mariculture sustainability scores
 tmp_old <- read.csv("../v2017/raw/Truj_label_sust.csv")
 tmp_new <- read.csv("../v2018/raw/Truj_label_sust.csv")
 
 test <- full_join(tmp_new, tmp_old, by=c("country", "species_fao", "fao", "environment" ))
 
-## Compare new/old Mariculture sustainability scores
 plot(test$Maric_sustainability.x, test$Maric_sustainability.y)
+abline(0,1,col="red")
+
 
 ## Compare new/old genetic escapees scores
 plot(test$Genetic.escapees.x, test$Genetic.escapees.y)
+abline(0,1,col="red")
 
 ```
 
