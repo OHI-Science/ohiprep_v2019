@@ -461,9 +461,9 @@ gf_sp_sus[duplicated(gf_sp_sus$species), ]
 mar_sus_gf = mar_sus %>%
   left_join(gf_sp_sus, by = 'species')
 
-
 ## Select observations gapfilled at the coarse taxon level:
-gf_taxon_sus <- filter(sus_rgn, gapfill != "actuals" & match_type == "taxon") %>%
+gf_taxon_sus <- sus_rgn %>% 
+  filter(gapfill != "actuals" & match_type == "taxon") %>%
   select(Taxon_code=taxon, Sust_gf_taxon = Maric_sustainability)
 
 ## Match gapfilling values by species
@@ -493,6 +493,13 @@ mar_sus_final = mar_sus_gf %>%
   mutate(Sust = ifelse(is.na(Sust), Sust_gf_taxon, Sust)) %>% # gapfill with taxon level
   mutate(taxa_code = paste(species, species_code, sep="_")) %>%
   select(rgn_id, species, species_code, taxa_code, year, gapfill_sus = gapfill, gapfill_fao = gap_0_fill, tonnes=value, Sust)
+
+## Remove duplicates
+# mar_sus_final <- mar_sus_final %>%
+#  group_by(rgn_id, species, species_code, taxa_code, year, gapfill_sus, gapfill_fao, tonnes, Sust) %>%
+#  unique() %>%
+#  ungroup()
+
 ```
 
 # Save Data:
@@ -657,6 +664,16 @@ tonnes_esc = mar_esc_gf %>%
 **Take a look at the summary
 ```{r}
 summary(tonnes_esc)
+
+## Check for duplicates
+#anyDuplicated(tonnes_esc)
+## Remove duplicates
+# tonnes_esc <- tonnes_esc %>%
+#  group_by(rgn_id, species, species_code, year, gapfill_escapees, tonnes, Escapees) %>%
+#  unique() %>%
+#  ungroup()
+
+
 ```
 
 
