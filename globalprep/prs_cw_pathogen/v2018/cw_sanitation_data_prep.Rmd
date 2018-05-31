@@ -319,7 +319,7 @@ summary(sani_complete)
 
 ```{r}
 #Save data
-write.csv(sani_complete, "intermediate/sani_complete.csv", row.names=FALSE)
+#write.csv(sani_complete, "intermediate/sani_complete.csv", row.names=FALSE)
 
 ```
 
@@ -343,7 +343,7 @@ unsani_pop <- sani_complete %>%
     select(rgn_id, year, basic_sani_prop) %>%
     left_join(population, 
               by=c('rgn_id', 'year')) %>%
-    mutate(propWO_x_pop     = (1 - basic_sani_prop) * popsum, # this is the population density of people without access
+    mutate(propWO_x_pop     = (1 - basic_sani_prop) * popsum, # this is the population density of people without access (WO)
            propWO_x_pop_log = log(propWO_x_pop + 1)) # log is important because the skew was high otherwise
 
 ```
@@ -355,20 +355,21 @@ unsani_pop <- sani_complete %>%
 
 #Calculate refernce point
 ref_calc <- unsani_pop %>% 
-  filter(year %in% 2000:2009) %>% 
+  filter(year %in% 2000:2009) %>% #years of reference
   summarise(ref= quantile(propWO_x_pop_log, probs=c(0.99), na.rm = T)) %>% 
   .$ref
+
 ref_value <- 18.26
 
 unsani_prs <- unsani_pop %>%
     mutate(pressure_score = propWO_x_pop_log / ref_value) %>% 
   mutate(pressure_score = ifelse(pressure_score>1, 1, pressure_score)) %>% 
-  select(rgn_id, year, pressure_score)
+  select(rgn_id, year, pressure_score) #limits pressure scores not to be higher than 1
   
 summary(unsani_prs)
 
 #Save data pressure scores 
-write.csv(unsani_prs, "output/po_pathogen_popdensity25mi.csv", row.names=FALSE)
+#write.csv(unsani_prs, "output/po_pathogen_popdensity25mi.csv", row.names=FALSE)
 ```
 
 
@@ -401,7 +402,7 @@ unsani_prs_mdl <- unsani_prs %>%
 summary(unsani_prs_mdl)
 
 #Save trend data
-write.csv(unsani_prs_mdl, "output/po_pathogen_popdensity25mi_trend.csv", row.names=FALSE)
+#write.csv(unsani_prs_mdl, "output/po_pathogen_popdensity25mi_trend.csv", row.names=FALSE)
 ```
 
 
@@ -416,6 +417,8 @@ old <- read.csv("../v2016/output/pathogens_popdensity25mi_trend_updated.csv") %>
   left_join(new, by='rgn_id')
 plot(old$old_trend, old$trend, ylab = "new trend", xlab = "old trend")
 abline(0,1, col="red")
+
+
 ```
 
 
