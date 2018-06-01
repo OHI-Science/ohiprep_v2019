@@ -19,7 +19,11 @@ output:
 This analysis converts FAO mariculture data into data used to calculate the OHI global mariculture status score.  This also calculates the genetic escapee from mariculture pressure data.
 
 # Updates from previous assessment
-New year of FAO mariculture yield data for 2016. Included some seaweed species for the 2018 assessment (see species_list.csv). No changes to sustainability. Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
+
+* New year of FAO mariculture yield data for 2016. 
+* Included edible seaweed species for the 2018 assessment (see species_list.csv). 
+* Added a row for Edible seaweeds taxa in Truj_label_sust.csv using the average of all seaweed species provided by Trujillo. 
+* Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
 
 
 ***
@@ -83,8 +87,6 @@ Mariculture production in tonnes.
 
 mar <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_mariculture/d2018/FAO_GlobalAquacultureProduction_Quantity_1950_2016.csv'), check.names=FALSE, stringsAsFactors=FALSE) ; head(mar) 
 
-# mar <- read.csv('D:/git-annex/globalprep/_raw_data/FAO_mariculture/d2017/FAO_GlobalAquacultureProduction_Quantity_1950_2015.csv', check.names=FALSE, stringsAsFactors=FALSE) ; head(mar) 
-
 ```
 
 # Wrangle: 
@@ -124,10 +126,10 @@ Update species name in the `raw/species_list.csv` file with names in the `mar` d
 ```{r}
 
 ## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.
- mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-  select(FAO_name, exclude, alias, Taxon_code)
 # mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-#  select(FAO_name, exclude_no_seaweed, alias, Taxon_code)
+#  select(FAO_name, exclude, alias, Taxon_code)
+ mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+  select(FAO_name, exclude_no_seaweed, alias, Taxon_code)
 #mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
 #  select(FAO_name, exclude_no_nei, alias, Taxon_code)
 
@@ -135,12 +137,15 @@ new.spp <- setdiff(mar$FAO_name, mar_sp$FAO_name)
 new.spp # check: if dim has 0 rows it means all match
 ## if there is a list of species, hand check species_list.csv to see whether to keep (exclude seaweeds and species harvested for ornamental/medicinal), check if synonyms match Trujillo names
 
-## Remove species not relevant to mariculuture goal (i.e., non-food species)
+## REMOVE SPECIES not relevant to mariculuture goal (i.e., non-food species)
 mar <- left_join (mar, mar_sp, by="FAO_name") 
-mar <- filter (mar, exclude==0) 
-# mar <- filter (mar, exclude_no_seaweed==0) 
 
+# mar <- filter (mar, exclude==0) 
+ mar <- filter (mar, exclude_no_seaweed==0) 
+# mar <- filter(mar, exclude_no_nei==0)
 
+ 
+ 
 ## change names using species alias or FAO species name (global changes)
 mar$species <- ifelse(!is.na(mar$alias), mar$alias, mar$FAO_name) 
 
@@ -292,7 +297,7 @@ See how may NA values were converted to 0
 
 ```{r}
 table(mar_rgn_gf$gap_0_fill)
-## 3743 of these out of 26778+3743 cases had NA values converted to 0
+## 2671 of these out of 26479+2671 cases had NA values converted to 0
 
 ```
 
@@ -331,9 +336,9 @@ Used to estimate total mariculture yield per country.
 
 ```{r}
 
-write.csv(maric, 'output/MAR_FP_data.csv', row.names=FALSE)
-# write.csv(maric, 'output/MAR_FP_data_no_seaweed.csv', row.names=FALSE)
-# write.csv(maric, 'output/MAR_FP_data_no_nei.csv', row.names=FALSE)
+#write.csv(maric, 'output/MAR_FP_data.csv', row.names=FALSE)
+write.csv(maric, 'output/MAR_FP_data_no_seaweed.csv', row.names=FALSE)
+#write.csv(maric, 'output/MAR_FP_data_no_nei.csv', row.names=FALSE)
 
 ```
 
@@ -461,9 +466,9 @@ gf_sp_sus[duplicated(gf_sp_sus$species), ]
 mar_sus_gf = mar_sus %>%
   left_join(gf_sp_sus, by = 'species')
 
-
 ## Select observations gapfilled at the coarse taxon level:
-gf_taxon_sus <- filter(sus_rgn, gapfill != "actuals" & match_type == "taxon") %>%
+gf_taxon_sus <- sus_rgn %>% 
+  filter(gapfill != "actuals" & match_type == "taxon") %>%
   select(Taxon_code=taxon, Sust_gf_taxon = Maric_sustainability)
 
 ## Match gapfilling values by species
@@ -473,7 +478,7 @@ mar_sus_gf = mar_sus_gf %>%
 
 **Take a look at the wrangled data**
 ```{r}
-summary(mar_sus_gf) # no NA's in Sust_gf_taxon column
+summary(mar_sus_gf) # should be no NA's in Sust_gf_taxon column
 table(mar_sus_gf$gapfill) 
 ```
 
@@ -493,6 +498,7 @@ mar_sus_final = mar_sus_gf %>%
   mutate(Sust = ifelse(is.na(Sust), Sust_gf_taxon, Sust)) %>% # gapfill with taxon level
   mutate(taxa_code = paste(species, species_code, sep="_")) %>%
   select(rgn_id, species, species_code, taxa_code, year, gapfill_sus = gapfill, gapfill_fao = gap_0_fill, tonnes=value, Sust)
+
 ```
 
 # Save Data:
@@ -505,16 +511,16 @@ mar_harvest_tonnes = mar_sus_final %>%
 
 anyDuplicated(mar_harvest_tonnes) # check for duplications
 
-write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
-# write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_seaweed.csv', row.names=F)
+#write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
+ write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_seaweed.csv', row.names=F)
 # write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_nei.csv', row.names=F)
 
 ## save gapfill data for mariculture harvest
 mar_harvest_tonnes_gf = mar_sus_final %>%
   select(rgn_id, taxa_code, year, tonnes=gapfill_fao)
 
-write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
-# write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_seaweed.csv', row.names=F)
+#write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
+ write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_seaweed.csv', row.names=F)
 # write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_nei.csv', row.names=F)
 
 
@@ -526,8 +532,8 @@ mar_sustainability_score = mar_sus_final %>%
 
 anyDuplicated(mar_sustainability_score)
 
-write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F)
-#write.csv(mar_sustainability_score, 'output/mar_sustainability_no_seaweed.csv', row.names=F)
+#write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F)
+write.csv(mar_sustainability_score, 'output/mar_sustainability_no_seaweed.csv', row.names=F)
 #write.csv(mar_sustainability_score, 'output/mar_sustainability_no_nei.csv', row.names=F)
 
 ## save gapfill data for sustainability scores
@@ -535,8 +541,8 @@ mar_sustainability_score_gf = mar_sus_final %>%
   select(rgn_id, taxa_code, sust_coeff = gapfill_sus) %>% 
   unique()
 
-write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf.csv', row.names=F)
-#write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_seaweed.csv', row.names=F)
+#write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf.csv', row.names=F)
+write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_seaweed.csv', row.names=F)
 #write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_nei.csv', row.names=F)
 
 ```
@@ -656,7 +662,10 @@ tonnes_esc = mar_esc_gf %>%
 
 **Take a look at the summary
 ```{r}
+
 summary(tonnes_esc)
+anyDuplicated(tonnes_esc) # check for duplicates
+
 ```
 
 
@@ -689,8 +698,8 @@ genEscapes_gf <- tonnes_esc %>%
 
 ## Save gapfill data
 ```{r}
-write.csv(genEscapes_gf, 'output/GenEsc_gf.csv', row.names=FALSE)
-#write.csv(genEscapes_gf, 'output/GenEsc_gf_no_seaweed.csv', row.names=FALSE)
+#write.csv(genEscapes_gf, 'output/GenEsc_gf.csv', row.names=FALSE)
+write.csv(genEscapes_gf, 'output/GenEsc_gf_no_seaweed.csv', row.names=FALSE)
 #write.csv(genEscapes_gf, 'output/GenEsc_gf_no_nei.csv', row.names=FALSE)
 ```
 
@@ -703,8 +712,8 @@ data <- genEscapes %>%
 
 ## Save escapee pressure layer 
 ```{r}
-write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
-#write.csv(data, 'output/GenEsc_no_seaweed.csv', row.names=FALSE)  
+#write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
+write.csv(data, 'output/GenEsc_no_seaweed.csv', row.names=FALSE)  
 #write.csv(data, 'output/GenEsc_no_nei.csv', row.names=FALSE)  
 ```
 
@@ -713,6 +722,7 @@ Comparing this year's data to previous year's data. Expect small variation from 
 
 ```{r}
 
+## Compare genetic escapes pressure scores
 old <- read.csv("../v2017/output/GenEsc.csv") %>%
   filter(year == 2015) %>% # compare the most recent shared year between old and new
   select(rgn_id, prs_score_old=pressure_score)
@@ -722,21 +732,21 @@ new <- read.csv("../v2018/output/GenEsc.csv") %>%
   select(rgn_id, prs_score_old=pressure_score)
 
 compare <- full_join(old, new, by="rgn_id")
-compare <- na.omit(compare)
 
-## Compare genetic escapes pressure scores
-plot(compare$prs_score_old.x, compare$prs_score_old.y)
+plot(compare$prs_score_old.x, compare$prs_score_old.y);abline(0,1,col="red")
 
+
+## Compare new/old Mariculture sustainability scores
 tmp_old <- read.csv("../v2017/raw/Truj_label_sust.csv")
 tmp_new <- read.csv("../v2018/raw/Truj_label_sust.csv")
 
 test <- full_join(tmp_new, tmp_old, by=c("country", "species_fao", "fao", "environment" ))
 
-## Compare new/old Mariculture sustainability scores
-plot(test$Maric_sustainability.x, test$Maric_sustainability.y)
+plot(test$Maric_sustainability.x, test$Maric_sustainability.y);abline(0,1,col="red")
+
 
 ## Compare new/old genetic escapees scores
-plot(test$Genetic.escapees.x, test$Genetic.escapees.y)
+plot(test$Genetic.escapees.x, test$Genetic.escapees.y);abline(0,1,col="red")
 
 ```
 
@@ -751,35 +761,39 @@ Compare the three exclusion methods for seaweed species.
 ```{r}
 
 ## Read in the three different versions of wrangled data
+## Best Professional Judgement (BPJ)
 exclude <- read.csv("../v2018/output/GenEsc.csv") %>%
   filter(year == 2015) %>% # compare the most recent shared year between old and new
-  select(rgn_id, prs_score_old=pressure_score)
+  select(rgn_id, prs_score_BPJ=pressure_score)
 
-exclude_no_sw <- read.csv("../v2018/output/GenEsc.csv") %>%
+## Exclude all seaweeds (no seaweed)
+exclude_no_sw <- read.csv("../v2018/output/GenEsc_no_seaweed.csv") %>%
   filter(year == 2015) %>% # compare the most recent shared year between old and new
-  select(rgn_id, prs_score_old=pressure_score)
+  select(rgn_id, prs_score_no_sw=pressure_score)
 
-exclude_no_nei <- read.csv("../v2018/output/GenEsc.csv") %>%
+## Exclude only nei seaweeds (no nei)
+exclude_no_nei <- read.csv("../v2018/output/GenEsc_no_nei.csv") %>%
   filter(year == 2015) %>% # compare the most recent shared year between old and new
-  select(rgn_id, prs_score_old=pressure_score)
+  select(rgn_id, prs_score_no_nei=pressure_score)
 
-## Compare exclusion method 1 with original exclusion method
+
+## Compare No Seaweed to Best Professional Judgement
 compare <- full_join(exclude, exclude_no_sw, by="rgn_id")
 compare <- na.omit(compare)
 ## Compare genetic escapes pressure scores
-plot(compare$prs_score_old.x, compare$prs_score_old.y)
+plot(compare$prs_score_BPJ, compare$prs_score_no_sw); abline(0,1,col="red")
 
-## Compare exclusion method 3 with original exclusion method
+## Compare No Nei to No Seaweed (not much difference)
 compare <- full_join(exclude_no_nei, exclude_no_sw, by="rgn_id")
 compare <- na.omit(compare)
 ## Compare genetic escapes pressure scores
-plot(compare$prs_score_old.x, compare$prs_score_old.y)
+plot(compare$prs_score_no_nei, compare$prs_score_no_sw); abline(0,1,col="red")
 
-## Compare exclusion method 1 with method 3
+## Compare No Nei to BPJ
 compare <- full_join(exclude_no_nei, exclude, by="rgn_id")
 compare <- na.omit(compare)
 ## Compare genetic escapes pressure scores
-plot(compare$prs_score_old.x, compare$prs_score_old.y)
+plot(compare$prs_score_BPJ, compare$prs_score_no_nei); abline(0,1,col="red")
 
 
 ```

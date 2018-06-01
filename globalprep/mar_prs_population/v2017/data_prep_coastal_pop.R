@@ -82,7 +82,7 @@ inland <- rbind(inland, fiji)
 
 # # save shapefile for future reference
 # st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017",
-#                                      layer = "EEZ_inland_50mi"), 
+#                                      layer = "EEZ_inland_25mi"), 
 #          driver="ESRI Shapefile")
 
 
