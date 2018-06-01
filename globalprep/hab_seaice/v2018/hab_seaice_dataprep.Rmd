@@ -101,23 +101,16 @@ E-mail: nsidc@nsidc.org
 Load all relevant libraries, establish/define parameters and commonly used pathnames. Manually change scenario and data years in file pathnames code chunk to reflect the most recent data (d) and current assessment year (v) in setup code chunk.
 
 ```{r setup}
-# load libraries, set directories
-if(!requireNamespace("raster", quietly = TRUE))
-  install.packages("raster")
-if(!requireNamespace("sf", quietly = TRUE))
-  install.packages("sf")
-if(!requireNamespace("fasterize", quietly = TRUE))
-  install.packages("fasterize")
-if(!requireNamespace("fields", quietly = TRUE))
-  install.packages("fields")
 
-library(sp)
-library(raster)
-library(fasterize)
-library(sf)
-library(rgdal)
-library(fields) # colors in Status_Trend.R
-library(ohicore)
+## install R packages where necessary
+pkg <- c("raster", "fasterize", "sf", "sp", "rgdal", "fields") # "fields" for colors in Status_Trend.R
+new.pkg <- pkg[!(pkg %in% installed.packages())]
+if (length(new.pkg)){install.packages(new.pkg)}
+if (!("ohicore" %in% installed.packages())){devtools::install_github("ohi-science/ohicore")}
+
+
+# load libraries, set directories
+lapply(c(pkg, "ohicore"), require, character.only = TRUE)
 
 ## UPDATE THESE!
 assessYear <- "v2018" # change to reflect assessment year
@@ -129,8 +122,8 @@ final.year <- 2016 # final year of data ***2 months of 2017 data...***
 ```
 
 ```{r source common and spatial_common}
-source('../../../src/R/common.R') # directory locations
-source('../../../src/R/spatial_common.R')
+source("../../../src/R/common.R") # directory locations
+source("../../../src/R/spatial_common.R")
 ```
 
 ### Location of Maps
@@ -140,7 +133,7 @@ These maps of the OHI regions were made by the PreparingSpatialFiles.R script. I
 The original polygon files are used from: git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2015. However, we use the `fasterize` package to rasterize the polygons and save them to: git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2017. 
 
 ```{r define file path to ohi region maps (polygons)}
-maps <- file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2017")
+maps <- file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2018") # change year to current assessment
 ```
 
 ### Establish Parameters
@@ -165,7 +158,6 @@ years = c(1979:final.year) # full range of data
 months = 1:12
 n.pym = length(poles)*length(years)*length(months)
 i.pym = 0
-t0 = Sys.time() # not really helpful when using rmd...
 ```
 
 # Methods
@@ -179,7 +171,7 @@ source("ObtainingData.R")
 ```
 
 ### Function 2
-Using the data from the .rdata files created in Function 1, this function calculates status and trend for shoreline ice and ice edge habitat. Data is saved in intermediate (`int`) folder: 
+Using the data from the .rdata files created from Function 1 with the `ObtainingData.R` script, this function calculates status and trend for shoreline ice and ice edge habitat. Data is saved in intermediate (`int`) folder: 
 
 * Habitat: `n_IceEdgeHabitat.csv`, `s_IceEdgeHabitat.csv`
 * Coastal Protection: `n_IceShoreProtection.csv`, `s_IceShoreProtection.csv`
