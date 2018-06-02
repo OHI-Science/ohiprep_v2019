@@ -72,7 +72,7 @@ dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities
 files <- list.files(dir_fao_data, pattern=glob2rx('*.csv'), full.names=T)
 
 ## To compare to old data:
-# dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2016/raw')
+# dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2016')
  
 # files <- list.files(dir_fao_data, pattern=glob2rx('*.csv'), full.names=T)
 
@@ -232,7 +232,7 @@ h <- h %>% add_georegion_id()
 h <- h %>% np_regr_fill(years_back = 10, vars = 'td', scope = 'rgn_id')
 h <- h %>% np_regr_fill(vars = 'tdy', scope = 'georgn_id')
 h <- h %>% np_regr_fill(vars = 'tdy', scope = 'global')
-## np_regr_fill() is a generalized regression gapfill function.  Parameters (with defaults):
+## np_regr_fill() is a generalized regression gapfill function. Parameters (with defaults):
 ## * years_back=50 (int):     This determines how far back in the time series to include within the regression.
 ## * min_paired_obs=4 (int):  This determines how many paired observations are required to attempt a regression.
 ## * scope = 'rgn_id' (str):  ('rgn_id', 'georgn_id', 'global') Determines grouping scale for regression.
@@ -312,12 +312,12 @@ year_max <- max(h_prod$year)
 roll_prod <- h_prod %>%
   arrange(rgn_id, product, year) %>%
   group_by(rgn_id, product) %>%
-        mutate(
-          tonnes_rollmean = rollapply(tonnes, width=4, FUN=mean, align='right', partial=TRUE, na.rm=FALSE),
-          usd_rollmean    = rollapply(   usd, width=4, FUN=mean, align='right', partial=TRUE, na.rm=FALSE)) %>%
-        rename(
-          tonnes_orig = tonnes, # prevent overwriting of reported and gapfilled values
-          usd_orig    = usd) %>% # prevent overwriting of reported and gapfilled values
+  mutate(
+      tonnes_rollmean = rollapply(tonnes, width=4, FUN=mean, align='right', partial=TRUE, na.rm=FALSE),
+      usd_rollmean    = rollapply(   usd, width=4, FUN=mean, align='right', partial=TRUE, na.rm=FALSE)) %>%
+  rename(
+      tonnes_orig = tonnes, # prevent overwriting of reported and gapfilled values
+      usd_orig    = usd) %>% # prevent overwriting of reported and gapfilled values
   mutate(
       tonnes = ifelse(!is.na(tonnes_rollmean), tonnes_rollmean, tonnes_orig),
       usd    = ifelse(!is.na(usd_rollmean),    usd_rollmean,    usd_orig)) %>%
@@ -385,116 +385,121 @@ write.csv(tonnes_rel, 'output/np_harvest_tonnes_rel.csv', row.names = FALSE, na 
 
 ## Final data check
 
-Comparing against last year's data
+Comparing against last year's data. For example, compare the data for 1976-2013 for the 2017 and 2018 assessment year. Do not need to look at new years of data (2014-2015), which is only available in the 2018 assessment year, since those did not exist in the previous year's assessment.
+
+Note: Republique du Congo, due to revision of 2011 data for ornamentals (and only one product that isn't a big producer)
 ```{r}
 
-## Look at Commodities TONNES
-## Replique de Congo, due to revision of 2011 data for ornamentals (and only one product that isn't a big producer)
+## Look at Commodities TONNES for a few countries
 new <- read.csv("int/tonnes.csv")
 old <- read.csv("../v2016/int/tonnes.csv") # CHANGE YEAR
 
 ## Take a look at Dominican Republic
 new_c <- filter(new, rgn_id==115) %>%
-  arrange(commodity, year) 
+  arrange(commodity, year) %>% 
+  rename(tonnes_new = "tonnes")
 old_c <- filter(old, rgn_id==115) %>%
   arrange(commodity, year)
 
 compare <- old_c %>% 
 left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
 
-plot(compare$tonnes.x, compare$tonnes.y)
+plot(compare$tonnes_new, compare$tonnes)
 abline(0,1, col="red")
 
 
 ## Look at tonnes for Senegal
 new_c <- filter(new, rgn_id==66) %>%
   arrange(commodity, year) %>% 
-  filter(year >= year_max - 10)
+  rename(tonnes_new = "tonnes")
 old_c <- filter(old, rgn_id==66) %>%
+  arrange(commodity, year)
+
+compare <- old_c %>% 
+left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
+
+plot(compare$tonnes_new, compare$tonnes)
+abline(0,1, col="red")
+
+
+## Look at tonnes for Greenland
+new_c <- filter(new, rgn_id==145) %>%
   arrange(commodity, year) %>% 
-  filter(year >= year_max - 10)
+  rename(tonnes_new = "tonnes")
+old_c <- filter(old, rgn_id==145) %>%
+  arrange(commodity, year)
+
+compare <- old_c %>% 
+left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
+
+plot(compare$tonnes_new, compare$tonnes)
+abline(0,1, col="red")
 
 
 
-plot1 <- ggplot(old_c, aes(x=year, y=tonnes))+
-  geom_point() +
-  ggtitle("old") +
-  theme_bw()
-plot2 <- ggplot(new_c, aes(x=year, y=tonnes))+
-  geom_point() +
-  ggtitle("new") +
-  theme_bw()
-grid.arrange(plot1, plot2, ncol=2)
-
-
-
-## Commodities USD value
+## Look at Commodities USD value for a few countries
 new <- read.csv("int/usd.csv")
 old <- read.csv("../v2016/int/usd.csv") # CHANGE YEAR
 
 ## Look at Republique du Congo
 new_c <- filter(new, rgn_id==100) %>%
   arrange(commodity, year) %>%
-  filter(year >= year_max - 10)
+  rename(usd_new = "usd")
 old_c <- filter(old, rgn_id==100) %>%
-  arrange(commodity, year) %>%
-  filter(year >= year_max - 10)
+  arrange(commodity, year)
 
 compare <- old_c %>%
   left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
 
-plot(compare$usd.x,compare$usd.y)
+plot(compare$usd_new,compare$usd)
 abline(0,1, col="red")
-
-
-plot1 <- ggplot(old_c, aes(x=year, y=usd))+
-  geom_point(aes(color=product)) +
-  ggtitle("old") +
-  theme_bw()
-plot2 <- ggplot(new_c, aes(x=year, y=usd))+
-  geom_point(aes(color=product)) +
-  ggtitle("new") +
-  theme_bw()
-grid.arrange(plot1, plot2, ncol=2)
 
 ## Look at Bahamas
 new_c <- filter(new, rgn_id==110) %>%
-  arrange(commodity, year) %>% 
-  filter(year >= year_max - 5)
+  arrange(commodity, year) %>%
+  rename(usd_new = "usd")
 old_c <- filter(old, rgn_id==110) %>%
-  arrange(commodity, year) %>% 
-  filter(year >= year_max - 5)
+  arrange(commodity, year)
 
-plot1 <- ggplot(old_c, aes(x=year, y=usd))+
-  geom_point(aes(color=product)) +
-  ggtitle("old") +
-  theme_bw()
-plot2 <- ggplot(new_c, aes(x=year, y=usd))+
-  geom_point(aes(color=product)) +
-  ggtitle("new") +
-  theme_bw()
-grid.arrange(plot1, plot2, ncol=2)
+compare <- old_c %>%
+  left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
 
+plot(compare$usd_new,compare$usd)
+abline(0,1, col="red")
 
 
 ## Look at final smoothed tonnes data for Republique du Congo
 ## Rolling average changes values slightly - make sure new data is not too different from previous year
 new <- read.csv('output/np_harvest_tonnes.csv')
-new_c <- filter(new, rgn_id==100) %>% rename(tonnes_new = tonnes)
 old <- read.csv('../v2016/output/np_harvest_tonnes.csv') # CHANGE YEAR
-old_c <- filter(old, rgn_id==100)
+
+
+## Look at 	Republique du Congo
+new_c <- new %>% 
+  filter(rgn_id==100) %>% 
+  rename(tonnes_new = tonnes)
+old_c <- old %>% 
+  filter(rgn_id==100)
 
 compare <- old_c %>%
   left_join(new_c, by = c("year","rgn_id","product"))
 
+plot(compare$tonnes_new,compare$tonnes)
+abline(0,1, col="red")
+
 
 ## Look at Bahamas
-new <- read.csv('output/np_harvest_tonnes.csv') %>%
-filter(rgn_id==110)
-new
-old <- read.csv('../v2016/output/np_harvest_tonnes.csv') %>%
-filter(rgn_id==110)
-old
+new_c <- new %>% 
+  filter(rgn_id==110) %>% 
+  rename(tonnes_new = tonnes)
+old_c <- old %>% 
+  filter(rgn_id==110)
+
+compare <- old_c %>%
+  left_join(new_c, by = c("year","rgn_id","product"))
+
+plot(compare$tonnes_new,compare$tonnes)
+abline(0,1, col="red")
 
 
 ```
