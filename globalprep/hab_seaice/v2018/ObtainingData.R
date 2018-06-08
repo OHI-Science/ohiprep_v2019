@@ -137,7 +137,7 @@ for (p in poles){
         ## setdiff() check showed no difference between the methods
         library(dplyr)
         OHIregion_points <- OHIregion_points %>% dplyr::mutate(type_nsidc = raster::extract(r.typ, OHIregion_points))
-        st_write(OHIregion_points, dsn=file.path(maps, "tmp") , driver='ESRI Shapefile', layer=sprintf('%s_type_rgns_pts',p))
+        st_write(OHIregion_points, dsn=file.path(maps, "tmp"), driver="ESRI Shapefile", layer=sprintf("%s_type_rgns_pts",p), update=TRUE)
       }
       
       ##################################################################################################################
