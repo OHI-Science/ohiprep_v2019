@@ -79,7 +79,8 @@ Percentage of people without sanitation was multiplied by the coastal population
 # setwd("~/github/ohiprep_v2018/globalprep/prs_cw_pathogen/v2018")
 
 ##Packages
-library(ohicore) # devtools::install_github('ohi-science/ohicore@dev') # may require uninstall and reinstall
+library(ohicore) 
+devtools::install_github('ohi-science/ohicore@dev') # may require uninstall and reinstall
 library(zoo)     # for na.locf: Last Observation Carried Forward
 library(tidyverse)
 
@@ -97,7 +98,7 @@ source('../../../src/R/common.R')
 
 
 ##From Mazu
-sani_raw_M <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2018/JMP_2017_WLD.csv"),  header = FALSE, sep = ",", na.strings = c(NA, ''), skip = 2, stringsAsFactors = FALSE, strip.white = TRUE)
+#sani_raw_M <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2018/JMP_2017_WLD.csv"),  header = FALSE, sep = ",", na.strings = c(NA, ''), skip = 2, stringsAsFactors = FALSE, strip.white = TRUE)
 
 ##From github
 sani_raw <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/globalprep/prs_cw_pathogen/v2018/raw/JMP_2017_WLD.csv',  header = FALSE, sep = ",", na.strings = c(NA, ''), skip = 2, stringsAsFactors = FALSE, strip.white = TRUE) #some of the data has spaces before or at the end, stripe.white removes this
@@ -334,7 +335,7 @@ summary(sani_complete)
 ```
 
 
-#Standarizing Sanitation data by population
+#Standarizing Sanitation data by population density
 ```{r}
 population <- read.csv("../../mar_prs_population/v2018/output/mar_pop_25mi.csv") %>%
   arrange(rgn_id, year)
@@ -346,14 +347,26 @@ pop_0 <- population %>%
   filter(popsum==0)
 sort(table(pop_0$rgn_id))
 
+#Read area 25mi inland to calculate population density
+area <- read.csv("../../mar_prs_population/v2018/int/area_km2_25mi.csv")
+
+pop_density <- population %>% 
+  left_join(area, by='rgn_id') %>% 
+  mutate(pop_per_km2= popsum/area_km2) %>% 
+  select(rgn_id, year, pop_per_km2)
+
+##Save population density data for 2018 assesment
+#write.csv(pop_density, "inter/pathogen_pop_density_25mi.csv", row.names=FALSE)
+ 
+
 
 #standarization: convert proportion with acces to sanitation to proportion without access to sanitation (poopers! lack of access*population density)
 
 unsani_pop <- sani_complete %>%  
     select(rgn_id, rgn_name, year, basic_sani_prop) %>%
-    left_join(population, 
+    left_join(pop_density, 
               by=c('rgn_id', 'year')) %>%
-    mutate(propWO_x_pop     = (1 - basic_sani_prop) * popsum, # this is the population density of people without access (WO)
+    mutate(propWO_x_pop     = (1 - basic_sani_prop) * pop_per_km2, # this is the population density of people without access (WO)
            propWO_x_pop_log = log(propWO_x_pop + 1)) # log is important because the skew was high otherwise
 
 
@@ -362,8 +375,9 @@ hist(unsani_pop$propWO_x_pop_log)
 
 #Pressure Score
 
+Pressure score is calculated by using the 99th quantile as a reference point
+
 ```{r pressure}
-#Pressure score is calculated by using the 99th quantile as a reference point
 
 #Calculate reference point
 ref_calc <- unsani_pop %>% 
@@ -372,8 +386,8 @@ ref_calc <- unsani_pop %>%
   summarise(ref= quantile(propWO_x_pop_log, probs=c(0.99), na.rm = TRUE)) %>% 
   .$ref
 
-# save to the master reference point list
-# (edit file if necessary)
+##save to the master reference point list
+##(edit file if necessary)
 # master_refs <- read.csv("../../supplementary_information/v2018/reference_points_pressures.csv", stringsAsFactors = FALSE)
 # master_refs$ref_point[master_refs$pressure == "Sanitation"] <- ref_calc
 # write.csv(master_refs, "../../supplementary_information/v2018/reference_points_pressures.csv", row.names=FALSE)
@@ -384,9 +398,9 @@ ref_value <- as.numeric(master_refs$ref_point[master_refs$pressure == "Sanitatio
 
 unsani_prs <- unsani_pop %>%
     mutate(pressure_score = propWO_x_pop_log / ref_value) %>% 
-  mutate(pressure_score = ifelse(pressure_score>1, 1, pressure_score)) %>% 
-  dplyr::select(rgn_id, year, pressure_score) #limits pressure scores not to be higher than 1
-  
+  mutate(pressure_score = ifelse(pressure_score>1, 1, pressure_score)) %>% #limits pressure scores not to be higher than 1
+  dplyr::select(rgn_id, year, pressure_score) 
+
 summary(unsani_prs)
 
 #Save data pressure scores 
@@ -401,10 +415,9 @@ Data years (annual change in pressure), times 5.
 
 ```{r trend}
 
-
 #Min and max year of data to calculate trend
 assess_years <- 7  #this will change every assessment year
-maxyear <- max(unsani_prs$year)
+maxyear <- max(unsani_prs$year) #max year of data
 minyear <- maxyear-7+1
 
 trend_data <- data.frame()
@@ -427,7 +440,7 @@ trend_data <- rbind(trend_data, trend_data_focal_year)
 }
 summary(trend_data)
 
-#Save trend data
+##Save trend data
 #write.csv(trend_data, "output/po_pathogen_popdensity25mi_trend.csv", row.names=FALSE)
 ```
 
