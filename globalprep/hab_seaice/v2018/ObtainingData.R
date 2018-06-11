@@ -15,11 +15,11 @@ for (p in poles){
   } else if (p == "s"){
     xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s
   }
-  
   xMax = xMin + (pixel*nc); yMax = yMin + (pixel*nr)
-  r = raster(nrow = nr, ncol = nc, xmn = xMin, xmx = xMax, ymn = yMin, ymx = yMax)
-  projection(r) = prj
-  s = stack(r)
+  
+  r <- raster(nrow = nr, ncol = nc, xmn = xMin, xmx = xMax, ymn = yMin, ymx = yMax)
+  projection(r) <- prj
+  s <- stack(r)
   
   ######################################################################################################################
   ## Collect the data for each month/year from the website and add to raster stack
@@ -31,10 +31,11 @@ for (p in poles){
       # yr=1979; mo=1 # testing
       
       ## get proper ftp (file transfer protocol) site based on time of data collection    
-      i.pym = i.pym + 1 
-      ym = yr*100 + mo
-      y.m = sprintf("%d-%02d", yr, mo)
-      p.y.m = sprintf("%s%d%02d", p, yr, mo)
+      i.pym <- i.pym + 1 
+      ym <- yr*100 + mo
+      y.m <- sprintf("%d-%02d", yr, mo)
+      p.y.m <- sprintf("%s%d%02d", p, yr, mo)
+      
       if (ym < 198709){
         ss = "n07"
       } else if (ym >= 198709 & ym < 199201){
@@ -48,19 +49,19 @@ for (p in poles){
       }
       
       ## retrieving the data using ftp
-      min.done = as.numeric(difftime(Sys.time(), t0, units="mins"))
-      min.togo = (n.pym-i.pym) * min.done/i.pym
+      min.done <- as.numeric(difftime(Sys.time(), t0, units="mins"))
+      min.togo <- (n.pym - i.pym) * min.done/i.pym
       print(sprintf("Retrieving %s (%d of %d). Minutes done=%0.1f, to go=%0.1f",
                     p.y.m,i.pym,n.pym,min.done,min.togo)) # time remaining for data download
       
-      u = sprintf("%s/nt_%d_%s_v1.1_%s.bin", ub, ym, ss, p)
+      u <- sprintf("%s/nt_%d_%s_v1.1_%s.bin", ub, ym, ss, p)
       con <- file(u, "rb")  # "rb" = "open for reading in binary mode"
-      x = readBin(con, "raw", 300)
-      x = readBin(con,"int", size = 1, signed = FALSE, 150000)
+      x <- readBin(con, "raw", 300)
+      x <- readBin(con,"int", size = 1, signed = FALSE, 150000)
       close(con)    
       
       ## place result in raster framework
-      r = setValues(r, x)
+      r <- setValues(r, x)
       
       ## raster values: 254=land, 253=coast, 251=north pole assumed ice not seen by satellite
       ## 0 to 250 / 250 = % ice concentration (see raster::calc documentation)
@@ -91,28 +92,29 @@ for (p in poles){
       ##################################################################################################################
       
 
-      pts.shp = file.path(maps, sprintf("tmp/%s_type_rgns_pts.shp", p))
+      pts.shp <- file.path(maps, sprintf("tmp/%s_type_rgns_pts.shp", p))
       
       ## if the pts.shp file exists in the assessment year git-annex NSIDC_SeaIce tmp folder, this code is not run      
       if (!file.exists(pts.shp)){
         
         ## These take the raster cells that are identified as something other than ice (i.e., land, water, etc.)
         ## and creates new raster layers with just those cells
-        r_coast = r==253
-        r_land = r==254
-        r_hole = r==251
-        r_water = r<=250
+        r_coast = r == 253
+        r_land = r == 254
+        r_hole = r == 251
+        r_water = r <= 250
         
-        r_coast_na = calc(r_coast, fun=function(x) { x[x==0] = NA; return(x) }) # replaces 0 values with NA in r_coast file
-        r_coast_distance = distance(r_coast_na) # calculates distance from coast (units are in meters)
-        r_shore = r_water==1 & r_coast_distance<pixel*1.1 # selects one pixel offshore from coast: 25km offshore
+        r_coast_na <- calc(r_coast, fun = function(x) { x[x == 0] = NA; return(x) }) # replaces 0 values with NA in r_coast file
+        r_coast_distance <- distance(r_coast_na) # calculates distance from coast (units are in meters)
+        r_shore <- r_water == 1 & r_coast_distance < pixel*1.1 # selects one pixel offshore from coast: 25km offshore
       
-        r_type = r
-        r_type[r_land==1]=0;
-        r_type[r_coast==1]=1
-        r_type[r_water==1]=3
-        r_type[r_shore==1]=2        
-        r_type[r_hole==1]=4    
+        r_type <- r
+        
+        r_type[r_land == 1] = 0
+        r_type[r_coast == 1] = 1
+        r_type[r_water == 1] = 3
+        r_type[r_shore == 1] = 2
+        r_type[r_hole == 1] = 4
         
         writeRaster(r_type, 
                     file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2018/tmp/%s_type.tif", p)),
@@ -120,24 +122,25 @@ for (p in poles){
         
         
         r.typ <- raster(file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2018/tmp/%s_type.tif",p)))
-        OHIregion <- read_sf(dsn=file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2015/raw"), 
-                             layer=sprintf("New_%s_rgn_fao", p)) # projected ohi regions, read as simple features object
+        OHIregion <- read_sf(dsn = file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2015/raw"), 
+                             layer = sprintf("New_%s_rgn_fao", p)) # projected ohi regions, read as simple features object
         OHIregion <- OHIregion %>%
           dplyr::filter(!is.na(st_dimension(OHIregion))) %>%
           st_cast("MULTIPOLYGON") # clean up regions with no geometry
 
         ## convert OHIregion multipolygon sf to a raster, replace NAs with zeroes, convert to points sf, add some attributes
-        OHIregion_raster <- fasterize(OHIregion, r.typ, field="rgn_id")
+        OHIregion_raster <- fasterize(OHIregion, r.typ, field = "rgn_id")
         OHIregion_raster[is.na(OHIregion_raster)] <- 0
-        OHIregion_points <- st_as_sf(rasterToPoints(OHIregion_raster, spatial=TRUE))
+        OHIregion_points <- st_as_sf(rasterToPoints(OHIregion_raster, spatial = TRUE))
         names(OHIregion_points)[1] <- "rgn_id"
-        OHIregion_points <- dplyr::left_join(OHIregion_points, OHIregion %>% st_set_geometry(NULL), by="rgn_id")
+        OHIregion_points <- dplyr::left_join(OHIregion_points, OHIregion %>% st_set_geometry(NULL), by = "rgn_id")
         
         ## add type_nsidc to the points (changed this from last year, to extract just using sf+dplyr not sp)
         ## setdiff() check showed no difference between the methods
         library(dplyr)
         OHIregion_points <- OHIregion_points %>% dplyr::mutate(type_nsidc = raster::extract(r.typ, OHIregion_points))
-        st_write(OHIregion_points, dsn=file.path(maps, "tmp") , driver='ESRI Shapefile', layer=sprintf('%s_type_rgns_pts',p))
+        st_write(OHIregion_points, dsn = file.path(maps, "tmp"), 
+                 driver = "ESRI Shapefile", layer = sprintf("%s_type_rgns_pts",p), update = TRUE)
       }
       
       ##################################################################################################################
@@ -146,12 +149,13 @@ for (p in poles){
       
       ## If at the start of the data, this reads in the points shp file created above
       ## assumes that the range starts with january 1979 (yr==1979, mo==1)
-      if (yr==1979 & mo==1){
-        pts =  st_read(dsn=file.path(maps, "tmp"), layer=sprintf("%s_type_rgns_pts", p))
+      if (yr == 1979 & mo == 1){
+        pts <- st_read(dsn = file.path(maps, "tmp"), layer = sprintf("%s_type_rgns_pts", p))
       }
       
       ## add raster data (r) to the stack (s) and name the layer: pole.year.month (e.g. s197901)
-      s.names = names(s)
+      s.names <- names(s)
+      
       if (nlayers(s) == 0){ 
         s = stack(r)
         names(s) = p.y.m
@@ -163,15 +167,15 @@ for (p in poles){
       ## extract data from the downloaded raster and append it to the type_rgns_pts shp file
       pts <- pts %>% dplyr::mutate(p.y.m = raster::extract(r, pts))
       names(pts)[names(pts) == "p.y.m"] <- p.y.m 
-      
     }
-    
   }
   
   ######################################################################################################################
   ## Save stack of rasters and pts of shore as rdata file
   ######################################################################################################################
   
-  save_loc <- file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/NSIDC_SeaIce/%s/%s_rasters_points.rdata", assessYear, p))
+  save_loc <- file.path(dir_M, 
+                        sprintf("git-annex/globalprep/_raw_data/NSIDC_SeaIce/%s/%s_rasters_points.rdata", 
+                                assessYear, p))
   save(s, pts, file=save_loc)
 }
