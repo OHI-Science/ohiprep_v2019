@@ -37,6 +37,7 @@ old_improved <- old %>%
   mutate(country=ifelse(str_detect(country,"Hong Kong"), "Hong Kong", country)) %>% 
   mutate(country=ifelse(str_detect(country,"Macao"), "Macao", country))
 
+
 # NethAnt <- old %>% 
 #   filter(country=='Netherlands Antilles') #no data so ist filter out
 # 
@@ -89,7 +90,8 @@ new <- sani_final %>%
 
 new_na <- new %>% 
   group_by(rgn_id, rgn_name) %>%
-  mutate(na_count = sum(is.na(new_prop)))
+  mutate(na_count = sum(is.na(new_prop))) %>% 
+  ungroup()
 
 summary(new_na)
 
@@ -102,16 +104,18 @@ new_count_na <- new_na %>%
 na_compare_raw <- new_count_na %>% 
   full_join(old_count_na, by= c('rgn_id', 'rgn_name')) %>% 
   mutate(na_count_old= ifelse(is.na(na_count_old), 0, na_count_old)) %>%
-  mutate(na_count_new= ifelse(is.na(na_count_new), 0, na_count_new))
+  mutate(na_count_new= ifelse(is.na(na_count_new), 0, na_count_new)) %>% 
+  arrange(rgn_id)
 
 #Conclusion: there are differences in several countries. Overall there are more NAs in the old data than the new (total NAs for new data = 137, total NAs for old data = 228).
 sum(na_compare_raw$na_count_new)
 sum(na_compare_raw$na_count_old)
 
-#there are several countries that have data in the old but not in the new. 
+#rgn_id 60, Gibraltar is no included in the raw old data set so there is no old data for this rgn (na_count_old should be 16)
 
 filter(na_compare_raw, na_count_new==16)
 
+filter(na_compare_raw, na_count_old==0) #several countries that have 0 here should have 16 because they are actually not included in the old raw data (rgn_id=60, 86,161, 219, 220)
 
 #COMPARING GEOREGION GAPFILL
 
@@ -132,7 +136,8 @@ old_georgn_gf <- georegions %>%
 ## count missing regions in old data
 old_rgn_na <- old_georgn_gf %>% 
   group_by(rgn_id) %>%
-  mutate(na_count = sum(is.na(rgn_name)))
+  mutate(na_count = sum(is.na(rgn_name))) %>% 
+  ungroup()
 
 
 old_count_na_rgn <- old_rgn_na %>% 
@@ -153,6 +158,7 @@ new_rgn_na <- new_georgn_gf %>%
   mutate(na_count = sum(is.na(rgn_name)))
 
 
+#This counts the rgn do not have any data (there were not in the raw data base but are part of the ohi rgn) and will be gapfilled by georegions
 new_count_na_rgn <- new_rgn_na %>% 
   filter(na_count>0) %>% 
   select(rgn_id, rgn_name, na_count_rgn_new = na_count) %>% 
@@ -198,7 +204,6 @@ area_compare <- old_area %>%
 old_popsum <- old_pop_density %>%
   mutate(popsum_old=popsum) %>% 
   select(rgn_id, year, popsum_old)
-
   
 new_popsum <- population %>% 
   filter(year %in% 2005:2015) %>% 
@@ -207,9 +212,11 @@ new_popsum <- population %>%
 
 popsum_compare <- old_popsum %>% 
   left_join(new_popsum) %>% 
-  mutate(diff= popsum_old - popsum_new)
+  mutate(diff= popsum_old - popsum_new) %>% 
+  arrange(diff)
 
-#HUGE DIFFERENCES!!!!
+max(popsum_compare$diff, na.rm = T) ##rgn_id 73 Russia: 8,835,620
+min(popsum_compare$diff, na.rm = T) ##rgn_id 209, China: -86,635,417
 
 
 #Density differences for regions 1 and 2 as an exmple..
