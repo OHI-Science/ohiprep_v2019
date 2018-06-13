@@ -268,7 +268,7 @@ h_prod <- h_comm %>%
   summarize(tonnes = sum(tonnes, na.rm = TRUE), 
             usd = sum(usd, na.rm = TRUE))
           
-## Error-checking and table exports
+## Error-checking and table exports to see if there are duplicates
 stopifnot(sum(duplicated(h_prod[ , c('rgn_id', 'product', 'year')])) == 0)
 ```
 
@@ -394,6 +394,9 @@ Note: Republique du Congo, due to revision of 2011 data for ornamentals (and onl
 new <- read.csv("int/tonnes.csv")
 old <- read.csv("../v2016/int/tonnes.csv") # CHANGE YEAR
 
+compare <- old %>% 
+left_join(new, by = c("commodity","year","rgn_id","rgn_name","product"))
+
 ## Take a look at Dominican Republic
 new_c <- filter(new, rgn_id==115) %>%
   arrange(commodity, year) %>% 
@@ -434,6 +437,22 @@ left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
 
 plot(compare$tonnes_new, compare$tonnes)
 abline(0,1, col="red")
+
+
+## Look at tonnes for Indonesia
+new_c <- filter(new, rgn_id==216) %>%
+  arrange(commodity, year) %>% 
+  rename(tonnes_new = "tonnes")
+old_c <- filter(old, rgn_id==216) %>%
+  arrange(commodity, year)
+
+compare <- old_c %>% 
+left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
+
+plot(compare$tonnes_new, compare$tonnes)
+abline(0,1, col="red")
+
+
 
 
 
