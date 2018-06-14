@@ -51,7 +51,7 @@ UN population data is used in this data prep routine to check population counts;
 
 **Reference**: https://esa.un.org/unpd/wpp/
 
-**Downloaded**: August 24 2017
+**Downloaded**: August 24, 2017
 
 **Description**: Population (in thousands) for countries.
 
@@ -69,7 +69,7 @@ Load all relevant libraries including parallel processing packages, and define f
 
 ```{r setup, message=FALSE, warning=FALSE, verbose=FALSE}
 ## set options for all chunks in code
-knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.path = 'figs/')
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.height = 4, fig.path = "figs/")
 
 ## comment out when knitting
 # setwd("globalprep/mar_prs_population/")
@@ -92,18 +92,10 @@ path_mar_prs <- file.path(dir_M, "git-annex/globalprep/mar_prs_population", scen
 
 ```{r packages}
 ## load packages, installing them first where necessary
-if(!requireNamespace("raster", quietly = TRUE))
-  install.packages("raster")
-if(!requireNamespace("ohicore", quietly = TRUE))
-  devtools::install_github("ohi-science/ohicore")
-if(!requireNamespace("dplyr", quietly = TRUE))
-  install.packages("tidyverse")
-if(!requireNamespace("sf", quietly = TRUE))
-  install.packages("sf")
-if(!requireNamespace("fasterize", quietly = TRUE))
-  install.packages("fasterize")
-if(!requireNamespace("foreach", quietly = TRUE))
-  install.packages("foreach")
+pkg <- c("raster", "rgdal", "sp", "sf", "fasterize", "tidyverse", "foreach", "parallel","doParallel")
+new_pkg <- pkg[!(pkg %in% installed.packages())]
+if (length(new.pkg)){install.packages(new.pkg)}
+if (!("ohicore" %in% installed.packages())){devtools::install_github("ohi-science/ohicore")}
 
 library(ohicore)
 
@@ -152,14 +144,14 @@ Gridded world population densities from CIESE and CIAT are projected into the Wo
 ```{r manipulate spatial data}
 ## convert year to numeric, project raster, resample, and save human_density_year_mol.tifs with these updates
 
-cl <- makeCluster(10)
+cl <- makeCluster(5)
 registerDoParallel(cl)
 foreach(i = raw, .packages = c("raster", "rgdal", "stringr")) %dopar% {
   yr <- as.numeric(as.character(str_sub(i, -8, -5)))
   raster::raster(i) %>%
     raster::projectRaster(crs = crs(ocean), res = res(ocean), over = TRUE, method = "ngb",
                           filename = file.path(path_mar_prs, sprintf("int/human_density_%s_mol.tif", yr)),
-                          overwrite = TRUE) # ... actually taking TOO LONG, NOT FINISHED AN HOUR LATER...
+                          overwrite = TRUE)
 }
 stopCluster(cl)
 closeAllConnections()
@@ -196,9 +188,8 @@ yearly_diff(year_min = 2015, year_max = 2020)
 
 ## define and apply function to interpolate population densities for years between years in dataset
 yearly_interpolate <- function(year, start_raster, yearly_change){
-  stack(start_raster, yearly_change) %>%
     for(i in 1:4){
-      overlay(fun = function(x, y){(x + i*y)},
+      raster::overlay(raster::raster(start_raster), raster::raster(yearly_change), fun = function(x, y){(x + i*y)},
               filename = file.path(path_mar_prs, sprintf("int/human_density_%s_mol.tif", (year+i))),
               overwrite = TRUE)
     }
@@ -207,7 +198,7 @@ yearly_interpolate <- function(year, start_raster, yearly_change){
 ## interpolate missing years
 files <- list.files(file.path(path_mar_prs, "int"), pattern = ".tif$", full = TRUE)
 
-for(i in c(2000, 2005, 2010, 2015)){
+for(i in c(2000, 2005, 2010, 2015)) {
   yearly_interpolate(i, start_raster = files[grep(sprintf("density_%s_mol",i), files)],
                      yearly_change = files[grep(sprintf("change_%s_to_%s", i, i+5), files)])
 }
@@ -222,7 +213,7 @@ Density data are converted to population by multiplying density times the area o
 den_raster <- list.files(file.path(path_mar_prs, "int"), pattern = "density_\\d{4}_mol.tif$", full = TRUE)
 den_raster # check to make sure this looks correct; all and only density tifs in folder
 
-cl <- makeCluster(length(den_raster))
+cl <- makeCluster(5)
 registerDoParallel(cl)
 
 foreach(i = den_raster, .packages = c("raster", "rgdal", "stringr")) %dopar% {
