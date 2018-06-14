@@ -108,14 +108,13 @@ new.pkg <- pkg[!(pkg %in% installed.packages())]
 if (length(new.pkg)){install.packages(new.pkg)}
 if (!("ohicore" %in% installed.packages())){devtools::install_github("ohi-science/ohicore")}
 
-
-# load libraries, set directories
+## load libraries, set directories
 lapply(c(pkg, "ohicore"), require, character.only = TRUE)
 
 ## UPDATE THESE!
 assessYear <- "v2018" # change to reflect assessment year
 data_yr_gci <- "d2018" # change to reflect year of most recently downloaded data
-final.year <- 2016 # final year of data ***2 months of 2017 data...***
+final.year <- 2016 # final year of data
 
 ## comment out when knitting
 #setwd(paste0("globalprep/hab_seaice/", assessYear))
@@ -178,7 +177,7 @@ Using the data from the .rdata files created from Function 1 with the `Obtaining
 
 ```{r function 2: source status trend script, eval=FALSE}
 ref.years <- 1979:2000 # reference years are chosen... how/why?
-source("Status_Trend.R") # calculates status and trend for shoreline ice and ice edge hab
+source("Status_Trend.R") # calculates status and trend for shoreline ice and ice edge habitat
 ```
 
 ### Final calculations and organization
@@ -254,7 +253,7 @@ write.csv(extent, "output/hab_ice_extent_eez.csv", row.names = FALSE) # save sea
 
 ## health
 health <- read.csv("output/hab_ice_health_eez.csv")
-old <- read.csv("../v2016/output/hab_ice_health_eez_updated.csv") %>% # compare to last year's data
+old <- read.csv("../v2017/output/hab_ice_health_eez.csv") %>% # compare to last year's data
   dplyr::rename(old_health = health) %>%
   dplyr::left_join(health, by = c("rgn_id", "habitat", "year"))
 plot(old$old_health, old$health)
@@ -262,7 +261,7 @@ abline(0, 1, col="red")
 
 ## trend
 trend <- read.csv("output/hab_ice_trend_eez.csv")
-old <- read.csv("../v2016/output/hab_ice_trend_eez_updated.csv") %>%
+old <- read.csv("../v2017/output/hab_ice_trend_eez.csv") %>%
   dplyr::rename(old_trend = trend) %>%
   dplyr::left_join(trend, by = c("rgn_id", "habitat", "year"))
 plot(old$old_trend, old$trend)
@@ -270,7 +269,7 @@ abline(0, 1, col="red")
 
 ## extent
 extent <- read.csv("output/hab_ice_extent_eez.csv") # compare to last year's data
-old <- read.csv("../v2016/output/hab_ice_extent_eez_updated.csv") %>%
+old <- read.csv("../v2017/output/hab_ice_extent_eez.csv") %>%
   dplyr::rename(old_km2 = km2) %>%
   dplyr::left_join(extent, by = c("rgn_id", "year", "habitat"))
 plot(old$old_km2, old$km2)
