@@ -255,9 +255,9 @@ inland <- sf::st_transform(inland, st_crs(fiji))
 inland <- rbind(inland, fiji)
 
 ## save shapefile for future reference if it doesn't already exist
-if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_50mi"))){
-  sf::st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_50mi"), 
-           layer = "EEZ_inland_50mi", driver = "ESRI Shapefile")
+if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"))){
+  sf::st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
+           layer = "EEZ_inland_25mi", driver = "ESRI Shapefile")
 }
 
 ## create new object merging eez and rasterized 25mile inland buffer
