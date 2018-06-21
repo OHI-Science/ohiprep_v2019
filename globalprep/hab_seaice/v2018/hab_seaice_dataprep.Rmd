@@ -22,7 +22,7 @@ This data prep markdown calls a series of scripts to download and analyze sea ic
 
 # Updates from previous assessment
 
-An additional year of data has been added. 
+New data was not available for 2017.
 
 **We attempted to transition to using the sf package for the spatial data, however, this was mostly not possible due to our reliance on the raster::extract function which is not supported for the sf format.  Maybe next year we can make this update.**
 
@@ -113,6 +113,7 @@ lapply(c(pkg, "ohicore"), require, character.only = TRUE)
 
 ## UPDATE THESE!
 assessYear <- "v2018" # change to reflect assessment year
+previous_yr <- "v2017" # previous assessment year
 data_yr_gci <- "d2018" # change to reflect year of most recently downloaded data
 final.year <- 2016 # final year of data
 
@@ -176,7 +177,7 @@ Using the data from the .rdata files created from Function 1 with the `Obtaining
 * Coastal Protection: `n_IceShoreProtection.csv`, `s_IceShoreProtection.csv`
 
 ```{r function 2: source status trend script, eval=FALSE}
-ref.years <- 1979:2000 # reference years are chosen... how/why?
+ref.years <- 1979:2000
 source("Status_Trend.R") # calculates status and trend for shoreline ice and ice edge habitat
 ```
 
@@ -238,7 +239,7 @@ write.csv(trend, "output/hab_ice_trend_eez.csv", row.names = FALSE)
 ## seaice extent data
 extent <- data %>%
    dplyr::filter(rgn_typ == "eez") %>%
-   dplyr::mutate(year = 2016) %>%
+   dplyr::mutate(year = final.year) %>% # extent for most recent/last year of data, final.year defined above
   dplyr::select(rgn_id, habitat, year, km2)
 
 write.csv(extent, "output/hab_ice_extent_eez.csv", row.names = FALSE) # save seaice extent data
@@ -253,7 +254,7 @@ write.csv(extent, "output/hab_ice_extent_eez.csv", row.names = FALSE) # save sea
 
 ## health
 health <- read.csv("output/hab_ice_health_eez.csv")
-old <- read.csv("../v2017/output/hab_ice_health_eez.csv") %>% # compare to last year's data
+old <- read.csv(sprintf("../%s/output/hab_ice_health_eez.csv", previous_yr)) %>% # compare to last year's data
   dplyr::rename(old_health = health) %>%
   dplyr::left_join(health, by = c("rgn_id", "habitat", "year"))
 plot(old$old_health, old$health)
@@ -261,7 +262,7 @@ abline(0, 1, col="red")
 
 ## trend
 trend <- read.csv("output/hab_ice_trend_eez.csv")
-old <- read.csv("../v2017/output/hab_ice_trend_eez.csv") %>%
+old <- read.csv(sprintf("../%s/output/hab_ice_trend_eez.csv", previous_yr)) %>%
   dplyr::rename(old_trend = trend) %>%
   dplyr::left_join(trend, by = c("rgn_id", "habitat", "year"))
 plot(old$old_trend, old$trend)
@@ -269,7 +270,7 @@ abline(0, 1, col="red")
 
 ## extent
 extent <- read.csv("output/hab_ice_extent_eez.csv") # compare to last year's data
-old <- read.csv("../v2017/output/hab_ice_extent_eez.csv") %>%
+old <- read.csv(sprintf("../%s/output/hab_ice_extent_eez.csv", previous_yr)) %>%
   dplyr::rename(old_km2 = km2) %>%
   dplyr::left_join(extent, by = c("rgn_id", "year", "habitat"))
 plot(old$old_km2, old$km2)
