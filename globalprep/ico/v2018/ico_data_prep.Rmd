@@ -18,17 +18,20 @@ output:
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = FALSE, message = FALSE, warning = FALSE)
 
-source('~/github/ohiprep/src/R/common.R')
+library(jsonlite)
 library(readr)
+library(tidyverse)
 
-goal      <- 'globalprep/spp_ico'
-scenario  <- 'v2016'
-dir_anx   <- file.path(dir_M, 'git-annex', goal) 
-dir_goal  <- file.path('~/github/ohiprep', goal, scenario)
+## set up provenance tracking for this script:
+# source(file.path('~/github/ohibc', 'src/R/prov.R'))  
 
-### set up provenance tracking for this script:
-# source(file.path('~/github/ohibc', 'src/R/prov.R'))          
+goal     <- 'globalprep/ico'
+scenario <- 'v2018'
+source(sprintf('~/github/ohiprep_%s/src/R/common.R', scenario))
+source(sprintf('~/github/ohiprep_%s/globalprep/ico/%s/ico_fxn.R', scenario, scenario))
 
+dir_anx  <- file.path(dir_M, 'git-annex', goal) 
+dir_goal <- file.path(sprintf('~/github/ohiprep_%s', scenario), goal, scenario)
 source(file.path(dir_goal, 'ico_fxn.R'))
 
 if(!file.exists(file.path(dir_goal, 'README.md'))) {
@@ -37,7 +40,6 @@ if(!file.exists(file.path(dir_goal, 'README.md'))) {
 if(!file.exists(file.path(dir_goal, 'README.md'))) {
   warning(sprintf('No README detected in %s', file.path(dir_git, scenario)))
 }
-# SPP-specific and ICO-specific functions
 ```
 
 # Summary:  Iconic Species Subgoal (Sense of Place)
@@ -119,18 +121,14 @@ Using the IUCN API, we accessed the full IUCN species list at http://apiv3.iucnr
 
 iucn_sid | kingdom | phylum | class | order | family | genus | sciname | population | category
 
+### Download Species List from IUCN
+
+Get all pages and bind into total species list, using the IUCN API. __include more details here?__
 
 ``` {r get_spp_info}
-### Get all pages and bind into total species list
 
-library(jsonlite)
 api_key <- 'fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5'
-
 spp_list_from_api_file <- file.path(dir_goal, 'int/spp_list_from_api.csv')
-### NOTE:  As of 6/30/16, API returns a messed up set of data with 17500 duplicated rows.
-###   Not sure what's up with that.  I think there is a bug in their pagination.  For now,
-###   loading from pre-loaded species list from API earlier in June.
-### This problem became evident when 24 different ICO species went missing from the list.
 
 if(!file.exists(spp_list_from_api_file)) {
   message('Using API to create full species list from scratch')
@@ -158,27 +156,31 @@ if(!file.exists(spp_list_from_api_file)) {
 ```
 
 
-## get master list of Iconic Species
+## Get master list of Iconic Species
 
 The list of Iconic Species is based upon the original ICO list generated in 2011, using species identified as globally iconic (WWF Flagship species and Priority species) or regionally iconic (based upon WWF regional/local priority species and nation-specific lists).
 
 ``` {r get_ico_spp_list}
-ico_list_raw <- get_ico_list(reload = TRUE)
+ico_list_raw <- get_ico_list(reload = TRUE) # get_ico_list is defined in ico_fxn.R
 
-#                   comname                  sciname ico_gl ico_rgn_id
-# 1      Peruvian anchoveta        Engraulis ringens  FALSE        138
-# 2 Mediterranean monk seal        Monachus monachus  FALSE        183
-# 3     Smooth-coated Otter  Lutrogale perspicillata  FALSE        203
-# 4            Ganges Shark       Glyphis gangeticus  FALSE        203
-# 5       Pygmy right whale        Caperea marginata  FALSE         16
-# 6   Antarctic minke whale Balaenoptera bonaerensis  FALSE         16
-### * ico_rgn_id: rgn_id in which species is iconic by regional/national
-###   lists; if globally iconic, ico_rgn_id <- NA
+## head of ico_list_raw for v2018:
+
+# comname                          sciname               ico_gl ico_rgn_id
+#   <chr>                            <chr>                 <lgl>       <int>
+# 1 Blue Shark                       Prionace glauca       T              NA
+# 2 Whale Shark                      Rhincodon typus       T              NA
+# 3 Shortfin Mako                    Isurus oxyrinchus     T              NA
+# 4 Olive Ridley Turtle              Lepidochelys olivacea T              NA
+# 5 Irrawaddy Dolphin                Orcaella brevirostris T              NA
+# 6 Humphead wrasse, Napoleon Wrasse Cheilinus undulatus   T              NA
+
+## ico_rgn_id: rgn_id in which species is iconic by regional/national lists; 
+## if globally iconic, ico_rgn_id <- NA
 
 write_csv(ico_list_raw, file.path(dir_goal, 'int/ico_list_raw.csv'))
 ```
 
-`r DT::datatable(ico_list_raw, caption = 'Iconic species list')`
+`r DT::datatable(ico_list_raw, caption = 'Iconic Species List')`
 
 ***
 
@@ -205,14 +207,13 @@ ico_list <- ico_list_raw %>%
   filter(!is.na(iucn_sid))
 
 write_csv(ico_list, file.path(dir_goal, 'int/ico_list_prepped.csv'))
-
-            
 ```
 
 For each of these species, use the IUCN API to gather a list of countries in which it is present.
 
 ``` {r get_country_list}
-### for each species ID, get country list
+
+## for each species ID, get country list
 ico_country_url <- 'http://apiv3.iucnredlist.org/api/v3/species/countries/id/%s?token=%s'
 
 ico_spp_countries <- mc_get_from_api(ico_country_url, ico_list$iucn_sid) 
@@ -220,13 +221,13 @@ ico_spp_countries <- mc_get_from_api(ico_country_url, ico_list$iucn_sid)
 rgn_iucn2ohi <- read_csv(file.path(dir_goal, 'raw/rgns_iucn2ohi.csv'))
 
 ico_spp_rgn_raw <- ico_spp_countries %>%
-  select(-code, -count, iucn_sid = name1, iucn_rgn_name = country) %>% 
+  select(-code, -count, iucn_sid = name, iucn_rgn_name = country) %>% 
   mutate(iucn_sid = as.integer(iucn_sid),
          iucn_rgn_name  = str_trim(iucn_rgn_name)) %>% 
   left_join(rgn_iucn2ohi,
             by = 'iucn_rgn_name')
 
-### Error check on region name matching
+## error check on region name matching; landlocked --> not matched
 non_match <- ico_spp_rgn_raw %>%
   filter(is.na(ohi_rgn_name))
 if(nrow(non_match) > 0) {
@@ -249,12 +250,11 @@ write_csv(ico_spp_rgn_raw, file.path(dir_goal, 'int/ico_spp_rgn_raw.csv'))
 ico_spp_rgn_raw <- read_csv(file.path(dir_goal, 'int/ico_spp_rgn_raw.csv'))
 ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
 
-ico_spp_rgn_prepped <- ico_spp_rgn_raw %>% 
-  left_join(ico_list,
-            by = 'iucn_sid')
+ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
+  left_join(ico_list, by = 'iucn_sid')
 
-### filter this for species who are global (so all instances are iconic) 
-###   OR ico_rgn_id matches rgn_id (so locally iconic matches with location)
+## filter this for species who are global (so all instances are iconic) 
+##   OR ico_rgn_id matches rgn_id (so locally iconic matches with location)
 ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>%
   filter(ico_gl == TRUE | ico_rgn_id == rgn_id)
 
@@ -262,7 +262,7 @@ write_csv(ico_spp_rgn_prepped, file.path(dir_goal, 'int/ico_spp_rgn_prepped.csv'
 
 ```
 
-`ico_spp_rgn_prepped` saved at `~/github/ohiprep/globalprep/spp_ico/v2016/int/ico_spp_rgn_prepped.csv`:
+`ico_spp_rgn_prepped` saved at `~/github/ohiprep/globalprep/ico/v2016/int/ico_spp_rgn_prepped.csv`:
 
 `r DT::datatable(ico_spp_rgn_prepped)`
 
@@ -275,7 +275,8 @@ We accessed the IUCN API to determine past IUCN assessments for each of the iden
 Each assessment includes a year and an extinction risk, along with additional information on the assessment.
 
 ``` {r get_category_list}
-### for each species ID, get past assessments
+
+## for each species ID, get past assessments
 ico_past_assess_url <- 'http://apiv3.iucnredlist.org/api/v3/species/history/id/%s?token=%s'
 ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
 
