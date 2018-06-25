@@ -21,3 +21,5 @@ georegion_labels.csv
 georegions.csv
 rgn_eez_v2013a_synonyms.csv
 rgn_uninhabited_islands.csv
+
+EEZ_inland_25mi created in globalprep/mar_prs_population/v2017/data_prep_coastal_pop.R
