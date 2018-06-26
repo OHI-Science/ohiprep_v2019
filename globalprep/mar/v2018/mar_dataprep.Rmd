@@ -21,7 +21,7 @@ This analysis converts FAO mariculture data into data used to calculate the OHI 
 # Updates from previous assessment
 
 * New year of FAO mariculture yield data for 2016. 
-* Included edible seaweed species for the 2018 assessment (see species_list.csv). 
+* Included edible seaweed species for the 2018 assessment (see species_list.csv). Tested three different scenarios of including/excluding seaweed (best judgement, exclude all seaweeds, exclude only seaweeds nei)
 * Added a row for Edible seaweeds taxa in Truj_label_sust.csv using the average of all seaweed species provided by Trujillo. 
 * Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
 
@@ -127,6 +127,7 @@ Update species name in the `raw/species_list.csv` file with names in the `mar` d
 ```{r}
 
 ## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.
+
 mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
   select(FAO_name, exclude, alias, Taxon_code)
 # mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
