@@ -18,9 +18,14 @@ output:
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = FALSE, message = FALSE, warning = FALSE)
 
+# pkg <- c("jsonlite","readr","tidyverse")
+# new_pkg <- pkg[!(pkg %in% installed.packages())]
+# if (length(new.pkg)){install.packages(new.pkg)}
+
 library(jsonlite)
 library(readr)
 library(tidyverse)
+library(parallel)
 
 ## set up provenance tracking for this script:
 # source(file.path('~/github/ohibc', 'src/R/prov.R'))  
@@ -28,19 +33,21 @@ library(tidyverse)
 goal     <- 'globalprep/ico'
 scenario <- 'v2018'
 source(sprintf('~/github/ohiprep_%s/src/R/common.R', scenario))
-source(sprintf('~/github/ohiprep_%s/globalprep/ico/%s/ico_fxn.R', scenario, scenario))
 
-dir_anx  <- file.path(dir_M, 'git-annex', goal) 
+dir_anx  <- file.path(dir_M, 'git-annex', goal)
 dir_goal <- file.path(sprintf('~/github/ohiprep_%s', scenario), goal, scenario)
 source(file.path(dir_goal, 'ico_fxn.R'))
 
 if(!file.exists(file.path(dir_goal, 'README.md'))) {
-  warning(sprintf('No README detected in %s', dir_git))
+  warning(sprintf('No README detected in %s', dir_goal))
 }
-if(!file.exists(file.path(dir_goal, 'README.md'))) {
-  warning(sprintf('No README detected in %s', file.path(dir_git, scenario)))
+if(!file.exists(file.path(dirname(dir_goal), 'README.md'))) {
+  warning(sprintf('No README detected in %s', file.path(dirname(dir_goal))))
 }
 ```
+
+[REFERENCE RMD FILE](https://rawgit.com/OHI-Science/ohi-global/draft/global_supplement/Supplement.html#591_iconic_species_(subgoal_of_sense_of_place))
+
 
 # Summary:  Iconic Species Subgoal (Sense of Place)
 
@@ -100,17 +107,26 @@ Changes since 2015 ICO subgoal for global OHI:
 
 ``` {r setup functions}
 
+# get_from_api <- function(url, param) {
+#     api_info <- fromJSON(sprintf(url, param, api_key)) %>%
+#       data.frame(stringsAsFactors = FALSE)
+# } # need to add conditional for if api_info for given param (iucn id) has no data and gives empty list...
+
 get_from_api <- function(url, param) {
-    api_info <- fromJSON(sprintf(url, param, api_key)) %>%
-      data.frame(stringsAsFactors = FALSE)
-}
+    api_info_json <- fromJSON(sprintf(url, param, api_key)) 
+    len_result <- api_info_json %>% .[[2]] %>% length()
+    df_len_zero <- data.frame(name=as.character(param), 
+                              result.year=NA, result.code=NA, result.category=NA, 
+                              stringsAsFactors = FALSE)
+    if(len_result==0){api_info = df_len_zero}else{api_info = api_info_json %>% 
+      data.frame(stringsAsFactors = FALSE)}
+} 
 
 mc_get_from_api <- function(url, param_vec) {
   numcores = ifelse(Sys.info()[['nodename']] == 'mazu', 12, 1)
   out_df <- parallel::mclapply(param_vec, 
                           function(x) get_from_api(url, x),
-                          mc.cores = numcores) %>% 
-    bind_rows() 
+                          mc.cores = numcores) %>% bind_rows() 
   out_df <- out_df %>%
     setNames(names(.) %>%
                str_replace('result.', ''))
@@ -177,7 +193,7 @@ ico_list_raw <- get_ico_list(reload = TRUE) # get_ico_list is defined in ico_fxn
 ## ico_rgn_id: rgn_id in which species is iconic by regional/national lists; 
 ## if globally iconic, ico_rgn_id <- NA
 
-write_csv(ico_list_raw, file.path(dir_goal, 'int/ico_list_raw.csv'))
+write_csv(ico_list_raw, file.path(dir_goal, 'raw/ico_list_raw.csv'))
 ```
 
 `r DT::datatable(ico_list_raw, caption = 'Iconic Species List')`
@@ -191,7 +207,7 @@ Filtering the complete IUCN species list to include only the identified Iconic S
 ``` {r combine_iucn_spp_info_with_ico_list}
 
 spp_df_all <- read_csv(file.path(dir_goal, 'int/spp_list_from_api.csv'))
-ico_list_raw <- read_csv(file.path(dir_goal, 'int/ico_list_raw.csv'))
+ico_list_raw <- read_csv(file.path(dir_goal, 'raw/ico_list_raw.csv'))
 
 spp_ico <- spp_df_all %>% 
   filter(sciname %in% ico_list_raw$sciname) 
@@ -241,13 +257,13 @@ ico_spp_rgn_raw <- ico_spp_rgn_raw %>%
   filter(!is.na(rgn_id)) %>%
   distinct()
 
-write_csv(ico_spp_rgn_raw, file.path(dir_goal, 'int/ico_spp_rgn_raw.csv'))
+write_csv(ico_spp_rgn_raw, file.path(dir_goal, 'raw/ico_spp_rgn_raw.csv'))
 
 ```
 
 ``` {r attach_country_list_to_spp_info_list}
 
-ico_spp_rgn_raw <- read_csv(file.path(dir_goal, 'int/ico_spp_rgn_raw.csv'))
+ico_spp_rgn_raw <- read_csv(file.path(dir_goal, 'raw/ico_spp_rgn_raw.csv'))
 ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
 
 ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
@@ -280,7 +296,7 @@ Each assessment includes a year and an extinction risk, along with additional in
 ico_past_assess_url <- 'http://apiv3.iucnredlist.org/api/v3/species/history/id/%s?token=%s'
 ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
 
-ico_assess_raw <- mc_get_from_api(ico_past_assess_url, ico_list$iucn_sid) 
+ico_assess_raw <- mc_get_from_api(ico_past_assess_url, ico_list$iucn_sid)
 
 ico_assess_raw <- ico_assess_raw %>% 
   rename(iucn_sid = name) %>%
@@ -291,13 +307,13 @@ ico_assess_raw <- ico_assess_raw %>%
               distinct(),
             by = 'iucn_sid')
 
-write_csv(ico_assess_raw, file.path(dir_goal, 'int/ico_assessments_raw.csv'))
+write_csv(ico_assess_raw, file.path(dir_goal, 'raw/ico_assessments_raw.csv'))
 
 ```
 
 `r DT::datatable(ico_assess_raw, caption = 'ICO species and past IUCN assessments')`
 
-These raw assessments are cleaned up to standardize codes and categories, and category scores are assigned based on a scale from Least Concern = 1 to Extinct = 0, as per the Species OHI subgoal.  Note that past assessments used different coding, especially prior to 1994; we reclassified older codes according to this chart:
+These raw assessments are cleaned up to standardize codes and categories, and category scores are assigned based on a scale from Least Concern = 1 to Extinct = 0, as per the [Species OHI subgoal](https://rawgit.com/OHI-Science/ohi-global/draft/global_supplement/Supplement.html#591_iconic_species_(subgoal_of_sense_of_place)).  Note that past assessments used different coding, especially prior to 1994; we reclassified older codes according to this chart:
 
 ```
 New category <- original category/description                         
@@ -318,7 +334,7 @@ New category <- original category/description
 ### Clean up the time series
 ### iucn_sid | year | code | category | sciname
 
-ico_assess_raw <- read_csv(file.path(dir_goal, 'int/ico_assessments_raw.csv'))
+ico_assess_raw <- read_csv(file.path(dir_goal, 'raw/ico_assessments_raw.csv'))
 
 ico_assess <- ico_assess_raw %>%
   rename(cat = code, cat_txt = category) %>%
@@ -436,8 +452,6 @@ ico_spp_rgn_cat <- ico_spp_rgn_cat %>%
 write_csv(ico_spp_rgn_cat, file.path(dir_goal, 'int/ico_spp_rgn_cat.csv'))
 
 ```
-
-Sample of `ico_spp_rgn_cat` saved at `~/github/ohiprep/globalprep/spp_ico/v2016/int/ico_spp_rgn_cat.csv`:
 
 `r knitr::kable(head(ico_spp_rgn_cat, 10))`
 
