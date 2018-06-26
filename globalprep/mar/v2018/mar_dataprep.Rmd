@@ -36,6 +36,7 @@ This analysis converts FAO mariculture data into data used to calculate the OHI 
 http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
 Release date: March 2018
 FAO Global Aquaculture Production Quantity 1950_2016
+FAO metadata found [here](http://ref.data.fao.org/dataset?entryId=033ae7cf-b322-4dc5-8dfe-140140c56008&tab=metadata)
 
 **Downloaded**: 4/11/2018
 
