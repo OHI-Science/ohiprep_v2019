@@ -12,7 +12,7 @@ If using these data, please see our [citation policy](http://ohi-science.org/cit
 
 
 ### Additional information
-FAO Commodities data are used to determine the Natural Products goal.
+FAO Commodities data are used to determine the Natural Products goal. FAO metadata found [here](http://ref.data.fao.org/dataset?entryId=aea93578-9b01-4448-9305-917348ca00b2&tab=metadata).
 
 The FAO fisheries and aquaculture web page (http://www.fao.org/fishery/topic/166235/en) provides instructions on downloading and installing their FishStatJ software.  Once you've done that, then:
 
