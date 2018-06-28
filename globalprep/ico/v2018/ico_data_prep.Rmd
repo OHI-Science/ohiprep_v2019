@@ -569,9 +569,9 @@ Plot the estimated status and trends for 2016 from assessments v2017 and v2018.
 #   spread(key = dimension, value = score)
 
 status_trend <- ico_sum %>% 
-  filter(year == max(year)) %>% 
+  filter(year == max(year)-1) %>% 
   select(rgn_id, ico_status, ico_trend, n_spp) %>% 
-  distinct()
+  distinct() ## status and trend in this year's assessment
   
 ico_compare <- read_csv(file.path(dir_previous, 'summary/ico_summary.csv')) %>% 
   filter(year == max(year)) %>%
