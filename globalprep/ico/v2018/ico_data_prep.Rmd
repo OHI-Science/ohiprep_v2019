@@ -105,30 +105,66 @@ Changes since 2015 ICO subgoal for global OHI:
 
 ``` {r setup functions}
 
-# get_from_api <- function(url, param) {
-#     api_info <- fromJSON(sprintf(url, param, api_key)) %>%
-#       data.frame(stringsAsFactors = FALSE)
-# }
+get_from_api <- function(url, param, api_key, delay) {
+  
+  i <- 1; tries <- 5; success <- FALSE
+  
+  while(i <= tries & success == FALSE) {
+    message('try #', i)
+    Sys.sleep(delay * i) ### be nice to the API server? later attempts wait longer
+    api_info <- fromJSON(sprintf(url, param, api_key)) 
+    if (class(api_info) != 'try-error') {
+      success <- TRUE
+    } else {
+      warning(sprintf('try #%s: class(api_info) = %s\n', i, class(api_info)))
+    }
+    message('... successful? ', success)
+    i <- i + 1
+  }
+  
+  if (class(api_info) == 'try-error') { ### multi tries and still try-error
+    api_return <- data.frame(param_id  = param,
+                             api_error = 'try-error after multiple attempts')
+  } else if (class(api_info$result) != 'data.frame') { ### result isn't data frame for some reason
+    api_return <- data.frame(param_id  = param,
+                             api_error = paste('non data.frame output: ', class(api_info$result), ' length = ', length(api_info$result)))
+  } else if (length(api_info$result) == 0) { ### result is empty
+    api_return <- data.frame(param_id  = param,
+                             api_error = 'zero length data.frame')
+  } else {
+    api_return <- api_info %>%
+      data.frame(stringsAsFactors = FALSE)
+  }
+  
+  return(api_return)
+}
 
-get_from_api <- function(url, param) {
-    api_info_json <- fromJSON(sprintf(url, param, api_key)) 
-    len_result <- api_info_json %>% .[[2]] %>% length()
-    df_len_zero <- data.frame(name=as.character(param), 
-                              result.year=NA, result.code=NA, result.category=NA, 
-                              stringsAsFactors = FALSE)
-    if(len_result==0){api_info = df_len_zero}else{api_info = api_info_json %>% 
-      data.frame(stringsAsFactors = FALSE)}
-} 
-
-mc_get_from_api <- function(url, param_vec) {
-  numcores = ifelse(Sys.info()[['nodename']] == 'mazu', 12, 1)
-  out_df <- parallel::mclapply(param_vec, 
-                          function(x) get_from_api(url, x),
-                          mc.cores = numcores) %>% bind_rows() 
+mc_get_from_api <- function(url, param_vec, api_key, cores = NULL, delay = 0.5) {
+  
+  if(is.null(cores)) {
+    numcores <- ifelse(Sys.info()[['nodename']] == 'mazu', 12, 1)
+  } else {numcores <- cores}
+  
+  out_list <- parallel::mclapply(param_vec, 
+                                 function(x) get_from_api(url, x, api_key, delay),
+                                 mc.cores   = numcores,
+                                 mc.cleanup = TRUE) 
+  
+  if(any(sapply(out_list, class) != 'data.frame')) {
+    error_list <- out_list[sapply(out_list, class) != 'data.frame']
+    message('List items are not data frame: ', paste(sapply(error_list, class), collapse = '; '))
+    message('might be causing the bind_rows() error; returning the raw list instead')
+    return(out_list)
+  }
+  
+  out_df <- out_list %>%
+    bind_rows()
   out_df <- out_df %>%
     setNames(names(.) %>%
                str_replace('result.', ''))
+  return(out_df)
 }
+
 ```
 
 Using the IUCN API, we accessed the full IUCN species list at http://apiv3.iucnredlist.org/api/v3/speciescount?token=<token>.  With some minor formatting, this list contains the following variables:
@@ -141,7 +177,10 @@ Get all pages and bind into total species list, using the IUCN API. __include mo
 
 ``` {r get_spp_info}
 
-api_key <- 'fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5'
+api_file <- file.path(dir_anx, 'api_key.csv')
+api_key <- scan(api_file, what = 'character')
+## api_key <- 'fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5'
+
 spp_list_from_api_file <- file.path(dir_goal, 'int/spp_list_from_api.csv')
 
 if(!file.exists(spp_list_from_api_file)) {
@@ -153,7 +192,7 @@ if(!file.exists(spp_list_from_api_file)) {
   n_pages <- ceiling(n_spp/10000)
   
   spp_page_url <- 'http://apiv3.iucnredlist.org/api/v3/species/page/%s?token=%s'
-  spp_df_all <- mc_get_from_api(spp_page_url, c(0:(n_pages - 1)))
+  spp_df_all <- mc_get_from_api(spp_page_url, c(0:(n_pages - 1)), api_key)
   
   spp_df_all <- spp_df_all %>%
     dplyr::select(-infra_rank, -infra_name, -count, -page) %>%
@@ -212,7 +251,6 @@ spp_ico <- spp_df_all %>%
 
 spp_missing <- ico_list_raw %>% 
   filter(!sciname %in% spp_ico$sciname)
-# after adding in BHI species, Sprat (Sprattus sprattus) is not found.  Identify with a different species name?
 
 ico_list <- ico_list_raw %>%
   left_join(spp_ico %>% 
@@ -230,7 +268,7 @@ For each of these species, use the IUCN API to gather a list of countries in whi
 ## for each species ID, get country list
 ico_country_url <- 'http://apiv3.iucnredlist.org/api/v3/species/countries/id/%s?token=%s'
 
-ico_spp_countries <- mc_get_from_api(ico_country_url, ico_list$iucn_sid) ### run line by line or get stuck here...
+ico_spp_countries <- mc_get_from_api(ico_country_url, ico_list$iucn_sid, api_key)
 
 rgn_iucn2ohi <- read_csv(file.path(dir_goal, 'raw/rgns_iucn2ohi.csv'))
 
@@ -294,7 +332,7 @@ Each assessment includes a year and an extinction risk, along with additional in
 ico_past_assess_url <- 'http://apiv3.iucnredlist.org/api/v3/species/history/id/%s?token=%s'
 ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
 
-ico_assess_raw <- mc_get_from_api(ico_past_assess_url, ico_list$iucn_sid) ## run line by line not entire chunk otherwise gets stuck here...
+ico_assess_raw <- mc_get_from_api(ico_past_assess_url, ico_list$iucn_sid, api_key)
 
 ico_assess_raw <- ico_assess_raw %>% 
   rename(iucn_sid = name) %>%
