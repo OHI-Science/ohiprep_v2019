@@ -22,16 +22,15 @@ editor_options:
 ]
 
 # Summary
-[general description: What data are being generated? Why (what project, etc.)? Upstream/downstream processing information that might be helpful?  Other information?]
 
 This document describes the steps for preparing the pathogen pollution and pathogen pollution trend data layers for the 2018 global assessment.
-The percentage of the population with access to improved sanitation facilities (World Health Organization and United Nations Children’s Fund, Joint Monitoring Programme, 2011) was used in combination with measurements of coastal population as a proxy for pathogens in coastal waters. Access to improved sanitation facilities is defined as the percentage of the population in a country with at least adequate access to disposal facilities that can effectively prevent human, animal, and insect contact with excreta. These data are a country-wide average (not specific to the coastal region). 
 
+The percentage of the population with access to improved sanitation facilities (World Health Organization and United Nations Children’s Fund, Joint Monitoring Programme, 2011) was used in combination with measurements of coastal population as a proxy for pathogens in coastal waters. Access to improved sanitation facilities is defined as the percentage of the population in a country with at least adequate access to disposal facilities that can effectively prevent human, animal, and insect contact with excreta. These data are a country-wide average (not specific to the coastal region). 
 
 # Updates from previous assessment
 Data source (WHO-UNICEF) updated the way they reported the data. However, the 2018 assesment is calculated using the "At least Basic" data becuse it is consistent with what have been used in previous assesmentes and the data is more complete. 
 
-**Consider for future assesments: make the "Safely managed" data more complete, and reconsider whether these data would be better to use.
+**Consider for future assesments:** make the "Safely managed" data more complete, and reconsider whether these data would be better to use.
 
 Definition of each variable according to the data source:
 "At least basic": Use of improved facilities that are not shared with other households.
@@ -64,7 +63,7 @@ Access to improved sanitation facilities is defined as the percentage of the pop
 # Methods
 [R code used to generate the data. Or, alternatively, description of the code/data files used to generate the data.]
 
-Percentage of people without sanitation was multiplied by the coastal population (within 25 miles of the coast) to estimate the number of people located along the coast without sanitation. This value was rescaled between 0 and 1 by dividing by the 99th quantile across all regions and years. 
+Percentage of people without sanitation was multiplied by the coastal population (within 25 miles of the coast) to estimate the number of people located along the coast without sanitation. This value was rescaled between 0 and 1 by dividing by the 99th quantile across all regions from years 2000 to 2009. 
 
 ***
 
@@ -147,7 +146,7 @@ sani_improved <- sani %>%
 sani_improved <- sani_improved %>% 
   filter(country!= 'Caribbean Netherlands')
 
-##If there was data for Caribbean Netherlands this is how to use the data of this region for Bonaire, Sint Eustatius, Saba
+##If there was data for Caribbean Netherlands this is how to use the data of this region for Bonaire, Sint Eustatius, Saba, using the following code.
 
 # CN <- filter(sani_improved, country=="Caribbean Netherlands") %>%
 #   rename(country_old = country)
@@ -190,7 +189,7 @@ sort(table(rgn_sani$rgn_id)) #for this analysis regions which are duplicated are
 ## Each region has 16 years of data in this case. If there are regions with more than 16 values is because in this database they are resported in a higher resolution than the OHI global assesment (eg: China, Hong Kong and Macao are just one region for the OHI global). For these regions a weighted average will be calculated as its final score.
 
 
-##Finalizing the first part of the sanitation preparation by calculating weighted means for the duplicated regions.
+## Calculating weighted means for the duplicated regions.
 
 sani_final <- rgn_sani %>% 
   group_by(rgn_id, rgn_name, year) %>% 
@@ -198,6 +197,8 @@ sani_final <- rgn_sani %>%
 
 ##Check for duplicate regions. If weighed average where included then all rgn_id have 16 values of data.
 sort(table(sani_final$rgn_id))
+
+
 
 ```
 
@@ -329,7 +330,7 @@ summary(sani_complete)
 
 ```{r}
 #Save data
-#write.csv(sani_complete, "intermediate/sani_complete.csv", row.names=FALSE)
+write.csv(sani_complete, "intermediate/sani_complete.csv", row.names=FALSE)
 
 ```
 
@@ -339,7 +340,7 @@ summary(sani_complete)
 population <- read.csv("../../mar_prs_population/v2018/output/mar_pop_25mi.csv") %>%
   arrange(rgn_id, year)
 
-#Note: there is a difference between the list of islands with no population in the mar_pop_25mi dataset with the uninhabited list in github. In the mar_pop_25mi, rgn_id 144 - Jan Mayen is not identified as a pop_0 region while in the github list it is. Population data also considers Antartica (rgn_id213)
+#Note: there is a difference between the list of islands with no population in the mar_pop_25mi dataset with the uninhabited list in github. In the mar_pop_25mi, rgn_id 144 - Jan Mayen is not identified as a pop_0 region while in the github list it is. Population data also considers Antartica (rgn_id 213)
 
 #identify inhabited regions (popsum=0)
 pop_0 <- population %>%
@@ -386,8 +387,6 @@ ref_calc <- unsani_pop %>%
   summarise(ref= quantile(propWO_x_pop_log, probs=c(0.99), na.rm = TRUE)) %>% 
   .$ref
 
-
-
 ##save to the master reference point list
 ##(edit file if necessary)
 # master_refs <- read.csv("../../supplementary_information/v2018/reference_points_pressures.csv", stringsAsFactors = FALSE)
@@ -425,7 +424,7 @@ minyear <- maxyear-7+1
 
 trend_data <- data.frame()
 
-for(focal_year in minyear:maxyear){ # focal_year = 2015
+for(focal_year in minyear:maxyear){ #focal_year = 2009
 
   trend_years <- (focal_year-4):focal_year
   
@@ -457,8 +456,12 @@ new <- read.csv("output/po_pathogen_popdensity25mi_trend.csv")
 old <- read.csv("../v2016/output/pathogens_popdensity25mi_trend_updated.csv") %>%
   select(rgn_id, old_trend = trend) %>%
   left_join(new, by='rgn_id')
+
 plot(old$old_trend, old$trend, xlim=c(-1,1), ylim=c(-1, 1))
 abline(0,1, col="red")
+identify(old$old_trend, old$trend, labels = old$rgn_id)
+
+
 
 ### test : matches
 # data.frame(filter(unsani_prs, rgn_id==6))
@@ -479,8 +482,10 @@ new <- read.csv("output/po_pathogen_popdensity25mi.csv")
 old <- read.csv("../v2016/output/pathogens_popdensity25mi_updated.csv") %>%
   select(rgn_id, old_pressure = pressure_score) %>%
   left_join(new, by='rgn_id')
+
 plot(old$old_pressure, old$pressure_score)
 abline(0,1, col="red")
+identify(old$old_pressure, old$pressure_score, labels = old$rgn_id)
 
 
 #compare raw data

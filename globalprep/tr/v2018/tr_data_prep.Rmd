@@ -48,10 +48,10 @@ We were able to update the following data:
 # Some code to set everything up
 
 ```{r setup, message=FALSE, warning=FALSE}
-#setwd('globalprep/tr/v2018') #comment out when knitting
+#setwd("~/github/ohiprep_v2018/globalprep/tr/v2018") #comment out when knitting
 
 # library(devtools)
-# devtools::install_github("ohi-science/ohicore@dev") 
+# devtools::install_github("ohi-science/ohicore@dev")
 library(ohicore)
 
 source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
@@ -161,7 +161,7 @@ Information is from the U.S. State Department (https://travel.state.gov/content/
 
 #### A few notes about getting data:
 
-Add the data to tr_travelwarnings_xxx.xls
+Add the data to tr_travelwarnings_xxx.xls (csv file in raw folder)
 Most of the data can be cut and paste (after it is checked) from the previous year (update the data and year information).
 
 If different subregions within a country have different warnings, these are put on two lines and combined in the R script:
@@ -181,8 +181,7 @@ regional: added if the warning only applies to specific regions within a country
 The following code is used to clean these data and transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
 ```{r travel warnings}
 
-scores = data.frame(category = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"),
-                    score = c(0, 0.25, 0.75, 1, 1)) 
+scores = data.frame(category = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"), score = c(0, 0.25, 0.75, 1, 1)) 
 
 warn <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
   select(year = assess_year, rgn_name, inform, risk, avoid_nonessential, avoid_all, gtfo, regional) %>%
