@@ -407,35 +407,46 @@ old_c <- filter(old, rgn_id==6) %>%
   arrange(commodity, year)
 
 compare <- old_c %>% 
-left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
-
-plot(compare$tonnes_new, compare$tonnes)
-abline(0,1, col="red")
-
-## Look at Vanuatu final output
-new_tonnes <- read.csv("output/np_harvest_tonnes.csv") %>% 
-  filter(rgn_id==6)
-old_tonnes <- read.csv("../v2016/output/np_harvest_tonnes.csv") %>% 
-  filter(rgn_id==6) %>% 
-  rename(tonnes_old = tonnes)
-
-compare <- old_tonnes %>% 
-left_join(new_tonnes, by = c("rgn_id","product","year"))
-
-## Take a look at Tunisia commodities tonnes: differences start in raw FAO data
-new <- read.csv("int/tonnes.csv")
-old <- read.csv("../v2016/int/tonnes.csv") # CHANGE YEAR
-new_c <- filter(new, rgn_id==61) %>%
-  arrange(commodity, year) %>% 
-  rename(tonnes_new = "tonnes")
-old_c <- filter(old, rgn_id==61) %>%
-  arrange(commodity, year)
-
-compare <- old_c %>% 
 left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product")); View(compare)
 
 plot(compare$tonnes_new, compare$tonnes)
 abline(0,1, col="red")
+
+## Look at Vanuatu final output: decreases in ornamental values from old assessment year to new assessment year
+new_tonnes <- read.csv("output/np_harvest_tonnes.csv") %>% 
+  filter(rgn_id==6, year %in% c(2010:2013))
+old_tonnes <- read.csv("../v2016/output/np_harvest_tonnes.csv") %>% 
+  filter(rgn_id==6, year %in% c(2010:2013)) %>% 
+  rename(tonnes_old = tonnes)
+
+compare <- old_tonnes %>% 
+full_join(new_tonnes, by = c("rgn_id","product","year")); View(compare)
+
+
+
+## Take a look at Tunisia harvest tonnes:
+new <- read.csv("output/np_harvest_tonnes.csv") %>% 
+  filter(rgn_id==61, year %in% c(2010:2013))
+old <- read.csv("../v2016/output/np_harvest_tonnes.csv") %>% 
+  filter(rgn_id==61, year %in% c(2010:2013)) %>% 
+  rename(tonnes_old = tonnes)
+
+compare <- old %>% 
+full_join(new, by = c("rgn_id","product","year")); View(compare)
+
+
+smooth_new <- read.csv("int/np_harvest_smoothed_data.csv") %>% 
+  filter(rgn_id==61, year %in% c(2010:2013)) %>% 
+  select(rgn_id, product, year, tonnes, tonnes_rel)
+smooth_old <- read.csv("../v2016/int/np_harvest_smoothed_data.csv") %>% 
+  filter(rgn_id==61, year %in% c(2010:2013)) %>%
+  select(rgn_id, product, year, tonnes, tonnes_rel) %>% 
+  rename(tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
+
+smoothed <- smooth_old %>% 
+  full_join(smooth_new, by = c("rgn_id","product","year")); View(smoothed)
+
+
 
 
 ## Take a look at Cuba: no diff in intermediate tonnes file
