@@ -57,7 +57,7 @@ old_improved <- old_improved %>%
   rbind(CI_subregions_old)  
 
 
-#Add rgen id
+#Add rgn id
 
 old_rgn_id <- name_2_rgn(old_improved, 
                        fld_name     = 'country',
@@ -194,7 +194,10 @@ area_compare <- old_area %>%
   left_join(area, by='rgn_id') %>% 
   mutate(area_km2_new=area_km2) %>% 
   mutate(diff= area_km2_old-area_km2_new) %>% 
-  select(-area_km2)
+  select(-area_km2) %>% 
+  arrange(diff)
+
+#larger differences (min and max): rgn_id 145 -185,801 and rgn_id 73: 1,620,526
 
 #There are differences in the area used to calculate pop_density inneach asssement.
 
@@ -235,6 +238,170 @@ density_compare2 <- popsum_compare %>%
 
 #Look into trend and pressure of old data
 #this is done at the end of the cw_sanitation_sata prep
+
+#Scatterplot
+#population
+popsum_plot <- popsum_compare %>% 
+  mutate(log_old = log(popsum_old+1)) %>% 
+  mutate(log_new = log(popsum_new+1))
+
+plot(popsum_plot$log_old, popsum_plot$log_new)
+abline(0,1, col="red")
+
+#area
+area_plot <- area_compare %>% 
+  mutate(log_old = log(area_km2_old+1)) %>% 
+  mutate(log_new = log(area_km2_new+1))
+
+plot(area_plot$log_old, area_plot$log_new)
+abline(0,1, col="red")
+
+
+#compare 2016 with 2015
+
+v2016 <- read.csv("../v2016/output/pathogens_popdensity25mi_updated.csv")%>%
+  select(rgn_id, v2015_pressure = pressure_score)
+
+v2015 <- read.csv("../v2015/data/po_pathogens_popdensity25mi_2015a_gf.csv") %>%
+  left_join(v2016, by='rgn_id')
+
+plot(v2015$v2015_pressure, v2015$pressure_score)
+abline(0,1, col="red")
+
+######################################################
+
+#Comparing outliers data in several steps of data wrangling
+
+#outliers rgn_id: 154, 163, 190, 81
+
+#apparently al differencesa are due on how data is reported.
+#Comparing each outlier raw data
+
+#rgn_145 - Niue
+
+rgn_154_old <-old_final %>% 
+  filter(rgn_id==154)
+
+rgn_154_new <-sani_final %>% 
+  filter(rgn_id==154)
+
+rgn_154 <- rgn_154_old %>% 
+  left_join(rgn_154_new) %>% 
+  select(-rgn_id, -rgn_name)
+  
+head(rgn_154)
+View(rgn_154)
+
+ggplot(data=rgn_154)+
+  geom_line(aes(x=year, y=old_prop), color="blue", alpha=0.4)+
+  geom_line(aes(x=year, y=basic_sani_prop), color="red", alpha=0.4)+
+  ylab('raw proportion')+
+  theme_bw()
+  
+
+#Note: in the old data you can see an increase in sanitation, therfore a decrease in pressure. The opposite trend is observed in the new data, there is a decrease in sanitation which implies an increase in pressure, making the trend 1 instead of -1 as in the old data.
+
+#rgn_163 - USA
+
+rgn_163_old <-old_final %>% 
+  filter(rgn_id==163)
+
+rgn_163_new <-sani_final %>% 
+  filter(rgn_id==163)
+
+rgn_163 <- rgn_163_old %>% 
+  left_join(rgn_163_new)
+
+View(rgn_163)
+
+ggplot(data=rgn_163)+
+  geom_line(aes(x=year, y=old_prop), color="blue", alpha=0.4)+
+  geom_line(aes(x=year, y=basic_sani_prop), color="red", alpha=0.4)+
+  ylab('raw proportion')+
+  theme_bw()
+
+
+#Note: In the old data there is a slightly increase in sanitation from the year 2000 to 2015. in the new data it seems all values are roundes to 1 so thee is no change in sanitation. This explains why the pressure trend goes from -1 to 0.
+
+
+#rgn_190 - Qatar
+
+rgn_190_old <-old_final %>% 
+  filter(rgn_id==190)
+
+rgn_190_new <-sani_final %>% 
+  filter(rgn_id==190)
+
+rgn_190 <- rgn_190_old %>% 
+  left_join(rgn_190_new)
+
+View(rgn_190)
+
+ggplot(data=rgn_190)+
+  geom_line(aes(x=year, y=old_prop), color="blue", alpha=0.4)+
+  geom_line(aes(x=year, y=basic_sani_prop), color="red", alpha=0.4)+
+  ylab('raw proportion')+
+  theme_bw()
+
+
+#Note: Old data shows a slight decrease in sanitation (increase in pressure). New data has de opposite trend, therefor it makes sense that the Trend in pressure shifts from being positive to being -1.
+
+#rgn_81 - Cyprus
+
+rgn_81_old <-old_final %>% 
+  filter(rgn_id==81)
+
+rgn_81_new <-sani_final %>% 
+  filter(rgn_id==81)
+
+rgn_81 <- rgn_81_old %>% 
+  left_join(rgn_81_new)
+
+View(rgn_81)
+
+ggplot(data=rgn_81)+
+  geom_line(aes(x=year, y=old_prop), color="blue", alpha=0.4)+
+  geom_line(aes(x=year, y=basic_sani_prop), color="red", alpha=0.4)+
+  ylab('raw proportion')+
+  theme_bw()
+
+
+#Note: Similar to the regions above, the old data for rgn_81 is constant in 1 and the new data slightly decreases in 2013, 2014 and 2015.
+
+
+#Compara old a and new pressure scores
+
+#read old presure scores - NOE this files only has data form 2012-2015
+old_prs <- read_csv("~/github/ohiprep_v2018/globalprep/prs_cw_pathogen/v2016/output/pathogens_popdensity25mi_updated.csv") %>% 
+  arrange(rgn_id)
+
+View(old_prs)
+
+#filter for outliers (target rgns)
+old_prs_outliers <- old_prs %>% 
+  filter(rgn_id %in% c(154, 163, 190, 81)) %>% 
+  mutate(old_prs=pressure_score) %>% 
+  select(-pressure_score)
+
+View(old_prs_outliers)
+
+
+new_prs_outliers <- unsani_prs %>% 
+  filter(rgn_id %in% c(154, 163, 190, 81)) %>% 
+  filter(year %in% 2012:2015) %>% 
+  mutate(new_prs=pressure_score) %>% 
+  select(-pressure_score)
+
+View(new_prs_outliers)
+
+prs_compare <- old_prs_outliers %>% 
+  left_join(new_prs_outliers)
+
+View(prs_compare)
+
+
+
+
 
 
 
