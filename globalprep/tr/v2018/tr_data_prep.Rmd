@@ -159,9 +159,16 @@ abline(0,1, col="red")
 
 Information is from the U.S. State Department (https://travel.state.gov/content/passports/en/alertswarnings.html)
 
+#### 2018 Assesment
+Data source updated the way they report the data. This year warnings are reported for every country. We input the data manualy to an excel file, converted into csv and wrangle the data to merge with previous assesments.
+
+Data was download on 06/28/2018
+
+CONTINUE DESCRIOTION OF METHODS!!!
+
 #### A few notes about getting data:
 
-Add the data to tr_travelwarnings_xxx.xls (csv file in raw folder)
+Add the data to tr_travelwarnings_xxx.csv
 Most of the data can be cut and paste (after it is checked) from the previous year (update the data and year information).
 
 If different subregions within a country have different warnings, these are put on two lines and combined in the R script:
@@ -170,11 +177,11 @@ assess_year  date  rgn_name  rgn_name_full
 2016		4-Feb-15	Cameroon	Cameroon		    risk 				
 2016		4-Feb-15	Cameroon	Cameroon (North and Far North region)				avoid_all		regional
 
-inform: information traveler should be aware of (election violence, be aware due to crime, etc)
-risk: risks that travelers should be aware of ("consider carefully risks of travel", "warns of risks")
-avoid_nonessential travel: "defer non-essential travel"
-avoid_all: "avoid all travel"
-gtfo: get out!!!
+                    inform: information traveler should be aware of (election violence, be aware due to crime, etc)
+                    risk: risks that travelers should be aware of ("consider carefully risks of travel", "warns of risks")
+                    avoid_nonessential travel: "defer non-essential travel"
+                    avoid_all: "avoid all travel"
+                    gtfo: get out!!!
 
 regional: added if the warning only applies to specific regions within a country
 
