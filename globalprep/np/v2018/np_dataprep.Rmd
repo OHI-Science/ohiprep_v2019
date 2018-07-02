@@ -449,28 +449,49 @@ smoothed <- smooth_old %>%
 new <- read.csv("int/tonnes.csv")
 old <- read.csv("../v2016/int/tonnes.csv") # CHANGE YEAR
 new_c <- new %>% 
-  filter(rgn_id==112, year %in% c(2010:2013)) %>%
+  filter(rgn_id==112, year %in% c(2007:2013)) %>%
   arrange(commodity, year) %>% 
   rename(tonnes_new = "tonnes")
 old_c <- old %>% 
-  filter(rgn_id==112, year %in% c(2010:2013)) %>%
+  filter(rgn_id==112, year %in% c(2007:2013)) %>%
   arrange(commodity, year)
 
 compare <- old_c %>% 
-left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product")); View(compare)
+  left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product")); View(compare)
+compare_full <- old_c %>% 
+  full_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product")); View(compare_full)
 
 plot(compare$tonnes_new, compare$tonnes)
 abline(0,1, col="red")
 
+## Just look at Cuba sponges, all years
+new <- read.csv("int/tonnes.csv")
+old <- read.csv("../v2016/int/tonnes.csv") # CHANGE YEAR
+new_c <- new %>% 
+  filter(rgn_id==112, product == "sponges") %>%
+  arrange(commodity, year) %>% 
+  rename(tonnes_new = "tonnes")
+old_c <- old %>% 
+  filter(rgn_id==112, product == "sponges") %>%
+  arrange(commodity, year)
+
+compare <- old_c %>% 
+left_join(new_c, by = c("rgn_id","rgn_name","commodity","product","year")); View(compare)
+
+
 ## Look at Cuba final tonnes output: minor diff in final output
 new_tonnes <- read.csv("output/np_harvest_tonnes.csv") %>% 
-  filter(rgn_id==112, year %in% c(2010:2013))
+  filter(rgn_id==112, year %in% c(2007:2013))
 old_tonnes <- read.csv("../v2016/output/np_harvest_tonnes.csv") %>% 
-  filter(rgn_id==112, year %in% c(2010:2013)) %>% 
+  filter(rgn_id==112, year %in% c(2007:2013)) %>% 
   rename(tonnes_old = tonnes)
 
-compare <- old_tonnes %>% 
-  left_join(new_tonnes, by = c("rgn_id","product","year")); View(compare)
+compare2 <- old_tonnes %>% 
+  left_join(new_tonnes, by = c("rgn_id","product","year")); View(compare2)
+
+
+
+
 
 ## Take a look at Cuba smoothed data to find tonnes rel
 smooth_new <- read.csv("int/np_harvest_smoothed_data.csv") %>% 
