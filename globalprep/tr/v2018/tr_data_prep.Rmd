@@ -159,24 +159,64 @@ abline(0,1, col="red")
 
 Information is from the U.S. State Department (https://travel.state.gov/content/passports/en/alertswarnings.html)
 
-#### A few notes about getting data:
+#### 2018 Assesment
+Data source updated the way they report the data. This year warnings are reported for every country. We input the data manualy to an excel file, converted into csv and wrangle the data to merge with data for previous assesments.
 
-Add the data to tr_travelwarnings_xxx.xls (csv file in raw folder)
-Most of the data can be cut and paste (after it is checked) from the previous year (update the data and year information).
+Data was download on 06/28/2018
 
-If different subregions within a country have different warnings, these are put on two lines and combined in the R script:
+#### A few notes about getting data: [WORK IN PROGRESS]
 
-assess_year  date  rgn_name  rgn_name_full 
-2016		4-Feb-15	Cameroon	Cameroon		    risk 				
-2016		4-Feb-15	Cameroon	Cameroon (North and Far North region)				avoid_all		regional
+Step 1: Copy and paste the data for each contry found in:https://travel.state.gov/content/passports/en/alertswarnings.html
 
-inform: information traveler should be aware of (election violence, be aware due to crime, etc)
-risk: risks that travelers should be aware of ("consider carefully risks of travel", "warns of risks")
+Step 2: Manually chack for every country if there is any regional warning and the risk factor in each case. If different subregions within a country have different warnings, these are put on two different lines.
+Eg:
+assess_year	country	level	                           date	   regional	 location
+2018	     Albania	1: Exercise normal precautions	6/18/18			
+2018	     Albania	2: Exercise increased caution	  6/18/18	   1	     The southern town of Lazarat
+
+regional: added if the warning only applies to specific regions within a country
+
+Step 3: Import, wrangle and clean the new data so it matches long format of tr_travelwarnings_2017.csv
+
+Step 4: Wrangle tr_travelwarnings_2017.csv into long format and adapt risk levels to new way of reporting risk levels (see note below)
+
+Step 5: Join new data with previous assesment data and transform the warnings into a multiplier that is used to calculate tourism and recreation scores.
+
+Risk levels
+Up to 2017:
+inform: information travelor should be aware of (election violence, be aware due to crime, etc)
+risk: risks that trevelors should be aware of ("consider carefully risks of travel", "warns of risks")
 avoid_nonessential travel: "defer non-essential travel"
 avoid_all: "avoid all travel"
 gtfo: get out!!!
 
-regional: added if the warning only applies to specific regions within a country
+For 2018:
+Level 1 - Exercise Normal Precautions: This is the lowest advisory level for safety and security risk. There is some risk in any international travel. 
+Level 2 - Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
+Level 3 - Reconsider Travel: Avoid travel due to serious risks to safety and security.
+Level 4 – Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
+
+For this assesment, Level 1 is  the status quo warning, therefore regions with a level 1 warning are not considered. This matches better the way the data used to be reported (only countries with risk and not all countries)
+
+```{r}
+##Reading and wrangling 2018 data
+warn_raw <- read.csv('raw/tr_travelwarning_2018_raw.csv') %>% 
+  select(-risk_factor, -location, -date) %>% 
+  mutate(level = str_extract(level, '[1,2,3,4]')) %>% 
+  filter(level!= 1)
+
+#Formating data upto 2017
+warn_old <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
+  select(year = assess_year, rgn_name, inform, risk, avoid_nonessential, avoid_all, gtfo, regional) %>%
+  gather("category", "n", 3:7)  %>%
+  filter(!is.na(n)) %>%
+  select(-n)
+  
+
+
+```
+
+
 
 The following code is used to clean these data and transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
 ```{r travel warnings}
