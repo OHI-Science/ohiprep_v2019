@@ -392,6 +392,41 @@ Note: Republique du Congo, due to revision of 2011 data for ornamentals (and onl
 ```{r}
 
 ## Look at Commodities TONNES for a few countries
+## Look at a few regions that previously had no scores: Malta, Cayman Islands, Curacao
+## Previous assessment only went up to 2013??
+
+## Malta
+new <- read.csv("int/tonnes.csv") %>% 
+  filter(rgn_id==68, year %in% c(1990:2015))
+old <- read.csv("../v2016/int/tonnes.csv") %>%  # CHANGE YEAR
+  filter(rgn_id==68, year %in% c(1990:2015)) %>% 
+  rename(tonnes_old = tonnes)
+
+compare <- old %>% 
+full_join(new, by = c("rgn_id","rgn_name","commodity","product","year")); View(compare)
+
+## Cayman Islands
+new <- read.csv("int/tonnes.csv") %>% 
+  filter(rgn_id==113, year %in% c(1976:2015))
+old <- read.csv("../v2016/int/tonnes.csv") %>%  # CHANGE YEAR
+  filter(rgn_id==113, year %in% c(1976:2015)) %>% 
+  rename(tonnes_old = tonnes)
+
+compare <- old %>% 
+full_join(new, by = c("rgn_id","rgn_name","commodity","product","year")); View(compare)
+
+## Curacao Islands
+new <- read.csv("int/tonnes.csv") %>% 
+  filter(rgn_id==244, year %in% c(1976:2015))
+old <- read.csv("../v2016/int/tonnes.csv") %>%  # CHANGE YEAR
+  filter(rgn_id==244, year %in% c(1976:2015)) %>% 
+  rename(tonnes_old = tonnes)
+
+compare <- old %>% 
+full_join(new, by = c("rgn_id","rgn_name","commodity","product","year")); View(compare)
+
+
+
 ## Look at a few regions that had large differences in status values: Vanuatu, Tunisia, Cuba, North Korea
 ## Take a look at Vanuatu: no diff in int tonnes, but significant diff in np_harvest_tonnes, checked gapfilling - gapfilled all '0' and NA values for tonnes using regression with georegion
 new <- read.csv("int/tonnes.csv")
