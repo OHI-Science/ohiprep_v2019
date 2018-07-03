@@ -129,7 +129,7 @@ for (p in poles){
           st_cast("MULTIPOLYGON") # clean up regions with no geometry
 
         ## convert OHIregion multipolygon sf to a raster, replace NAs with zeroes, convert to points sf, add some attributes
-        ## st_as_sf(rasterToPoints()) with spatial = TRUE option turns raster first into spatialPointsDataFrame then sf...
+        ## with spatial = TRUE option, st_as_sf(rasterToPoints()) turns raster first into spatialPointsDataFrame then sf...
         OHIregion_raster <- fasterize(OHIregion, r.typ, field = "rgn_id")
         OHIregion_raster[is.na(OHIregion_raster)] <- 0
         OHIregion_points <- st_as_sf(rasterToPoints(OHIregion_raster, spatial = TRUE)) # is there a better approach??
