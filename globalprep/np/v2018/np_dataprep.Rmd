@@ -403,7 +403,7 @@ old <- read.csv("../v2016/int/tonnes.csv") %>%  # CHANGE YEAR
   rename(tonnes_old = tonnes)
 
 compare <- old %>% 
-full_join(new, by = c("rgn_id","rgn_name","commodity","product","year")); View(compare)
+full_join(new, by = c("rgn_id","rgn_name","commodity","product","year"))
 
 ## Cayman Islands
 new <- read.csv("int/tonnes.csv") %>% 
@@ -413,7 +413,7 @@ old <- read.csv("../v2016/int/tonnes.csv") %>%  # CHANGE YEAR
   rename(tonnes_old = tonnes)
 
 compare <- old %>% 
-full_join(new, by = c("rgn_id","rgn_name","commodity","product","year")); View(compare)
+full_join(new, by = c("rgn_id","rgn_name","commodity","product","year"))
 
 ## Curacao Islands
 new <- read.csv("int/tonnes.csv") %>% 
@@ -423,7 +423,7 @@ old <- read.csv("../v2016/int/tonnes.csv") %>%  # CHANGE YEAR
   rename(tonnes_old = tonnes)
 
 compare <- old %>% 
-full_join(new, by = c("rgn_id","rgn_name","commodity","product","year")); View(compare)
+full_join(new, by = c("rgn_id","rgn_name","commodity","product","year"))
 
 
 
@@ -438,7 +438,7 @@ old_c <- filter(old, rgn_id==6) %>%
   arrange(commodity, year)
 
 compare <- old_c %>% 
-left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product")); View(compare)
+left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
 
 plot(compare$tonnes_new, compare$tonnes)
 abline(0,1, col="red")
@@ -451,7 +451,7 @@ old_tonnes <- read.csv("../v2016/output/np_harvest_tonnes.csv") %>%
   rename(tonnes_old = tonnes)
 
 compare <- old_tonnes %>% 
-full_join(new_tonnes, by = c("rgn_id","product","year")); View(compare)
+full_join(new_tonnes, by = c("rgn_id","product","year"))
 
 
 
@@ -463,7 +463,7 @@ old <- read.csv("../v2016/output/np_harvest_tonnes.csv") %>%
   rename(tonnes_old = tonnes)
 
 compare <- old %>% 
-full_join(new, by = c("rgn_id","product","year")); View(compare)
+full_join(new, by = c("rgn_id","product","year"))
 
 ## Tunisia harvest smoothed data to see rel tonnes
 smooth_new <- read.csv("int/np_harvest_smoothed_data.csv") %>% 
@@ -475,7 +475,7 @@ smooth_old <- read.csv("../v2016/int/np_harvest_smoothed_data.csv") %>%
   rename(tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
 
 smoothed <- smooth_old %>% 
-  full_join(smooth_new, by = c("rgn_id","product","year")); View(smoothed)
+  full_join(smooth_new, by = c("rgn_id","product","year"))
 
 
 
@@ -492,9 +492,9 @@ old_c <- old %>%
   arrange(commodity, year)
 
 compare <- old_c %>% 
-  left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product")); View(compare)
+  left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
 compare_full <- old_c %>% 
-  full_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product")); View(compare_full)
+  full_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
 
 plot(compare$tonnes_new, compare$tonnes)
 abline(0,1, col="red")
@@ -511,7 +511,7 @@ old_c <- old %>%
   arrange(commodity, year)
 
 compare <- old_c %>% 
-left_join(new_c, by = c("rgn_id","rgn_name","commodity","product","year")); View(compare)
+left_join(new_c, by = c("rgn_id","rgn_name","commodity","product","year"))
 
 
 ## Look at Cuba final tonnes output: minor diff in final output
@@ -522,7 +522,7 @@ old_tonnes <- read.csv("../v2016/output/np_harvest_tonnes.csv") %>%
   rename(tonnes_old = tonnes)
 
 compare2 <- old_tonnes %>% 
-  left_join(new_tonnes, by = c("rgn_id","product","year")); View(compare2)
+  left_join(new_tonnes, by = c("rgn_id","product","year"))
 
 
 
@@ -537,7 +537,7 @@ smooth_old <- read.csv("../v2016/int/np_harvest_smoothed_data.csv") %>%
   select(rgn_id, product, year, tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
 
 compare <- smooth_old %>% 
-left_join(smooth_new, by = c("rgn_id","product","year")); View(compare)
+left_join(smooth_new, by = c("rgn_id","product","year"))
 
 
 
@@ -549,7 +549,7 @@ old_tonnes <- read.csv("../v2016/output/np_harvest_tonnes.csv") %>%
   rename(tonnes_old = tonnes)
 
 compare <- old_tonnes %>% 
-left_join(new_tonnes, by = c("rgn_id","product","year")); View(compare)
+left_join(new_tonnes, by = c("rgn_id","product","year"))
 plot(compare$tonnes_old, compare$tonnes)
 abline(0,1, col="red")
 
@@ -562,7 +562,7 @@ smooth_old <- read.csv("../v2016/int/np_harvest_smoothed_data.csv") %>%
   select(rgn_id, product, year, tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
 
 compare <- smooth_old %>% 
-left_join(smooth_new, by = c("rgn_id","product","year")); View(compare)
+left_join(smooth_new, by = c("rgn_id","product","year"))
 
 
 
