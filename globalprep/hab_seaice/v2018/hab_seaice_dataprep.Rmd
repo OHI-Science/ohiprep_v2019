@@ -22,9 +22,7 @@ This data prep markdown calls a series of scripts to download and analyze sea ic
 
 # Updates from previous assessment
 
-New data was not available for 2017.
-
-**We attempted to transition to using the sf package for the spatial data, however, this was mostly not possible due to our reliance on the raster::extract function which is not supported for the sf format.  Maybe next year we can make this update.**
+No changes to methods from previous assessment. Transitioned almost entirely to using the sf package for the spatial data; the one dependence on sp left in ObtainingData.R is OHIregion_points calculation since rasterToPoints() turns raster first into a spatialPointsDataFrame and then sf. 
 
 ***
   
@@ -115,7 +113,7 @@ lapply(c(pkg, "ohicore"), require, character.only = TRUE)
 assessYear <- "v2018" # change to reflect assessment year
 previous_yr <- "v2017" # previous assessment year
 data_yr_gci <- "d2018" # change to reflect year of most recently downloaded data
-final.year <- 2016 # final year of data
+final.year <- 2017 # final year of data (all months); double check nsidc0051 monthly dataset was updated at ftp://sidads.colorado.edu/pub/DATASETS/
 
 ## comment out when knitting
 #setwd(paste0("globalprep/hab_seaice/", assessYear))
@@ -254,26 +252,27 @@ write.csv(extent, "output/hab_ice_extent_eez.csv", row.names = FALSE) # save sea
 
 ## health
 health <- read.csv("output/hab_ice_health_eez.csv")
-old <- read.csv(sprintf("../%s/output/hab_ice_health_eez.csv", previous_yr)) %>% # compare to last year's data
-  dplyr::rename(old_health = health) %>%
-  dplyr::left_join(health, by = c("rgn_id", "habitat", "year"))
-plot(old$old_health, old$health)
+ice_health_eez <- read.csv(sprintf("../%s/output/hab_ice_health_eez.csv", previous_yr)) %>% # compare to last year's data
+  dplyr::rename(health_prev_assess = health) %>%
+  dplyr::left_join(health, by = c("rgn_id", "habitat", "year")) %>% 
+  na.omit("health")
+plot(ice_health_eez$health_prev_assess, ice_health_eez$health)
 abline(0, 1, col="red")
 
 ## trend
 trend <- read.csv("output/hab_ice_trend_eez.csv")
-old <- read.csv(sprintf("../%s/output/hab_ice_trend_eez.csv", previous_yr)) %>%
-  dplyr::rename(old_trend = trend) %>%
-  dplyr::left_join(trend, by = c("rgn_id", "habitat", "year"))
-plot(old$old_trend, old$trend)
+ice_trend_eez <- read.csv(sprintf("../%s/output/hab_ice_trend_eez.csv", previous_yr)) %>%
+  dplyr::rename(trend_prev_assess = trend) %>%
+  dplyr::left_join(trend, by = c("rgn_id", "habitat", "year")) %>% 
+  na.omit("trend")
+plot(ice_trend_eez$trend_prev_assess, ice_trend_eez$trend)
 abline(0, 1, col="red")
 
 ## extent
-extent <- read.csv("output/hab_ice_extent_eez.csv") # compare to last year's data
-old <- read.csv(sprintf("../%s/output/hab_ice_extent_eez.csv", previous_yr)) %>%
-  dplyr::rename(old_km2 = km2) %>%
-  dplyr::left_join(extent, by = c("rgn_id", "year", "habitat"))
-plot(old$old_km2, old$km2)
+extent <- read.csv("output/hab_ice_extent_eez.csv", stringsAsFactors = FALSE) # compare to last year's data
+ice_extent_eez <- read.csv(sprintf("../%s/output/hab_ice_extent_eez.csv", previous_yr), stringsAsFactors = FALSE) %>%
+  dplyr::rename(km2_prev_assess = km2) # not sure why left_join won't work- results in NAs in km2 col
+plot(ice_extent_eez$km2_prev_assess, extent$km2)
 abline(0, 1, col="red")
 
 ## pair with region names
