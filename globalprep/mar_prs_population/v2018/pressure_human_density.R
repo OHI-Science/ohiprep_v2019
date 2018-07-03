@@ -17,13 +17,13 @@ library(units)
 
 ## last year, Fiji was dropped due to the shapefile not having these data.
 ## corrected in these spatial data, so I will regenerate these data.
-inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_50mi"),
-                      layer = "EEZ_inland_50mi")
+inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"),
+                      layer = "EEZ_inland_25mi")
 
 inland$area_km2 <- st_area(inland)
 
 area <- data.frame(inland) %>%
-  select(rgn_id, area_km2) %>%
+  dplyr::select(rgn_id, area_km2) %>%
   mutate(area_km2 = round(area_km2/1000000)) %>%
   mutate(area_km2 = as.numeric(as.character(gsub(" m^2", "", area_km2)))) %>%
   filter(rgn_id <=250) %>%
@@ -33,7 +33,7 @@ area <- data.frame(inland) %>%
 
 ## compare with previous year (should look very similar)
 old_area <- read.csv("globalprep/mar_prs_population/v2015/rgn_area_inland25mi.csv") %>%
-  select(rgn_name, rgn_id, old_area_km2=area_km2) %>%
+  dplyr::select(rgn_name, rgn_id, old_area_km2=area_km2) %>%
   mutate(old_area_km2 = round(old_area_km2)) %>%
   left_join(area, by="rgn_id")
 
