@@ -107,7 +107,7 @@ for (p in poles){
   
   ## could replace/simplify with raster v2.6-7 "movingFun" function?
   
-  range.years = (final.year-10):(final.year) 
+  range.years = (final.year-10):(final.year) # final.year defined in data prep set-up code chunk
   
   for (yr in range.years){ # for each of the summed years worth of data
     # yr = 2011  # testing
@@ -134,7 +134,7 @@ for (p in poles){
   ## Summarize averaged data for each year/region, output is a dataframe
   ######################################################################################################################
   
-  z.h.T = sih.avg3yr %>% zonal(r.rgn, sum) %>% merge(z.h.R)
+  z.h.T = sih.avg3yr %>% zonal(r.rgn, sum) %>% merge(z.h.R) # has years in range.years (final.year-10 to final.year)
   z.p.T = sip.avg3yr %>% zonal(r.rgn, sum) %>% merge(z.p.R)    
   
   ## Reference values (mean across all years)
@@ -154,7 +154,7 @@ for (p in poles){
   ######################################################################################################################
   
   ## Regression model for each region for the selected years and save the slope and R2 to the z.h.T dataframe
-  for (j in 2010:final.year){
+  for (j in (final.year-6):final.year){
     # j = 2012 # testing
     trend.years = (j - 4):j
     early_year <- min(trend.years)
@@ -171,7 +171,7 @@ for (p in poles){
   }
   
   ## Regression model for each region for the selected years and save the slope and R2 to the z.p.T dataframe
-  for (j in 2010:final.year){ # j = 2015
+  for (j in (final.year-6):final.year){ # j = 2015
     trend.years = (j - 4):j
     early_year <- min(trend.years) 
     
