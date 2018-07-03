@@ -50,8 +50,8 @@ We were able to update the following data:
 ```{r setup, message=FALSE, warning=FALSE}
 #setwd("~/github/ohiprep_v2018/globalprep/tr/v2018") #comment out when knitting
 
-# library(devtools)
-# devtools::install_github("ohi-science/ohicore@dev")
+library(devtools)
+devtools::install_github("ohi-science/ohicore@dev")
 library(ohicore)
 
 source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
@@ -160,47 +160,90 @@ abline(0,1, col="red")
 Information is from the U.S. State Department (https://travel.state.gov/content/passports/en/alertswarnings.html)
 
 #### 2018 Assesment
-Data source updated the way they report the data. This year warnings are reported for every country. We input the data manualy to an excel file, converted into csv and wrangle the data to merge with previous assesments.
+Data source updated the way they used to report the data. This year warnings are reported for every country. We input the data manualy to an excel file, converted into csv and wrangle the data to merge with data for previous assesments.
 
 Data was download on 06/28/2018
 
-CONTINUE DESCRIOTION OF METHODS!!!
+#### A few notes about getting data: [WORK IN PROGRESS]
 
-#### A few notes about getting data:
+Step 1: Copy and paste the data for each contry found in:https://travel.state.gov/content/passports/en/alertswarnings.html
 
-Add the data to tr_travelwarnings_xxx.csv
-Most of the data can be cut and paste (after it is checked) from the previous year (update the data and year information).
-
-If different subregions within a country have different warnings, these are put on two lines and combined in the R script:
-
-assess_year  date  rgn_name  rgn_name_full 
-2016		4-Feb-15	Cameroon	Cameroon		    risk 				
-2016		4-Feb-15	Cameroon	Cameroon (North and Far North region)				avoid_all		regional
-
-                    inform: information traveler should be aware of (election violence, be aware due to crime, etc)
-                    risk: risks that travelers should be aware of ("consider carefully risks of travel", "warns of risks")
-                    avoid_nonessential travel: "defer non-essential travel"
-                    avoid_all: "avoid all travel"
-                    gtfo: get out!!!
+Step 2: Manually chack for every country if there is any regional warning and the risk factor in each case. If different subregions within a country have different warnings, these are put on two different lines, indicating if the warning is regional.
 
 regional: added if the warning only applies to specific regions within a country
 
-The following code is used to clean these data and transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
-```{r travel warnings}
+Eg:
+assess_year	country	level	                           date	   regional	 location
+2018	     Albania	1: Exercise normal precautions	6/18/18			
+2018	     Albania	2: Exercise increased caution	  6/18/18	   1	     The southern town of Lazarat
 
-scores = data.frame(category = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"), score = c(0, 0.25, 0.75, 1, 1)) 
 
-warn <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
+Step 3: Import, wrangle and clean the new data so it matches long format of tr_travelwarnings_2017.csv
+
+Step 4: Wrangle tr_travelwarnings_2017.csv into long format and adapt risk levels to new way of reporting risk levels (see note below)
+
+Step 5: Join new data with previous assesment data and transform the warnings into a multiplier that is used to calculate tourism and recreation scores.
+
+Risk levels
+Up to 2017:
+inform: information travelor should be aware of (election violence, be aware due to crime, etc)
+risk: risks that trevelors should be aware of ("consider carefully risks of travel", "warns of risks")
+avoid_nonessential travel: "defer non-essential travel"
+avoid_all: "avoid all travel"
+gtfo: get out!!!
+
+For 2018:
+Level 1 - Exercise Normal Precautions: This is the lowest advisory level for safety and security risk. There is some risk in any international travel. 
+Level 2 - Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
+Level 3 - Reconsider Travel: Avoid travel due to serious risks to safety and security.
+Level 4 – Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
+
+For this assesment, Level 1 is  the status quo warning, therefore regions with a level 1 warning are not considered. This matches better the way the data used to be reported (only countries with risk and not all countries)
+
+```{r}
+##Reading and wrangling 2018 data
+warn_raw <- read.csv('raw/tr_travelwarning_2018_raw.csv', stringsAsFactors=FALSE, fileEncoding = "", encoding = 'UTF-8') %>% 
+  select(-risk_factor, -location, -date) %>% 
+  mutate(level = as.numeric(str_extract(level, '[1,2,3,4]'))) %>% 
+  rename(year= assess_year, rgn_name = country)
+  #filter(level!= 1)
+
+#Formating data upto 2017
+
+#scores_old = data.frame(category = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"), old_score = c(0, 0.25, 0.75, 1, 1)) 
+
+scores = data.frame(level = c(1, 2, 3, 4), score = c(0, 0.25, 0.75, 1)) 
+
+warn_old <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
   select(year = assess_year, rgn_name, inform, risk, avoid_nonessential, avoid_all, gtfo, regional) %>%
   gather("category", "n", 3:7)  %>%
   filter(!is.na(n)) %>%
-  select(-n) %>%
-  left_join(scores, by="category") %>%
-  group_by(year, rgn_name) %>%
-  mutate(warning_count = n()) # column 'regions' is number of warnings issued that year for each country
+  select(-n) %>% 
+  #left_join(scores_old, by="category") %>% 
+  mutate(level= ifelse(category == 'inform', 1, ifelse(category== 'risk', 2, ifelse(category== 'avoid_nonessential', 3, ifelse(category %in% c('avoid_all', 'gtfo'), 4, NA))))) %>% 
+  select(-category) %>% 
+  arrange(desc(year), rgn_name)
+  #left_join(scores, by="level")
 
-warn2 <- warn %>%
-  mutate(score = ifelse(warning_count %in% 1 & regional %in% 1, score*0.5, score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
+#binding old a new data and add scores for each warning level
+warn_complete <- warn_raw %>% 
+  bind_rows(warn_old) %>% 
+  left_join(scores, by="level") %>% 
+  group_by(year, rgn_name) %>%
+  mutate(warning_count = n()) 
+
+```
+
+
+The following code is used transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
+```{r travel warnings}
+
+##Note: Adjusting scores for regions that only have one regional report: For 2018 warnings, every contry will have at least 1 warning, therefore the if statement changes to:  ifelse(warning_count %in% 2 & regional %in% 1, score*0.5, score). This is becuase countries with only one regional warn will have 2 warn count, the general inform warning plus the regional warning. If a country has more than one regional warn, then warn count would be >= 3 and their score should net be discounted.
+## In the past (data from 2015 to 2017): ifelse(warning_count %in% 1 & regional %in% 1, score*0.5, score). This works because not all countries have a warning so whenever there is one warning_count and regional is 1, then then is means that that country has only a one regional warning which should be discouted. 
+
+warn2 <- warn_complete %>%
+  mutate(score = ifelse(year == '2018', ifelse(warning_count %in% 2 & regional %in% 1, score*0.5, score), score)) %>% 
+  mutate(score = ifelse(year %in% 2017:2015, ifelse(warning_count %in% 1 & regional %in% 1, score*0.5, score), score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
   summarize(score = mean(score)) %>%
   mutate(multiplier = 1-score) %>%
   select(year, rgn_name, multiplier) %>%
@@ -208,6 +251,7 @@ warn2 <- warn %>%
 
 data.frame(filter(warn2, year==2015)) # checked to make sure I got conversions correct, looks good!
 
+#Add rgn_id
 warn_rgn <- name_2_rgn(df_in = warn2, 
                        fld_name='rgn_name', 
                        flds_unique=c('rgn_name','year'))
@@ -216,6 +260,12 @@ warn_rgn <- warn_rgn %>%
   select(rgn_id, year, multiplier)
 
 write.csv(warn_rgn, 'output/tr_travelwarnings.csv', row.names=FALSE)
+
+
+#FOR CHECKING
+warn_multi_old <- read_csv("output/tr_travelwarnings.csv") %>% 
+  rename(multiplier_old= multiplier)
+
 
 ```
 

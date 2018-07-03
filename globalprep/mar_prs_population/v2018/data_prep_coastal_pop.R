@@ -65,7 +65,7 @@ library(fasterize)
 eez_raster <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/regions_eez_with_fao_ant.tif"))
 
 # need to add in Fiji...which appears to get cut
-# include all of Fiji land which all falls within the 50 mile boundary
+# include all of Fiji land which all falls within the 25 mile boundary
 fiji <- sf::read_sf(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017"),
                               layer ="regions_2017_update") %>%
   filter(rgn_type == "land" & rgn_id==18) %>%
@@ -82,7 +82,7 @@ inland <- rbind(inland, fiji)
 
 # # save shapefile for future reference
 # st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017",
-#                                      layer = "EEZ_inland_50mi"), 
+#                                      layer = "EEZ_inland_25mi"), 
 #          driver="ESRI Shapefile")
 
 

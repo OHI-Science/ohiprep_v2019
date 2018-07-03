@@ -17,8 +17,8 @@ library(units)
 
 ## last year, Fiji was dropped due to the shapefile not having these data.
 ## corrected in these spatial data, so I will regenerate these data.
-inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_50mi"),
-                      layer = "EEZ_inland_50mi")
+inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"),
+                      layer = "EEZ_inland_25mi")
 
 inland$area_km2 <- st_area(inland)
 
