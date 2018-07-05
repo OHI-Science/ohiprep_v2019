@@ -40,20 +40,21 @@ dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
 # Summary
 
 * Setup WDPA shapefile for lasting special places by filtering out non-"Designated" protected areas, and filtering out "non-MPA programmatic management plans" (US protected areas that distort scores).
-* Re-sort polygons by year, with oldest at end; this will allow gdal_rasterize to function properly (values toward the end of the dataset take precedence in assigning values to cells)
-* Rasterize the result using `fasterize::fasterize()` (not `gdal_rast2()`) and save to disk using `writeRasterBlocks()` defined in this script.
+* Rasterize the result using `fasterize::fasterize()` (not `gdal_rast2()` as in previous assessments) and save to disk using `writeRasterBlocks()` defined in this script.
 
 # Updates from previous assessment
 
-Using `fasterize::fasterize()` to rasterize the WDPA polygons, rather than ArcGIS.  This allows the entire process to be completed in R.
+Using `fasterize::fasterize()` to rasterize the WDPA polygons, rather than ArcGIS.  This allows the entire process to be completed in R. 
+
+Using `fasterize()` argument `fun=min` to assign oldest year to an area where there are overlapping polygons. Prior assessment re-ordered the status year with the oldest year at the end, so that `gdalUtils::gdal_rasterize()` in `gdal_rast2()` would work correctly.
 
 ***
 
 # Methods
 
-Read in the polygons from the WDPA dataset; filter as needed; reorder.
+## Filter WDPA Shapefile 
 
-Note that if using `fasterize()`, reordering polygons is not necessary, as there is an option to call a function to determine which value to keep for a cell (e.g. 'min', 'max', 'sum', etc.)
+Read in the polygons from the WDPA dataset; filter as needed.
 
 ``` {r filter_and_reorder_poly}
 
@@ -91,14 +92,15 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
   wdpa_poly <- wdpa_poly[wdpa_poly@data$status == 'Designated', ]
   wdpa_poly <- wdpa_poly[!str_detect(tolower(wdpa_poly@data$mang_plan), 'non-mpa program'), ]
   
+  ## Before using fasterize(), had to manually reorder polygon before running gdal_rast2()
   ## reorder polygons (oldest last) and save shapefile
-  reorder_vec <- order(wdpa_poly@data$status_yr, decreasing = TRUE)
-  wdpa_poly1  <- wdpa_poly[reorder_vec, ]
+  #reorder_vec <- order(wdpa_poly@data$status_yr, decreasing = TRUE)
+  #wdpa_poly1  <- wdpa_poly[reorder_vec, ]
   
   message('Writing filtered/reordered WDPA polygons to: \n  ', shp_reorder)
   ## probably gonna take half an hour to write?
   ptm <- proc.time()
-  writeOGR(wdpa_poly1, 
+  writeOGR(wdpa_poly, 
            dsn = dirname(shp_reorder), layer = basename(shp_reorder),
            driver = 'ESRI Shapefile')
   message('elapsed: ', (proc.time() - ptm)[3])
@@ -114,6 +116,8 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
 }
 
 ```
+
+## Transform to Mollweide Projection
 
 Transform ordered polygons to Mollweide and save as new polygons.
 
@@ -165,88 +169,6 @@ Here we also define `writeRasterBlocks()` to write out very large rasters chunk-
 ``` {r define_gdal_rast2}
 ## from OHIBC...
 
-gdal_rast2 <- function(src, rast_base, dst = NULL, value = NULL, override_p4s = FALSE) {
-
-  src <- path.expand(src)
-
-  if(!str_detect(src, '.shp$'))
-    src <- paste0(src, '.shp')
-  ## add .shp if not present on src
-
-  if(is.null(dst))
-    dst <- src %>%
-      stringr::str_replace('.shp$', '.tif')
-  ## if no dst, save it in same place as src
-
-  ## check projections
-  message('Checking projections...')
-  shp_prj <- rgdal::ogrInfo(dsn = dirname(src),
-                     layer = basename(src) %>% str_replace('.shp$', '')) %>%
-    .$p4s
-
-  rst_prj <- rast_base@crs@projargs
-
-  if(str_trim(shp_prj) != str_trim(rst_prj) & override_p4s == FALSE) {
-    cat('Shapefile and raster file do not seem to have same proj4string:\n')
-    cat('  shapefile: ', shp_prj, '\n')
-    cat('  raster:    ', rst_prj, '\n')
-    stop('Exiting process; please resolve projections or set override_p4s = TRUE')
-  } else {
-    message('Shapefile and raster file seem to have same proj4string, or override_p4s == TRUE:\n  shapefile: ',
-            shp_prj, '\n  raster:    ', rst_prj)
-  }
-
-  if(is.null(value)) { ### default: choose first numeric column as value
-    message('No "value" set...')
-    tmp_dbf  <- foreign::read.dbf(str_replace(src, '.shp$', '.dbf'))
-    num_cols <- sapply(tmp_dbf, class) %in% c('numeric', 'integer')
-    if(sum(num_cols) == 0) {
-      message('No numeric or integer column found in source shapefile')
-      stop()
-    } else {
-      value <- names(tmp_dbf)[num_cols][1]
-      message('Using "', value, '" column')
-    }
-  }
-
-  dst_tmp  <- dst %>% str_replace('.tif$', '_tmp.tif')
-
-  base_tr  <- raster::res(rast_base)
-  base_ext <- raster::extent(rast_base)
-  base_te  <- c(base_ext[1], base_ext[3], base_ext[2], base_ext[4])
-
-  message('Initializing temp raster file at final location: \n  ', dst_tmp)
-  file.copy(rast_base@file@name, dst_tmp) ### set up a file at the temp location
-
-  message('Using gdalUtils::gdal_rasterize to rasterize polygons to temp raster')
-  rast_tmp <- gdalUtils::gdal_rasterize(
-    src_datasource = path.expand(src),
-    dst_filename   = path.expand(dst_tmp),
-    a = value, # attribute to burn
-    a_nodata = NA,
-    # at = TRUE,
-    te = base_te,
-    tr = base_tr,
-    output_Raster = TRUE)
-
-  ## writeRaster to write a compressed version in final location
-  message('Writing final raster file using raster::writeRaster (for compression)\n  ', dst)
-  raster::writeRaster(rast_tmp, dst, overwrite = TRUE)
-
-  ## unlink the temp raster because it's huge
-  message('Unlinking temp raster')
-  unlink(dst_tmp) ### delete temp
-
-  ## reload raster from the compressed file and return it
-  rast <- raster::raster(dst)
-
-  if(exists('git_prov')) {
-    git_prov(src, 'input')
-    git_prov(dst, 'output')
-  }
-
-  return(invisible(rast))
-}
 
 writeRasterBlocks <- function(rast, filename) {
   bs <- blockSize(rast)
@@ -266,45 +188,19 @@ writeRasterBlocks <- function(rast, filename) {
 
 ```
 
-### `gdal_rast2()`
 
-Using the `gdal_rast2()` function generally creates rasters faster than `raster::rasterize()`, and avoids an issue in which `raster::rasterize()` fills in holes (e.g. islands) in polygons.  On this very large polygon set, this function ran for over 25 hours without returning a completed raster.
-
-``` {r gdal_rasterize_wdpa, eval = FALSE}
-
-rast_wdpa_file   <- file.path(dir_goal_anx, 'rast', 'wdpa_2018_moll_500m_gdal.tif')
-
-if(!file.exists(rast_wdpa_file)) {
-  shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_xformed')
-  
-  ## don't need to change file path name from year to year
-  rast_base <- raster::raster(file.path(dir_M, 'git-annex/globalprep/spatial/d2014', 
-                                'data/rgn_mol_raster_500m', 
-                                'rgn_inland1km_mol_500mcell.tif')) 
-  
-  ptm <- proc.time()
-  rast_wdpa <- gdal_rast2(src       = shp_xformed_file,
-                          rast_base = rast_base, 
-                          dst       = rast_wdpa_file, 
-                          value     = 'status_yr',
-                          override_p4s = TRUE)
-  message('elapsed: ', (proc.time() - ptm)[3])
-}
-
-
-```
-
-### `fasterize()`
+## Shapefile to Raster: `fasterize()`
 
 `fasterize()` from the `fasterize` package takes advantage of Simple Features objects from the `sf` package, rather than objects from the `sp` package.  It is considerably faster; it returned a completed raster in ten minutes.  However, saving the very large (18GB) resulting raster proved problematic.  The `writeRasterBlocks()` function defined above helped get around that problem though still took over an hour to write the raster to disk.
 
 ``` {r fasterize_wdpa, eval = TRUE}
+
 library(sf)
 library(fasterize) ### devtools::install_github('ecohealthalliance/fasterize')
-rast_wdpa_file   <- file.path(dir_goal_anx, 'rast', 'wdpa_2017_moll_500m.tif')
+rast_wdpa_file   <- file.path(dir_goal_anx, 'rast', 'wdpa_2018_moll_500m.tif')
 
 if(!file.exists(rast_wdpa_file)) {
-shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_May2017_shp_xformed')
+shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_xformed')
   
   ptm <- proc.time()
   wdpa_poly <- sf::st_read(dsn = dirname(shp_xformed_file),
@@ -315,6 +211,7 @@ shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_May2017_shp_xformed')
   rast_base <- raster::raster(file.path(dir_M, 'git-annex/globalprep/spatial/d2014',
                                 'data/rgn_mol_raster_500m',
                                 'rgn_inland1km_mol_500mcell.tif'))
+  
   # test_poly <- sf::st_read(path.expand('~/github/ohibc/prep/spatial'),
   #                             'ohibc_offshore_3nm',
   #                             stringsAsFactors = FALSE) %>%
@@ -324,6 +221,7 @@ shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_May2017_shp_xformed')
   # rast_base <- raster::crop(rast_base, poly_ext)
   # test_poly <- wdpa_poly[1:100, ]
   
+  ## For any overlapping polygons, assign the oldest (minimum) status year to that area
   ptm <- proc.time()
   rast_wdpa <- fasterize(wdpa_poly, rast_base, field = 'status_yr', fun = 'min')
   cat('fasterize elapsed: ', (proc.time() - ptm)[3]) 
