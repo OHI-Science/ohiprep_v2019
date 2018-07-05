@@ -92,11 +92,6 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
   wdpa_poly <- wdpa_poly[wdpa_poly@data$status == 'Designated', ]
   wdpa_poly <- wdpa_poly[!str_detect(tolower(wdpa_poly@data$mang_plan), 'non-mpa program'), ]
   
-  ## Before using fasterize(), had to manually reorder polygon before running gdal_rast2()
-  ## reorder polygons (oldest last) and save shapefile
-  #reorder_vec <- order(wdpa_poly@data$status_yr, decreasing = TRUE)
-  #wdpa_poly1  <- wdpa_poly[reorder_vec, ]
-  
   message('Writing filtered WDPA polygons to: \n  ', shp_reorder)
   ## probably gonna take half an hour to write?
   ptm <- proc.time()
