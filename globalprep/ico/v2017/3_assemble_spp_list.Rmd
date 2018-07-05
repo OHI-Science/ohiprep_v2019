@@ -1,0 +1,490 @@
+---
+title: 'OHI: Species: Assemble marine species list'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+
+source('~/github/ohiprep/src/R/common.R')
+
+goal     <- 'spp_ico'
+scenario <- 'v2017'
+dir_anx  <- file.path(dir_M, 'git-annex', 'globalprep')
+dir_goal_anx <- file.path(dir_anx, goal, scenario) 
+dir_goal  <- file.path('~/github/ohiprep/globalprep', goal, scenario)
+
+### set up provenance tracking for this script:
+library(provRmd); prov_setup()
+
+source(file.path(dir_goal, 'spp_fxn.R'))
+
+```
+
+
+# Methods
+
+## Create Aquamaps-to-IUCN lookup
+
+The goal here is to create a lookup of IUCN IDs (including map ID to identify mapped species) and AquaMaps IDs.  The IUCN master species list will be the source of risk categories (time series too, where available).  The basic steps:
+
+* get IUCN list of all species, including some indication of maps
+    * the `map_iucn_sid` column will work to indicate availability of IUCN maps
+* get AquaMaps species info
+    * already extracted to csv
+    * should contain columns on iucn_id and risk category, as these will be used to join and filter
+* match AquaMaps ID to IUCN ID based on iucn_id
+    * trim AM to just ones with iucn_id number
+    * attach by iucn_id
+    * (verify names match up well...)
+* match up based on scinames
+    * filter out those matched by ID
+    * these are direct matches, no modification needed
+* match up based on synonyms
+    * filter out those already matched by ID or direct name
+* check remaining unmatched
+    * if all are NE (or DD?) then don't try to attach... for SPP and ICO we drop unassessed species anyway
+
+Resulting dataframe will include:
+
+* IUCN species ID (`iucn_sid`), which will be the subpop ID for those species with subpops
+* IUCN map ID (`map_iucn_sid`), which will be the parent ID for those species with subpops
+* AquaMaps species ID (`am_sid`), for those species that match IUCN IDs/names/synonyms
+* Scientific name from IUCN (`sciname`) and AquaMaps (`am_sciname`) to compare/check
+
+### match AquaMaps ID based on reported IUCN species ID
+
+Here we load the full IUCN marine species list (from `ingest_iucn_info.Rmd`) and the AquaMaps species list (`speciesoccursum.csv`).
+
+* For the IUCN info list, we create a variable that includes all the scientific name options (as `sci_to_match`), from the IUCN list (`iucn_sciname`), the IUCN maps `binomial` field (`map_sciname`, where different from `iucn_sciname`), and the IUCN maps `sciname` field (`alt_sciname`, where different from `iucn_sciname`).  This will be used in later matching.
+
+Then, we match AquaMaps species instances with IUCN species instances by joining AM's reported IUCN species ID to the IUCN list.
+
+``` {r get_basic_spp_lists}
+
+iucn_spp_list <- read_csv(file.path(dir_goal, 'int', 'spp_marine_iucn_ids.csv')) %>%
+  select(-habitat) %>% ### all habitats count as marine
+  select(iucn_sid, map_iucn_sid, sciname, map_sciname, alt_sciname) %>%
+  mutate(iucn_sciname = sciname,
+         map_sciname = ifelse(map_sciname == sciname, NA, map_sciname),
+         alt_sciname = ifelse(alt_sciname == sciname, NA, alt_sciname)) %>%
+  gather(sci_origin, sci_to_match, iucn_sciname, map_sciname, alt_sciname) %>%
+  filter(!is.na(sci_to_match)) %>%
+  distinct()
+
+am_spp_list <- read_csv(file.path(dir_anx, '_raw_data', 'aquamaps/d2017/csv', 
+                                  'speciesoccursum.csv')) %>%
+  setNames(tolower(names(.))) %>%
+  select(am_sid = speciesid, 
+         genus, species, fbname, 
+         iucn_id, iucn_code) %>%
+  unite(am_sciname, genus, species, sep = ' ', remove = TRUE) %>%
+  mutate(iucn_id  = as.integer(iucn_id))
+
+```
+
+``` {r match_am_by_id_no}
+
+am_spp_iucn_id <- am_spp_list %>%
+  filter(!is.na(iucn_id))
+### in 8/2016 dataset, 4590 matches
+
+spp_iucn_id_match <- iucn_spp_list %>%
+  filter(iucn_sid %in% am_spp_iucn_id$iucn_id) %>%
+  left_join(am_spp_iucn_id, by = c('iucn_sid' = 'iucn_id')) %>%
+  select(iucn_sid, am_sid, sciname, am_sciname, fbname) %>%
+  distinct()
+# length(unique(spp_iucn_id_match$iucn_sid)); length(unique(spp_iucn_id_match$am_sid))
+### only 4552 IDs included here out of 4590 on AM list... 
+### some of the aquamaps iucn_id values are not matching up.
+
+id_nonmatches <- am_spp_iucn_id %>%
+  filter(!iucn_id %in% spp_iucn_id_match$iucn_sid)
+### check some of these - why not matching?
+
+sciname_nonmatches <- spp_iucn_id_match %>% filter(sciname != am_sciname) %>%
+  select(am_sid, iucn_sid, sciname, am_sciname) %>%
+  distinct()
+### while many names don't match, they all seem to be reasonable synonyms
+
+```
+
+#### Species matched by IUCN species ID (head):
+
+`r knitr::kable(spp_iucn_id_match %>% head(10))`
+
+#### AquaMaps species with IUCN IDs that don't match:
+
+`r DT::datatable(id_nonmatches)`
+
+#### Species matched by ID but differences in scientific names:
+
+`r DT::datatable(sciname_nonmatches)`
+
+Most of these seem like reasonable synonyms.
+
+-----
+
+### Match by sciname
+
+Here we match AquaMaps species (those not matched by IUCN species ID) to the IUCN list using the scientific name.  The IUCN list includes a few options for scientific name, taken from the IUCN API list, the IUCN shapefile `binomial` field, and the IUCN shapefile `sciname` field.  Usually these match, but not always.  
+
+``` {r match_am_by_sciname}
+
+### get AquaMaps species not already matched by ID
+am_no_id_match <- am_spp_list %>%
+  filter(!am_sid %in% spp_iucn_id_match$am_sid)
+### 20526 spp (plus 4552 matched by ID = 25078)
+
+### get IUCN species not already matched by ID
+iucn_no_id_match <- iucn_spp_list %>%
+  filter(!iucn_sid %in% spp_iucn_id_match$iucn_sid)
+### iucn_no_id_match$iucn_sid %>% unique() %>% length()
+### spp_iucn_id_match$iucn_sid %>% unique() %>% length()
+### iucn_spp_list$iucn_sid %>% unique() %>% length()
+### 8801 unique species IDs (plus 4552 already matched by ID = 13353)
+
+spp_sciname_match <- iucn_no_id_match %>%
+  inner_join(am_no_id_match, by = c('sci_to_match' = 'am_sciname')) %>%
+  rename(am_sciname = sci_to_match) %>%
+  select(iucn_sid, am_sid, sciname, am_sciname, fbname) %>%
+  distinct()
+### spp_sciname_match$iucn_sid %>% unique() %>% length()
+### spp_sciname_match$am_sid %>% unique() %>% length()
+### spp_sciname_match$sciname %>% unique() %>% length()
+### 3232 matches right away: 3224 unique iucn_sid; 3225 unique am_sid; 3225 unique scinames
+
+```
+
+#### Species matched by scientific name (head):
+
+`r knitr::kable(spp_sciname_match %>% head(10))`
+
+-----
+
+### Match by sciname synonyms
+
+``` {r get_am_synonyms_from_api}
+
+am_no_sciname_match <- am_spp_list %>%
+  filter(!am_sid %in% spp_iucn_id_match$am_sid) %>%
+  filter(!am_sid %in% spp_sciname_match$am_sid)
+### 15348 spp + 2981 spp (sciname match) + 4560 spp (id match) = 22889: all of 'em
+
+
+am_syn_file <- file.path(dir_goal_anx, 'int', 'am_synonyms.csv')
+reload <- TRUE
+
+if(!file.exists(am_syn_file) | reload) {
+  
+  if(file.exists(am_syn_file)) {
+    syns_matched <- read_csv(am_syn_file) # %>%
+      # filter(!is.na(synonym))
+    spp_nomatch <- am_no_sciname_match %>%
+      filter(!am_sciname %in% syns_matched$sciname) %>%
+      .$am_sciname %>%
+      unique()
+  } else {
+    spp_nomatch <- am_no_sciname_match$am_sciname %>% 
+      unique()
+  }
+
+  ### /api/v3/species/synonym/:name?token='YOUR TOKEN'
+  spp_synonym_url <- 'http://apiv3.iucnredlist.org/api/v3/species/synonym/%s?token=%s'
+
+  syn_df <- data.frame()
+  for(i in seq_along(spp_nomatch)) {
+    # cat(i, spp_nomatch[i], '...\n')
+    tmp_df <- get_from_api(spp_synonym_url, 
+                           spp_nomatch[i],
+                           api_key, delay = .5)
+    syn_df <- syn_df %>%
+      bind_rows(tmp_df)
+  }
+  
+  # ptm <- proc.time()
+  # spp_synonym_df_am <- mc_get_from_api(spp_synonym_url,
+  #                                        spp_nomatch,
+  #                                        api_key, cores = 4, delay = .5)
+  # print(proc.time() - ptm)
+
+  if(nrow(syn_df) > 0) {
+    syn_df <- syn_df %>%
+      setNames(str_replace(names(.), 'result.', '')) %>%
+      mutate(sciname = ifelse(is.na(name), param_id, name)) %>%
+      select(sciname, count, accepted_id, accepted_name, synonym) %>%
+      distinct()
+  }
+  ### found 1555 synonyms, with 607 distinct IDs, from 17301 names
+  
+  if(file.exists(am_syn_file)) {
+    syn_df <- syn_df %>%
+    bind_rows(read_csv(am_syn_file))
+  }
+  
+  write_csv(syn_df, am_syn_file)
+} else {
+  git_prov(am_syn_file, filetype = 'output')
+}
+
+```
+
+``` {r match_am_by_synonym_id}
+
+am_syn_file <- file.path(dir_goal_anx, 'int', 'am_synonyms.csv')
+spp_synonym_df_am <- read_csv(am_syn_file)
+
+am_spp_syns <- spp_synonym_df_am %>%
+  gather(accepted_or_synonym, am_sci_to_match, accepted_name, synonym) %>%
+  filter(sciname != am_sci_to_match) %>%
+  select(am_sciname = sciname,
+         syn_iucn_sid = accepted_id,
+         am_sci_to_match)
+
+am_syn_match <- am_no_sciname_match %>%
+  inner_join(am_spp_syns, by = 'am_sciname') %>%
+### NOTE: for those in here with unmatched AM-reported IUCN species IDs,
+### most of them match up with IUCN ids based on their synonyms.  That
+### predicts not much in the way of matching here; ditch those.
+  filter(is.na(iucn_id) | iucn_id != syn_iucn_sid) %>%
+  select(-iucn_id) %>%
+  distinct()
+  
+spp_synonym_match <- iucn_spp_list %>%
+  filter(!iucn_sid %in% spp_iucn_id_match$iucn_sid) %>%
+  filter(!iucn_sid %in% spp_sciname_match$iucn_sid) %>% ### 5804 unique species IDs
+  inner_join(am_syn_match, 
+             # by = c('sci_to_match' = 'am_sciname')) %>% ### no matches here...
+             by = c('iucn_sid' = 'syn_iucn_sid')) %>% ### only 38 matches here
+  select(iucn_sid, am_sid, sciname, am_sciname, fbname) %>%
+  distinct()
+
+```
+
+#### Species matched by synonym and IUCN species ID:
+
+`r DT::datatable(spp_synonym_match)`
+
+-----
+
+### Check unmatched species
+
+``` {r any_evaluated_spp_left}
+
+am_not_matched <- am_spp_list %>%
+  filter(!am_sid %in% spp_iucn_id_match$am_sid) %>%
+  filter(!am_sid %in% spp_sciname_match$am_sid) %>%
+  filter(!am_sid %in% spp_synonym_match$am_sid)
+### 17263 species unmatched; most have NE or DD
+# table(am_not_matched$iucn_code)
+   # DD    LC  N.E.    VU 
+   # 11    10 16906     3 
+
+am_not_matched_valid <- am_not_matched %>%
+  filter(!iucn_code %in% c('N.E.', 'DD', NA))
+### only 13 species unmatched with valid IUCN code
+
+```
+
+### Unmatched AquaMaps with valid (non-NE or DD) risk category
+
+Note the non-matched species are mostly N.E. or DD:
+
+`r table(am_not_matched$iucn_code)`
+
+Check these; they all have IUCN species IDs and valid codes, but do not seem to be counted as marine?  All but one seem to be errors in the AquaMaps dataset.  By including them in the list, with no valid IUCN species IDs, they will be included per AquaMaps, and use the AquaMaps code statically, rather than a time series.
+
+`r DT::datatable(am_not_matched_valid)`
+
+* `Coregonus lavaretus`	European whitefish	5369	VU
+    * refers to a freshwater fish: lavaret; formerly might have been used for a broad range of whitefish (incl. marine?)
+*	`Myliobatis australis`	Australian bull ray	60122	LC
+    * is synonym for Myliobatis tenuicaudatus, with ID 70686656
+    * 60122 is not recognized.
+* `Scorpaenodes quadrispinosus`	Fourspine scorpionfish	155208	LC
+    * this seems valid.  Why did it not match?
+    * because by IUCN habitat check, its only habitats are both marginal.
+* `Trisopterus minutus`	Poor cod	154897	LC
+    * this is not recognized by name or ID
+* `Anguilla nebulosa`	Mottled eel	168293	LC
+    * synonym for Anguilla bengalensis, 61668607. 
+    * 168923 is unrecognized.
+* `Rhinobatos formosensis`	Taiwan guitarfish	60165	VU
+    * not recognized by name or ID
+* `Larus scopulinus`	red-billed gull	22694408	LC
+    * synonym for Larus novaehollandiae, 62021891. 
+    * 22694408 is not recognized.
+* `Stercorarius antarcticus`	brown skua	22694183	LC
+    * not recognized by name or ID.
+-----
+
+## Assemble all matched lists to create AM-to-IUCN lookup
+
+Attach the following matched lists:
+
+* Matches by IUCN species ID number (using ID provided by AquaMaps)
+* Matches by scientific name (no ID match, use raw scientific name)
+* Matches by synonym (AquaMaps sciname matches an IUCN synonym or vice versa)
+* Non-matched AquaMaps with a non-NE or non-DD category
+
+Note that this will drop non-matched AquaMaps species without a valid IUCN code.
+
+``` {r assemble_all_lists}
+
+spp_am_to_iucn <- bind_rows(spp_iucn_id_match,
+                            spp_sciname_match,
+                            spp_synonym_match,
+                            am_not_matched %>% 
+                              select(-iucn_id, am_cat = iucn_code))
+
+### Squalus acanthias (piked dogfish? spiny dogfish?) shows up
+### multiple times; IUCN subpops.
+### chondri_maps <- foreign::read.dbf(file.path(dir_anx, '_raw_data/iucn_spp/d2016/CHONDRICHTHYES.dbf'))
+### Subpops not mapped.  Will this drop out in the analysis, when map_iucn_id is not matched?
+### ... no it won't; AquaMaps will pick it up and count it once for each subpop.
+spp_am_to_iucn <- spp_am_to_iucn %>%
+  filter(!(am_sid == 'Fis-29532' & iucn_sid != 91209505))
+
+write_csv(spp_am_to_iucn, file.path(dir_goal, 'int', 'spp_am_to_iucn.csv'))
+
+```
+
+-----
+
+## Create full species lookup
+
+This lookup will combine IUCN info list (with IUCN map info) and AquaMaps species list.  Species with neither an AquaMaps map (IUCN-matched) nor an IUCN map will be dropped.
+
+``` {r create_full_spp_lookup}
+
+spp_am_to_iucn <- read_csv(file.path(dir_goal, 'int', 'spp_am_to_iucn.csv'))
+
+iucn_mar_spp   <- read_csv(file.path(dir_goal, 'int', 'spp_marine_iucn_ids.csv'),
+                           col_types = 'dddc__c__c') %>%
+  select(iucn_sid, map_iucn_sid, subpop_sid, sciname, map_subpop, spp_group) %>%
+  distinct()
+
+iucn_spp_info  <- read_csv(file.path(dir_goal_anx, 'int', 'spp_info_from_api.csv')) %>%
+  select(iucn_sid, sciname, population, category) %>%
+  distinct()
+
+### Join IUCN maps info
+spp_list1 <- iucn_spp_info %>%
+  inner_join(iucn_mar_spp, by = c('iucn_sid', 'sciname'))
+  
+### some duplicated species due to species appearing in two shapefiles.
+### eliminate dupes that show up in MANGROVES, REPTILES, and MARINE_FISH
+spp_duped <- spp_list1 %>%
+  filter(iucn_sid %in% spp_list1$iucn_sid[duplicated(spp_list1$iucn_sid)])
+
+spp_list2 <- spp_list1 %>%
+  filter(!(iucn_sid %in% spp_duped$iucn_sid & str_detect(spp_group, 'MANG|REPT|MARINEFISH')))
+
+
+### join AM maps info.  Note the full_join to capture the non-matched AquaMaps species.
+spp_list3 <- spp_list2 %>%
+  full_join(spp_am_to_iucn, by = c('iucn_sid', 'sciname'))
+
+spp_list4 <- spp_list3 %>%
+  mutate(cat_code = ifelse(is.na(category), am_cat, category),
+         sciname  = ifelse(is.na(sciname), am_sciname, sciname)) %>%
+  select(am_sid, iucn_sid, 
+         map_iucn_sid, map_subpop, 
+         sciname,
+         cat_code, 
+         spp_group)
+
+write_csv(spp_list4, file.path(dir_goal, 'int', 'spp_list_raw.csv'))
+
+```
+
+Decide which spatial source to use for each species; convert IUCN extinction risk codes to numeric values.  We also determine population trend (old school style) from the Red List API for narrative, but only for species with a valid IUCN extinction risk code.
+
+``` {r get_trends}
+
+### Filter to just the valid species and get narratives.
+spp_list_valid <- read_csv(file.path(dir_goal, 'int', 'spp_list_raw.csv'),
+                           col_types = 'cddcccc') %>%
+  filter(!is.na(map_iucn_sid) | !is.na(am_sid)) %>%
+  filter(!cat_code %in% c('DD', 'NE', 'N.E.') & !is.na(cat_code)) %>%
+  select(iucn_sid, am_sid, sciname) %>%
+  distinct()
+
+spp_ids_valid <- spp_list_valid$iucn_sid %>%
+  unique() %>%
+  .[!is.na(.)]
+
+### /api/v3/species/narrative/id/:id?token='YOUR TOKEN'
+spp_narr_url <- 'http://apiv3.iucnredlist.org/api/v3/species/narrative/id/%s?token=%s'
+
+spp_narr <- vector('list', length = length(spp_iucn_ids_valid))
+for(i in seq_along(spp_ids_valid)) { # i <- 1
+  spp_id <- spp_ids_valid[i]
+  cat(i, 'Trying ', spp_id)
+  spp_narr_tmp <- get_from_api(spp_narr_url, spp_id, api_key, delay = .02)
+  spp_narr[[i]] <- spp_narr_tmp
+}
+
+spp_narr1 <- spp_narr %>%
+  bind_rows() %>%
+  select(iucn_sid = name, pop_trend = result.populationtrend) %>%
+  mutate(iucn_sid = as.integer(iucn_sid)) %>%
+  left_join(spp_list_valid, by = 'iucn_sid')
+
+trend_scores <- c('decreasing' = -.5, 'stable' = 0, 'increasing' = +.5)
+
+spp_narr1 <- spp_narr1 %>%
+  mutate(trend_score = trend_scores[pop_trend])
+
+write_csv(spp_narr1, file.path(dir_goal, 'int', 'spp_pop_trends.csv'))
+### the mclapply version seems to hang for some reason.
+# spp_narr_iucn <- mc_get_from_api(spp_narr_url,
+#                             spp_iucn_ids_valid,
+#                             api_key, cores = 12, delay = .5)
+
+```
+
+``` {r clean_spp_list}
+
+spp_list <- read_csv(file.path(dir_goal, 'int', 'spp_list_raw.csv'),
+                     col_types = 'cddcccc') %>%
+  mutate(spatial_source = ifelse(!is.na(map_iucn_sid), 'iucn', NA),
+         spatial_source = ifelse(is.na(map_iucn_sid) & !is.na(am_sid), 'am', spatial_source)) %>%
+  left_join(read_csv(file.path(dir_goal, 'raw/risk_code_lookup.csv')), 
+            by = c('cat_code' = 'code')) %>%
+  select(-cat_code, -category) %>%
+  rename(cat_code = code_current) %>%
+  left_join(read_csv(file.path(dir_goal, 'int/spp_pop_trends.csv'))) %>%
+  distinct()
+
+write_csv(spp_list, file.path(dir_goal, 'int', 'spp_list_cleaned.csv'))
+  
+```
+
+Head of the species list (at `r file.path(dir_goal, 'int', 'spp_list_cleaned.csv')`:
+
+`r knitr::kable(spp_list4 %>% head(20))`
+
+Total rows: `r nrow(spp_list4)`
+
+-----
+
+``` {r, results = 'asis'}
+prov_wrapup(commit_outputs = FALSE)
+```

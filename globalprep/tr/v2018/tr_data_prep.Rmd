@@ -202,11 +202,59 @@ For this assesment, Level 1 is  the status quo warning, therefore regions with a
 
 ```{r}
 ##Reading and wrangling 2018 data
-warn_raw <- read.csv('raw/tr_travelwarning_2018_raw.csv', stringsAsFactors=FALSE, fileEncoding = "", encoding = 'UTF-8') %>% 
-  select(-risk_factor, -location, -date) %>% 
+warn_raw <- read.csv('raw/tr_travelwarning_2018_raw.csv') %>% 
+  mutate(country = as.character(country)) %>% 
   mutate(level = as.numeric(str_extract(level, '[1,2,3,4]'))) %>% 
-  rename(year= assess_year, rgn_name = country)
-  #filter(level!= 1)
+  select(assess_year, level, country , regional) %>% 
+  rename(year= assess_year)
+ 
+encodeString(warn_raw$rgn_name)
+
+##Correct names for regions not identified by the name_2_region
+
+#NOTE rgn: Northern Saint-Martin and Guadeloupe and Martinique are reported under "French West Indies". The general warning for this region is 1 but is has a regional regional warning for St. Martin. Therefore, Guadeloupe and Martinique will get a level 1 score and Northern Saint-Martin a level 3 (this is according to the data) and no dicounting for regional.
+
+#MAKE THIS WORK!!!!!!
+warn_improved <- warn_raw %>% 
+  dplyr::mutate(rgn_name = ifelse(regional == 1 & country == "French West Indies", "Northern Saint-Martin", country)) %>% 
+  dplyr::mutate(rgn_name = ifelse(country== "French West Indies" & is.na(regional) & is.na(rgn_name), "Guadeloupe and Martinique", rgn_name)) %>% 
+  dplyr::mutate(regional = ifelse(rgn_name == "Northern Saint-Martin", NA, regional)) %>% 
+ dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Bonaire"), "#Bonaire", country)) %>%
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"ROC"), "Republique du Congo", country)) %>% 
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Kinshasha"), "Democratic Republic of the Congo", country)) %>% 
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Domincan"), "Dominican Republic", country)) %>% 
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"France"), "France", country)) %>%
+    dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Honduras\xca"), "Honduras", country))%>%
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Israel"), "Israel", country)) %>%
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Sao Tome"), "Sao Tome and Principe", country)) %>%
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Turks and Caicos"), "Turks and Caicos Islands", country)) %>%
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"United Arab Emirates"), "United Arab Emirates", country))
+
+
+#In this dataset France and Monaco are reported together. This code creates a separate row for each of these regions.
+
+FM <- filter(warn_improved, rgn_name=="France") %>%
+  rename(country_old = rgn_name)
+FM_subregions <- data.frame(country_old = "France",
+                            rgn_name = c("France", "Monaco")) %>%
+  left_join(FM) %>%
+  select(-country_old)
+
+warn_improved <- warn_improved %>%
+  filter(rgn_name != "France") %>%
+  rbind(FM_subregions)
+
+#Same with Bonaire, Saba and Sint Estatius: all reported together.
+BSS <- filter(warn_improved, rgn_name=="Bonaire") %>%
+  rename(country_old = rgn_name)
+BSS_subregions <- data.frame(country_old = "Bonaire",
+                            rgn_name = c("Bonaire", "Saba", "Sint Eustatius")) %>%
+  left_join(BSS) %>%
+  select(-country_old)
+
+warn_improved <- warn_improved %>%
+  filter(rgn_name != "Bonaire") %>%
+  rbind(BSS_subregions)
 
 #Formating data upto 2017
 
@@ -251,6 +299,8 @@ warn2 <- warn_complete %>%
 
 data.frame(filter(warn2, year==2015)) # checked to make sure I got conversions correct, looks good!
 
+
+
 #Add rgn_id
 warn_rgn <- name_2_rgn(df_in = warn2, 
                        fld_name='rgn_name', 
@@ -262,7 +312,7 @@ warn_rgn <- warn_rgn %>%
 write.csv(warn_rgn, 'output/tr_travelwarnings.csv', row.names=FALSE)
 
 
-#FOR CHECKING
+#Compare old multiliers vs new
 warn_multi_old <- read_csv("output/tr_travelwarnings.csv") %>% 
   rename(multiplier_old= multiplier)
 
