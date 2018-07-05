@@ -74,7 +74,7 @@ Percentage of people without sanitation was multiplied by the coastal population
 
 #Setup
 
-```{r}
+```{r setup, results="hide", message = FALSE, warning = FALSE}
 ## set working directory; comment out for knitting
 #setwd("~/github/ohiprep_v2018/globalprep/prs_cw_pathogen/v2018")
 #setwd("globalprep/prs_cw_pathogen/v2018")
@@ -89,13 +89,12 @@ library(tidyverse)
 
 #Import raw data
 
-```{r}
+```{r raw_data, results="hide", message = FALSE, warning = FALSE}
 ##Directly from Mazu
 
-#CHECK TO SEE IS I NEED THIS
+
 ##reads in the directory path to Mazu based on operating system 
 source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R")
-
 
 
 ##From Mazu
@@ -111,7 +110,7 @@ head(sani_raw)
 ##Data wrangling
 Selecting and naming the columns of interest. Scale the percentage of population with access to improved sanitation to proportion (from 0-1). Transform population and percentage into a numeric variable.
 
-```{r}
+```{r data_wrangling, results="hide", message = FALSE, warning = FALSE}
 
 sani <- sani_raw %>%
   dplyr::slice(-1) %>%                # cut first row with column names
@@ -130,9 +129,9 @@ sani <- sani_raw %>%
 
 Change names of regions to match names in ohicore and filter out regions that are not part of the OHI assesment or do not have data.
 
-If after running 'name_2_rgn' (see next r chunk), there are some coastal regions that are not identified. They must be checked to determine how to best include them (or not include them).
+If after running 'name_2_rgn' (see next r chunk), there are some coastal regions that are not identified by `name_2rgn` function. They must be checked to determine how to best include them (or not include them).
 
-```{r}
+```{r, results="hide", message = FALSE, warning = FALSE}
 
 sani_improved <- sani %>%
    dplyr::mutate(country = ifelse(stringr::str_detect(country,"Cura\\Sao"), "Curacao", country))%>% 
@@ -175,7 +174,7 @@ sani_improved <- sani_improved %>%
 
 Add rgn_id and merge duplicate regions using a mean weighted by population. 
 
-```{r}
+```{r rgn_id, results="hide", message = FALSE, warning = FALSE}
 rgn_sani <- name_2_rgn(sani_improved, 
                         fld_name     = 'country',
                         flds_unique  = c('country','year')) 
@@ -184,7 +183,7 @@ rgn_sani <- name_2_rgn(sani_improved,
 ## Check list in warning to make sure all countries removed are not of interest for the OHI global assesment. In this case West Bank and Gaza Strip is not considered because it is a disputed area and Isle of Man is not consider an OHI region.
 
 ##Check for duplicate regions.
-sort(table(rgn_sani$rgn_id)) #for this analysis regions which are duplicated are: rgn_id = 209, 140, 116, 13
+sort(table(rgn_sani$rgn_id)) #for this analysis, regions which are duplicated are: rgn_id = 209, 140, 116, 13
 
 ## Each region has 16 years of data in this case. If there are regions with more than 16 values is because in this database they are reported in a higher resolution than the OHI global assesment (eg: China, Hong Kong and Macao are just one region for the OHI global). For these regions a weighted average will be calculated as its final score.
 
@@ -204,7 +203,7 @@ sort(table(sani_final$rgn_id))
 
 First step is to get an idea of what needs to be gapfilled.
 
-```{r check}
+```{r check, message = FALSE, warning = FALSE}
 
 sani_gf <- sani_final %>% 
   dplyr::group_by(rgn_id, rgn_name) %>%
@@ -215,7 +214,7 @@ summary(sani_gf)
 ## list of regions that will have gapfilling
 dplyr::filter(sani_gf, gf_count>0) %>% 
   dplyr::select(rgn_id, rgn_name, gf_count) %>% 
- unique() %>%
+  unique() %>%
   data.frame()
 
 ##Some regions have no data. Filter those out to be gapfilled later.
@@ -231,7 +230,7 @@ sani_gf <- sani_gf %>%
 ## Gapfilling 1: Linear model
 Use a linear model within country data to estimate missing years.
 
-```{r gf_lm}
+```{r gf_lm, results="hide", message = FALSE, warning = FALSE}
 
 sani_gf_lm <- sani_gf %>%
   dplyr::group_by(rgn_id, rgn_name) %>%
@@ -256,7 +255,7 @@ sani_gf_lm <- sani_gf_lm %>%
 
 Georegional gapfilling for regions that do not have data.
 
-```{r gf georgn}
+```{r gf georgn, results="hide", message = FALSE, warning = FALSE}
 ##Bring from ohicore package georegions and georegions lables as variables
 georegions       <- georegions
 georegion_labels <- georegion_labels
@@ -313,7 +312,7 @@ dplyr::filter(sani_georgn_gf, is.na(basic_sani_prop)) %>%
 
 Uninhabited regions get a perfect score.
 
-```{r}
+```{r, results="hide", message = FALSE, warning = FALSE}
 ##Check for uninhabited rigions
 dplyr::filter(sani_georgn_gf, !is.na(inhab)) %>%
   dplyr::select(rgn_id, rgn_label, basic_sani_prop, method) %>% 
@@ -333,8 +332,8 @@ summary(sani_complete)
 
 #Save gapfilled data records
 
-```{r}
-write.csv(sani_complete, "intermediate/sani_complete.csv", row.names=FALSE)
+```{r, results="hide", message = FALSE, warning = FALSE}
+#write.csv(sani_complete, "intermediate/sani_complete.csv", row.names=FALSE)
 
 sani_complete <- read.csv("intermediate/sani_complete.csv")
 
@@ -342,7 +341,7 @@ sani_complete <- read.csv("intermediate/sani_complete.csv")
 gf_data <- sani_complete %>%
   dplyr::select(rgn_id, year, gapfill, method)
 
-write.csv(gf_data, "output/po_pathogen_popdensity25mi_gf.csv", row.names=FALSE)
+#write.csv(gf_data, "output/po_pathogen_popdensity25mi_gf.csv", row.names=FALSE)
 
 gf_data_trend <- sani_complete %>%
   dplyr::arrange(rgn_id, year) %>%
@@ -351,7 +350,8 @@ gf_data_trend <- sani_complete %>%
   dplyr::mutate(method = paste(na.exclude(unique(method)), collapse = ", ")) %>%
   dplyr::mutate(gapfill = gapfill_5year/5) %>%
   dplyr::select(rgn_id, year, gapfill, method)
-write.csv(gf_data, "output/po_pathogen_popdensity25mi_trend_gf.csv", row.names=FALSE)
+
+#write.csv(gf_data, "output/po_pathogen_popdensity25mi_trend_gf.csv", row.names=FALSE)
 
 ```
 
@@ -360,7 +360,7 @@ write.csv(gf_data, "output/po_pathogen_popdensity25mi_trend_gf.csv", row.names=F
 
 First calculate coastal population density (people/km^2^) is calculated by dividing the population within 25 miles of the coast by km^2^ within the 25 mile inland coastal area (yes! This is confusing because area is in km^2^, despite the boundary being 25 miles inland).
 
-```{r}
+```{r, results="hide", message = FALSE, warning = FALSE}
 
 ## Population within 25 miles of coastline
 population <- read.csv("../../mar_prs_population/v2018/output/mar_pop_25mi.csv") %>%
@@ -397,7 +397,7 @@ The number of people per km^2 without access to sanitation is calculated by:
 2. The proportion without access is multiplied by the coastal population density.
 3. Number of people without access are log transformed (ln(x+1))
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 
 unsani_pop <- sani_complete %>%  
     dplyr::select(rgn_id, rgn_name, year, basic_sani_prop) %>%
@@ -444,7 +444,7 @@ unsani_prs <- unsani_pop %>%
 summary(unsani_prs)
 
 #Save data pressure scores 
-write.csv(unsani_prs, "output/po_pathogen_popdensity25mi.csv", row.names=FALSE)
+#write.csv(unsani_prs, "output/po_pathogen_popdensity25mi.csv", row.names=FALSE)
 
 
 ```
@@ -452,22 +452,27 @@ write.csv(unsani_prs, "output/po_pathogen_popdensity25mi.csv", row.names=FALSE)
 
 #Model Trend
 
-Trend is slope estimate from a linear regression of pressure scores estimated using the past five data years of data (annual change in pressure).  This value is divided by the earliest year to get proportional change and then multiplied by 5 to get estimate five years out. 
+Using `CalculateTrend` function form the `ohicore`, trend is calculated by applying a linear regression model to the pressuere scores using a window of 5 years of data. The solope of the linear regression (annual change in pressure) is then divided by the earliest year to get proportional change and then multiplied by 5 to get estimate trend on pressure in the next five years. 
+
 
 ```{r trend}
+##Calculate trend using CalculateTrend()
 
-#Min and max year of data to calculate trend
-assess_years <- 7  #this will change every assessment year
-maxyear <- max(unsani_prs$year) #max year of data
-minyear <- maxyear-7+1
+##Define relevant years: Min and max year of data to calculate trend
+assess_years <- 7  ##Years for which the trend is going to be calculated for. This will change every assessment year
+maxyear <- max(unsani_prs$year) ##max year of data
+minyear <- maxyear- assess_years +1 
 
-trend_data <- data.frame()
+trend_data <- data.frame() #create a data.frame to save trend socores
 
-for(focal_year in minyear:maxyear){ #focal_year = 2009
 
-  trend_years <- (focal_year-4):focal_year
+##For loop: calculates trend for all assess years within the corresponding 5 year window.
+#focal_year is the year for which the trend is being calculated.
+for(focal_year in minyear:maxyear){ #focal_year = 2009 
+
+  trend_years <- (focal_year-4):focal_year #defines the 5 years window to calculate trend
   
-  data_new <- unsani_prs %>%
+  data_new <- unsani_prs %>% #format data to work in CalculateTrend()
     select(rgn_id, year, status=pressure_score)
   
 trend_data_focal_year <- CalculateTrend(data_new, trend_years)
@@ -477,12 +482,12 @@ trend_data_focal_year <- trend_data_focal_year %>%
   select(rgn_id = region_id, year, trend=score) %>%
   data.frame()
 
-trend_data <- rbind(trend_data, trend_data_focal_year)
+trend_data <- rbind(trend_data, trend_data_focal_year) #add trend calculation to dataframe crearted outside the loop
 }
 summary(trend_data)
 
 ##Save trend data
-write.csv(trend_data, "output/po_pathogen_popdensity25mi_trend.csv", row.names=FALSE)
+#write.csv(trend_data, "output/po_pathogen_popdensity25mi_trend.csv", row.names=FALSE)
 
 ```
 
@@ -493,6 +498,7 @@ write.csv(trend_data, "output/po_pathogen_popdensity25mi_trend.csv", row.names=F
 ### Trend data
 
 There is not a great correspondence between this year and last year's trend estimates.  This is partially due to changes in the source data.  But mainly, it is due to the limited number of years used in last year's assessment to calculate trend.  
+
 ```{r}
 
 new <- read.csv("output/po_pathogen_popdensity25mi_trend.csv")
@@ -518,7 +524,7 @@ filter(data_new, rgn_id==190)
 
 
 ### Pressure values
-We checked the main discrepancies and these were due to changes in source data.  Fairly small changes in access can lead to fairly large changes in pressure scores, depending on the populatio. There are slightly higher pressure scores this year (indicated by points tending to be above the 1-1 red line) due to modifications of reference point calculations.
+We checked the main discrepancies and these were due to changes in source data.  Fairly small changes in access can lead to fairly large changes in pressure scores, depending on the population. There are slightly higher pressure scores this year (indicated by points tending to be above the 1-1 red line) due to modifications of reference point calculations.
 
 ```{r}
 new <- read.csv("output/po_pathogen_popdensity25mi.csv")
