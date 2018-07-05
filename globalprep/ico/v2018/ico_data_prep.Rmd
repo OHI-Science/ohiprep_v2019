@@ -118,8 +118,9 @@ api_key <- scan(api_file, what = 'character')
 ## api_key <- 'fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5'
 
 spp_list_from_api_file <- file.path(dir_goal, 'int/spp_list_from_api.csv')
+reload <- TRUE
 
-if(!file.exists(spp_list_from_api_file)) {
+if(!file.exists(spp_list_from_api_file) | reload) {
   message('Using API to create full species list from scratch')
   
   spp_npage_url <- sprintf('http://apiv3.iucnredlist.org/api/v3/speciescount?token=%s', api_key)
@@ -128,7 +129,7 @@ if(!file.exists(spp_list_from_api_file)) {
   n_pages <- ceiling(n_spp/10000)
   
   spp_page_url <- 'http://apiv3.iucnredlist.org/api/v3/species/page/%s?token=%s'
-  spp_df_all <- mc_get_from_api(spp_page_url, c(0:(n_pages - 1)), api_key)
+  spp_df_all <- mc_get_from_api(spp_page_url, c(0:(n_pages - 1)), api_key) # mc_get_from_api function is defined in the ico_fxn.R script
   
   spp_df_all <- spp_df_all %>%
     dplyr::select(-infra_rank, -infra_name, -count, -page) %>%
@@ -180,13 +181,13 @@ Filtering the complete IUCN species list to include only the identified Iconic S
 ``` {r combine_iucn_spp_info_with_ico_list}
 
 spp_df_all <- read_csv(file.path(dir_goal, 'int/spp_list_from_api.csv'))
-ico_list_raw <- read_csv(file.path(dir_goal, 'raw/ico_list_raw.csv'))
+ico_list_raw <- read_csv(file.path(dir_goal, 'raw/ico_list_raw.csv')) # static list; same each year
 
 spp_ico <- spp_df_all %>% 
   filter(sciname %in% ico_list_raw$sciname) 
 
 spp_missing <- ico_list_raw %>% 
-  filter(!sciname %in% spp_ico$sciname)
+  filter(!sciname %in% spp_ico$sciname) # for v2018, missing only Sprattus sprattus
 
 ico_list <- ico_list_raw %>%
   left_join(spp_ico %>% 
@@ -194,7 +195,7 @@ ico_list <- ico_list_raw %>%
             by = 'sciname') %>%
   filter(!is.na(iucn_sid))
 
-write_csv(ico_list, file.path(dir_goal, 'int/ico_list_prepped.csv'))
+write_csv(ico_list, file.path(dir_goal, 'int/ico_list_prepped.csv')) # 144 in v2018
 ```
 
 For each of these species, use the IUCN API to gather a list of countries in which it is present.
@@ -504,7 +505,7 @@ library(plotly)
 status_ts_plot <- ggplot(ico_sum %>%
                            filter(!is.na(rgn_id)),
                          aes(x = year, y = ico_status, color = rgn_id, group = rgn_id)) +
-  geom_line(size = 2, alpha = .6) +
+  geom_line(size = 1.2, alpha = .4) +
   labs(x = 'year',
        y = 'ICO status',
        title = 'ICO status over time',
@@ -514,7 +515,7 @@ ggplotly(status_ts_plot)
 trend_ts_plot <- ggplot(ico_sum %>%
                            filter(!is.na(rgn_id) &!is.na(ico_trend)),
                          aes(x = year, y = ico_trend, color = rgn_id, group = rgn_id)) +
-  geom_line(size = 2, alpha = .6) +
+  geom_line(size = 1.2, alpha = .4) +
   labs(x = 'year',
        y = 'ICO trend',
        title = 'ICO trend over time',
@@ -531,43 +532,33 @@ Plot the estimated status and trends for 2016 from assessments v2017 and v2018.
 
 ``` {r spp_plot_scores_vs_2015, fig.height = 4, fig.width = 6, fig.align = 'center'}
 
-# ico_previous_status <- read_csv(file.path(dir_previous, "output/ico_status_calc.csv")) %>% 
-#   filter(year == 2016)
-# ico_compare <- ico_status_calc %>%
-#   filter(year == 2016) %>% 
-#   dplyr::full_join(ico_previous_status, by = "rgn_id")
-
-# ico_prev <- list.files(sprintf('~/github/ohi-global/global%s/', previous_scen), pattern = 'final_formatted_scores',  full.names = TRUE) %>% 
-#   read_csv() %>% 
-#   filter(scenario == 2016, goal == 'ICO', dimension %in% c('status', 'trend')) %>% 
-#   spread(key = dimension, value = score)
-
-status_trend <- ico_sum %>% 
-  filter(year == max(year)-1) %>% 
+status_trend <- ico_sum %>% # status and trend in this year's assessment
+  filter(year == max(year)-2) %>%  # max year of ico_sum is 2018 not 2017
   select(rgn_id, ico_status, ico_trend, n_spp) %>% 
-  distinct() ## status and trend in this year's assessment
+  distinct() # because removing iucn_sid, cat, cat_score, and species name, results in duplicates
   
 ico_compare <- read_csv(file.path(dir_previous, 'summary/ico_summary.csv')) %>% 
-  filter(year == max(year)) %>%
+  filter(year == max(year)) %>% # max year of v2017 ico_summary is 2016; make sure to update for v2019
   select(rgn_id, rgn_name, ico_status, ico_trend, n_spp) %>% 
   distinct() %>% 
   rename(previous_status = ico_status, previous_trend = ico_trend, previous_nspp = n_spp) %>% 
   left_join(status_trend, by = 'rgn_id') %>% 
-  rename(new_status = ico_status, new_trend = ico_trend, new_nspp = n_spp)
+  mutate(d_nspp = as.factor(previous_nspp - n_spp))
 
 compare_status_plot <- ggplot(ico_compare) + 
-  geom_point(aes(previous_status, new_status, color = rgn_id)) + 
-  labs(x = sprintf('ICO status %s', scenario),
-       y = sprintf('ICO status v%s', previous_scen),
-       title = 'ICO status comparison')
+  geom_point(aes(previous_status, ico_status, color = d_nspp, label = rgn_id), alpha = 0.6) + 
+    geom_abline(slope = 1, intercept = 0, color = 'red') +
+  labs(x = sprintf('ICO status v%s', previous_scen),
+       y = sprintf('ICO status %s', scenario),
+       title = 'ICO Status Comparison')
 ggplotly(compare_status_plot)
 
-trend_compare_plot <- ggplot(ico_compare, aes(x = new_trend, y = previous_trend, color = rgn_id)) +
-  geom_point(alpha = .6) +
+trend_compare_plot <- ggplot(ico_compare) +
+  geom_point(aes(previous_trend, ico_trend, color = d_nspp, label = rgn_id), alpha = .6) +
   geom_abline(slope = 1, intercept = 0, color = 'red') +
-  labs(x = sprintf('ICO trend %s', scenario),
-       y = sprintf('ICO trend v%s', previous_scen),
-       title = 'ICO status comparison')
+  labs(x = sprintf('ICO trend v%s', previous_scen),
+       y = sprintf('ICO trend %s', scenario),
+       title = 'ICO Trend Comparison')
 ggplotly(trend_compare_plot)
 
 ```

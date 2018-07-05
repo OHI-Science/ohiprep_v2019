@@ -34,9 +34,8 @@ Porbeagle,Lamna nasus,TRUE,NA,39343,Northeast Atlantic subpopulation,CR
 Porbeagle,Lamna nasus,TRUE,NA,39344,Northwest Atlantic subpopulation,EN
 Porbeagle,Lamna nasus,TRUE,NA,61420,Mediterranean subpopulation,CR
 Bowhead whale,Balaena mysticetus,TRUE,NA,2467,NA,LC
-Bowhead whale,Balaena mysticetus,TRUE,NA,2468,Bering-Chukchi-Beaufort Sea subpopulation,LR/cd
 Bowhead whale,Balaena mysticetus,TRUE,NA,2469,Okhotsk Sea subpopulation,EN
-Bowhead whale,Balaena mysticetus,TRUE,NA,2472,Svalbard-Barents Sea (Spitsbergen) subpopulation,CR
+Bowhead whale,Balaena mysticetus,TRUE,NA,2472,East Greenland-Svalbard-Barents Sea subpopulation,EN
 North Atlantic Right Whale,Eubalaena glacialis,TRUE,NA,41712,NA,EN
 Polar bear,Ursus maritimus,TRUE,NA,22823,NA,VU
 Gray Whale,Eschrichtius robustus,TRUE,NA,8097,NA,LC
@@ -83,8 +82,8 @@ Rough Toothed Dolphin,Steno bredanensis,TRUE,NA,20738,NA,LC
 Bottlenose Dolphin,Tursiops truncatus,FALSE,53,22563,NA,LC
 Bottlenose Dolphin,Tursiops truncatus,FALSE,53,194300,Fiordland subpopulation,CR
 Bottlenose Dolphin,Tursiops truncatus,FALSE,53,16369383,Mediterranean subpopulation,VU
-Antarctic minke whale,Balaenoptera bonaerensis,FALSE,16,2480,NA,DD
-Bryde's whale,Balaenoptera edeni,FALSE,16,2476,NA,DD
+Antarctic minke whale,Balaenoptera bonaerensis,FALSE,16,2480,NA,NT
+Bryde's whale,Balaenoptera edeni,FALSE,16,2476,NA,LC
 Bryde's whale,Balaenoptera edeni,FALSE,16,117636167,Gulf of Mexico subpopulation,CR
 Arnoux's Beaked Whale,Berardius arnuxii,FALSE,16,2762,NA,DD
 Pygmy right whale,Caperea marginata,FALSE,16,3778,NA,DD

@@ -1,7 +1,6 @@
 # ico_fxn.R
 # created Jun2015 by Casey O'Hara
-# functions to support calculations of the Iconic Species subgoal.  Some 
-# functions are also used from the spp_fxn.R script, so that must be loaded as well.
+# functions to support calculations of the Iconic Species subgoal.
 
 
 message('NOTE: ico_fxn.R requires that the following variables be set in the global environment (main script):\n')
@@ -106,6 +105,7 @@ get_ico_details = function(sid, download_tries = 10) {
 }
 # ??? update to scrape possibly/regionally extinct countries
 
+
 #############################################################################=
 get_ico_details_all <- function(ico_spp_list, reload = FALSE) {
   ### gets a list of countries in which parents and subpops appear, from
@@ -172,6 +172,7 @@ get_from_api <- function(url, param, api_key, delay) {
   return(api_return)
 }
 
+
 #############################################################################=
 mc_get_from_api <- function(url, param_vec, api_key, cores = NULL, delay = 0.5) {
   
@@ -199,6 +200,7 @@ mc_get_from_api <- function(url, param_vec, api_key, cores = NULL, delay = 0.5) 
   return(out_df)
 }
 
+
 #############################################################################=
 ico_rgn_name_to_number <- function(ico_countries) {
   rgn_name_file <- '~/github/ohi-global/eez2013/layers/rgn_global.csv'
@@ -224,6 +226,7 @@ ico_rgn_name_to_number <- function(ico_countries) {
 # Converts ALL the regions into rgn_id - should start with the basic region list as in 
 # the get_ico_list function, and then apply patches afterward?
 # OR: bind the patch list to Melanie's rgn name to number table and do it one swoop.
+
 
 #############################################################################=
 process_ico_rgn <- function(ico_rgn_list) {
