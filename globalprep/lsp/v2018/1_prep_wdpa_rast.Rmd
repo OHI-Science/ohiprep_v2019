@@ -21,6 +21,8 @@ pdf_document:
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = FALSE, message = FALSE, warning = FALSE)
 library(rgdal)
+library(gdalUtils)
+library(tidyverse)
 source('~/github/ohiprep_v2018/src/R/common.R')
 
 goal     <- 'globalprep/lsp'
@@ -31,98 +33,101 @@ dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
                          'wdpa_mpa/d2018')
 
 ## set up provenance tracking for this script:
-# library(provRmd); prov_setup()
+# library(provRmd); prov_setup() #devtools::install_github('oharac/provRmd', build_vignettes = TRUE)
 
 ```
 
-#Summary
+# Summary
 
 * Setup WDPA shapefile for lasting special places by filtering out non-"Designated" protected areas, and filtering out "non-MPA programmatic management plans" (US protected areas that distort scores).
 * Re-sort polygons by year, with oldest at end; this will allow gdal_rasterize to function properly (values toward the end of the dataset take precedence in assigning values to cells)
 * Rasterize the result using `fasterize::fasterize()` (not `gdal_rast2()`) and save to disk using `writeRasterBlocks()` defined in this script.
 
-#Updates from previous assessment
+# Updates from previous assessment
 
 Using `fasterize::fasterize()` to rasterize the WDPA polygons, rather than ArcGIS.  This allows the entire process to be completed in R.
 
 ***
 
-#Methods
+# Methods
 
-Read in the polygons from the WDPA dataset; filter as needed; reorder; transform to Mollweide.
+Read in the polygons from the WDPA dataset; filter as needed; reorder.
 
 Note that if using `fasterize()`, reordering polygons is not necessary, as there is an option to call a function to determine which value to keep for a cell (e.g. 'min', 'max', 'sum', etc.)
 
 ``` {r filter_and_reorder_poly}
 
 shp_raw     <- file.path(dir_data, 'WDPA_June2018-shapefile', 'WDPA_June2018-shapefile-polygons')
-shp_reorder <- file.path(dir_data, 'shps', 'WDPA_May2017_shp_ordered')
+shp_reorder <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_ordered')
 
 if(!file.exists(paste0(shp_reorder, '.shp'))) {
   message('No shp found for filtered/reordered WDPA database')
-  ### Read in the raw shapefile (3.6 GB); 472 sec on Mazu
+  ## Read in the raw shapefile (3.6 GB); 472 sec on Mazu
   message('Reading in raw shapefile: \n  ', shp_raw)
   ptm <- proc.time()
-  wdpa_poly <- readOGR(dsn = dirname(shp_raw), 
+  wdpa_poly <- rgdal::readOGR(dsn = dirname(shp_raw), 
                        layer = basename(shp_raw),
                        stringsAsFactors = FALSE)
   message('elapsed: ', (proc.time() - ptm)[3])
   
-  ### filter polygons
-  # glimpse(wdpa_poly@data) ### check class of STATUS_YR
+  ## filter polygons
+  # glimpse(wdpa_poly@data) ## check class of STATUS_YR
   wdpa_poly@data <- wdpa_poly@data %>%
     setNames(tolower(names(.))) %>%
-    select(wdpaid, name, orig_name, 
+    dplyr::select(wdpaid, name, orig_name, 
            desig, desig_eng, desig_type,
            iucn_cat, 
            marine, no_take, no_tk_area, 
            status, status_yr, 
            mang_auth, mang_plan, verif,
            sub_loc, parent_iso, iso3) %>%
-    mutate(status_yr = as.integer(status_yr))
+    dplyr::mutate(status_yr = as.integer(status_yr))
   
   # wdpa_poly@data$status %>% unique()
-  ### [1] "Designated"   "Proposed"     "Inscribed"    "Not Reported" "Adopted"     
+  ## [1] "Designated"   "Proposed"     "Inscribed"    "Not Reported" "Adopted"     
 
   # x <- wdpa_poly@data %>% filter(str_detect(tolower(mang_plan), 'non-mpa program'))
-  ### 84 observations
+  ## 84 observations
   wdpa_poly <- wdpa_poly[wdpa_poly@data$status == 'Designated', ]
   wdpa_poly <- wdpa_poly[!str_detect(tolower(wdpa_poly@data$mang_plan), 'non-mpa program'), ]
   
-  ### reorder polygons (oldest last) and save shapefile
+  ## reorder polygons (oldest last) and save shapefile
   reorder_vec <- order(wdpa_poly@data$status_yr, decreasing = TRUE)
   wdpa_poly1  <- wdpa_poly[reorder_vec, ]
   
   message('Writing filtered/reordered WDPA polygons to: \n  ', shp_reorder)
-  ### probably gonna take half an hour to write?
+  ## probably gonna take half an hour to write?
   ptm <- proc.time()
   writeOGR(wdpa_poly1, 
            dsn = dirname(shp_reorder), layer = basename(shp_reorder),
            driver = 'ESRI Shapefile')
   message('elapsed: ', (proc.time() - ptm)[3])
-  ### lots of warnings similar to:
-  ###   "Warning 1: Value 555593627 of field WDPAID of feature 507 not successfully written."
-  ### warning ignored: WDPAID field not used in analysis
+  ## lots of warnings similar to:
+  ##   "Warning 1: Value 555593627 of field WDPAID of feature 507 not successfully written."
+  ## warning ignored: WDPAID field not used in analysis
   
   rm('wdpa_poly') ### clean up memory
   
 } else {
-  ### reordered shapefile exists; confirm
-  message('Filtered/re-ordered shapefile: \n  ', shp_reorder)
+  ## reordered shapefile exists; confirm
+  message('Filtered/re-ordered shapefile exists: \n  ', shp_reorder)
 }
 
 ```
 
+Transform ordered polygons to Mollweide and save as new polygons.
+
 ``` {r transform_poly}
 
-shp_xformed <- file.path(dir_data, 'shps', 'WDPA_May2017_shp_xformed')
+shp_xformed <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_xformed')
 
 if(!file.exists(paste0(shp_xformed, '.shp'))) {
   message('No shp found for filtered/reordered/transformed WDPA database')
   
   if(!exists('wdpa_poly1')) {
+    
     message('loading wdpa polygons (filtered and ordered)')
-    shp_reorder <- file.path(dir_data, 'shps', 'WDPA_May2017_shp_ordered')
+    shp_reorder <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_ordered')
     wdpa_poly1 <- readOGR(dsn = dirname(shp_reorder), 
                           layer = basename(shp_reorder),
                           stringsAsFactors = FALSE)
@@ -139,15 +144,16 @@ if(!file.exists(paste0(shp_xformed, '.shp'))) {
   writeOGR(wdpa_poly2, dsn = dirname(shp_xformed), layer = basename(shp_xformed),
            driver = 'ESRI Shapefile')
   message('elapsed: ', (proc.time() - ptm)[3])
-  ### elapsed: 734.635 s on Mazu
+  ## elapsed: 734.635 s on Mazu
   
   rm('wdpa_poly1', 'wdpa_poly2') ### clean up the memory
   
 } else {
-  ### transformed shapefile exists
+  ## transformed shapefile exists
   message('Transformed WDPA shapefile exists at \n  ', shp_xformed)
   message('Go inspect it to make sure it looks good!')
 }
+
 ```
 
 ### Define some raster functions.
@@ -157,7 +163,7 @@ Here we define `gdal_rast2()` function as a wrapper for `gdalUtils::gdal_rasteri
 Here we also define `writeRasterBlocks()` to write out very large rasters chunk-by-chunk to avoid an issue in which `writeRaster()` fails due to inability to work with long vectors (over 2 billion elements?).
 
 ``` {r define_gdal_rast2}
-### from OHIBC...
+## from OHIBC...
 
 gdal_rast2 <- function(src, rast_base, dst = NULL, value = NULL, override_p4s = FALSE) {
 
@@ -165,14 +171,14 @@ gdal_rast2 <- function(src, rast_base, dst = NULL, value = NULL, override_p4s = 
 
   if(!str_detect(src, '.shp$'))
     src <- paste0(src, '.shp')
-  ### add .shp if not present on src
+  ## add .shp if not present on src
 
   if(is.null(dst))
     dst <- src %>%
       stringr::str_replace('.shp$', '.tif')
-  ### if no dst, save it in same place as src
+  ## if no dst, save it in same place as src
 
-  ### check projections
+  ## check projections
   message('Checking projections...')
   shp_prj <- rgdal::ogrInfo(dsn = dirname(src),
                      layer = basename(src) %>% str_replace('.shp$', '')) %>%
@@ -195,7 +201,7 @@ gdal_rast2 <- function(src, rast_base, dst = NULL, value = NULL, override_p4s = 
     tmp_dbf  <- foreign::read.dbf(str_replace(src, '.shp$', '.dbf'))
     num_cols <- sapply(tmp_dbf, class) %in% c('numeric', 'integer')
     if(sum(num_cols) == 0) {
-      message('No numeric column found in source shapefile')
+      message('No numeric or integer column found in source shapefile')
       stop()
     } else {
       value <- names(tmp_dbf)[num_cols][1]
@@ -223,15 +229,15 @@ gdal_rast2 <- function(src, rast_base, dst = NULL, value = NULL, override_p4s = 
     tr = base_tr,
     output_Raster = TRUE)
 
-  ### writeRaster to write a compressed version in final location
+  ## writeRaster to write a compressed version in final location
   message('Writing final raster file using raster::writeRaster (for compression)\n  ', dst)
   raster::writeRaster(rast_tmp, dst, overwrite = TRUE)
 
-  ### unlink the temp raster because it's huge
+  ## unlink the temp raster because it's huge
   message('Unlinking temp raster')
   unlink(dst_tmp) ### delete temp
 
-  ### reload raster from the compressed file and return it
+  ## reload raster from the compressed file and return it
   rast <- raster::raster(dst)
 
   if(exists('git_prov')) {
@@ -266,13 +272,15 @@ Using the `gdal_rast2()` function generally creates rasters faster than `raster:
 
 ``` {r gdal_rasterize_wdpa, eval = FALSE}
 
-rast_wdpa_file   <- file.path(dir_goal_anx, 'rast', 'wdpa_2017_moll_500m_gdal.tif')
+rast_wdpa_file   <- file.path(dir_goal_anx, 'rast', 'wdpa_2018_moll_500m_gdal.tif')
 
 if(!file.exists(rast_wdpa_file)) {
-  shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_May2017_shp_xformed')
+  shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_xformed')
+  
+  ## don't need to change file path name from year to year
   rast_base <- raster::raster(file.path(dir_M, 'git-annex/globalprep/spatial/d2014', 
                                 'data/rgn_mol_raster_500m', 
-                                'rgn_inland1km_mol_500mcell.tif'))
+                                'rgn_inland1km_mol_500mcell.tif')) 
   
   ptm <- proc.time()
   rast_wdpa <- gdal_rast2(src       = shp_xformed_file,
