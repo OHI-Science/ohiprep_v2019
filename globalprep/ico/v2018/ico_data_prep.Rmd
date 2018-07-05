@@ -181,13 +181,13 @@ Filtering the complete IUCN species list to include only the identified Iconic S
 ``` {r combine_iucn_spp_info_with_ico_list}
 
 spp_df_all <- read_csv(file.path(dir_goal, 'int/spp_list_from_api.csv'))
-ico_list_raw <- read_csv(file.path(dir_goal, 'raw/ico_list_raw.csv'))
+ico_list_raw <- read_csv(file.path(dir_goal, 'raw/ico_list_raw.csv')) # static list; same each year
 
 spp_ico <- spp_df_all %>% 
   filter(sciname %in% ico_list_raw$sciname) 
 
 spp_missing <- ico_list_raw %>% 
-  filter(!sciname %in% spp_ico$sciname)
+  filter(!sciname %in% spp_ico$sciname) # for v2018, missing only Sprattus sprattus
 
 ico_list <- ico_list_raw %>%
   left_join(spp_ico %>% 
@@ -195,7 +195,7 @@ ico_list <- ico_list_raw %>%
             by = 'sciname') %>%
   filter(!is.na(iucn_sid))
 
-write_csv(ico_list, file.path(dir_goal, 'int/ico_list_prepped.csv'))
+write_csv(ico_list, file.path(dir_goal, 'int/ico_list_prepped.csv')) # 144 in v2018
 ```
 
 For each of these species, use the IUCN API to gather a list of countries in which it is present.
