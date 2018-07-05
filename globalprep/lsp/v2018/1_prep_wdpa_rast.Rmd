@@ -97,7 +97,7 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
   #reorder_vec <- order(wdpa_poly@data$status_yr, decreasing = TRUE)
   #wdpa_poly1  <- wdpa_poly[reorder_vec, ]
   
-  message('Writing filtered/reordered WDPA polygons to: \n  ', shp_reorder)
+  message('Writing filtered WDPA polygons to: \n  ', shp_reorder)
   ## probably gonna take half an hour to write?
   ptm <- proc.time()
   writeOGR(wdpa_poly, 
@@ -111,8 +111,8 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
   rm('wdpa_poly') ### clean up memory
   
 } else {
-  ## reordered shapefile exists; confirm
-  message('Filtered/re-ordered shapefile exists: \n  ', shp_reorder)
+  ## filtered shapefile exists; confirm
+  message('Filtered shapefile exists: \n  ', shp_reorder)
 }
 
 ```
