@@ -158,11 +158,16 @@ if(length(zonal_files_to_run) > 0) {
     return(rast_df)
   }
   
-  ### For 
+  ### For processing & saving zonal statistics for a single raster if 
+  ### for loop or mclapply not working
   # x <- lsp_crosstab(rgn_rast_list[3])
   # write_csv(x, zonal_files[3])
+  
+  ### Indicates start time of zonal stats calculation
   ptm <- proc.time()
   
+  ### Use either a simple for loop or mclapply to process the zonal stats
+  ### Use for loop - will see messages and progress bar
   # zonal_dfs <- vector('list', length = length(zonal_files))
   # for(i in seq_along(zonal_files)) {
   #   tmp_df <- lsp_crosstab(rgn_rast_list[i],
@@ -172,14 +177,17 @@ if(length(zonal_files_to_run) > 0) {
   # zonal_dfs %>%
   #   setNames(names(rgn_rast_list))
   
+  ### Use mclapply - won't see messages and progress bar
   ### Not sure how long this takes - ran it for 3 hours with no result
   zonal_dfs <- parallel::mclapply(rgn_rast_list,
                                   lsp_crosstab, rast_values = rast_wdpa,
                                   mc.cores = 3) %>%
     setNames(names(rgn_rast_list))
   
+  ### Duration of zonal stats calculations for all rasters
   message('Elapsed: ', (proc.time() - ptm)[3], ' sec')
   
+  ### Save completed zonal stats data tables
   for(zone in names(zonal_files_to_run)) {
     message('Writing zonal dataframe to ', zonal_files_to_run[zone])
     write_csv(zonal_dfs[[zone]], zonal_files_to_run[zone])
