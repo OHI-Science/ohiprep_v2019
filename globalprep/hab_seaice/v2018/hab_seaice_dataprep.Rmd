@@ -237,7 +237,7 @@ write.csv(trend, "output/hab_ice_trend_eez.csv", row.names = FALSE)
 ## seaice extent data
 extent <- data %>%
    dplyr::filter(rgn_typ == "eez") %>%
-   dplyr::mutate(year = final.year) %>% # extent for most recent/last year of data, final.year defined above
+   dplyr::mutate(year = 2016) %>% # extent not updated each year (historic extent of the sea ice habitat); updated last 2016 bc of source methods
   dplyr::select(rgn_id, habitat, year, km2)
 
 write.csv(extent, "output/hab_ice_extent_eez.csv", row.names = FALSE) # save seaice extent data
