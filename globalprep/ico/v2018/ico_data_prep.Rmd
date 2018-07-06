@@ -370,11 +370,12 @@ ico_assess <- read_csv(file.path(dir_goal, 'int/ico_assess_clean.csv'))
 ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
 
 ico_assess_full <- ico_assess %>%
+  mutate(eval_yr = year) %>% 
   select(-sciname) %>%
   arrange(iucn_sid, year) %>%
   complete(year = full_seq(year, 1), nesting(iucn_sid)) %>%
   group_by(iucn_sid) %>%
-  fill(cat, cat_txt, cat_score) %>% ## fills all the way to latest year
+  fill(cat, cat_txt, cat_score, eval_yr) %>% ## fills all the way to latest year
   ungroup()
 
 ico_spp_cat <- ico_list %>% 
@@ -416,7 +417,7 @@ Using `dplyr::full_join()` we combine the `ico_spp_rgn` dataframe (iconic specie
 ``` {r combine_ico_spp_cat_with_countries}
 
 ico_cat_ts_abbr <- read_csv(file.path(dir_goal, 'int/ico_spp_cat.csv')) %>%
-  select(iucn_sid, sciname, year, cat, cat_score) %>%
+  select(iucn_sid, sciname, year, cat, cat_score, eval_yr) %>%
   filter(year >= 2000)
 
 ico_spp_rgn <- read_csv(file.path(dir_goal, 'int/ico_spp_rgn_prepped.csv')) %>%
@@ -455,7 +456,7 @@ ico_spp_rgn_cat <- read_csv(file.path(dir_goal, 'int/ico_spp_rgn_cat.csv'))
 ##   average any parent/subpop species listings before aggregating to overall average per region.
 
 ico_status_raw <- ico_spp_rgn_cat %>%
-  select(rgn_id, rgn_name, sciname, iucn_sid, cat, cat_score, year) %>%
+  select(rgn_id, rgn_name, sciname, iucn_sid, cat, cat_score, year, eval_yr) %>%
   arrange(rgn_id, desc(year), sciname) %>%
   ungroup()
 
@@ -492,7 +493,7 @@ write_csv(ico_sum, file.path(dir_goal, 'summary/ico_summary.csv'))
 ### Report out for finalized status and trend values per region
 
 ico_status_raw1 <- ico_status_raw %>%
-  dplyr::select(rgn_id, sciname, iucn_sid, year, category = cat)
+  dplyr::select(rgn_id, sciname, iucn_sid, year, eval_yr, category = cat)
 
 write_csv(ico_status_raw1, file.path(dir_goal, 'output/ico_spp_iucn_status.csv'))
 write_csv(ico_status_calc, file.path(dir_goal, 'output/ico_status_calc.csv'))
