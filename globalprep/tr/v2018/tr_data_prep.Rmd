@@ -208,7 +208,7 @@ warn_raw <- read.csv('raw/tr_travelwarning_2018_raw.csv') %>%
   select(assess_year, level, country , regional) %>% 
   rename(year= assess_year)
  
-encodeString(warn_raw$rgn_name)
+encodeString(warn_raw$country)
 
 ##Correct names for regions not identified by the name_2_region
 
@@ -219,12 +219,12 @@ warn_improved <- warn_raw %>%
   dplyr::mutate(rgn_name = ifelse(regional == 1 & country == "French West Indies", "Northern Saint-Martin", country)) %>% 
   dplyr::mutate(rgn_name = ifelse(country== "French West Indies" & is.na(regional) & is.na(rgn_name), "Guadeloupe and Martinique", rgn_name)) %>% 
   dplyr::mutate(regional = ifelse(rgn_name == "Northern Saint-Martin", NA, regional)) %>% 
- dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Bonaire"), "#Bonaire", country)) %>%
+ dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Bonaire"), "Bonaire", country)) %>%
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"ROC"), "Republique du Congo", country)) %>% 
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Kinshasha"), "Democratic Republic of the Congo", country)) %>% 
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Domincan"), "Dominican Republic", country)) %>% 
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"France"), "France", country)) %>%
-    dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Honduras\xca"), "Honduras", country))%>%
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Honduras\xca"), "Honduras", country)) %>%
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Israel"), "Israel", country)) %>%
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Sao Tome"), "Sao Tome and Principe", country)) %>%
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Turks and Caicos"), "Turks and Caicos Islands", country)) %>%
@@ -307,7 +307,8 @@ warn_rgn <- name_2_rgn(df_in = warn2,
                        flds_unique=c('rgn_name','year'))
 
 warn_rgn <- warn_rgn %>%
-  select(rgn_id, year, multiplier)
+  select(rgn_id, year, multiplier) %>% 
+
 
 write.csv(warn_rgn, 'output/tr_travelwarnings.csv', row.names=FALSE)
 
