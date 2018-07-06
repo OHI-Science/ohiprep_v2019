@@ -8,7 +8,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+      in_header: '~/github/ohiprep_v2018/src/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -75,14 +75,12 @@ ICO trend is calculated in a similar manner, but weightings are assigned accordi
 
 # Updates from previous assessment
 
-Changes since 2015 ICO subgoal for global OHI:
-
-* The 2016 assessment now pulls data from the new IUCN API (http://apiv3.iucnredlist.org/api/v3/docs) instead of the old API.
-* The trend calculations for 2016 are based on a ten-year linear trend of species risk status based on past assessment information, rather than population trend ('decreasing', 'stable', 'increasing').
+No changes have been made to the data prep methods for this goal, since the 2016 assessment, though there were some slight changes to improve the code. API key is read from a file, the 'get from API' function now includes error checking (it reports a little on what the error is, whether it's a zero-length data frame or a try error, etc) and multiple attempts (if it gets an error it tries again a few times), and there is also a delay parameter to space out requests to the API. 
 
 ## Future improvements?
 
 * Update list of iconic species... see issue #671
+
 
 ***
 
@@ -107,6 +105,7 @@ Using the IUCN API, we accessed the full IUCN species list at http://apiv3.iucnr
 
 iucn_sid | kingdom | phylum | class | order | family | genus | sciname | population | category
 
+
 ### Download Species List from IUCN
 
 Get all pages and bind into total species list, using the IUCN API. __include more details here?__
@@ -114,8 +113,7 @@ Get all pages and bind into total species list, using the IUCN API. __include mo
 ``` {r get_spp_info}
 
 api_file <- file.path(dir_anx, 'api_key.csv')
-api_key <- scan(api_file, what = 'character')
-## api_key <- 'fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5'
+api_key <- scan(api_file, what = 'character') # fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5
 
 spp_list_from_api_file <- file.path(dir_goal, 'int/spp_list_from_api.csv')
 reload <- TRUE
@@ -146,23 +144,25 @@ if(!file.exists(spp_list_from_api_file) | reload) {
 ```
 
 
+
 ## Get master list of Iconic Species
 
 The list of Iconic Species is based upon the original ICO list generated in 2011, using species identified as globally iconic (WWF Flagship species and Priority species) or regionally iconic (based upon WWF regional/local priority species and nation-specific lists).
+
 
 ``` {r get_ico_spp_list}
 ico_list_raw <- get_ico_list(reload = TRUE) # get_ico_list is defined in ico_fxn.R
 
 ## head of ico_list_raw for v2018:
 
-# comname                          sciname               ico_gl ico_rgn_id
-#   <chr>                            <chr>                 <lgl>       <int>
-# 1 Blue Shark                       Prionace glauca       T              NA
-# 2 Whale Shark                      Rhincodon typus       T              NA
-# 3 Shortfin Mako                    Isurus oxyrinchus     T              NA
-# 4 Olive Ridley Turtle              Lepidochelys olivacea T              NA
-# 5 Irrawaddy Dolphin                Orcaella brevirostris T              NA
-# 6 Humphead wrasse, Napoleon Wrasse Cheilinus undulatus   T              NA
+## comname                          sciname               ico_gl ico_rgn_id
+##   <chr>                            <chr>                 <lgl>       <int>
+## 1 Blue Shark                       Prionace glauca       T              NA
+## 2 Whale Shark                      Rhincodon typus       T              NA
+## 3 Shortfin Mako                    Isurus oxyrinchus     T              NA
+## 4 Olive Ridley Turtle              Lepidochelys olivacea T              NA
+## 5 Irrawaddy Dolphin                Orcaella brevirostris T              NA
+## 6 Humphead wrasse, Napoleon Wrasse Cheilinus undulatus   T              NA
 
 ## ico_rgn_id: rgn_id in which species is iconic by regional/national lists; 
 ## if globally iconic, ico_rgn_id <- NA
@@ -243,17 +243,22 @@ ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
   left_join(ico_list, by = 'iucn_sid')
 
 ## filter this for species who are global (so all instances are iconic) 
-##   OR ico_rgn_id matches rgn_id (so locally iconic matches with location)
+##  OR ico_rgn_id matches rgn_id (so locally iconic matches with location)
 ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>%
   filter(ico_gl == TRUE | ico_rgn_id == rgn_id)
 
 write_csv(ico_spp_rgn_prepped, file.path(dir_goal, 'int/ico_spp_rgn_prepped.csv'))
 
+ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>% 
+  select(iucn_sid, sciname, comname, presence, origin, distribution_code, cat, ico_gl, rgn_id, rgn_name, subpop, ico_rgn_id, api_error, param_id)
+
 ```
 
-`ico_spp_rgn_prepped` saved at `~/github/ohiprep/globalprep/ico/v2016/int/ico_spp_rgn_prepped.csv`:
+`ico_spp_rgn_prepped` saved at `~/github/ohiprep/globalprep/ico/v2016/int/ico_spp_rgn_prepped.csv`
 
-`r DT::datatable(ico_spp_rgn_prepped)`
+
+
+`r DT::datatable(ico_spp_rgn_prepped, width = 400)`
 
 ***
 
@@ -265,10 +270,10 @@ Each assessment includes a year and an extinction risk, along with additional in
 
 ``` {r get_category_list}
 
-## for each species ID, get past assessments
 ico_past_assess_url <- 'http://apiv3.iucnredlist.org/api/v3/species/history/id/%s?token=%s'
 ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
 
+## for each species ID, get past assessments
 ico_assess_raw <- mc_get_from_api(ico_past_assess_url, ico_list$iucn_sid, api_key)
 
 ico_assess_raw <- ico_assess_raw %>% 
@@ -288,6 +293,23 @@ write_csv(ico_assess_raw, file.path(dir_goal, 'raw/ico_assessments_raw.csv'))
 
 These raw assessments are cleaned up to standardize codes and categories, and category scores are assigned based on a scale from Least Concern = 1 to Extinct = 0, as per the [Species OHI subgoal](https://rawgit.com/OHI-Science/ohi-global/draft/global_supplement/Supplement.html#591_iconic_species_(subgoal_of_sense_of_place)).  Note that past assessments used different coding, especially prior to 1994; we reclassified older codes according to this chart:
 
+
+\begin{eqnarray*}
+\textbf{New Category} & & \longleftarrow \textbf{Original Category/Description}\\
+NT & & \Longleftarrow \text{"Lower risk/Near threatened ($LR/NT$)"}\\
+T  & & \Longleftarrow \text{"Threatened ($T$)" treat as "$EN$"}\\
+VU & & \Longleftarrow \text{"Vulnerable ($V$)"}\\                  
+EN & & \Longleftarrow \text{"Endangered ($E$)" }\\
+LR/CD & & \Longleftarrow \text{"Lower risk/Conservation dependent ($LR/CD$)" treat as between $VU$ and $NT$}\\
+CR & & \Longleftarrow \text{"Very rare and believed to be decreasing in numbers"}\\
+T & & \Longleftarrow \text{"Less rare but believed to be threatened-Requires watching"}\\
+DD & & \Longleftarrow \text{"Insufficiently known ($K$)"}\\
+DD & & \Longleftarrow \text{"Indeterminate ($I$)"}\\
+DD & & \Longleftarrow \text{"Status inadequately known-Survey required or data sought"}\\
+NE & & \Longleftarrow \text{"Not recognized ($NR$)"}
+\end{eqnarray*}
+
+
 ```
 New category <- original category/description                         
 #     NT     <- "LOWER RISK/NEAR THREATENED (LR/NT)"                       
@@ -303,9 +325,12 @@ New category <- original category/description
 #     NE     <- "NOT RECOGNIZED (NR)"  
 ```
 
+
+Clean up the time series:
+
+iucn_sid | year | code | category | sciname
+
 ``` {r clean_up_category_list}
-## Clean up the time series
-## iucn_sid | year | code | category | sciname
 
 ico_assess_raw <- read_csv(file.path(dir_goal, 'raw/ico_assessments_raw.csv'))
 
@@ -321,7 +346,6 @@ ico_assess <- ico_assess_raw %>%
          cat = ifelse(cat == 'V', 'VU', cat), 
          cat = ifelse(cat == 'E', 'EN', cat))
 
-       
 pop_cat <- data.frame(cat       = c("LC", "NT", "VU", "EN", "CR", "EX", "T", "CD", "NE", "DD"), 
                       cat_score = c(   0,  0.2,  0.4,  0.6,  0.8,  1.0, 0.6,  0.3,   NA,  NA),
                       stringsAsFactors = FALSE)
@@ -357,17 +381,17 @@ ico_spp_cat <- ico_list %>%
   rename(cat_2016 = cat) %>%
   left_join(ico_assess_full, by = c('iucn_sid'))
 
-### if no time series available, time series years will be NA.  Assign a list to
-### those NAs, then unnest it to create observations for those years.
+## if no time series available, time series years will be NA.  Assign a list to
+## those NAs, then unnest it to create observations for those years.
 ico_spp_cat <- ico_spp_cat %>%
   mutate(year = ifelse(is.na(year), 
                        list(c(min(year, na.rm = TRUE):max(year, na.rm = TRUE))), 
                        year)) %>% 
   unnest(year)
 
-### NAs will be filled backward in time by starting from the most recent non-NA.
-### To do this, we'll swap any current-year NAs with the cat_score (meaning no
-### time series fill), and fill upwards instead of downwards.
+## NAs will be filled backward in time by starting from the most recent non-NA.
+## To do this, we'll swap any current-year NAs with the cat_score (meaning no
+## time series fill), and fill upwards instead of downwards.
 ico_spp_cat <- ico_spp_cat %>%
   left_join(pop_cat %>% 
               rename(cat_2016 = cat, cat_2016_score = cat_score), 
@@ -420,16 +444,15 @@ write_csv(ico_spp_rgn_cat, file.path(dir_goal, 'int/ico_spp_rgn_cat.csv'))
 
 The toolbox wants `rgn_id`, species `sciname`, and extinction risk `category` for the basic calculations.  Since some regions contain multiple subpops (or parent/subpop) we also include `iucn_sid` to differentiate.  This information is included for each `year`, filtered back to the year 2000.
 
-While the official calculations are performed in the toolbox, we perform the same basic calcs here to get a sense of the ICO status and trend ahead of time.
+While the official calculations are performed in the toolbox, we perform the same basic calcs here to get a sense of the ICO status and trend ahead of time. Report and summarize estimate of regional iconic species status:
 
 ``` {r report_status_and_trend}
-### Report and summarize estimate of regional iconic species status
 
 ico_spp_rgn_cat <- read_csv(file.path(dir_goal, 'int/ico_spp_rgn_cat.csv'))
 
-### Report out for toolbox format (rgn_id | sciname | category or popn_trend for each species within a region).
-### Note: in toolbox, group_by(rgn_id, sciname) and then summarize(category = mean(category)) to
-###   average any parent/subpop species listings before aggregating to overall average per region.
+## Report out for toolbox format (rgn_id | sciname | category or popn_trend for each species within a region).
+## Note: in toolbox, group_by(rgn_id, sciname) and then summarize(category = mean(category)) to
+##   average any parent/subpop species listings before aggregating to overall average per region.
 
 ico_status_raw <- ico_spp_rgn_cat %>%
   select(rgn_id, rgn_name, sciname, iucn_sid, cat, cat_score, year) %>%
