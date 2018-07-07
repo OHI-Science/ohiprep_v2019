@@ -1,5 +1,5 @@
 ---
-title: 'OHI: Lasting Special Places v2017'
+title: 'OHI: Lasting Special Places v2018'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output:
   html_document:
@@ -22,6 +22,7 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 
 library(raster)
 library(readr)
+library(tidyverse)
 # library(tmap)
 
 
@@ -73,17 +74,17 @@ New World Database on Protected Areas spatial data from UNEP-WCMC became availab
 ***
 
 # Data Source
-**Reference**: IUCN and UNEP-WCMC (2016), The World Database on Protected Areas (WDPA) [On-line], May 2016. Cambridge, UK: UNEP-WCMC. Available at: www.protectedplanet.net.
+**Reference**: IUCN and UNEP-WCMC (2018), The World Database on Protected Areas (WDPA) [On-line], June 2018. Cambridge, UK: UNEP-WCMC. Available at: www.protectedplanet.net.
 
-**Downloaded**: June 7, 2016
+**Downloaded**: July 2, 2018
 
 **Description**:  Shapefile of World Database on Protected Areas
 
-**Time range**: 1819 - 2015; some protected areas do not have an associated "status year" and are reported as year 0.
+**Time range**: 1819 - 2018; some protected areas do not have an associated "status year" and are reported as year 0.
 
 **Format**:  Shapefile
 
-**File location**: `Mazu:git-annex/globalprep/_raw_data/wdpa_mpa/d2016/WDPA_May2016-shapefile/`
+**File location**: `Mazu:git-annex/globalprep/_raw_data/wdpa_mpa/d2018/WDPA_June2018-shapefile/`
 
 ***
   
@@ -104,13 +105,13 @@ The WDPA-MPA dataset comes as a shapefile or geodatabase in WGS84 coordinate ref
 
 Once the polygons have been prepped, we rasterize the results to 500 m resolution.
 
-This process is all done in the script: `1_prep_wdpa_rast.Rmd`.
+This process is all done in the script: `1_prep_wdpa_rast.Rmd`. After that is complete, move on to computing zonal statistics.
 
 ***
 
 ## Compute zonal statistics
 
-Comparing the global WDPA raster to the 3 nm offshore and 1 km inland rasters, we can tally the protected area within each region and compare to the total area within each region.  Note each cell is 500 m^2^, so area is .25 km^2^, but since we are simply calculating a ratio, this cancels out.
+Comparing the global WDPA raster to the 3 nautical miles offshore and 1 km inland rasters, we can tally the protected area within each region and compare to the total area within each region.  Note each cell is 500 m^2^, so area is .25 km^2^, but since we are simply calculating a ratio, this cancels out.
 
 ``` {r lsp_zonal_stats, eval = TRUE}
 
@@ -118,7 +119,9 @@ zonal_files <- c('zonal_3nm' =  file.path(dir_goal, 'int', 'zonal_stats_3nm.csv'
                  'zonal_1km' =  file.path(dir_goal, 'int', 'zonal_stats_1km.csv'),
                  'zonal_eez' =  file.path(dir_goal, 'int', 'zonal_stats_eez.csv'))
 
-rast_wdpa <- raster::raster(file.path(dir_goal_anx, 'rast', 'wdpa_2017_moll_500m.tif'))
+rast_wdpa <- raster::raster(file.path(dir_goal_anx, 'rast', 'wdpa_2018_moll_500m.tif'))
+
+
 
 ### point to 500 m rasters for 3 nautical mile coastal regions, and 1 km inland coastal regions.
 dir_zones <- file.path(dir_anx, 'spatial/d2014/data/rgn_mol_raster_500m')
@@ -128,7 +131,8 @@ rgn_rast_list <- c(
   'zonal_1km' = file.path(dir_zones, 'rgn_inland1km_mol_500mcell.tif'),
   'zonal_eez' = file.path(dir_zones, 'rgn_eez_mol_500mcell.tif'))
 
-### filter out finished zonal files... comment out to recalculate
+### Remove all files in `int` if it's the first time working through this data prep for this assessment
+### Filters out finished zonal files: if zonal files don't exist yet, they will be created (comment out to recalculate)
 zonal_files_to_run <- zonal_files[!file.exists(zonal_files)]
 rgn_rast_list <- rgn_rast_list[!file.exists(zonal_files)]
 
@@ -139,6 +143,7 @@ if(length(zonal_files_to_run) > 0) {
       # In FUN(X[[i]], ...) : integer overflow - use sum(as.numeric(.))
   ### zonal() wouldn't work since we want to track the frequency of each
   ### year value within each rgn_id value.
+  ### This will probably take about 1.5 hours
   
   lsp_crosstab <- function(rgn_rast_file, rast_values) {
     rgn_rast <- raster::raster(rgn_rast_file)
@@ -153,10 +158,16 @@ if(length(zonal_files_to_run) > 0) {
     return(rast_df)
   }
   
+  ### For processing & saving zonal statistics for a single raster if 
+  ### for loop or mclapply not working
   # x <- lsp_crosstab(rgn_rast_list[3])
   # write_csv(x, zonal_files[3])
+  
+  ### Indicates start time of zonal stats calculation
   ptm <- proc.time()
   
+  ### Use either a simple for loop or mclapply to process the zonal stats
+  ### Use for loop - will see messages and progress bar
   # zonal_dfs <- vector('list', length = length(zonal_files))
   # for(i in seq_along(zonal_files)) {
   #   tmp_df <- lsp_crosstab(rgn_rast_list[i],
@@ -166,13 +177,17 @@ if(length(zonal_files_to_run) > 0) {
   # zonal_dfs %>%
   #   setNames(names(rgn_rast_list))
   
+  ### Use mclapply - won't see messages and progress bar
+  ### Not sure how long this takes - ran it for 3 hours with no result
   zonal_dfs <- parallel::mclapply(rgn_rast_list,
                                   lsp_crosstab, rast_values = rast_wdpa,
                                   mc.cores = 3) %>%
     setNames(names(rgn_rast_list))
   
+  ### Duration of zonal stats calculations for all rasters
   message('Elapsed: ', (proc.time() - ptm)[3], ' sec')
   
+  ### Save completed zonal stats data tables
   for(zone in names(zonal_files_to_run)) {
     message('Writing zonal dataframe to ', zonal_files_to_run[zone])
     write_csv(zonal_dfs[[zone]], zonal_files_to_run[zone])
