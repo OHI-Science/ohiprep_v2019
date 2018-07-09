@@ -111,7 +111,7 @@ This process is all done in the script: `1_prep_wdpa_rast.Rmd`. After that is co
 
 ## Compute zonal statistics
 
-Comparing the global WDPA raster to the 3 nautical miles offshore and 1 km inland rasters, we can tally the protected area within each region and compare to the total area within each region.  Note each cell is 500 m^2^, so area is .25 km^2^, but since we are simply calculating a ratio, this cancels out.
+Comparing the global WDPA raster to the 3 nautical miles offshore and 1 km inland rasters, we can tally the protected area within each region and compare to the total area within each region.  Note each cell is 500 m x 500 m, so area is .25 km^2^, but since we are simply calculating a ratio, this cancels out.
 
 ``` {r lsp_zonal_stats, eval = TRUE}
 
@@ -158,8 +158,8 @@ if(length(zonal_files_to_run) > 0) {
     return(rast_df)
   }
   
-  ### For processing & saving zonal statistics for a single raster if 
-  ### for loop or mclapply not working
+  ### For processing & saving zonal statistics for a single raster 
+  ### if for loop or mclapply not working
   # x <- lsp_crosstab(rgn_rast_list[3])
   # write_csv(x, zonal_files[3])
   
