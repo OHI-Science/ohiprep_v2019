@@ -275,23 +275,25 @@ write_csv(prot_eez, file.path(dir_goal, 'int', 'area_protected_eez.csv'))
 ```
 
 
-### Protected areas (3 nm offshore, 2016 only):
+### Protected areas (3 nm offshore, 2018 only):
 
-`r DT::datatable(prot_3nm %>% filter(year == 2016) %>% select(-year, -contains('cell')), caption = '3 nautical mile offshore zone - area in km^2^')`
+`r DT::datatable(prot_3nm %>% filter(year == 2018) %>% select(-year, -contains('cell')), caption = '3 nautical mile offshore zone - area in km^2^')`
 
-### Protected areas (1 km inland, 2016 only):
+### Protected areas (1 km inland, 2018 only):
 
-`r DT::datatable(prot_1km %>% filter(year == 2016) %>% select(-year, -contains('cell')), caption = '1 kilometer inland zone - area in km^2^')`
+`r DT::datatable(prot_1km %>% filter(year == 2018) %>% select(-year, -contains('cell')), caption = '1 kilometer inland zone - area in km^2^')`
 
-### Protected areas (full EEZ, 2016 only):
+### Protected areas (full EEZ, 2018 only):
 
-`r DT::datatable(prot_eez %>% filter(year == 2016) %>% select(-year, -contains('cell')), caption = 'Full EEZ - area in km^2^')`
+`r DT::datatable(prot_eez %>% filter(year == 2018) %>% select(-year, -contains('cell')), caption = 'Full EEZ - area in km^2^')`
 
 ***
 
 ## Write out layers
 
 From the protected area files, write out the individual layers ready for the Toolbox[TM]. 
+* total area for offshore 3 nm and inland 1 km
+* protected area for offshore 3 nm and inland 1 km
 
 ``` {r write_layers, eval = TRUE}
 
@@ -317,7 +319,7 @@ a_prot_1km <- write_lsp_layer(prot_1km, c('year', 'a_prot_1km'), 'lsp_prot_area_
 
 ```
 
-
+Some goals require calculation of resilience nearshore (3nm) or entire EEZ.
 ``` {r estimate status by year, eval = TRUE}
 
 area_ref = .30 ### 30% of area protected = reference point
@@ -330,19 +332,14 @@ resil_eez <- read_csv(file.path(dir_goal, 'int', 'area_protected_eez.csv')) %>%
   mutate(resilience.score = (a_prot_km2 / a_tot_km2) / area_ref,
          resilience.score = ifelse(resilience.score > 1, 1, resilience.score))
 
-for(resil_year in 2011:2017){ #year=2011
+## Save resilience scores for 3 nm and EEZ data
   tmp_3nm <- resil_3nm %>%
-    filter(year == resil_year) %>%
-    select(rgn_id, resilience.score)
-  
-  write_csv(tmp_3nm, file.path(dir_goal, 'output', sprintf("mpa_3nm_%s.csv", resil_year)))
+    select(rgn_id, year, resilience.score)
+  write_csv(tmp_3nm, file.path(dir_goal, 'output', "mpa_3nm_resilience.csv"))
 
   tmp_eez <- resil_eez %>%
-    filter(year == resil_year) %>%
     select(rgn_id, resilience.score)
-  
-  write_csv(tmp_eez, file.path(dir_goal, 'output', sprintf("mpa_eez_%s_resilience.csv", resil_year)))
-}
+  write_csv(tmp_eez, file.path(dir_goal, 'output', "mpa_eez_resilience.csv"))
 
 ```
 
