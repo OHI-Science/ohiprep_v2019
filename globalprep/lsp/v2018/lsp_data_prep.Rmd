@@ -5,7 +5,7 @@ output:
   html_document:
     highlight: haddock
     includes:
-      in_header: ~/github/ohiprep/src/templates/ohi_hdr.html
+      in_header: '../../../src/templates/ohi_hdr.html'
     number_sections: yes
     theme: cerulean
     toc: yes
