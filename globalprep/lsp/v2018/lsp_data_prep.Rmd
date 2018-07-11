@@ -481,32 +481,34 @@ tpa2018 <- read_csv(file.path(dir_goal, 'output/lsp_prot_area_inland1km.csv'))
 marea2018 <- read_csv(file.path(dir_goal, 'output/rgn_area_offshore3nm.csv'))
 tarea2018 <- read_csv(file.path(dir_goal, 'output/rgn_area_inland1km.csv'))
 
-mpa2017 <- read_csv(file.path(dir_goal, '../v2017/output/lsp_prot_area_offshore3nm.csv')) %>%
-  group_by(rgn_id) %>%
-  mutate(a_prot_3nm = cumsum(a_prot_3nm)) 
-tpa2017 <- read_csv(file.path(dir_goal, '../v2017/output/lsp_prot_area_inland1km.csv')) %>%
-  group_by(rgn_id) %>%
-  mutate(a_prot_1km = cumsum(a_prot_1km)) 
+mpa2017 <- read_csv(file.path(dir_goal, '../v2017/output/lsp_prot_area_offshore3nm.csv')) #%>%
+#  group_by(rgn_id) %>%
+#  mutate(a_prot_3nm = cumsum(a_prot_3nm)) 
+tpa2017 <- read_csv(file.path(dir_goal, '../v2017/output/lsp_prot_area_inland1km.csv')) # %>%
+#  group_by(rgn_id) %>%
+#  mutate(a_prot_1km = cumsum(a_prot_1km)) 
 marea2017 <- read_csv(file.path(dir_goal, '../v2017/output/rgn_area_offshore3nm.csv'))
 tarea2017 <- read_csv(file.path(dir_goal, '../v2017/output/rgn_area_inland1km.csv'))
 
 #lsp_v2017 <- read_csv('~/github/ohi-global/eez2013/scores.csv') 
 
 
-checks <- mpa2018 %>% filter(rgn_id %in% c(153, 190)) %>% filter(year > 2000) %>% rename(prot_3nm_2018 = a_prot_3nm) %>%
-  left_join(tpa2018 %>% filter(rgn_id %in% c(153, 190)) %>% filter(year > 2000) %>% rename(prot_1km_2018 = a_prot_1km),
+check_rgn <- c(80,110,205,104,66,42,209)
+
+checks <- mpa2018 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_3nm_2018 = a_prot_3nm) %>%
+  left_join(tpa2018 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_1km_2018 = a_prot_1km),
             by = c('rgn_id', 'year')) %>%
-  left_join(mpa2017 %>% filter(rgn_id %in% c(153, 190)) %>% filter(year > 2000) %>% rename(prot_3nm_2017 = a_prot_3nm),
+  left_join(mpa2017 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_3nm_2017 = a_prot_3nm),
             by = c('rgn_id', 'year')) %>%
-  left_join(tpa2017 %>% filter(rgn_id %in% c(153, 190)) %>% filter(year > 2000) %>% rename(prot_1km_2017 = a_prot_1km),
+  left_join(tpa2017 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_1km_2017 = a_prot_1km),
             by = c('rgn_id', 'year')) %>%
-  left_join(marea2018 %>% filter(rgn_id %in% c(153, 190)) %>% rename(marea18 = area),
+  left_join(marea2018 %>% filter(rgn_id %in% check_rgn) %>% rename(marea18 = area),
             by = c('rgn_id')) %>%
-  left_join(tarea2018 %>% filter(rgn_id %in% c(153, 190)) %>% rename(tarea18 = area),
+  left_join(tarea2018 %>% filter(rgn_id %in% check_rgn) %>% rename(tarea18 = area),
             by = c('rgn_id')) %>%
-  left_join(marea2017 %>% filter(rgn_id %in% c(153, 190)) %>% rename(marea17 = area),
+  left_join(marea2017 %>% filter(rgn_id %in% check_rgn) %>% rename(marea17 = area),
             by = c('rgn_id')) %>%
-  left_join(tarea2017 %>% filter(rgn_id %in% c(153, 190)) %>% rename(tarea17 = area),
+  left_join(tarea2017 %>% filter(rgn_id %in% check_rgn) %>% rename(tarea17 = area),
             by = c('rgn_id'))
 ```
 
