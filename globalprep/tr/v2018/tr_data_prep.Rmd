@@ -210,6 +210,7 @@ Level 3 - Reconsider Travel: Avoid travel due to serious risks to safety and sec
 Level 4 – Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
 
 Step 6: Convert names to OHI regions and identify NAs. Look for regions with no data in the Canadian Government website and add them to the raw data csv. Make sure to label the column indicting the data source. 
+NOTE: Canada's warning have the same levels as the U.S
 
 Step 7: Upload the new version of the raw casv (including data from the Canadian Gov).
 
@@ -250,7 +251,7 @@ warn_improved <- warn_improved %>%
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Sao Tome"), "Sao Tome and Principe", rgn_name)) %>%
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Turks and Caicos"), "Turks and Caicos Islands", rgn_name)) %>%
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"United Arab Emirates"), "United Arab Emirates", rgn_name)) %>% 
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Line Islands"), "Kiribati", rgn_name)) %>% 
+  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Line Islands"), "Line Group", rgn_name)) %>% 
   dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Virgin Islands"), "Virgin Islands", rgn_name)) %>% 
   dplyr::select(-country)
 
@@ -306,6 +307,9 @@ warn_complete <- warn_improved %>%
   group_by(year, rgn_name) %>%
   mutate(warning_count = n()) 
 
+##Save warn complete!!!!
+
+
 ```
 
 
@@ -313,24 +317,40 @@ The following code is used transform the warnings into a multiplier that is used
 
 ```{r travel warnings}
 
-##Note: Adjusting scores for regions that only have one regional report: For 2018 warnings, every contry will have at least 1 warning, therefore the if statement changes to:  ifelse(warning_count %in% 2 & regional %in% 1, score*0.5, score). This is becuase countries with only one regional warn will have 2 warn count, the general inform warning plus the regional warning. If a country has more than one regional warn, then warn count would be >= 3 and their score should not be discounted.
+##Note: Discounting scores for regions that only have one regional report: For 2018 warnings, every contry will have at least 1 warning, therefore the discounting will apply to regions that have a general warning level 1 and only one aditional regional warning. This to be consistence with regions discounted in previous years (only one regional warning)
 
-## In the past (data from 2015 to 2017): ifelse(warning_count %in% 1 & regional %in% 1, score*0.5, score). This works because not all countries have a warning so whenever there is one warning_count and regional is 1, then then is means that that country has only a one regional warning which should be discounted. 
-
+##identify which 2018 warnings need to be discounted 
 warn2 <- warn_complete %>%
-  mutate(score = ifelse(year == '2018', ifelse(warning_count %in% 2 & regional %in% 1, score*0.5, score), score)) %>% #year == '2018' will change in the fuure when new assesment years are added. 
-  mutate(score = ifelse(year %in% 2017:2015, ifelse(warning_count %in% 1 & regional %in% 1, score*0.5, score), score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
-  summarize(score = mean(score)) %>%
-  mutate(multiplier = 1-score) %>%
-  select(year, rgn_name, multiplier) %>%
+  dplyr::mutate(discount = ifelse(level %in% 1 & warning_count %in% 2, 1, NA)) %>% 
+  dplyr::group_by(year, rgn_name) %>% 
+  tidyr::fill(discount) %>% 
+  dplyr::ungroup() 
+
+##Applying discount accordingly and calculating multiplier for each country each year
+warn_discount <- warn2 %>% 
+  dplyr::mutate(score =  ifelse(year %in% '2018' & regional %in% 1 & discount %in% 1, score*0.5, score)) %>% 
+  dplyr::mutate(score = ifelse(year %in% 2015:2017 & warning_count %in% 1 &regional %in% 1, score*0.5, score)) %>% 
+  dplyr::group_by(year, rgn_name) %>% 
+  dplyr::summarize(score = mean(score)) %>%
+  dplyr::mutate(multiplier = 1- score) %>%
+  dplyr::select(year, rgn_name, multiplier) %>%
+  dplyr::ungroup() %>% 
   data.frame()
+    
+  
+# mutate(score = ifelse(year == '2018', ifelse(warning_count %in% 2 & regional %in% 1, score*0.5, score), score)) %>% #year == '2018' will change in the fuure when new assesment years are added. 
+#   mutate(score = ifelse(year %in% 2017:2015, ifelse(warning_count %in% 1 & regional %in% 1, score*0.5, score), score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
+#   summarize(score = mean(score)) %>%
+#   mutate(multiplier = 1-score) %>%
+#   select(year, rgn_name, multiplier) %>%
+#   data.frame()
 
 data.frame(filter(warn_complete, year==2015))
-data.frame(filter(warn2, year==2015)) # checked to make sure I got conversions correct, looks good!
+data.frame(filter(warn_discount, year==2015)) # checked to make sure I got conversions correct, looks good!
 
 
 #Add rgn_id
-warn_rgn <- name_2_rgn(df_in = warn2, 
+warn_rgn <- name_2_rgn(df_in = warn_discount, 
                        fld_name='rgn_name', 
                        flds_unique=c('rgn_name','year'))
 
@@ -389,6 +409,54 @@ plot(warn_multi_new$multiplier, warn_multi_new$multiplier_old)
 abline(0,1, col="red")
 
 ##No change, that's good!
+
+##Compare 2017 multiplier to 2018
+
+old <- warn_rgn %>% 
+  dplyr::filter(year== '2017') %>% 
+  dplyr::rename(multiplier_2017= multiplier) %>% 
+  select(-year)
+
+old_2016 <- warn_rgn %>% 
+  dplyr::filter(year== '2016') %>% 
+  dplyr::rename(multiplier_2016= multiplier) %>% 
+  select(-year)
+
+old_2015 <- warn_rgn %>% 
+  dplyr::filter(year== '2015') %>% 
+  dplyr::rename(multiplier_2015= multiplier) %>% 
+  select(-year)
+
+new <- warn_rgn %>% 
+  dplyr::filter(year== '2018') %>% 
+  left_join(old, by= 'rgn_id') %>% 
+  left_join(old_2016, by= 'rgn_id') %>%
+  left_join(old_2015, by= 'rgn_id') %>%
+  #filter(!is.na(multiplier_2017)) %>% 
+  select(-year) %>% 
+  dplyr::rename(multiplier_2018= multiplier)
+
+plot(new$multiplier, new$multiplier_v2017)
+abline(0,1, col="red")
+
+
+compare_18_17 <- ggplot(new, aes(x=multiplier_2018, y= multiplier_2017, label= rgn_id))+
+  geom_point()+
+  geom_abline(color= 'red')+
+  theme_bw()
+ggplotly(compare_18_17)
+
+ggplot(new, aes(x=multiplier_2017, y= multiplier_2016))+
+  geom_point()+
+  geom_abline(color= 'red')+
+  theme_bw()
+
+ggplot(new, aes(x=multiplier_2016, y= multiplier_2015))+
+  geom_point()+
+  geom_abline(color= 'red')+
+  theme_bw()
+
+
 ```
 
 Save the travel warning data in the output folder

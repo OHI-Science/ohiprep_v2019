@@ -2,8 +2,9 @@ data_source,assess_year,country,level,date,regional,location,risk_factor
 US,2018,Afghanistan,4: Do not travel,1/10/18,,,"crime, terrorism, civil unrest, and armed conflict"
 US,2018,Albania,1: Exercise normal precautions,6/18/18,,,
 US,2018,Albania,2: Exercise increased caution,6/18/18,1,The southern town of Lazarat,cirme
-US,2018,Algeria,2: Exercise increased caution,1/10/18,1,eastern and southern borders,terrorism
-US,2018,Algeria,2: Exercise increased caution,1/10/18,1,Sahara Desert,terrorism
+US,2018,Algeria,2: Exercise increased caution,1/10/18,,,
+US,2018,Algeria,4: Do not travel,1/10/18,1,eastern and southern borders,terrorism
+US,2018,Algeria,4: Do not travel,1/10/18,1,Sahara Desert,terrorism
 US,2018,Andorra,1: Exercise normal precautions,1/10/18,,,
 US,2018,Angola,1: Exercise normal precautions,1/10/18,,,
 US,2018,Angola,2: Exercise increased caution,1/10/18,1,Urban areas,crime
