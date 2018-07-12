@@ -240,3 +240,37 @@ shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_xformed')
 
 ```
 
+## Data Checking
+
+Compare shapfile 2017 v 2018.
+
+```{r}
+
+library(sf)
+library(raster)
+
+## Read in reordered shapefile
+shp_reorder <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_ordered')
+shp_reorder17 <- file.path(dir_data, '../d2017', 'shps', 'WDPA_May2017_shp_ordered')
+  
+## Read in as shapefile
+wdpa_order <- rgdal::readOGR(dsn = dirname(shp_reorder), 
+                       layer = basename(shp_reorder),
+                       stringsAsFactors = FALSE)
+
+wdpa_order17 <- rgdal::readOGR(dsn = dirname(shp_reorder17), 
+                       layer = basename(shp_reorder17),
+                       stringsAsFactors = FALSE)
+
+## Subtract wdpa_order17 from wdpa_order to view differences
+wdpa_diff <- raster::erase(wdpa_order17, wdpa_order)
+
+
+## Read in as sf
+#wdpa_sf <- st_read(dsn = file.path(dir_data, 'shps'), layer = "WDPA_June2018_shp_ordered")
+## Convert back to 'Spatial' object
+# wdpa_order <- as(variable, "Spatial")
+
+
+```
+

@@ -5,7 +5,7 @@ output:
   html_document:
     highlight: haddock
     includes:
-      in_header: ~/github/ohiprep/src/templates/ohi_hdr.html
+      in_header: '../../../src/templates/ohi_hdr.html'
     number_sections: yes
     theme: cerulean
     toc: yes
@@ -292,6 +292,7 @@ write_csv(prot_eez, file.path(dir_goal, 'int', 'area_protected_eez.csv'))
 ## Write out layers
 
 From the protected area files, write out the individual layers ready for the Toolbox[TM]. 
+
 * total area for offshore 3 nm and inland 1 km
 * protected area for offshore 3 nm and inland 1 km
 
@@ -346,7 +347,12 @@ resil_eez <- read_csv(file.path(dir_goal, 'int', 'area_protected_eez.csv')) %>%
 
 ***
 
-## Plot scores for 2018 vs 2017 assessment years
+## Data checking
+
+Plot scores for 2018 vs 2017 assessment years
+
+* 2018 AY data goes through June 2018
+* 2017 AY data goes through May 2017
 
 ``` {r plot_scores_vs_v2016, plotly = TRUE, eval = TRUE}
 
@@ -430,11 +436,23 @@ x <- lsp_new_old %>%
 ```
 
 Check outliers in Status plot
+
+
+rgn ID    |   rgn name  | status diff  | explanation
+--------- | -------------- |------- | ---------------
+  153      | Cook Islands     |  0 -> 100  | Partial update, including the addition of the 1.97 million km2 Marae Moana Marine Park marine protected area. The Marine Park was designated in July 2017 and encompasses the entire Cook Islands Exclusive Economic Zone. Marae Moana is now the largest protected area in the world. Protected area for both coastline and coastal marine area increased significantly for 2017 data due to this change. 
+  190     | Qatar             |  0 -> 71   | 
+  249     | Sint Eustatius    |  0 -> 54   | 
+  146     | Pitcairn          |  0 -> 50   | 
+  154     | Niue              |  0 -> 36   | 
+  173     | Uruaguay          | 30 -> 97   |
+  227     | Jersey            | 30 -> 70  |       
+
 ``` {r outlier_checks, eval = FALSE}
 
 ### LSP outlier check based on estimates
-#  88 Tristan da Cunha 100 -> 0   OK: STATUS changed from Designated to Inscribed (World Heritage Site in both years)
-# 146 Pitcairn          50 -> 0   OK?: looks like land-based protected area; not in 2016 raster
+#  88 Cook Islands 0 -> 100
+# 146 Qatar               0 -> 71  OK?: looks like land-based protected area; not in 2016 raster
 #  47 Yemen             40 -> 0   OK?: land-based protected area on island; not in 2016 raster
 # 
 # 110 Bahamas            3 -> 51  OK: new PAs showing up in 2016 raster (2015: SE island; 2016: add more on main island)
@@ -457,40 +475,40 @@ Check outliers in Status plot
 # rgn 8 (-59 drop in score): The old data had 645 nm2 offshore and 63 km2 inland polygons in 2012, but these were gone in this year's analysis.
 # rgns 91, 92, 93 (+ increase in score): The new data included large polygons added in 2008 for all three regions that were no in the previous year's data.
 
-mpa2016 <- read_csv(file.path(dir_goal, 'output/lsp_protected_offshore3nm.csv'))
-tpa2016 <- read_csv(file.path(dir_goal, 'output/lsp_protected_inland1km.csv'))
+mpa2018 <- read_csv(file.path(dir_goal, 'output/lsp_prot_area_offshore3nm.csv'))
+tpa2018 <- read_csv(file.path(dir_goal, 'output/lsp_prot_area_inland1km.csv'))
 
-marea2016 <- read_csv(file.path(dir_goal, 'output/rgn_area_offshore3nm.csv'))
-tarea2016 <- read_csv(file.path(dir_goal, 'output/rgn_area_inland1km.csv'))
+marea2018 <- read_csv(file.path(dir_goal, 'output/rgn_area_offshore3nm.csv'))
+tarea2018 <- read_csv(file.path(dir_goal, 'output/rgn_area_inland1km.csv'))
 
-mpa2015 <- read_csv(file.path(dir_goal, '../v2015/data/lsp_protarea_offshore3nm.csv')) %>%
-  group_by(rgn_id) %>%
-  mutate(a_prot_3nm = cumsum(area_km2)) %>%
-  select(-area_km2)
-tpa2015 <- read_csv(file.path(dir_goal, '../v2015/data/lsp_protarea_inland1km.csv')) %>%
-  group_by(rgn_id) %>%
-  mutate(a_prot_1km = cumsum(area_km2)) %>%
-  select(-area_km2)
+mpa2017 <- read_csv(file.path(dir_goal, '../v2017/output/lsp_prot_area_offshore3nm.csv')) #%>%
+#  group_by(rgn_id) %>%
+#  mutate(a_prot_3nm = cumsum(a_prot_3nm)) 
+tpa2017 <- read_csv(file.path(dir_goal, '../v2017/output/lsp_prot_area_inland1km.csv')) # %>%
+#  group_by(rgn_id) %>%
+#  mutate(a_prot_1km = cumsum(a_prot_1km)) 
+marea2017 <- read_csv(file.path(dir_goal, '../v2017/output/rgn_area_offshore3nm.csv'))
+tarea2017 <- read_csv(file.path(dir_goal, '../v2017/output/rgn_area_inland1km.csv'))
 
-lsp_v2015 <- read_csv('~/github/ohi-global/eez2013/scores.csv') %>%
+#lsp_v2017 <- read_csv('~/github/ohi-global/eez2013/scores.csv') 
 
-marea2015 <- read_csv('~/github/ohi-global/eez2013/layers/rgn_area_offshore3nm.csv')
-tarea2015 <- read_csv('~/github/ohi-global/eez2013/layers/rgn_area_inland1km.csv')
 
-checks <- mpa2016 %>% filter(rgn_id %in% c(8, 90)) %>% filter(year > 2000) %>% rename(prot_3nm_2016 = a_prot_3nm) %>%
-  left_join(tpa2016 %>% filter(rgn_id %in% c(8, 90)) %>% filter(year > 2000) %>% rename(prot_1km_2016 = a_prot_1km),
+check_rgn <- c(80,110,205,104,66,42,209)
+
+checks <- mpa2018 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_3nm_2018 = a_prot_3nm) %>%
+  left_join(tpa2018 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_1km_2018 = a_prot_1km),
             by = c('rgn_id', 'year')) %>%
-  left_join(mpa2015 %>% filter(rgn_id %in% c(8, 90)) %>% filter(year > 2000) %>% rename(prot_3nm_2015 = a_prot_3nm),
+  left_join(mpa2017 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_3nm_2017 = a_prot_3nm),
             by = c('rgn_id', 'year')) %>%
-  left_join(tpa2015 %>% filter(rgn_id %in% c(8, 90)) %>% filter(year > 2000) %>% rename(prot_1km_2015 = a_prot_1km),
+  left_join(tpa2017 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_1km_2017 = a_prot_1km),
             by = c('rgn_id', 'year')) %>%
-  left_join(marea2016 %>% filter(rgn_id %in% c(8, 90)) %>% rename(marea16 = area),
+  left_join(marea2018 %>% filter(rgn_id %in% check_rgn) %>% rename(marea18 = area),
             by = c('rgn_id')) %>%
-  left_join(tarea2016 %>% filter(rgn_id %in% c(8, 90)) %>% rename(tarea16 = area),
+  left_join(tarea2018 %>% filter(rgn_id %in% check_rgn) %>% rename(tarea18 = area),
             by = c('rgn_id')) %>%
-  left_join(marea2015 %>% filter(rgn_id %in% c(8, 90)) %>% rename(marea15 = area_km2),
+  left_join(marea2017 %>% filter(rgn_id %in% check_rgn) %>% rename(marea17 = area),
             by = c('rgn_id')) %>%
-  left_join(tarea2015 %>% filter(rgn_id %in% c(8, 90)) %>% rename(tarea15 = area_km2),
+  left_join(tarea2017 %>% filter(rgn_id %in% check_rgn) %>% rename(tarea17 = area),
             by = c('rgn_id'))
 ```
 
