@@ -1,0 +1,52 @@
+Gear,GearName,bycatch,type,destruction
+450,longline tuna,high,pelagic,non-destructive
+1000,surrounding nets,low,pelagic,non-destructive
+424,troll lines,low,,non-destructive
+421,handlines,low,,non-destructive
+440,pole line tuna,low,pelagic,non-destructive
+1400,gillnets,high,,non-destructive
+420,with gorges or hooks,low,,non-destructive
+1050,purse seine tuna,low,pelagic,non-destructive
+900,seine nets,high,,non-destructive
+920,genuine seine net,high,,non-destructive
+1540,trammel nets,high,demersal,non-destructive
+225,harpoons,low,,non-destructive
+1410,set gillnets,high,,non-destructive
+1020,purse seines,low,,non-destructive
+840,bottom trawls,high,demersal,destructive
+110,grasping with hand,low,,non-destructive
+850,mid-water trawls,high,pelagic,non-destructive
+1420,driftnets,high,,non-destructive
+433,squid hooks,low,pelagic,non-destructive
+1010,lampara-like nets,low,pelagic,non-destructive
+500,traps,high,demersal,non-destructive
+922,boat seines,high,,non-destructive
+1320,cast nets  with or without pockets,low,demersal,non-destructive
+563,pound nets,low,demersal,non-destructive
+432,pilks or jigs,low,,non-destructive
+1400,bottom trawls,high,demersal,destructive
+1400,mid-water trawls,high,pelagic,non-destructive
+400,Lines,,,non-destructive
+100,without gear,,,non-destructive
+921,beach seines,high,demersal,non-destructive
+1210,hand liftnets,low,pelagic,non-destructive
+422,set lines,high,pelagic,non-destructive
+830,dredges,high,demersal,destructive
+214,tongs,low,demersal,non-destructive
+221,spears and lances,low,demersal,non-destructive
+700,bagnets,low,pelagic,non-destructive
+1500,tangle nets,high,demersal,non-destructive
+213,raking devices,high,demersal,destructive
+551,pots,high,demersal,non-destructive
+1030,ring nets,low,pelagic,non-destructive
+540,tubular traps,high,demersal,non-destructive
+120,by diving,low,demersal,non-destructive
+831,hand dredges,high,demersal,destructive
+423,drift lines,high,pelagic,non-destructive
+1100,drive-in nets,low,,non-destructive
+560,trapping gear,high,demersal,non-destructive
+312,explosives,high,demersal,destructive
+1200,liftnets or dipnets,low,pelagic,non-destructive
+553,box-like traps,high,demersal,non-destructive
+552,conical and drum-like traps,high,demersal,non-destructive
+NA,,,,

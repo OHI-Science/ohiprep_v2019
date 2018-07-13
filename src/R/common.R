@@ -41,7 +41,7 @@ if (Sys.info()[['sysname']] == 'Linux' & (!file.exists(dir_M) & !file.exists(dir
 
 ### Casey's function...
 get_rgn_names <- function() {
-  x <- read_csv('~/github/ohiprep/globalprep/spatial/v2013/rgn_labels.csv',
+  x <- read_csv('../../spatial/v2013/rgn_labels.csv',
                 col_types = 'icc') %>%
     select(rgn_id, rgn_name = label)
   return(x)
