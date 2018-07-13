@@ -108,7 +108,7 @@ iucn_sid | kingdom | phylum | class | order | family | genus | sciname | populat
 
 ### Download Species List from IUCN
 
-Get all pages and bind into total species list, using the IUCN API. __include more details here?__
+Get all pages and bind into total species list, using the IUCN API.
 
 ``` {r get_spp_info}
 
@@ -234,6 +234,7 @@ write_csv(ico_spp_rgn_raw, file.path(dir_goal, 'raw/ico_spp_rgn_raw.csv'))
 
 ```
 
+
 ``` {r attach_country_list_to_spp_info_list}
 
 ico_spp_rgn_raw <- read_csv(file.path(dir_goal, 'raw/ico_spp_rgn_raw.csv'))
@@ -256,7 +257,7 @@ ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>%
 
 `ico_spp_rgn_prepped` saved at `~/github/ohiprep/globalprep/ico/v2016/int/ico_spp_rgn_prepped.csv`
 
-
+---
 
 `r DT::datatable(ico_spp_rgn_prepped, width = 400)`
 
@@ -293,42 +294,29 @@ write_csv(ico_assess_raw, file.path(dir_goal, 'raw/ico_assessments_raw.csv'))
 
 These raw assessments are cleaned up to standardize codes and categories, and category scores are assigned based on a scale from Least Concern = 1 to Extinct = 0, as per the [Species OHI subgoal](https://rawgit.com/OHI-Science/ohi-global/draft/global_supplement/Supplement.html#591_iconic_species_(subgoal_of_sense_of_place)).  Note that past assessments used different coding, especially prior to 1994; we reclassified older codes according to this chart:
 
+---
 
 \begin{eqnarray*}
 \textbf{New Category} & & \longleftarrow \textbf{Original Category/Description}\\
-NT & & \Longleftarrow \text{"Lower risk/Near threatened ($LR/NT$)"}\\
-T  & & \Longleftarrow \text{"Threatened ($T$)" treat as "$EN$"}\\
-VU & & \Longleftarrow \text{"Vulnerable ($V$)"}\\                  
-EN & & \Longleftarrow \text{"Endangered ($E$)" }\\
-LR/CD & & \Longleftarrow \text{"Lower risk/Conservation dependent ($LR/CD$)" treat as between $VU$ and $NT$}\\
-CR & & \Longleftarrow \text{"Very rare and believed to be decreasing in numbers"}\\
-T & & \Longleftarrow \text{"Less rare but believed to be threatened-Requires watching"}\\
-DD & & \Longleftarrow \text{"Insufficiently known ($K$)"}\\
-DD & & \Longleftarrow \text{"Indeterminate ($I$)"}\\
-DD & & \Longleftarrow \text{"Status inadequately known-Survey required or data sought"}\\
-NE & & \Longleftarrow \text{"Not recognized ($NR$)"}
+NT & & \longleftarrow \text{"Lower risk/Near threatened ($LR/NT$)"}\\
+T  & & \longleftarrow \text{"Threatened ($T$)" treat as "$EN$"}\\
+VU & & \longleftarrow \text{"Vulnerable ($V$)"}\\                  
+EN & & \longleftarrow \text{"Endangered ($E$)" }\\
+LR/CD & & \longleftarrow \text{"Lower risk/Conservation dependent ($LR/CD$)" treat as between $VU$ and $NT$}\\
+CR & & \longleftarrow \text{"Very rare and believed to be decreasing in numbers"}\\
+T & & \longleftarrow \text{"Less rare but believed to be threatened-Requires watching"}\\
+DD & & \longleftarrow \text{"Insufficiently known ($K$)"}\\
+DD & & \longleftarrow \text{"Indeterminate ($I$)"}\\
+DD & & \longleftarrow \text{"Status inadequately known-Survey required or data sought"}\\
+NE & & \longleftarrow \text{"Not recognized ($NR$)"}
 \end{eqnarray*}
 
-
-```
-New category <- original category/description                         
-#     NT     <- "LOWER RISK/NEAR THREATENED (LR/NT)"                       
-#      T     <- "THREATENED (T)" treat as "EN"
-#     VU     <- "VULNERABLE (V)"                                           
-#     EN     <- "ENDANGERED (E)"                                           
-#  LR/CD     <- "LOWER RISK/CONSERVATION DEPENDENT (LR/CD)" treat as between VU and NT
-#     CR     <- "VERY RARE AND BELIEVED TO BE DECREASING IN NUMBERS"       
-#      T     <- "LESS RARE BUT BELIEVED TO BE THREATENED-REQUIRES WATCHING"
-#     DD     <- "INSUFFICIENTLY KNOWN (K)"                                 
-#     DD     <- "INDETERMINATE (I)"                                        
-#     DD     <- "STATUS INADEQUATELY KNOWN-SURVEY REQUIRED OR DATA SOUGHT" 
-#     NE     <- "NOT RECOGNIZED (NR)"  
-```
-
+---
 
 Clean up the time series:
 
 iucn_sid | year | code | category | sciname
+
 
 ``` {r clean_up_category_list}
 
@@ -418,7 +406,7 @@ Using `dplyr::full_join()` we combine the `ico_spp_rgn` dataframe (iconic specie
 
 ico_cat_ts_abbr <- read_csv(file.path(dir_goal, 'int/ico_spp_cat.csv')) %>%
   select(iucn_sid, sciname, year, cat, cat_score, eval_yr) %>%
-  filter(year >= 2000)
+  filter(year >= 1993)
 
 ico_spp_rgn <- read_csv(file.path(dir_goal, 'int/ico_spp_rgn_prepped.csv')) %>%
   select(rgn_id, rgn_name, iucn_sid, comname, sciname, ico_gl, ico_rgn_id, presence)
@@ -471,7 +459,7 @@ ico_status_calc <- ico_status_raw %>%
   ungroup()
 
 ico_trend <- data.frame()
-for (i in 2010:max(ico_status_calc$year, na.rm = TRUE)) { # i <- 2013
+for (i in 1994:max(ico_status_calc$year, na.rm = TRUE)) { # i <- 2013
   tmp_status <- ico_status_calc %>%
     filter(year <= i & year > (i - 10)) # trend based on 10-year average since assessments are sporadic
   tmp_trend <- tmp_status %>%
