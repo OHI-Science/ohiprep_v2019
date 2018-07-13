@@ -406,7 +406,7 @@ Using `dplyr::full_join()` we combine the `ico_spp_rgn` dataframe (iconic specie
 
 ico_cat_ts_abbr <- read_csv(file.path(dir_goal, 'int/ico_spp_cat.csv')) %>%
   select(iucn_sid, sciname, year, cat, cat_score, eval_yr) %>%
-  filter(year >= 1993)
+  filter(year >= 1992)
 
 ico_spp_rgn <- read_csv(file.path(dir_goal, 'int/ico_spp_rgn_prepped.csv')) %>%
   select(rgn_id, rgn_name, iucn_sid, comname, sciname, ico_gl, ico_rgn_id, presence)
@@ -459,7 +459,7 @@ ico_status_calc <- ico_status_raw %>%
   ungroup()
 
 ico_trend <- data.frame()
-for (i in 1994:max(ico_status_calc$year, na.rm = TRUE)) { # i <- 2013
+for (i in 1993:max(ico_status_calc$year, na.rm = TRUE)) { # i <- 2013
   tmp_status <- ico_status_calc %>%
     filter(year <= i & year > (i - 10)) # trend based on 10-year average since assessments are sporadic
   tmp_trend <- tmp_status %>%
