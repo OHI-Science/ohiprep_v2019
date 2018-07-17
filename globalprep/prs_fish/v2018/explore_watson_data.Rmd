@@ -1,0 +1,89 @@
+---
+title: "Exploring Watson Fisheries Data"
+author: "Jamie Afflerbach"
+output:
+ html_document:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = F, warning = F)
+```
+
+
+```{r}
+#point to aquaculture folder on aurora
+dir_a <- c('Windows' = '//aurora.nceas.ucsb.edu/aquaculture',
+           'Linux'   = '/home/shares/aquaculture')[[ Sys.info()[['sysname']] ]]
+
+library(RColorBrewer)
+library(raster)
+library(tidyverse)
+
+cols <-  rev(colorRampPalette(brewer.pal(9, 'Spectral'))(255)) # rainbow color scheme
+```
+
+Read in Industrial catch data from 2010 - 2014
+
+```{r}
+data <- read_csv(file.path(dir_a, "input/Watson/CatchInd_2010_2014.csv"))
+
+DT::datatable(head(data))
+```
+
+Hmm, it's weird that the data provided is only catch per cell per year. No information on species, gear, country. Another dataset provided is `Index.csv`. Maybe this has more information.
+
+```{r}
+index <- read_csv(file.path(dir_a, "input/Watson/Index.csv"))
+
+DT::datatable(head(index))
+```
+
+It looks like the **ID** category is used to link the two datasets. I'm going to test mapping this by using the code I have from [Ocean Health Index](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/prs_fish/v2017/fishing_pressure_layers.html). I'll select just the year 2014.
+
+```{r}
+df <- data %>%
+  left_join(index, by = "ID") %>%
+  filter(Year == 2014) %>%
+  select(-NIndReported, -NIndIUU, -NIndDiscards)
+  
+DT::datatable(head(df))
+```
+
+Now the data is joined. The columns **IndReported**, **IndIUU**, and **IndDiscards** are redundant for each ID, which I believe represents the total reported, IUU and discarded catch for each country/year/taxon names.
+
+To map total catch per cell per year we need to grab cell, IndReported, IndIUU, IndDiscards
+
+```{r}
+
+map_df <- df %>%
+  mutate(cell_catch = Reported + IUU + Discards) %>%
+  group_by(Cell) %>%
+  summarize(catch = sum(cell_catch))
+
+DT::datatable(head(map_df))
+
+```
+```{r}
+library(seaaroundus)
+  saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
+
+   saup_rast <- raster(ncol=720, nrow=360)
+   saup_rast[] <- saup_cells
+  
+```
+
+```{r}
+
+r <- raster::subs(saup_rast, map_df, by = 1, which = 2, subsWithNA=TRUE) 
+
+plot(r, axes = F, main = "2015 Total Industrial Harvest (tons)", col = cols)
+```
+
+
+
+
+
+
+
+
