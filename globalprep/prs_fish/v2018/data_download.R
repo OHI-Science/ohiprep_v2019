@@ -3,7 +3,8 @@
 ###########################################
 
 ## paper url: https://www.sciencedirect.com/science/article/pii/S0308597X18300605
-## data url: http://metadata.imas.utas.edu.au/geonetwork/srv/eng/metadata.show?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0
+## metadata url: http://metadata.imas.utas.edu.au/geonetwork/srv/eng/metadata.show?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0
+## data url: http://data.imas.utas.edu.au/portal/search?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0
 ## Global Fisheries Landings V3.0, downloaded 7/17/2018
 ## OHI issue: #13
 

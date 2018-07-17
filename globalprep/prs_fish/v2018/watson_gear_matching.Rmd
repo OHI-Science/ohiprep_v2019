@@ -53,7 +53,7 @@ raw <- readRDS(file.path(dir_M,'git-annex/impact_acceleration/stressors/comm_fis
 
 #look at all the unique gear types
 
-gear <- raw%>%
+gear <- raw %>%
           dplyr::select(Gear,GearName)%>%
           unique()
 
@@ -62,7 +62,7 @@ DT::datatable(gear,rownames = F)
 
 ![](figs/GearTypeClassifications.png)
 
-The bycatch, type and destruction information was manually added for each gear type using figure S4 from Halpern (2008). Some I left some blank as I don't know if they are demersal or pelagic. This information was saved in `gear_to_cat.csv`.
+The bycatch, type and destruction information was manually added for each gear type using figure S4 from Halpern (2008). Some I left blank as I don't know if they are demersal or pelagic. This information was saved in `gear_to_cat.csv`.
 
 
 ```{r}
