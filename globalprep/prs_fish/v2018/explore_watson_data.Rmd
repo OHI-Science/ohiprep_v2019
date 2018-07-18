@@ -12,10 +12,6 @@ knitr::opts_chunk$set(echo = TRUE, message = F, warning = F)
 
 ## Load Libraries
 ```{r}
-#point to aquaculture folder on aurora
-#dir_a <- c('Windows' = '//aurora.nceas.ucsb.edu/aquaculture',
-#          'Linux'   = '/home/shares/aquaculture')[[ #Sys.info()[['sysname']] ]]
-
 library(RColorBrewer)
 library(raster)
 library(tidyverse)
@@ -30,7 +26,6 @@ cols <-  rev(colorRampPalette(brewer.pal(9, 'Spectral'))(255)) # rainbow color s
 * Spatial Cells Reference (Cell.csv)
 
 ```{r}
-#data <- read_csv(file.path(dir_a, "input/Watson/CatchInd_2010_2014.csv"))
 data <- readRDS(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/CatchInd_1950_1954.rds"))
 
 DT::datatable(head(data))
@@ -39,7 +34,6 @@ DT::datatable(head(data))
 Hmm, it's weird that the data provided is only catch per cell per year. No information on species, gear, country. Another dataset provided is `Index.csv`. Maybe this has more information.
 
 ```{r}
-#index <- read_csv(file.path(dir_a, "input/Watson/Index.csv"))
 index <- read_csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv"))
 
 DT::datatable(head(index))
@@ -48,9 +42,9 @@ DT::datatable(head(index))
 Add in geospatial information (lat/lon/area)
 
 ```{r}
-
 cells <- read_csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Cells.csv"))
 
+DT::datatable(head(cells))
 ```
 
 
@@ -89,14 +83,12 @@ DT::datatable(head(korea_clam))
 To map total catch per cell per year we need to sum up total catch (including reported, iuu, and discards) per cell.
 
 ```{r}
-
 map_df <- df %>%
   mutate(cell_catch = Reported + IUU + Discards) %>%
   group_by(Cell) %>%
   summarize(catch = sum(cell_catch))
 
 DT::datatable(head(map_df))
-
 ```
 
 Create template raster from `seaaroundus`
@@ -110,16 +102,12 @@ saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))"
 saup_rast <- raster(ncol=720, nrow=360)
 
 saup_rast[] <- saup_cells
-  
 ```
 
 Plot raster
 ```{r}
-
 r <- raster::subs(saup_rast, map_df, by = 1, which = 2, subsWithNA=TRUE) 
 #plot(r, axes = F, main = "1954 Total Industrial Harvest (tons)", col = cols)
 plot(r, main = "2015 Total Industrial Harvest (tons)", col = cols)
-
 ```
-
 
