@@ -151,13 +151,11 @@ $(document).ready(function () {
 
 <div id="load-libraries" class="section level2">
 <h2>Load Libraries</h2>
-<pre class="r"><code>#point to aquaculture folder on aurora
-#dir_a &lt;- c('Windows' = '//aurora.nceas.ucsb.edu/aquaculture',
-#          'Linux'   = '/home/shares/aquaculture')[[ #Sys.info()[['sysname']] ]]
-
-library(RColorBrewer)
+<pre class="r"><code>library(RColorBrewer)
 library(raster)
 library(tidyverse)
+
+dir_M &lt;- &quot;/home/shares/ohi&quot;
 
 cols &lt;-  rev(colorRampPalette(brewer.pal(9, 'Spectral'))(255)) # rainbow color scheme</code></pre>
 </div>
@@ -168,24 +166,23 @@ cols &lt;-  rev(colorRampPalette(brewer.pal(9, 'Spectral'))(255)) # rainbow colo
 <li>Master Index File (Index.csv)</li>
 <li>Spatial Cells Reference (Cell.csv)</li>
 </ul>
-<pre class="r"><code>#data &lt;- read_csv(file.path(dir_a, &quot;input/Watson/CatchInd_2010_2014.csv&quot;))
-#data &lt;- readRDS(file.path(dir_M, &quot;git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/CatchInd_1950_1954.rds&quot;))
-data &lt;- readRDS(&quot;../../../../../../shares/ohi/git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/CatchInd_1950_1954.rds&quot;)
+<pre class="r"><code>data &lt;- readRDS(file.path(dir_M, &quot;git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/CatchInd_1950_1954.rds&quot;))
 
 DT::datatable(head(data))</code></pre>
-<div id="htmlwidget-7135bb79a147621b0dd8" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7135bb79a147621b0dd8">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[491423,491423,491423,491423,491423,491423],[78370,80534,79813,83411,79099,81970],[0.7649,0.3508,0.2199,2.213,2.5324,2.2595],[0.3264,0.1497,0.0938,0.9442,1.0805,0.9641],[0.0008,0.0004,0.0002,0.0022,0.0025,0.0023]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Cell<\/th>\n      <th>Reported<\/th>\n      <th>IUU<\/th>\n      <th>Discards<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-4aa0b2581363a8eefe2b" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4aa0b2581363a8eefe2b">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[491423,491423,491423,491423,491423,491423],[78370,80534,79813,83411,79099,81970],[0.7649,0.3508,0.2199,2.213,2.5324,2.2595],[0.3264,0.1497,0.0938,0.9442,1.0805,0.9641],[0.0008,0.0004,0.0002,0.0022,0.0025,0.0023]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Cell<\/th>\n      <th>Reported<\/th>\n      <th>IUU<\/th>\n      <th>Discards<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Hmm, it’s weird that the data provided is only catch per cell per year. No information on species, gear, country. Another dataset provided is <code>Index.csv</code>. Maybe this has more information.</p>
-<pre class="r"><code>#index &lt;- read_csv(file.path(dir_a, &quot;input/Watson/Index.csv&quot;))
-#index &lt;- read_csv(file.path(dir_M, &quot;git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv&quot;))
-index &lt;- read_csv(&quot;../../../../../../shares/ohi/git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv&quot;)
+<pre class="r"><code>index &lt;- read_csv(file.path(dir_M, &quot;git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv&quot;))
 
 DT::datatable(head(index))</code></pre>
-<div id="htmlwidget-9d14d0c17b5b43b4ce92" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-9d14d0c17b5b43b4ce92">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[1,2,3,4,5,6],[1983,1987,2008,2015,1974,2014],["Tunisia","Cyprus","Sri Lanka","Viet Nam","Cuba","Falkland Is"],["Dicentrarchus","Siganus","Euthynnus affinis","Thunnus albacares","Merluccius gayi gayi","Merluccius hubbsi"],["European/spotted seabass","Rabbitfishes","Kawakawa","Yellowfin tuna","South Pacific hake","Argentine hake"],["Trawl midwater","Trap","Gillnet","Pole and Line Tuna","Lines Non-tuna","Lines Non-tuna"],[61.78,0,4335.25,3360.99,3050.65,1578.24],[3.93,0,323.23,358.79,781.4,338.89],[2.1,0,21.67,13.44,61.01,31.56],[11.81,7.99,0,0,682.68,0],[31.34,17.14,0,0,1998.3,0],[0.4,1.85,0,0,13.65,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Year<\/th>\n      <th>CountryName<\/th>\n      <th>TaxonName<\/th>\n      <th>CommonName<\/th>\n      <th>FleetGearName<\/th>\n      <th>IndReported<\/th>\n      <th>IndIUU<\/th>\n      <th>IndDiscards<\/th>\n      <th>NIndReported<\/th>\n      <th>NIndIUU<\/th>\n      <th>NIndDiscards<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,7,8,9,10,11,12]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b0c4da2063efdbd3ad5a" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b0c4da2063efdbd3ad5a">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[1,2,3,4,5,6],[1983,1987,2008,2015,1974,2014],["Tunisia","Cyprus","Sri Lanka","Viet Nam","Cuba","Falkland Is"],["Dicentrarchus","Siganus","Euthynnus affinis","Thunnus albacares","Merluccius gayi gayi","Merluccius hubbsi"],["European/spotted seabass","Rabbitfishes","Kawakawa","Yellowfin tuna","South Pacific hake","Argentine hake"],["Trawl midwater","Trap","Gillnet","Pole and Line Tuna","Lines Non-tuna","Lines Non-tuna"],[61.78,0,4335.25,3360.99,3050.65,1578.24],[3.93,0,323.23,358.79,781.4,338.89],[2.1,0,21.67,13.44,61.01,31.56],[11.81,7.99,0,0,682.68,0],[31.34,17.14,0,0,1998.3,0],[0.4,1.85,0,0,13.65,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Year<\/th>\n      <th>CountryName<\/th>\n      <th>TaxonName<\/th>\n      <th>CommonName<\/th>\n      <th>FleetGearName<\/th>\n      <th>IndReported<\/th>\n      <th>IndIUU<\/th>\n      <th>IndDiscards<\/th>\n      <th>NIndReported<\/th>\n      <th>NIndIUU<\/th>\n      <th>NIndDiscards<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,7,8,9,10,11,12]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Add in geospatial information (lat/lon/area)</p>
-<pre class="r"><code>#cells &lt;- read_csv(file.path(dir_M, &quot;git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Cells.csv&quot;))
-cells &lt;- read_csv(&quot;../../../../../../shares/ohi/git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Cells.csv&quot;)</code></pre>
+<pre class="r"><code>cells &lt;- read_csv(file.path(dir_M, &quot;git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Cells.csv&quot;))
+
+DT::datatable(head(cells))</code></pre>
+<div id="htmlwidget-4991865b1c692d124f71" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4991865b1c692d124f71">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[1,2,3,4,5,6],[-179.75,-179.25,-178.75,-178.25,-177.75,-177.25],[89.75,89.75,89.75,89.75,89.75,89.75],[13.48,13.48,13.48,13.48,13.48,13.48]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Cell<\/th>\n      <th>Lon<\/th>\n      <th>Lat<\/th>\n      <th>Area<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="combine-datasets" class="section level2">
 <h2>Combine Datasets</h2>
@@ -197,8 +194,8 @@ cells &lt;- read_csv(&quot;../../../../../../shares/ohi/git-annex/globalprep/_ra
   left_join(cells, by = &quot;Cell&quot;)
   
 DT::datatable(head(df))</code></pre>
-<div id="htmlwidget-3cd62f2106fb94534f90" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3cd62f2106fb94534f90">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[336557,336557,336557,336557,336557,336557],[43987,46171,60595,51873,40343,48275],[0.3216,0.1182,0.8313,0.0313,0.0084,0.1236],[0.0387,0.0142,0.1,0.0038,0.001,0.0149],[0.0003,0.0001,0.0008,0,0,0.0001],[1954,1954,1954,1954,1954,1954],["USA","USA","USA","USA","USA","USA"],["Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells"],["Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells"],["Other","Other","Other","Other","Other","Other"],[326.18,326.18,326.18,326.18,326.18,326.18],[39.25,39.25,39.25,39.25,39.25,39.25],[0.32,0.32,0.32,0.32,0.32,0.32],[-146.75,-134.75,-122.75,-163.75,-168.75,-162.75],[59.25,57.75,47.75,53.75,61.75,56.25],[1580.44,956.67,644.28,1827.77,1463.06,1717.3]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Cell<\/th>\n      <th>Reported<\/th>\n      <th>IUU<\/th>\n      <th>Discards<\/th>\n      <th>Year<\/th>\n      <th>CountryName<\/th>\n      <th>TaxonName<\/th>\n      <th>CommonName<\/th>\n      <th>FleetGearName<\/th>\n      <th>IndReported<\/th>\n      <th>IndIUU<\/th>\n      <th>IndDiscards<\/th>\n      <th>Lon<\/th>\n      <th>Lat<\/th>\n      <th>Area<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,11,12,13,14,15,16]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-e5dbc3859d03bacef6b6" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e5dbc3859d03bacef6b6">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[336557,336557,336557,336557,336557,336557],[43987,46171,60595,51873,40343,48275],[0.3216,0.1182,0.8313,0.0313,0.0084,0.1236],[0.0387,0.0142,0.1,0.0038,0.001,0.0149],[0.0003,0.0001,0.0008,0,0,0.0001],[1954,1954,1954,1954,1954,1954],["USA","USA","USA","USA","USA","USA"],["Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells"],["Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells","Clams cockles arkshells"],["Other","Other","Other","Other","Other","Other"],[326.18,326.18,326.18,326.18,326.18,326.18],[39.25,39.25,39.25,39.25,39.25,39.25],[0.32,0.32,0.32,0.32,0.32,0.32],[-146.75,-134.75,-122.75,-163.75,-168.75,-162.75],[59.25,57.75,47.75,53.75,61.75,56.25],[1580.44,956.67,644.28,1827.77,1463.06,1717.3]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Cell<\/th>\n      <th>Reported<\/th>\n      <th>IUU<\/th>\n      <th>Discards<\/th>\n      <th>Year<\/th>\n      <th>CountryName<\/th>\n      <th>TaxonName<\/th>\n      <th>CommonName<\/th>\n      <th>FleetGearName<\/th>\n      <th>IndReported<\/th>\n      <th>IndIUU<\/th>\n      <th>IndDiscards<\/th>\n      <th>Lon<\/th>\n      <th>Lat<\/th>\n      <th>Area<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,11,12,13,14,15,16]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Now the data is joined. The columns <strong>IndReported</strong>, <strong>IndIUU</strong>, and <strong>IndDiscards</strong> are redundant for each ID, representing the total reported, IUU and discarded catch for each country/year/taxon names.</p>
 </div>
 <div id="testcheck-data" class="section level2">
@@ -211,8 +208,8 @@ DT::datatable(head(df))</code></pre>
          tot_Discards = sum(Discards))
 
 DT::datatable(head(korea_clam))</code></pre>
-<div id="htmlwidget-7ffb9dd652d1ca215e56" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7ffb9dd652d1ca215e56">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[491423,491423,491423,491423,491423,491423],[78370,80534,79813,83411,79099,81970],[0.7649,0.3508,0.2199,2.213,2.5324,2.2595],[0.3264,0.1497,0.0938,0.9442,1.0805,0.9641],[0.0008,0.0004,0.0002,0.0022,0.0025,0.0023],[216.9012,216.9012,216.9012,216.9012,216.9012,216.9012],[92.546,92.546,92.546,92.546,92.546,92.546],[0.2175,0.2175,0.2175,0.2175,0.2175,0.2175]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Cell<\/th>\n      <th>Reported<\/th>\n      <th>IUU<\/th>\n      <th>Discards<\/th>\n      <th>tot_Reported<\/th>\n      <th>tot_IUU<\/th>\n      <th>tot_Discards<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f98d839d5a12451d1d62" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f98d839d5a12451d1d62">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[491423,491423,491423,491423,491423,491423],[78370,80534,79813,83411,79099,81970],[0.7649,0.3508,0.2199,2.213,2.5324,2.2595],[0.3264,0.1497,0.0938,0.9442,1.0805,0.9641],[0.0008,0.0004,0.0002,0.0022,0.0025,0.0023],[216.9012,216.9012,216.9012,216.9012,216.9012,216.9012],[92.546,92.546,92.546,92.546,92.546,92.546],[0.2175,0.2175,0.2175,0.2175,0.2175,0.2175]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>ID<\/th>\n      <th>Cell<\/th>\n      <th>Reported<\/th>\n      <th>IUU<\/th>\n      <th>Discards<\/th>\n      <th>tot_Reported<\/th>\n      <th>tot_IUU<\/th>\n      <th>tot_Discards<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2,3,4,5,6,7,8]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="map-data" class="section level2">
 <h2>Map Data</h2>
@@ -223,8 +220,8 @@ DT::datatable(head(korea_clam))</code></pre>
   summarize(catch = sum(cell_catch))
 
 DT::datatable(head(map_df))</code></pre>
-<div id="htmlwidget-8d35b11bce9fa6f8782b" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8d35b11bce9fa6f8782b">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[8833,8834,8835,8836,8837,8838],[0.0065,0.0186,0.0098,0.0156,0.003,0.0157]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Cell<\/th>\n      <th>catch<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-35921f51d6c46d9ed555" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-35921f51d6c46d9ed555">{"x":{"filter":"none","data":[["1","2","3","4","5","6"],[8833,8834,8835,8836,8837,8838],[0.0065,0.0186,0.0098,0.0156,0.003,0.0157]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Cell<\/th>\n      <th>catch<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[1,2]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <p>Create template raster from <code>seaaroundus</code></p>
 <pre class="r"><code>library(seaaroundus)
 

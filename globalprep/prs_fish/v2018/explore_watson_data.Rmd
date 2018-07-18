@@ -16,14 +16,16 @@ library(RColorBrewer)
 library(raster)
 library(tidyverse)
 
+dir_M <- "/home/shares/ohi"
+
 cols <-  rev(colorRampPalette(brewer.pal(9, 'Spectral'))(255)) # rainbow color scheme
 ```
 
 ## Read in Data
 
-* Industrial Catch (1950 - 1954)
-* Master Index File (Index.csv)
-* Spatial Cells Reference (Cell.csv)
+* Industrial Catch (1950 - 1954) - reported, iuu, and discard catch data for each cell location and unique identifier
+* Master Index File (Index.csv) - information associated with the unique identifiers in the Industrial Catch data
+* Spatial Cells Reference (Cell.csv) - contains geospatial information associated wtih the Industrial Catch data
 
 ```{r}
 data <- readRDS(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/CatchInd_1950_1954.rds"))
@@ -55,8 +57,8 @@ It looks like the **ID** category is used to link the two datasets. I'm going to
 ```{r}
 df <- data %>%
   left_join(index, by = "ID") %>%
-  filter(Year == 1954) %>%
-  dplyr::select(-NIndReported, -NIndIUU, -NIndDiscards) %>% 
+  dplyr::filter(Year == 1954) %>%
+  dplyr::select(-IndReported, -IndIUU, -IndDiscards, -NIndReported, -NIndIUU, -NIndDiscards) %>% 
   left_join(cells, by = "Cell")
   
 DT::datatable(head(df))
