@@ -22,9 +22,9 @@ web_years <- c("Ind_1950_1954", "Ind_1955_1959", "Ind_1960_1964", "Ind_1965_1969
 reference <- c("Cells", "Index", "HistoricalIndex")
 
 ## Download reference data from web and save into mazu
-for(ref in reference){ # web_year <- "Ind_1950_1954"
+for(ref in reference){ # ref <- "Ind_1950_1954"
   
-  data <- read.csv(sprintf("http://data.imas.utas.edu.au/attachments/ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0/%s.csv", ref))
+  data <- read.csv(sprintf("http://data.imas.utas.edu.au/attachments/ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0/Catch%s.csv", ref))
   
   write.csv(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/%s.csv", ref)))
   
@@ -44,9 +44,9 @@ saveRDS(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_Glob
 data <- readRDS(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/CatchInd_1950_1954.rds"))
 head(data)
 
+# Spatial cells reference
 ref1 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Cells.csv"))
 
-ref2 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/HistoricalIndex.csv"))
-
-ref3 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv"))
+## Master index file
+ref2 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv"))
 

@@ -13,8 +13,8 @@ knitr::opts_chunk$set(echo = TRUE, message = F, warning = F)
 
 ```{r}
 #point to aquaculture folder on aurora
-dir_a <- c('Windows' = '//aurora.nceas.ucsb.edu/aquaculture',
-           'Linux'   = '/home/shares/aquaculture')[[ Sys.info()[['sysname']] ]]
+#dir_a <- c('Windows' = '//aurora.nceas.ucsb.edu/aquaculture',
+#          'Linux'   = '/home/shares/aquaculture')[[ #Sys.info()[['sysname']] ]]
 
 library(RColorBrewer)
 library(raster)
@@ -26,7 +26,8 @@ cols <-  rev(colorRampPalette(brewer.pal(9, 'Spectral'))(255)) # rainbow color s
 Read in Industrial catch data from 2010 - 2014
 
 ```{r}
-data <- read_csv(file.path(dir_a, "input/Watson/CatchInd_2010_2014.csv"))
+#data <- read_csv(file.path(dir_a, "input/Watson/CatchInd_2010_2014.csv"))
+data <- readRDS(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/CatchInd_1950_1954.rds"))
 
 DT::datatable(head(data))
 ```
@@ -34,7 +35,8 @@ DT::datatable(head(data))
 Hmm, it's weird that the data provided is only catch per cell per year. No information on species, gear, country. Another dataset provided is `Index.csv`. Maybe this has more information.
 
 ```{r}
-index <- read_csv(file.path(dir_a, "input/Watson/Index.csv"))
+#index <- read_csv(file.path(dir_a, "input/Watson/Index.csv"))
+index <- read_csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv"))
 
 DT::datatable(head(index))
 ```
@@ -44,13 +46,23 @@ It looks like the **ID** category is used to link the two datasets. I'm going to
 ```{r}
 df <- data %>%
   left_join(index, by = "ID") %>%
-  filter(Year == 2014) %>%
+  filter(Year == 1954) %>%
   select(-NIndReported, -NIndIUU, -NIndDiscards)
   
 DT::datatable(head(df))
 ```
 
 Now the data is joined. The columns **IndReported**, **IndIUU**, and **IndDiscards** are redundant for each ID, which I believe represents the total reported, IUU and discarded catch for each country/year/taxon names.
+
+Test to see whether the values for **IndReported**, **IndIUU**, and **IndDiscards** are sum totals of Clams cockles arkshells in the Republic of Korea in year 1953.
+```{r}
+korea_clam <- data %>% 
+  filter(ID == 491423) %>% 
+  mutate(tot_Reported = sum(Reported),
+         tot_IUU = sum(IUU),
+         tot_Discards = sum(Discards))
+```
+
 
 To map total catch per cell per year we need to grab cell, IndReported, IndIUU, IndDiscards
 
