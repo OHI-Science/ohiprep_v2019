@@ -10,7 +10,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, message = F, warning = F)
 ```
 
-
+## Load Libraries
 ```{r}
 #point to aquaculture folder on aurora
 #dir_a <- c('Windows' = '//aurora.nceas.ucsb.edu/aquaculture',
@@ -23,7 +23,11 @@ library(tidyverse)
 cols <-  rev(colorRampPalette(brewer.pal(9, 'Spectral'))(255)) # rainbow color scheme
 ```
 
-Read in Industrial catch data from 2010 - 2014
+## Read in Data
+
+* Industrial Catch (1950 - 1954)
+* Master Index File (Index.csv)
+* Spatial Cells Reference (Cell.csv)
 
 ```{r}
 #data <- read_csv(file.path(dir_a, "input/Watson/CatchInd_2010_2014.csv"))
@@ -41,18 +45,33 @@ index <- read_csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFi
 DT::datatable(head(index))
 ```
 
+Add in geospatial information (lat/lon/area)
+
+```{r}
+
+cells <- read_csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Cells.csv"))
+
+```
+
+
+## Combine Datasets
+
 It looks like the **ID** category is used to link the two datasets. I'm going to test mapping this by using the code I have from [Ocean Health Index](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/prs_fish/v2017/fishing_pressure_layers.html). I'll select just the year 2014.
 
 ```{r}
 df <- data %>%
   left_join(index, by = "ID") %>%
   filter(Year == 1954) %>%
-  select(-NIndReported, -NIndIUU, -NIndDiscards)
+  dplyr::select(-NIndReported, -NIndIUU, -NIndDiscards) %>% 
+  left_join(cells, by = "Cell")
   
 DT::datatable(head(df))
 ```
 
-Now the data is joined. The columns **IndReported**, **IndIUU**, and **IndDiscards** are redundant for each ID, which I believe represents the total reported, IUU and discarded catch for each country/year/taxon names.
+Now the data is joined. The columns **IndReported**, **IndIUU**, and **IndDiscards** are redundant for each ID, representing the total reported, IUU and discarded catch for each country/year/taxon names.
+
+
+## Test/Check Data
 
 Test to see whether the values for **IndReported**, **IndIUU**, and **IndDiscards** are sum totals of Clams cockles arkshells in the Republic of Korea in year 1953.
 ```{r}
@@ -61,9 +80,13 @@ korea_clam <- data %>%
   mutate(tot_Reported = sum(Reported),
          tot_IUU = sum(IUU),
          tot_Discards = sum(Discards))
+
+DT::datatable(head(korea_clam))
 ```
 
-To map total catch per cell per year we need to grab cell, IndReported, IndIUU, IndDiscards
+## Map Data
+
+To map total catch per cell per year we need to sum up total catch (including reported, iuu, and discards) per cell.
 
 ```{r}
 
@@ -75,26 +98,28 @@ map_df <- df %>%
 DT::datatable(head(map_df))
 
 ```
+
+Create template raster from `seaaroundus`
 ```{r}
 library(seaaroundus)
-  saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
 
-   saup_rast <- raster(ncol=720, nrow=360)
-   saup_rast[] <- saup_cells
+## First get the template raster with a resolution of 0.5 degree cells.
+## getcells() functon is from the seaaroundus package
+saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
+
+saup_rast <- raster(ncol=720, nrow=360)
+
+saup_rast[] <- saup_cells
   
 ```
 
+Plot raster
 ```{r}
 
 r <- raster::subs(saup_rast, map_df, by = 1, which = 2, subsWithNA=TRUE) 
+#plot(r, axes = F, main = "1954 Total Industrial Harvest (tons)", col = cols)
+plot(r, main = "2015 Total Industrial Harvest (tons)", col = cols)
 
-plot(r, axes = F, main = "2015 Total Industrial Harvest (tons)", col = cols)
 ```
-
-
-
-
-
-
 
 
