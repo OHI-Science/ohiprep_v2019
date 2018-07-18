@@ -3,7 +3,8 @@
 ###########################################
 
 ## paper url: https://www.sciencedirect.com/science/article/pii/S0308597X18300605
-## data url: http://metadata.imas.utas.edu.au/geonetwork/srv/eng/metadata.show?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0
+## metadata url: http://metadata.imas.utas.edu.au/geonetwork/srv/eng/metadata.show?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0
+## data url: http://data.imas.utas.edu.au/portal/search?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0
 ## Global Fisheries Landings V3.0, downloaded 7/17/2018
 ## OHI issue: #13
 
@@ -18,14 +19,14 @@ web_years <- c("Ind_1950_1954", "Ind_1955_1959", "Ind_1960_1964", "Ind_1965_1969
                "NInd_1980_1984", "NInd_1985_1989", "NInd_1990_1994", "NInd_1995_1999", 
                "NInd_2000_2004", "NInd_2005_2009", "NInd_2010_2014", "NInd_2015_2019")
 
-reference <- c("Cells", "Index", "HistoricalIndex")
+reference <- c("Cells", "Index")
 
 ## Download reference data from web and save into mazu
-for(ref in reference){ # web_year <- "Ind_1950_1954"
+for(ref in reference){ # ref <- "Ind_1950_1954"
   
   data <- read.csv(sprintf("http://data.imas.utas.edu.au/attachments/ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0/%s.csv", ref))
   
-  write.csv(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/%s.csv", ref)))
+  write.csv(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/%s.csv", ref)), row.names=F)
   
 }
 
@@ -43,9 +44,9 @@ saveRDS(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_Glob
 data <- readRDS(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/CatchInd_1950_1954.rds"))
 head(data)
 
+# Spatial cells reference
 ref1 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Cells.csv"))
 
-ref2 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/HistoricalIndex.csv"))
-
-ref3 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv"))
+## Master index file
+ref2 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv"))
 

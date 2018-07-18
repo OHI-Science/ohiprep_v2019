@@ -208,9 +208,9 @@ for(layer in layers){
   
   quant <-  quantile(values_vector, prob=0.9999, na.rm=TRUE)
   
-  refs <- read.csv("comm_fish_ref_points.csv") %>%
+  refs <- read.csv("int/comm_fish_ref_points.csv") %>%
     dplyr::mutate(ref_point = ifelse(pressure == layer, quant, ref_point))
-  write.csv(refs, "comm_fish_ref_points.csv", row.names=FALSE)
+  write.csv(refs, "int/comm_fish_ref_points.csv", row.names=FALSE)
   
 print(layer)
 }  
@@ -225,7 +225,7 @@ For each type of commercial fisheries, rescale each year's data according to ref
 # relevant files
 all <- list.files(file.path(dir_M,'git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_npp_rasters'), full.names = TRUE, recursive = TRUE)
 
-ref_points <- read.csv("comm_fish_ref_points.csv")
+ref_points <- read.csv("int/comm_fish_ref_points.csv")
 
 # function to run through the 5 categories
 scale_fun <- function(prs){ # prs <- "pel_hb"

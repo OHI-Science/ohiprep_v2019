@@ -52,7 +52,7 @@ library(RColorBrewer)
 library(dplyr)
 
 source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R")
-source('vgpm_func.R')
+source('R/vgpm_func.R')
 
 cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
 

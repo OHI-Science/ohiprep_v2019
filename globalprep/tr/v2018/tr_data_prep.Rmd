@@ -28,23 +28,27 @@ Xtr = tr/90th quantile across regions
 
 * Ep = Proportion of workforce directly employed in tourism
 * Sr = (S-1)/5; Sustainability of tourism
-* Tw = A penalty applied to regions with travel warnings from the US State Department
+* Tw = A penalty applied to regions with travel warnings from the US State Department (or Canada's Government Travel Advise and Advisory)
 
 The following data are used:
 
-* Tourism sustainability: TCCI
-* Proportion of workforce directly employed in tourism: (WEF)
-* Travel warnings: (U.S. State Department)
+* Tourism sustainability: Travel and Tourism Competitiveness Index (TTCI) from World Economic Forum (WEF)
+* Proportion of workforce directly employed in tourism: World Travel & Tourism Council (WTTC)
+* Travel warnings: (U.S. State Department or Canada's Government Travel Advise and Advisory)
 * Per capita GDP: (World Bank with gaps filled using CIA data), used to gapfill missing values in Tourism sustainability
 
 # Updates from previous assessment
-We discovered that the WEF-Economics Global Competitiveness Index data used to estimate sustainability is not compatible across years.  New methods are used each year and previous year's of data are not recalculated using the updated methods. Consequently, we use the most recent data for all scenario years.  
+In 2017 we discovered that the WEF-Economics Global Competitiveness Index data used to estimate sustainability is not compatible across years.  New methods are used each year and previous year's of data are not recalculated using the updated methods. Consequently, we use the most recent data for all scenario years.
+
+Travel Warning data form the U.S State department has updated the way data is reported. This year all countries have a travel warning that ranges from level 1 (normal precautions) to level 4 (do not travel). Within each general warning for a country there are regional warnings which are included in the raw data. For more details see the travel_warning section of this data_prep. 
+
+The TTCI data is available to download in an excel file directly from the source. File was download on 07/12/2018 and saved in Mazu as a csv. No changes in data.
 
 We were able to update the following data:
-
-* Proportion of jobs in tourism 
+* Tourism Sustainability - TTCI form WEF - No updates
+* Proportion of jobs in tourism - WTTC data reported until 2018 (downloaded: 07/12/2018)
 * Travel warnings for 2018 (downloaded: 06/28/2018)
-* Sustainability
+
 
 
 # Some code to set everything up
@@ -63,7 +67,7 @@ library(WDI)
 source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
 
 ## maximum year of wttc data:
-year_max <- 2015
+year_max <- 2018
 
 source('R/tr_fxns.R')
 
@@ -72,21 +76,21 @@ source('R/tr_fxns.R')
 
 
 #Ep: Proportion of workforce directly employed in tourism
-These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/d2017/README.md for instructions on obtaining data). The data extend to 2027, but these values are projections.  The actual data goes to 2015.
+These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/d2018/README.md for instructions on obtaining data). The data extend to 2028, but these values are projections.  The actual data goes to 2018.
 
 These data are cleaned and formatted using the R/process_WTTC.R script. Missing values are gapfilled using the UN georegion information.
 
 ```{r wttc prop tourism}
 
 ## describe where the raw data are located:
-dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2017/raw')
+dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2018/raw')
 
 ## processing script that formats the WTTC for OHI, saves the following: intermediate/wttc_empd_rgn
 source('R/process_WTTC.R', local = TRUE)
 
 ## read in the dataset created by above function:
 tr_jobs_pct_tour <- read.csv('intermediate/wttc_empd_rgn.csv', stringsAsFactors = FALSE) %>%
-                select(rgn_id, year, jobs_pct)
+ dplyr::select(rgn_id, year, jobs_pct)
 
 ## format data to have complete years/regions and convert percentage of jobs to proportion of jobs
 rgn_names <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv', stringsAsFactors = FALSE) %>%
@@ -94,7 +98,7 @@ rgn_names <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/
 
 # create data frame with a row for each combination of region id and year
 rgn_names <- expand.grid(rgn_id = rgn_names$rgn_id, 
-                             year = min(tr_jobs_pct_tour$year):max(tr_jobs_pct_tour$year))
+                             year= min(tr_jobs_pct_tour$year):max(tr_jobs_pct_tour$year)) 
       
 tr_data_raw <- rgn_names %>%
     full_join(tr_jobs_pct_tour %>%
@@ -149,13 +153,14 @@ old <- read.csv('../v2017/output/tr_jobs_pct_tourism.csv')%>%
   select(rgn_id, year, ep_old=Ep)
 new <- read.csv('output/tr_jobs_pct_tourism.csv') %>%
   left_join(old) %>%
-  filter(year==2014) %>%
+  filter(year==2017) %>%
   arrange(ep_old)
-new
 
 plot(new$Ep, new$ep_old)
 abline(0,1, col="red")
-## NOTE: This looks reasonable to me.
+identify(new$Ep, new$ep_old, labels = new$rgn_id)
+
+## NOTE: This looks reasonable.
 
 ```
 
@@ -443,7 +448,7 @@ write.csv(warn_rgn_all_rgns, 'output/tr_travelwarnings.csv', row.names=FALSE)
 
 # Ts: Tourism sustainability
 
-These data are from the World Economic Forum's "Travel and Tourism Competitiveness Report" (http://reports.weforum.org/travel-and-tourism-competitiveness-report-2015/downloads/) See mazu: _raw_data/WEF-Economics/ for more details and the raw data.
+These data are from the World Economic Forum's "Travel and Tourism Competitiveness Report" (http://reports.weforum.org/travel-and-tourism-competitiveness-report-2017/downloads/) See mazu: _raw_data/WEF-Economics/ for more details and the raw data.
 
 These data are not compatible across years, so only the most recent year of data is across scenarios.
 
@@ -453,16 +458,32 @@ These data are gapfilled using gdppcppp and UN georegion information (see next s
 ```{r WEF processing, eval=FALSE}
 
 # read in files
-ttci_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WEF-Economics/d2017/wef_ttci.csv"))
+ttci_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WEF-Economics/d2018/WEF_TTCR17_data_for_download.csv")) %>%
+  dplyr::filter(row_number() %in% c(2,598)) %>% #Identified rows and colums of interest
+  dplyr::select(11:156) %>% 
+  t() %>%
+  data.frame() %>% 
+  remove_rownames() %>%
+  rename(country = "X1", score= "X2") %>% 
+  mutate(score = as.numeric(as.character(score))) %>% 
+  mutate(country = as.character(country))
+  
+#Checking the imported data is the same than in 2017! 
+ttci_v2017 <-read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WEF-Economics/d2017/wef_ttci.csv")) %>% 
+  rename(score_old= score) %>%
+  arrange(country) %>% 
+  left_join(ttci_raw)
+
+plot(ttci_v2017$score, ttci_v2017$score_old)
+abline(0,1, col="red") #Yes! This means data has not been updated. The only difference is that now we are importing the raw data form an excel file instead than a pdf
 
 
 ttci <- ttci_raw %>%
-    mutate(country = as.character(country)) %>%
     mutate(country = ifelse(country == "Congo, Democratic Rep.", "Democratic Republic of the Congo", country)) %>%
     mutate(country = ifelse(str_detect(country, "Ivoire"), "Ivory Coast", country))
   
   
-ttci_rgn <- name_2_rgn(df_in = ttci, 
+ttci_rgn <- name_2_rgn(df_in = ttcr, 
                        fld_name='country')
 
 weight_data <- data.frame(country = c("China", "Hong Kong SAR"),
@@ -490,25 +511,29 @@ The Artisanal Opportunities goal uses gdppcppp data, so we will get the data tha
 
 
 ```{r worldbank}
-wb <- read.csv("../../ao/v2017/intermediate/gdppcppp_ohi.csv") %>%
+wb <- read.csv("../../ao/v2018/intermediate/gdppcppp_ohi.csv") %>%
   dplyr::select(rgn_id, year, value)
 
 ```
 
 CIA data are used to fill in missing gaps in the gdppcppp data (https://www.cia.gov/library/publications/the-world-factbook/rankorder/2004rank.html)
 
-Downloaded: 9/11/2017
+Downloaded: 7/16/2018
 
 The following code is used to prepare these data for OHI:
 
 ```{r cia gdp, eval=FALSE}
 
-cia_gdp <- read.csv('raw/cia_gdp_pc_ppp.csv', stringsAsFactors = FALSE)
+cia_gdp <- read.csv('raw/cia_gdp_pc_ppp.csv', stringsAsFactors = FALSE, header = FALSE) %>% 
+  separate(V1, c("number", "other"), sep = " ", extra = "merge") %>% 
+  separate(other, c("country", "gdppcppp"), sep = "\\$") %>%
+  mutate(country = str_trim(country, side = "both")) %>% 
+  mutate(country = noquote(country)) %>% 
+  mutate(gdppcppp = as.numeric(gsub(",", "", gdppcppp))) %>% 
+  select(-number) %>% 
+  data.frame()
 
-
-splits <- data.frame(country = "Saint Helena, Ascension, and Tristan da Cunha", country2 = c("Saint Helena",
-                                                                                             "Ascension",
-                                                                                             "Tristan da Cunha")) %>%
+splits <- data.frame(country = "Saint Helena, Ascension, and Tristan da Cunha", country2 = c("Saint Helena",                                                                "Ascension","Tristan da Cunha")) %>%
   mutate(country = as.character(country),
          country2 = as.character(country2))
 
