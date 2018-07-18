@@ -11,6 +11,8 @@ output:
       in_header: '../../../src/templates/ohi_hdr.html'
   pdf_document:
     toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -49,20 +51,22 @@ We were able to update the following data:
 
 ```{r setup, message=FALSE, warning=FALSE}
 #setwd("~/github/ohiprep_v2018/globalprep/tr/v2018") #comment out when knitting
+#setwd("globalprep/tr/v2018")
 
-library(devtools)
-devtools::install_github("ohi-science/ohicore@dev")
+#library(devtools)
+#devtools::install_github("ohi-science/ohicore@dev")
 library(ohicore)
-
-source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
 library(tidyverse)
 library(stringr)
 library(WDI)
+
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
 
 ## maximum year of wttc data:
 year_max <- 2015
 
 source('R/tr_fxns.R')
+
 
 ```
 
@@ -163,8 +167,7 @@ Secondary source of information: Canada's Government - Travel Advice and Advisor
 (https://travel.gc.ca/travelling/advisories)
 
 #### 2018 Assesment
-the U.S. State Department updated the way they report the data. This year warnings are reported for every country (not only the ones under a certain risk as it used to be). 
-We input the data manualy to an excel file, converted into csv and wrangle the data to merge with data for previous assesments.
+the U.S. State Department updated the way they report the data. This year warnings are reported for every country (not only the ones under a certain risk as it used to be). They now provide a numeric scale describing the level of warning rather than just keywords.  
 
 Data was download on 06/28/2018
 
@@ -172,296 +175,268 @@ We also looked into Canada's Governement travel warning in order to make sure we
 
 Data was download on 07/06/2018
 
+
+Previously, we identified subregional warnings and modified the penalty based on this information.  However, given the State Department's new approach, we no longer will apply this method.  We eliminated the "subregion" information/penalties and modified past data to be consistent with our new approach. Future data should be collected without including this information.
+
+
 #### Notes about getting data:
 
-**For future assesmentes** It would be worthwhile to see if data can be "scrape" directly from the website into R. Maybe taking some time to figure this out because it seems like this will be the new format of the state department travel warning data. Figuring this out now will save us time in the future...and might be faster than doing this by hand.
+**For future assesmentes** It would be worthwhile to see if data can be "scraped" directly from the website into R. This seems possible given the new format of the state department travel warning data.
 
 #### Getting data for 2018 assessment
+The following code is used transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
 
-Step 1: Copy and paste the data for each contry found in:https://travel.state.gov/content/passports/en/alertswarnings.html
+Step 1: Copy and paste the data for each country: https://travel.state.gov/content/passports/en/alertswarnings.html
 
-Step 2: Manually check for every country if there is any regional warning and the risk factor in each case. If different subregions within a country have different warnings, these are put on two different lines, indicating if the warning is regional.
-
-regional: added if the warning only applies to specific regions within a country
-
-Eg:
-assess_year	country	level	                           date	   regional	 location
-2018	     Albania	1: Exercise normal precautions	6/18/18			
-2018	     Albania	2: Exercise increased caution	  6/18/18	   1	     The southern town of Lazarat
-
-Step 3: Import the csv with 2018 data. Wrangle and clean the new data so it matches long format of tr_travelwarnings_2017.csv
-
-Step 4: Wrangle tr_travelwarnings_2017.csv into long format and adapt risk levels to new way of reporting risk levels (see note below)
-
-Step 5: Join new data with previous assesment data and transform the warnings into a multiplier that is used to calculate tourism and recreation scores.
-
-Risk levels
-Up to 2017:
-inform: information travelor should be aware of (election violence, be aware due to crime, etc)
-risk: risks that trevelors should be aware of ("consider carefully risks of travel", "warns of risks")
-avoid_nonessential travel: "defer non-essential travel"
-avoid_all: "avoid all travel"
-gtfo: get out!!!
-
-For 2018:
-Level 1 - Exercise Normal Precautions: This is the lowest advisory level for safety and security risk. There is some risk in any international travel. 
-Level 2 - Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
-Level 3 - Reconsider Travel: Avoid travel due to serious risks to safety and security.
-Level 4 – Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
-
-Step 6: Convert names to OHI regions and identify NAs. Look for regions with no data in the Canadian Government website and add them to the raw data csv. Make sure to label the column indicting the data source. 
-NOTE: Canada's warning have the same levels as the U.S
-
-Step 7: Upload the new version of the raw casv (including data from the Canadian Gov).
-
-Step 8: Run the whole scritp again in order to obtain the outcome file with the multiplier for each country. 
-
+Step 2: Wrangle and clean the new data
 
 ```{r}
 ##Reading and wrangling 2018 data
+
 warn_raw <- read.csv('raw/tr_travelwarning_2018_raw.csv', na.strings = " ") %>% 
   mutate(country = as.character(country)) %>% 
   mutate(level = as.numeric(str_extract(level, '[1,2,3,4]'))) %>% 
-  mutate(regional = as.numeric (regional)) %>% 
-  select(assess_year, level, country , regional) %>% 
+  filter(!(regional %in% 1)) %>% # no longer relevant because we are not adjusting penalty based on subregional information
+  select(assess_year, level, country) %>% 
   rename(year= assess_year)
  
 ##Correct regions that are reported together
 
-##NOTE 1: Northern Saint-Martin and Guadeloupe and Martinique are reported under "French West Indies". The general warning for this region is 1 but is has a regional regional warning for St. Martin. Therefore, Guadeloupe and Martinique will get a level 1 score and Northern Saint-Martin a level 3 (this is according to the data) and not dicounting for regional.
-##NOTE 2: Similar than above Israel is reported together with The West Bank and Gaza. The overall warning for the region is level 2, but there are two regional warnings, one for Gaza dn one for the West Bank under a level 4 and 3 respectivly. Israel is getting the overal warning (Level 2), and Gaza and The West Bank are categorized as disputed areas and given two regional warnings according to the data.
+french_indies <- data.frame(country="French West Indies", 
+                            country_new =c("Northern Saint-Martin", "Guadeloupe and Martinique")) %>%
+  left_join(filter(warn_raw, country=="French West Indies")) %>%
+  select(country=country_new, year, level)
 
-warn_improved <- warn_raw %>% 
-  dplyr::mutate(rgn_name = ifelse(country == "French West Indies", "Northern Saint-Martin", country)) %>% 
-  dplyr::mutate(rgn_name = ifelse(country == "French West Indies" & is.na(regional), "Guadeloupe and Martinique", rgn_name)) %>%
-  dplyr::mutate(regional = ifelse(rgn_name == "Northern Saint-Martin", NA, regional)) %>% 
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Israel"), "Israel", rgn_name)) %>%
-  dplyr::mutate(rgn_name = ifelse(rgn_name == "Israel" & !is.na(regional), "DISPUTED", rgn_name)) 
-  
-  
+BES <- data.frame(country="Bonaire, St. Eustatius, and Saba (BES)", 
+                            country_new =c("Bonaire", "Saba", "Sint Eustatius")) %>%
+  left_join(filter(warn_raw, country=="Bonaire, St. Eustatius, and Saba (BES)")) %>%
+    select(country=country_new, year, level)
+
+FandM <- data.frame(country="France *Monaco", 
+                            country_new =c("France", "Monaco")) %>%
+  left_join(filter(warn_raw, country=="France *Monaco")) %>%
+    select(country=country_new, year, level)
+
+line <- data.frame(country="Line Islands (Kiribati)", 
+                            country_new =c("Line Group", "Phoenix Group")) %>%
+  left_join(filter(warn_raw, country=="Line Islands (Kiribati)")) %>%
+    select(country=country_new, year, level)
+
+warn_improved <- filter(warn_raw, country != "French West Indies") %>%
+  bind_rows(french_indies) 
+
+warn_improved <- filter(warn_improved, country != "Bonaire, St. Eustatius, and Saba (BES)") %>%
+  bind_rows(BES) 
+
+warn_improved <- filter(warn_improved, country != "France *Monaco") %>%
+  bind_rows(FandM) 
+
+warn_improved <- filter(warn_improved, country != "Line Islands (Kiribati)") %>%
+  bind_rows(line) 
+
+
 ##Correct names for regions not identified by the name_2_region
+warn_improved[str_detect(warn_improved$country,"union"), ] #use to check names
 
 warn_improved <- warn_improved %>% 
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Bonaire"), "Bonaire", rgn_name)) %>%
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"ROC"), "Republique du Congo", rgn_name)) %>% 
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Kinshasha"), "Democratic Republic of the Congo", rgn_name)) %>% 
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Domincan"), "Dominican Republic", rgn_name)) %>% 
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"France"), "France", rgn_name)) %>%
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Honduras\xca"), "Honduras", rgn_name)) %>%
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Sao Tome"), "Sao Tome and Principe", rgn_name)) %>%
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Turks and Caicos"), "Turks and Caicos Islands", rgn_name)) %>%
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"United Arab Emirates"), "United Arab Emirates", rgn_name)) %>% 
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Line Islands"), "Line Group", rgn_name)) %>% 
-  dplyr::mutate(rgn_name = ifelse(stringr::str_detect(country,"Virgin Islands"), "Virgin Islands", rgn_name)) %>% 
-  dplyr::select(-country)
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"Israel"), "Israel", country)) %>%
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"Bonaire"), "Bonaire", country)) %>%
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"ROC"), "Republique du Congo", country)) %>% 
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"Kinshasha"), "Democratic Republic of the Congo", country)) %>% 
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"Domincan"), "Dominican Republic", country)) %>% 
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"Honduras"), "Honduras", country)) %>%
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"Sao Tome"), "Sao Tome and Principe", country)) %>%
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"Turks and Caicos"), "Turks and Caicos Islands", country)) %>%
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"United Arab Emirates"), "United Arab Emirates", country)) %>% 
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"U.S. Virgin Islands"), "Puerto Rico and Virgin Islands of the United States", country)) %>%
+    dplyr::mutate(country = ifelse(stringr::str_detect(country,"Puerto Rico"), "Puerto Rico and Virgin Islands of the United States", country))
+
+```
 
 
-#In this dataset France and Monaco are reported together. This code creates a separate row for each of these regions.
+Step 3: Join new data with previous years' assesment data
+(adjusting previous data to be consistent with this year's data)
 
-FM <- filter(warn_improved, rgn_name=="France") %>%
-  rename(country_old = rgn_name)
-FM_subregions <- data.frame(country_old = "France",
-                            rgn_name = c("France", "Monaco")) %>%
-  left_join(FM) %>%
-  select(-country_old)
+We should be able to skip this section in the 2019 OHI assessment.
+```{r}
 
-warn_improved <- warn_improved %>%
-  filter(rgn_name != "France") %>%
-  rbind(FM_subregions)
+apply_level = data.frame(warning = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"), level = c(1, 2, 3, 4, 4)) 
 
-#Same with Bonaire, Saba and Sint Estatius: all reported together.
-BSS <- filter(warn_improved, rgn_name=="Bonaire") %>%
-  rename(country_old = rgn_name)
-BSS_subregions <- data.frame(country_old = "Bonaire",
-                            rgn_name = c("Bonaire", "Saba", "Sint Eustatius")) %>%
-  left_join(BSS) %>%
-  select(-country_old)
-
-warn_improved <- warn_improved %>%
-  filter(rgn_name != "Bonaire") %>%
-  rbind(BSS_subregions)
-
-##Formating data upto 2017. Assigning Levels to old categories:
-## inform - Level 1 
-## risk - Level 2 
-## avoid_nonessential - Level 3 
-## avoid_all & gtfo - Level 4
-
-#scores_old = data.frame(category = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"), old_score = c(0, 0.25, 0.75, 1, 1)) 
-
-scores <-  data.frame(level = c(1, 2, 3, 4), score = c(0, 0.25, 0.75, 1)) 
-
-warn_old <- read.csv('raw/tr_travelwarnings_2017.csv') %>%
-  select(year = assess_year, rgn_name, inform, risk, avoid_nonessential, avoid_all, gtfo, regional) %>%
-  gather("category", "n", 3:7)  %>%
+## deleted a couple regions that were duplicated (2016 Haiti and 2017 Kenya)
+warn_old <- read.csv('../v2018/raw/tr_travelwarnings_2017.csv') %>% 
+  select(year = assess_year, country=rgn_name, inform, risk, avoid_nonessential, avoid_all, gtfo, regional) %>%
+  gather("warning", "n", 3:7)  %>%
   filter(!is.na(n)) %>%
   select(-n) %>% 
-  mutate(level= ifelse(category == 'inform', 1, ifelse(category== 'risk', 2, ifelse(category== 'avoid_nonessential', 3, ifelse(category %in% c('avoid_all', 'gtfo'), 4, NA))))) %>% 
-  select(-category) %>% 
-  arrange(desc(year), rgn_name) 
+left_join(apply_level, by="warning") %>%
+  select(-warning) %>% 
+  arrange(desc(year), country) 
 
-#binding old a new data and add scores for each warning level
+## The old data does not always have data for the larger region when there was a "regional" warning.
+## Adding that data here:
+
+warn_old_add_rgns <- warn_old %>%
+  rowwise() %>%
+  mutate(country_year = paste(country, year, sep="_")) %>%
+  arrange(year, country) %>%
+  group_by(year, country) %>%
+  mutate(region_data = sum(is.na(regional)))
+
+warn_old_add_rgns <- filter(warn_old_add_rgns, region_data==0) %>%
+  mutate(regional = 0) %>%
+  mutate(level = 1) %>%
+  select(year, country, level)
+
+## exclude subregion data from old data
+warn_old_no_subs <- filter(warn_old, !(regional %in% 1)) %>%
+  select(year, country, level)
+
+#binding old a new data
 warn_complete <- warn_improved %>% 
-  bind_rows(warn_old) %>% 
-  left_join(scores, by="level") %>% 
-  group_by(year, rgn_name) %>%
-  mutate(warning_count = n()) 
+  bind_rows(warn_old_no_subs) %>%
+  bind_rows(warn_old_add_rgns) 
 
-##Save warn complete!!!!
+```
+
+Step 4: Transform the warnings into a multiplier that is used to calculate tourism and recreation scores.
+
+Travel warning  | Multiplier   | Description
+--------------- | ------------ | -------------------
+Level 1 | 0 (no penalty) | Exercise Normal Precautions: This is the lowest advisory level for safety and security risk. There is some risk in any international travel. 
+Level 2 | 0.25  | Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
+Level 3 | 0.50  | Reconsider Travel: Avoid travel due to serious risks to safety and security.
+Level 4 | 1 (full penalty) | Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
+
+```{r}
+scores <-  data.frame(level = c(1, 2, 3, 4), multiplier = c(1, 0.75, 0.25, 0)) 
+
+warn_complete = warn_complete %>%  
+  left_join(scores, by="level") %>% 
+  group_by(year, country) %>%
+  mutate(warning_count = n()) %>%
+  ungroup()
+
+# in general should be no regions with more than one warning count, \
+# but Puerto Rico and Virgin Islands are fine because they were reported separately
+# these will be averaged
+filter(warn_complete, warning_count>1)
+
+warn_complete <- warn_complete %>%
+  group_by(year, country) %>%
+  summarize(multiplier = mean(multiplier))
+
+
+write.csv(warn_complete, "intermediate/warning.csv", row.names=FALSE)
 
 
 ```
 
 
-The following code is used transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
+Step 4: Convert names to OHI regions and clean. 
 
 ```{r travel warnings}
-
-##Note: Discounting scores for regions that only have one regional report: For 2018 warnings, every contry will have at least 1 warning, therefore the discounting will apply to regions that have a general warning level 1 and only one aditional regional warning. This to be consistence with regions discounted in previous years (only one regional warning)
-
-##identify which 2018 warnings need to be discounted 
-warn2 <- warn_complete %>%
-  dplyr::mutate(discount = ifelse(level %in% 1 & warning_count %in% 2, 1, NA)) %>% 
-  dplyr::group_by(year, rgn_name) %>% 
-  tidyr::fill(discount) %>% 
-  dplyr::ungroup() 
-
-##Applying discount accordingly and calculating multiplier for each country each year
-warn_discount <- warn2 %>% 
-  dplyr::mutate(score =  ifelse(year %in% '2018' & regional %in% 1 & discount %in% 1, score*0.5, score)) %>% 
-  dplyr::mutate(score = ifelse(year %in% 2015:2017 & warning_count %in% 1 &regional %in% 1, score*0.5, score)) %>% 
-  dplyr::group_by(year, rgn_name) %>% 
-  dplyr::summarize(score = mean(score)) %>%
-  dplyr::mutate(multiplier = 1- score) %>%
-  dplyr::select(year, rgn_name, multiplier) %>%
-  dplyr::ungroup() %>% 
-  data.frame()
-    
-  
-# mutate(score = ifelse(year == '2018', ifelse(warning_count %in% 2 & regional %in% 1, score*0.5, score), score)) %>% #year == '2018' will change in the fuure when new assesment years are added. 
-#   mutate(score = ifelse(year %in% 2017:2015, ifelse(warning_count %in% 1 & regional %in% 1, score*0.5, score), score)) %>% # adjust country-year observations that only have had a single warning that was only applied to specific regions
-#   summarize(score = mean(score)) %>%
-#   mutate(multiplier = 1-score) %>%
-#   select(year, rgn_name, multiplier) %>%
-#   data.frame()
-
-data.frame(filter(warn_complete, year==2015))
-data.frame(filter(warn_discount, year==2015)) # checked to make sure I got conversions correct, looks good!
-
+warn <- read.csv("intermediate/warning.csv")
 
 #Add rgn_id
-warn_rgn <- name_2_rgn(df_in = warn_discount, 
-                       fld_name='rgn_name', 
-                       flds_unique=c('rgn_name','year'))
+warn_rgn <- name_2_rgn(df_in = warn, 
+                       fld_name='country', 
+                       flds_unique=c('country','year'))
 
+# Check to see if any regions are duplicated:
+sort(table(paste(warn_rgn$year, warn_rgn$rgn_id)))
+# China has multiple warnings (rgn_id 209)
+
+# Average China warnings
 warn_rgn <- warn_rgn %>%
-  select(rgn_id, year, multiplier) 
+  group_by(rgn_id, rgn_name, year) %>%
+  summarize(multiplier = mean(multiplier)) %>%
+  ungroup()
+
+sort(table(paste(warn_rgn$year, warn_rgn$rgn_id)))
+
 ```
 
-Identify which regions are not part of the U.S. State Department warning data for 2018 to be 'gapfilled' with information from Travel Advise from the Canadian Government. 
-Once these regions where identfied, we looked them up in the Canadien Gov. Travel Advise web site and updated the the raw data csv and then re-run the chunks above (within the Travel Warning heading)
 
+Step 5: Identify inhabited regions with no U.S. travel warning data and see if this information is available from the Canadian Government website and add warnings to the raw data csv. Make sure to label the column indicting the data source. 
+
+Next year, consider gapfilling missing territorial regions with administrative country data.
+
+NOTE: Canada's warning have the same levels as the U.S
 ```{r}
-##Creat two variables bringing the georegions and georegion lables from ohi-core. This will allow us to complete the dataframe with all OHI regions.
-georegions <- georegions
 georegion_labels <- georegion_labels
 
-##Read in OHI regions names to identify missing regions
-rgn_lable <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/layers/rgn_global.csv')
-
-##Read information about inhabited island to compare if some of the missing regions are inhabited
-inhab_islands <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/LookupTables/rgn_uninhabited_islands.csv') %>% 
-  select(-est_population)
+##uninhabited regions (no need to worry about these)
+uninhabited <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/LookupTables/rgn_uninhabited_islands.csv') %>% 
+  filter(est_population < 100) %>% # for this purpose: consider regions with <100 people to be uninhabited
+  select(rgn_id)
 
 ##Filter for information in current assesment year
-tw_assessment_yr <- warn_rgn %>% 
+filter_no_us_warn <- warn_rgn %>% 
   filter(year == 2018)
 
-tw_assessment_yr_complete <- georegions %>%
-  dplyr::left_join(tw_assessment_yr) %>%
-  dplyr::left_join(georegion_labels, by = 'rgn_id') %>%
-  dplyr::select(rgn_id, year, multiplier)
-
-##All regions that do not have data
-tw_assessment_yr_NA <- tw_assessment_yr_complete %>% 
+##All inhabited regions that do not have a travel warning
+no_us_warn <- georegion_labels %>%
+  dplyr::left_join(filter_no_us_warn, by = 'rgn_id')%>% 
   filter(is.na(multiplier)) %>% 
-  left_join(rgn_lable) %>% 
-  left_join(inhab_islands) %>% 
-  select(-year, -multiplier, -rgn_nam)
+  filter(!(rgn_id %in% uninhabited$rgn_id)) %>% 
+  select(rgn_id, rgn_name=rgn_label)
 
 ##Save regions with no data in intermediate folder
-write.csv(tw_assessment_yr_NA, 'intermediate/v2018_no_data.csv', row.names=FALSE)
+write.csv(no_us_warn, 'intermediate/v2018_no_data.csv', row.names=FALSE)
 
 ```
 
-Final step is to compare the multipliers assignd in 2017 match to the ones assign in 2018
+Final step is to compare with previous year's data.
 
+Many European regions now have a travel warning due to increased terrorism (e.g., United Kingdom, Italy, Spain, Germany), although this doesn't show up in the following figure because previously, these regions had no travel warning (and were thus, NA).
+
+The change in not penalizing subregional warnings tended to reduce the penalty (i.e. increase the multiplier value).
 ```{r}
-#Compare old multiplier vs new
-warn_multi_old <- read_csv("../v2017/output/tr_travelwarnings.csv") %>% 
-  rename(multiplier_old= multiplier)
+# The following indicates changes over time as well as changes to the State Department's approach to quantifying risk
+tmp <- warn_rgn %>%
+  spread(year, multiplier) %>%
+  data.frame()
 
-warn_multi_new <- warn_rgn %>% 
-  filter(year %in% 2015:2017) %>% 
-  left_join(warn_multi_old, by=c("rgn_id", "year"))
-
-plot(warn_multi_new$multiplier, warn_multi_new$multiplier_old)
-abline(0,1, col="red")
-
-##No change, that's good!
-
-##Compare 2017 multiplier to 2018
-
-old <- warn_rgn %>% 
-  dplyr::filter(year== '2017') %>% 
-  dplyr::rename(multiplier_2017= multiplier) %>% 
-  select(-year)
-
-old_2016 <- warn_rgn %>% 
-  dplyr::filter(year== '2016') %>% 
-  dplyr::rename(multiplier_2016= multiplier) %>% 
-  select(-year)
-
-old_2015 <- warn_rgn %>% 
-  dplyr::filter(year== '2015') %>% 
-  dplyr::rename(multiplier_2015= multiplier) %>% 
-  select(-year)
-
-new <- warn_rgn %>% 
-  dplyr::filter(year== '2018') %>% 
-  left_join(old, by= 'rgn_id') %>% 
-  left_join(old_2016, by= 'rgn_id') %>%
-  left_join(old_2015, by= 'rgn_id') %>%
-  #filter(!is.na(multiplier_2017)) %>% 
-  select(-year) %>% 
-  dplyr::rename(multiplier_2018= multiplier)
-
-plot(new$multiplier, new$multiplier_v2017)
+plot(jitter(tmp$X2017), jitter(tmp$X2018))
 abline(0,1, col="red")
 
 
-compare_18_17 <- ggplot(new, aes(x=multiplier_2018, y= multiplier_2017, label= rgn_id))+
-  geom_point()+
-  geom_abline(color= 'red')+
-  theme_bw()
-ggplotly(compare_18_17)
+### compare against last year's data
+### these changes will reflect changes due to removing subregional warnings:
+old <- read.csv("../v2017/output/tr_travelwarnings.csv") %>%
+  filter(year==2017) %>%
+  left_join(tmp, by="rgn_id")
 
-ggplot(new, aes(x=multiplier_2017, y= multiplier_2016))+
-  geom_point()+
-  geom_abline(color= 'red')+
-  theme_bw()
 
-ggplot(new, aes(x=multiplier_2016, y= multiplier_2015))+
-  geom_point()+
-  geom_abline(color= 'red')+
-  theme_bw()
-
+plot(jitter(old$multiplier), jitter(old$X2017))
+abline(0,1, col="red")
 
 ```
 
 Save the travel warning data in the output folder
 ```{r}
-write.csv(warn_rgn, 'output/tr_travelwarnings.csv', row.names=FALSE)
+georegions <- georegion_labels %>%
+  select(rgn_id)
+  
+
+warn_rgn_spread <- warn_rgn %>%
+  spread(year, multiplier) %>%
+  full_join(georegions, by=c("rgn_id")) %>%
+  data.frame() %>%
+  gather(year, multiplier, starts_with("X")) %>%
+  mutate(year = gsub("X", "", year)) %>%
+  mutate(multiplier = ifelse(is.na(multiplier), 1, multiplier)) %>%
+  filter(rgn_id <= 250) %>%
+  filter(rgn_id != 213)
+
+#should by 220 for each year
+table(warn_rgn_spread$year)
+
+warn_rgn_all_rgns <- warn_rgn_spread %>%
+  select(rgn_id, year, multiplier) %>%
+  arrange(year, rgn_id)
+
+write.csv(warn_rgn_all_rgns, 'output/tr_travelwarnings.csv', row.names=FALSE)
 ```
 
 
