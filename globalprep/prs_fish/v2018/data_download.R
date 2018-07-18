@@ -19,14 +19,14 @@ web_years <- c("Ind_1950_1954", "Ind_1955_1959", "Ind_1960_1964", "Ind_1965_1969
                "NInd_1980_1984", "NInd_1985_1989", "NInd_1990_1994", "NInd_1995_1999", 
                "NInd_2000_2004", "NInd_2005_2009", "NInd_2010_2014", "NInd_2015_2019")
 
-reference <- c("Cells", "Index", "HistoricalIndex")
+reference <- c("Cells", "Index")
 
 ## Download reference data from web and save into mazu
 for(ref in reference){ # ref <- "Ind_1950_1954"
   
-  data <- read.csv(sprintf("http://data.imas.utas.edu.au/attachments/ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0/Catch%s.csv", ref))
+  data <- read.csv(sprintf("http://data.imas.utas.edu.au/attachments/ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0/%s.csv", ref))
   
-  write.csv(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/%s.csv", ref)))
+  write.csv(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/%s.csv", ref)), row.names=F)
   
 }
 
