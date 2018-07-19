@@ -398,7 +398,7 @@ status_3nm_new <- read_csv(file.path(dir_goal, 'output', 'lsp_prot_area_offshore
   filter(year == max(year)) %>%
   select(rgn_id, pct_prot_3nm_new, status_3nm_new)
 
-status_3nm_old <- read_csv(file.path(dir_goal, '../v2016/output', 'lsp_protected_offshore3nm.csv')) %>%
+status_3nm_old <- read_csv(file.path(dir_goal, '../v2017/output', 'lsp_prot_area_offshore3nm.csv')) %>%
   full_join(read_csv(file.path(dir_goal, 'output', 'rgn_area_offshore3nm.csv')),
             by = 'rgn_id') %>%
   mutate(pct_prot_3nm_old = a_prot_3nm / area,
@@ -417,7 +417,7 @@ status_1km_new <- read_csv(file.path(dir_goal, 'output', 'lsp_prot_area_inland1k
   filter(year == max(year)) %>%
   select(rgn_id, pct_prot_1km_new, status_1km_new)
 
-status_1km_old <- read_csv(file.path(dir_goal, '../v2016/output', 'lsp_protected_inland1km.csv')) %>%
+status_1km_old <- read_csv(file.path(dir_goal, '../v2017/output', 'lsp_prot_area_inland1km.csv')) %>%
   full_join(read_csv(file.path(dir_goal, 'output', 'rgn_area_inland1km.csv')),
             by = 'rgn_id') %>%
   mutate(pct_prot_1km_old = a_prot_1km / area,
