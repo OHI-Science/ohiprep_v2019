@@ -1,0 +1,179 @@
+---
+title: "Additional Data Checks"
+author: "Iwen Su"
+output: html_document
+---
+
+```{r, echo=FALSE}
+library(raster)
+library(readr)
+library(tidyverse)
+
+dir_goal <- "~/github/ohiprep_v2018/globalprep/lsp/v2018"
+```
+
+# Summary
+
+* Check outliers in output files from Lasting Special Places data prep
+* Prepare raw shapefiles to check in ArcGIS
+
+Check outliers in Status plot
+
+
+rgn ID    |   rgn name  | status diff  | explanation
+--------- | -------------- |------- | ---------------
+  153      | Cook Islands     |  0 -> 100  | Partial update, including the addition of the 1.97 million km2 Marae Moana Marine Park marine protected area. The Marine Park was designated in July 2017 and encompasses the entire Cook Islands Exclusive Economic Zone. Marae Moana is now the largest protected area in the world. Protected area for both coastline and coastal marine area increased significantly for 2017 data due to this change. 
+  190     | Qatar             |  0 -> 71   | 
+  249     | Sint Eustatius    |  0 -> 54   | 
+  146     | Pitcairn          |  0 -> 50   | 
+  154     | Niue              |  0 -> 36   | 
+  173     | Uruaguay          | 30 -> 97   |
+  227     | Jersey            | 30 -> 70  |     
+  
+# Check Output Files
+``` {r outlier_checks, messages=F, warnings=F}
+
+mpa2018 <- read_csv(file.path(dir_goal, 'output/lsp_prot_area_offshore3nm.csv'))
+tpa2018 <- read_csv(file.path(dir_goal, 'output/lsp_prot_area_inland1km.csv'))
+
+marea2018 <- read_csv(file.path(dir_goal, 'output/rgn_area_offshore3nm.csv'))
+tarea2018 <- read_csv(file.path(dir_goal, 'output/rgn_area_inland1km.csv'))
+
+mpa2017 <- read_csv(file.path(dir_goal, '../v2017/output/lsp_prot_area_offshore3nm.csv')) #%>%
+#  group_by(rgn_id) %>%
+#  mutate(a_prot_3nm = cumsum(a_prot_3nm)) 
+tpa2017 <- read_csv(file.path(dir_goal, '../v2017/output/lsp_prot_area_inland1km.csv')) # %>%
+#  group_by(rgn_id) %>%
+#  mutate(a_prot_1km = cumsum(a_prot_1km)) 
+marea2017 <- read_csv(file.path(dir_goal, '../v2017/output/rgn_area_offshore3nm.csv'))
+tarea2017 <- read_csv(file.path(dir_goal, '../v2017/output/rgn_area_inland1km.csv'))
+
+#lsp_v2017 <- read_csv('~/github/ohi-global/eez2013/scores.csv') 
+
+
+check_rgn <- c(80,110,205,104,66,42,209)
+
+checks <- mpa2018 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_3nm_2018 = a_prot_3nm) %>%
+  left_join(tpa2018 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_1km_2018 = a_prot_1km),
+            by = c('rgn_id', 'year')) %>%
+  left_join(mpa2017 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_3nm_2017 = a_prot_3nm),
+            by = c('rgn_id', 'year')) %>%
+  left_join(tpa2017 %>% filter(rgn_id %in% check_rgn) %>% filter(year > 2000) %>% rename(prot_1km_2017 = a_prot_1km),
+            by = c('rgn_id', 'year')) %>%
+  left_join(marea2018 %>% filter(rgn_id %in% check_rgn) %>% rename(marea18 = area),
+            by = c('rgn_id')) %>%
+  left_join(tarea2018 %>% filter(rgn_id %in% check_rgn) %>% rename(tarea18 = area),
+            by = c('rgn_id')) %>%
+  left_join(marea2017 %>% filter(rgn_id %in% check_rgn) %>% rename(marea17 = area),
+            by = c('rgn_id')) %>%
+  left_join(tarea2017 %>% filter(rgn_id %in% check_rgn) %>% rename(tarea17 = area),
+            by = c('rgn_id'))
+
+DT::datatable(checks)
+```
+
+***
+
+# Prepare Raw Files
+
+```{r}
+library(sp)
+library(rgdal)
+library(sf)
+
+source('~/github/ohiprep_v2018/src/R/common.R')
+```
+
+## Global Regions Shapefile
+
+Select for just the EEZ of each region of interest. Note: shapefile is in Mollweide. Need to transform to match `wdpa_18` and `wdpa_17`
+
+```{r}
+regions <- sf::st_read(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017"), layer = "regions_2017_update")
+
+check_rgns <- c("Equatorial Guinea", "Bermuda", "Bahamas", "Anguilla", "Pitcairn", "Cook Islands", "Niue", "Uruguay", "Qatar", "Gabon", "Myanmar", "China", "Jersey", "Bonaire", "Saba", "Sint Eustatius", "Aruba", "Madagascar", "Senegal", "Greece")
+
+regions_int <- regions %>% 
+  dplyr::filter(type_w_ant == "eez", rgn_name %in% check_rgns) %>% 
+  dplyr::select(rgn_type, rgn_id, rgn_name, geometry)
+
+```
+
+## 2018 June WDPA Shapefile
+
+Transform coordinate system for `regions_int` so they match. Find intersect of WDPA June 2018 data and the EEZs for regions of interest.
+
+```{r}
+wdpa_18 <- sf::st_read(dsn = file.path(dir_M, 'git-annex/globalprep/_raw_data/wdpa_mpa/d2018/WDPA_June2018-shapefile'), layer = 'WDPA_June2018-shapefile-polygons')
+
+regions_t <- st_transform(regions_int, st_crs(wdpa_18))
+
+check_18 <- st_intersection(wdpa_18, regions_t)
+```
+
+## 2017 May WDPA Shapefile
+
+Find intersect of WDPA May 2017 data and the EEZs for regions of interest. 
+
+```{r}
+wdpa_17 <- sf::st_read(dsn = file.path(dir_M, 'git-annex/globalprep/_raw_data/wdpa_mpa/d2017/WDPA_May2017-shapefile'), layer = 'WDPA_May2017-shapefile-polygons')
+```
+
+A warning message appeared when reading in `wdpa_17`. This will cause an error when trying to find intersection of the polygons with `st_intersection`. Let's figure out why with `st_is_valid`.
+
+> Warning message: In CPL_read_ogr(dsn, layer, as.character(options), quiet, type, : GDAL Message 1: organizePolygons() received an unexpected geometry. Either a polygon with interior rings, or a polygon with less than 4 points, or a non-Polygon geometry. Return arguments as a collection.
+
+Set up parallel computing (limit number of mazu cores as other people need to use them!) to check each row in `wdpa_17` for invalid geometries. Set `reason=T` to print reasons (e.g. self-intersecting).
+```{r}
+library(doParallel)
+registerDoParallel(cores = 4) # set the number of cores so you don't use up all of mazu's cores
+getDoParWorkers()
+
+## Check each row to see if reason=T will print reasons (e.g. Self-intersecting) for invalid geometries.
+
+inval_geo <- foreach(i = 1:nrow(wdpa_17), .combine=rbind) %dopar% st_is_valid(wdpa_17[i,],reason=T)
+
+write.csv(inval_geo, file.path(dir_M,"git-annex/globalprep/_raw_data/wdpa_mpa/d2017/WDPA_May2017-shapefile/check_invalid_geometry.csv"), row.names = F) # save to review later
+
+## Append invalid geometry dataframe to 2017 WDPA data frame and filter for only valid geometries
+## About 2000+ invalid entries mostly 'Ring Self-intersection'
+wdpa_valid_17 <- cbind(wdpa_17, inval_geo) %>% 
+  filter(inval_geo == "Valid Geometry")
+
+## Save for future checks
+## Got a lot of warnings: 1: In CPL_write_ogr(obj, dsn, layer, driver, as.character(dataset_options),  ... : GDAL Message 1: Value 555543796 of field WDPAID of feature 8 not successfully written. Possibly due to too larger number with respect to field width
+st_write(wdpa_valid_17, file.path(dir_M,"git-annex/globalprep/_raw_data/wdpa_mpa/d2017/WDPA_May2017-shapefile/WDPA_May2017-shapefile-polygons-corrected.shp")) 
+
+```
+
+Find intersect of fixed WDPA May 2017 data and the EEZs for regions of interest.
+```{r}
+check_17 <- st_intersection(wdpa_valid_17, regions_t)
+```
+
+## Save Subsetted 2017 and 2018 Data
+
+Warnings: In CPL_write_ogr(obj, dsn, layer, driver, as.character(dataset_options),  ... : GDAL Message 1: Value 555548860 of field WDPAID of feature 262 not successfully written. Possibly due to too larger number with respect to field width
+
+```{r}
+st_write(check_17, file.path(dir_M,"git-annex/globalprep/_raw_data/wdpa_mpa/d2018/check/WDPA_May2017-shapefile-polygons-check.shp"), driver = "ESRI Shapefile", delete_layer = TRUE)
+st_write(check_18, file.path(dir_M,"git-annex/globalprep/_raw_data/wdpa_mpa/d2018/check/WDPA_June2018-shapefile-polygons-check.shp"), driver = "ESRI Shapefile", delete_layer = TRUE)
+```
+
+
+## Differences between 2017 and 2018 Data
+
+Find differences, convert to shapefile, and save.
+```{r}
+wdpa_diff <- st_difference(check_18, check_17)
+
+st_write(wdpa_diff, file.path(dir_M,"git-annex/globalprep/_raw_data/wdpa_mpa/d2018/check/WDPA_2017_2018-shapefile-polygons-diff.shp"), driver = "ESRI Shapefile", delete_layer = TRUE)
+```
+
+Open up shapefile in ArcGIS to see the data!
+
+Clean up working space
+```{r}
+rm(wdpa_17,wdpa_18,wdpa_diff,wdpa_valid_17, check_17, check_18)
+```
+
