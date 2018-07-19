@@ -67,7 +67,7 @@ Load raw catch data and the dataset matching gear and taxon to the five stressor
 watson_data <- list.files(file.path(dir_M, 'git-annex/impact_acceleration/stressors/comm_fish/data/catch'), full.names=TRUE, pattern = '.rds')
 
 #dataset created in watson_gear_matching that assigns each species/gear pair a gear type as defined in Halpern et al. (2008)
-gear_taxa <- read_csv('taxa_gear_types.csv')%>%
+gear_taxa <- read_csv('int/taxa_gear_types.csv')%>%
             dplyr::select(-X1)%>%
             rename(Taxonkey = TaxonKey)
 ```
