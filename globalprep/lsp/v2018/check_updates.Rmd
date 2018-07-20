@@ -74,7 +74,9 @@ DT::datatable(checks)
 
 ***
 
-# Prepare Raw Files
+# Prepare and Check Raw Files (Optional)
+
+You'll need ArcGIS for this part.
 
 ```{r}
 library(sp)
@@ -127,11 +129,12 @@ Set up parallel computing (limit number of mazu cores as other people need to us
 ```{r}
 library(doParallel)
 registerDoParallel(cores = 4) # set the number of cores so you don't use up all of mazu's cores
-getDoParWorkers()
+#getDoParWorkers()
 
 ## Check each row to see if reason=T will print reasons (e.g. Self-intersecting) for invalid geometries.
 
-inval_geo <- foreach(i = 1:nrow(wdpa_17), .combine=rbind) %dopar% st_is_valid(wdpa_17[i,],reason=T)
+inval_geo <- foreach(i = 1:nrow(wdpa_17), .combine=rbind) %dopar%
+  st_is_valid(wdpa_17[i,],reason=T)
 
 write.csv(inval_geo, file.path(dir_M,"git-annex/globalprep/_raw_data/wdpa_mpa/d2017/WDPA_May2017-shapefile/check_invalid_geometry.csv"), row.names = F) # save to review later
 
@@ -161,19 +164,18 @@ st_write(check_18, file.path(dir_M,"git-annex/globalprep/_raw_data/wdpa_mpa/d201
 ```
 
 
-## Differences between 2017 and 2018 Data
+## View in ArcGIS
 
-Find differences, convert to shapefile, and save.
-```{r}
-wdpa_diff <- st_difference(check_18, check_17)
+Open up 2017 (`check_17`), 2018 (`check_18`), and EEZ-regions (`regions_t`) shapefiles in ArcGIS to see the data! 
 
-st_write(wdpa_diff, file.path(dir_M,"git-annex/globalprep/_raw_data/wdpa_mpa/d2018/check/WDPA_2017_2018-shapefile-polygons-diff.shp"), driver = "ESRI Shapefile", delete_layer = TRUE)
-```
+Tip: open the attributes table of the EEZ-regions, highlight the row of the region you want to investigate (e.g. Bermuda) and select *zoom to selected* to view the 2017 and 2018 protected area differences for a region of interest. Click on `rgn_name` column to sort alphabetically - makes searching for regions easier.
 
-Open up shapefile in ArcGIS to see the data!
+![](Figs/data_check_example.png)
+
+*** 
 
 Clean up working space
 ```{r}
-rm(wdpa_17,wdpa_18,wdpa_diff,wdpa_valid_17, check_17, check_18)
+rm(wdpa_17,wdpa_18,wdpa_valid_17, check_17, check_18)
 ```
 
