@@ -317,7 +317,7 @@ old_gdppppc <- read.csv("../v2017/output/wb_gdppcppp_rescaled.csv") %>%
   dplyr::filter(year == 2016)
 
 new <- read.csv("output/wb_gdppcppp_rescaled.csv") %>%
-  dplyr::filter(year == 2017) %>% 
+  dplyr::filter(year == 2016) %>% 
   dplyr::left_join(old_gdppppc, by="rgn_id") #by=c("rgn_id", "year")
 
 plot(new$value, new$old_value)
