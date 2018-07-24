@@ -33,6 +33,8 @@ rgn ID    |   rgn name  | status diff
 # Check Output Files
 
 Regions with differences after adding non-resilience LSP layers
+
+**If no difference, may need to check whether there are additional protected areas within the EEZ not in the coastal or offshore regions.**
 ``` {r outlier_checks, messages=F, warnings=F}
 
 mpa2018 <- read_csv(file.path(dir_goal, 'output/lsp_prot_area_offshore3nm.csv'))
@@ -79,6 +81,8 @@ DT::datatable(checks)
 # Check Intermediate Files
 
 Regions with differences after adding resilience LSP layers. These intermediate files contain both **total area** and **total protected area** within the offshore 3-nm, coastal 1-km, and EEZ region (after processing with zonal stats files and `calc_areas()`).
+
+**If no difference, may need to check whether there are additional protected areas within the EEZ not in the coastal or offshore regions.**
 
 Combine assessment year 2017 and 2018 data
 ```{r}
