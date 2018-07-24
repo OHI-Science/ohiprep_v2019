@@ -1,5 +1,5 @@
 ---
-title: "OHI 2017 - Artisanal Opportunities: Preparing need data"
+title: "OHI 2018 - Artisanal Opportunities: Preparing need data"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -23,12 +23,12 @@ This script generates the "need" layer for the artisanal opportunities goal.  Th
 
 
 ## Updates from previous assessment
-None
+One more year of data
 
 ***
 #Data Source 
 
-**Downloaded**: 3/9/2018
+**Downloaded**: 7/23/2018
 
 **Description**:  
 GDP adjusted per capita by PPP (ppppcgdp)
@@ -37,7 +37,9 @@ Reported at country scale.
 
 GDP per capita based on purchasing power parity (PPP). PPP GDP is gross domestic product converted to international dollars using purchasing power parity rates. An international dollar has the same purchasing power over GDP as the U.S. dollar has in the United States. GDP at purchaser's prices is the sum of gross value added by all resident producers in the economy plus any product taxes and minus any subsidies not included in the value of the products. It is calculated without making deductions for depreciation of fabricated assets or for depletion and degradation of natural resources. Data are in constant international dollars based on the 2011 ICP round.
 
-**Time range**: 1990-2016
+Data is available directly to R throught the WDI package.
+
+**Time range**: 1990-2017
 
 
 ***
@@ -67,6 +69,8 @@ library(readr)
 # directory paths
 source('https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
 
+source('https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
+
 ```
 
 ## Download and save data
@@ -83,13 +87,13 @@ indicators <-  data.frame(WDI_data[[1]])
 
 head(indicators)
 
-
 # indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
 indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars. grep helps identify rows to select based on a string. (used this data)
 
 
-# download the data - This is the data we are going to work with. Create a variable for the data frame
-gdppcppp <-  WDI(country = "all",
+# download the data using the WDI package - This is the data we are going to work with. Create a variable for the data frame
+
+gdppcppp_raw <-  WDI(country = "all",
                indicator = "NY.GDP.PCAP.PP.KD", 
                start = yr_start, end=yr_end)
 
@@ -108,12 +112,12 @@ if (!file.exists("output")){
 } 
 
 #Save the file into the raw folder
-write.csv(gdppcppp, 'raw/raw_gdppcppp.csv', row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
+write.csv(gdppcppp_raw, 'raw/raw_gdppcppp.csv', row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
 
 ```
 
 
-## Within country gapfilling
+## Gapfilling 1: Linear Regression within a country's data
 
 When a country has some values (but not a complete series), a within country regression model is used to predict the missing values.
 
@@ -121,35 +125,34 @@ When a country has some values (but not a complete series), a within country reg
 
 # Reorganize to create cells for countries that have missing values for some years
 d <- read.csv('raw/raw_gdppcppp.csv') %>%
-  select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
-  filter(year >= 2005) %>%
-  spread(year, value) %>%
+  dplyr::select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
+  dplyr::filter(year >= 2005) %>%
+  tidyr::spread(year, value) %>%
     # spread to fill in potentially missing values with NA
   data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
-  gather(year, value, starts_with("X")) %>%
-  mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
-  mutate(year = as.numeric(year)) #convert the year column into a numeric format
+  tidyr::gather(year, value, starts_with("X")) %>%
+  dplyr::mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
+  dplyr::mutate(year = as.numeric(year)) #convert the year column into a numeric format
   
 
 # For the first case, if there is only one value use this value for all years
 # This is not ideal, but likely better than other forms of gapfilling
 d <- d %>%
-  group_by(country) %>%
-  mutate(value_num = sum(!is.na(value))) %>% # counts the numbers of non-missing values for each country (logical TRUEs regarded as one)
-  filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2017
-  mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%  # mean() function is just used to get the single value and remove all NAs in that group
-  ungroup() %>%
-  mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave it, otherwise gapfill; still have NAs where 12 > value_num > 1
-  select(country, year, value, value_num) %>% # select just these columns; to eliminate extraneous value_num_gf column
-  mutate(value = as.integer(value))
-
+  dplyr::group_by(country) %>%
+  dplyr::mutate(value_num = sum(!is.na(value))) %>% # counts the numbers of non-missing values for each country (logical TRUEs regarded as one)
+  dplyr::filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2017
+  dplyr::mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%  # mean() function is just used to get the single value and remove all NAs in that group
+  dplyr::ungroup() %>%
+  dplyr::mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave it, otherwise gapfill; still have NAs where 13 > value_num > 1
+  dplyr::select(country, year, value, value_num)  # select just these columns; to eliminate extraneous value_num_gf column
+ 
   
   
 # Predict values using a linear regression with 'year' as an independent variable 
 # Create new column with these predicted values
 d_gf <- d %>%
-dplyr::group_by(country) %>%
-dplyr::do({ 
+  dplyr::group_by(country) %>%
+  dplyr::do({ 
     mod <- lm(value ~ year, data =.)
     value_pred <- predict(mod, newdata =.[c('year')]) # value_pred = country-grouped mod$fitted.values?
     data.frame(., value_pred) # do loop applies the model fitting and prediction to each country group
@@ -157,30 +160,15 @@ dplyr::do({
   dplyr::ungroup()
 
 
+# Fill in the remaining NA values using the predicted values
 
-
-d_gf_ber <- d %>%
-filter(country %in% c("Eritrea", "Nauru", "Puerto Rico","South Sudan","Venezuela, RB", "Yemen, Rep.", "Bermuda")) %>% 
-dplyr::group_by(country) %>%
-dplyr::do({ 
-    mod <- lm(value ~ year, data =.) 
-    value_pred <- predict(mod, newdata =.[c('year')]) # value_pred = country-grouped mod$fitted.values?
-    data.frame(., value_pred) # do loop applies the model fitting and prediction to each country group
-  }) %>% 
-  dplyr::ungroup()
-
-#"Eritrea", "Nauru", "Puerto Rico","South Sudan","Venezuela, RB", "Yemen, Rep." 
-
-
-# Fill out the remaining NA values using the predicted values
-# These are those countries where number of non-NA values > 1
 d_gf <- d_gf %>%
-  ungroup() %>%
-  mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled', if value is currently NA, it will be gapfilled (indicated by a 1)
-  mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>% # if value_num is 1 it was gapfilled previously and gets a 1
-  mutate(value = ifelse(is.na(value), value_pred, value)) %>% # if missing value still, input the value in value_pred column
-  mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling; this puts message "lm based..." even in some rows gapfilled with one year of data
-  mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method)) # this overwrites/corrects method "lm based..." for rows actually gapfilled with "one-year of data"" method
+  dplyr::ungroup() %>%
+  dplyr::mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled', if value is currently NA, it will be gapfilled, indicated by a 1 in the gapfill column
+  dplyr::mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>% # if value_num is 1 it was gapfilled previously and gets a 1 in the gapfill column
+  dplyr::mutate(value = ifelse(is.na(value), value_pred, value)) %>% # if NA in value column, input the value in value_pred column
+  dplyr::mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling; this puts message "lm based..." even in some rows gapfilled with one year of data
+  dplyr::mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method)) # this overwrites/corrects method "lm based..." for rows actually gapfilled with "one-year of data"" method
   
 ```
 
@@ -191,26 +179,22 @@ This is performed by taking the natural log of each value and then dividing by t
 
 # Values at the 95th Quantile or greater are given a rescaled score of '1' (the highest value)
 d_rescale <- d_gf %>%
-  mutate(quantile_95 = quantile(value, probs=0.95)) %>% # gives a single value - the 95th quant
-  mutate(value_stand = value/quantile_95) %>% # where does value scale relative to 95th quantile
-  mutate(value_stand = ifelse(value_stand > 1, 1, value_stand))
-
-d_rescale <- d_rescale %>%
-  select(country, year, value, score=value_stand, gapfilled, method) # rename value_stand 'score'
+  dplyr::mutate(quantile_95 = quantile(value, probs=0.95)) %>% # gives a single value - the 95th quant
+  dplyr::mutate(value_stand = value/quantile_95) %>% # where does value scale relative to 95th quantile
+  dplyr::mutate(value_stand = ifelse(value_stand > 1, 1, value_stand)) %>% 
+  dplyr::select(country, year, value, score=value_stand, gapfilled, method) # rename value_stand 'score'
 
 
-# check the data with some plots
+##check the data with some plots
 # plotData <- d_rescale %>%
-#   mutate(need = 1-score) %>%
+#   dplyr::mutate(need = 1-score) %>%
 #   dplyr::select(country, year, need)
-
+# 
 # library(googleVis)
-#
-# Motion = gvisMotionChart(plotData,
-# idvar="country", timevar="year")
+# 
+# Motion = gvisMotionChart(plotData,idvar="country", timevar="year")
 # 
 # plot(Motion)
-# 
 # print(Motion, file = file.path('ao_need_95q.html'))
 
 ```
@@ -225,6 +209,8 @@ d_stand_rgn <- name_2_rgn(df_in = d_rescale,
                        fld_name='country', 
                        flds_unique=c('year')) # cannot load look up tables. 
 
+##Check if removed countries/regions are acording to what is expected.
+
 
 # Combine the duplicate regions (we report these at lower resolution)
 # In this case, we take the average score weighted by population
@@ -233,10 +219,10 @@ population_weights <- read.csv('../../../../ohiprep_v2018/src/LookupTables/Pop_w
 
 # Weight the `score`, `value`, and `gapfilled` column by population
 d_stand_rgn <- d_stand_rgn %>%
-  left_join(population_weights, by="country") %>%
-  mutate(population = ifelse(is.na(population), 1, population)) %>% # If no value available, input 1 (these values will not change)
-  group_by(rgn_id, year, method, gapfilled) %>% 
-  summarize(score = weighted.mean(score, population), # weight the single score value by pop.
+  dplyr::left_join(population_weights, by="country") %>%
+  dplyr::mutate(population = ifelse(is.na(population), 1, population)) %>% # If no value available, input 1 (these values will not change)
+  dplyr::group_by(rgn_id, year, method, gapfilled) %>% 
+  dplyr::summarize(score = weighted.mean(score, population), # weight the single score value by pop.
             value = weighted.mean(value, population)) %>%
   ungroup() 
 
@@ -262,6 +248,8 @@ In this case, we gapfill regions with no data using UN geopolitical means.
 ```{r}
 
 # Create dataframe pairing each UN geopolitical region id with a year from 2005 to current
+
+georegions <- ohicore::georegions
 d_stand_gf <- data.frame(year=min(d_stand_rgn$year):max(d_stand_rgn$year)) %>% 
   merge(georegions, by=NULL) 
 
@@ -295,6 +283,7 @@ d_stand_gf <- d_stand_gf %>%
   mutate(score = ifelse(is.na(score), r0_value, score))
 
 # should no longer have NAs in the score column!
+summary(d_stand_gf) #No NA!!
 
 ```
 
@@ -318,3 +307,25 @@ write.csv(final_gf, "output/wb_gdppcppp_rescaled_gf.csv", row.names=FALSE)
 
 
 ```
+
+
+#Compare data to previous year
+
+```{r}
+old_gdppppc <- read.csv("../v2017/output/wb_gdppcppp_rescaled.csv") %>% 
+  dplyr::rename(old_value=value) %>% 
+  dplyr::filter(year == 2016)
+
+new <- read.csv("output/wb_gdppcppp_rescaled.csv") %>%
+  dplyr::filter(year == 2017) %>% 
+  dplyr::left_join(old_gdppppc, by="rgn_id") #by=c("rgn_id", "year")
+
+plot(new$value, new$old_value)
+abline(0,1, col="red")
+
+
+```
+
+
+
+
