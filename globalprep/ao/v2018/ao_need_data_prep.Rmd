@@ -26,7 +26,7 @@ This script generates the "need" layer for the artisanal opportunities goal.  Th
 One more year of data
 
 ***
-#Data Source 
+# Data Source 
 
 **Downloaded**: 7/23/2018
 
@@ -200,7 +200,7 @@ d_rescale <- d_gf %>%
 ```
 
 
-# Convert country names to ohi regions
+## Convert country names to ohi regions
 
 ```{r}
 
@@ -242,7 +242,7 @@ write_csv(gdppcppp_data, "intermediate/gdppcppp_ohi.csv")
 
 ```
 
-# Gapfilling: part 2
+## Gapfilling: part 2
 In this case, we gapfill regions with no data using UN geopolitical means.
 
 ```{r}
@@ -288,7 +288,7 @@ summary(d_stand_gf) #No NA!!
 ```
 
 
-# Save the data
+## Save the data
 
 ```{r}
 
@@ -309,7 +309,7 @@ write.csv(final_gf, "output/wb_gdppcppp_rescaled_gf.csv", row.names=FALSE)
 ```
 
 
-#Compare data to previous year
+## Compare data to previous year
 
 ```{r}
 old_gdppppc <- read.csv("../v2017/output/wb_gdppcppp_rescaled.csv") %>% 
