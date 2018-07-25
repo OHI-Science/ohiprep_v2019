@@ -1,0 +1,72 @@
+---
+title: "Global Fisheries Catch"
+output: html_document
+---
+
+# Summary
+
+This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining CatchInd_XXXX_XXXX and CatchNInd_XXXX_XXXX rds files wtih Index.csv and Cells.csv.
+
+# Updates from previous assessment
+
+# Data Source
+
+**Reference**: Watson, R. A. and Tidd, A. 2018. Mapping nearly a century and a half of global marine fishing: 1869–2015. Marine Policy, 93, pp. 171-177. [(Paper URL)](https://doi.org/10.1016/j.marpol.2018.04.023)
+
+**Downloaded**: July 17, 2018 from [IMAS portal](http://data.imas.utas.edu.au/portal/search?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0) - clikc on download tab, step 3
+
+**Description**:  Global fisheries landings data per cell separated by Industrial versus Non-Industrial catch, IUU, and discards.
+
+**Native data resolution**:   
+
+**Time range**: 1950 - 2018
+
+**Format**:  CSV format
+
+**Additional Information**: [Metadata](http://metadata.imas.utas.edu.au/geonetwork/srv/eng/metadata.show?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0), [Supplementary Material](https://ars.els-cdn.com/content/image/1-s2.0-S0308597X18300605-mmc1.docx)
+
+
+***
+  
+# Setup
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+source("https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R")
+rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018")
+
+```
+
+# Import Raw Data
+
+_See data_download.R_ if new data is available.
+
+```{r}
+master <- read.csv(file.path(rawFolder,"Index.csv"))
+
+spatialCells <- read.csv(file.path(rawFolder,"Cells.csv"))
+write.csv(spatialCells, "int/spatial_cells.csv")
+```
+
+# Preliminary Exploration
+
+_See explore_watson_data.Rmd_
+
+# Methods
+
+## Wrangle into Intermediate Files
+
+* Subset Master Index File (Index.csv) data to include `ID`, `Year`, `CountryName`, `TaxonName`, `CommonName`, `FleetGearName` (I actually don't think we will need the `CountryName` or `FleetGearName`, but it might be interesting)
+* Combine the Master Index and Spatial Cells with the CatchInd and CatchNInd files
+
+```{r}
+
+masterSub <- master %>% 
+  select(ID, Year, CountryName, TaxonName, CommonName, FleetGearName)
+
+write.csv(masterSub, "int/master_index.csv")
+
+```
+
+

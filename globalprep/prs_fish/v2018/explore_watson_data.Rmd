@@ -10,7 +10,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, message = F, warning = F)
 ```
 
-## Load Libraries
+## Setup
 ```{r}
 library(RColorBrewer)
 library(raster)
