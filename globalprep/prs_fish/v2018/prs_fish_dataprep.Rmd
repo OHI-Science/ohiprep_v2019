@@ -5,9 +5,11 @@ output: html_document
 
 # Summary
 
-This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining CatchInd_XXXX_XXXX and CatchNInd_XXXX_XXXX rds files wtih Index.csv and Cells.csv.
+This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining CatchInd_XXXX_XXXX and CatchNInd_XXXX_XXXX rds files wtih Index.csv and Cells.csv as well as a single file with all years.
 
 # Updates from previous assessment
+
+No longer using gear type to classify catch data as high or low bycatch, since the IMAS data now provides values for **discards**, which we consider as bycatch. Previously, the raw catch data was all in a single file. This year, we have to combine across three different data tables: catch data (CatchInd_XXXX_XXXX), master index file with country name, species, etc (Index.csv), and geospatial information (Cells.csv).
 
 # Data Source
 
@@ -19,7 +21,7 @@ This script prepares and formats the IMAS Global Fisheries Catch raw data into i
 
 **Native data resolution**:   
 
-**Time range**: 1950 - 2018
+**Time range**: 1950 - 2015
 
 **Format**:  CSV format
 
@@ -33,20 +35,25 @@ This script prepares and formats the IMAS Global Fisheries Catch raw data into i
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 
 library(tidyverse)
+library(purrr)
+
 source("https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R")
+
 rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018")
 
 ```
 
 # Import Raw Data
 
-_See data_download.R_ if new data is available.
+_See data_download.R_ if new data is available. 
+
+Filter master file to only include `ID`, `Year`, `CountryName`, `TaxonName`, `CommonName`, `FleetGearName` (I actually don't think we will need the `CountryName` or `FleetGearName`, but it might be interesting).
 
 ```{r}
-master <- read.csv(file.path(rawFolder,"Index.csv"))
+master <- read.csv(file.path(rawFolder,"Index.csv")) %>% 
+  select(ID, Year, CountryName, TaxonName, CommonName, FleetGearName)
 
 spatialCells <- read.csv(file.path(rawFolder,"Cells.csv"))
-write.csv(spatialCells, "int/spatial_cells.csv")
 ```
 
 # Preliminary Exploration
@@ -55,18 +62,70 @@ _See explore_watson_data.Rmd_
 
 # Methods
 
-## Wrangle into Intermediate Files
+## Wrangle 
 
-* Subset Master Index File (Index.csv) data to include `ID`, `Year`, `CountryName`, `TaxonName`, `CommonName`, `FleetGearName` (I actually don't think we will need the `CountryName` or `FleetGearName`, but it might be interesting)
-* Combine the Master Index and Spatial Cells with the CatchInd and CatchNInd files
+Combine the Master Index and Spatial Cells with the CatchInd and CatchNInd files.
+
+### Function for Combining Files
+
+Create function to read in each file name, combine with Index and Cells data frame, and save everything into one single data file.
 
 ```{r}
 
-masterSub <- master %>% 
-  select(ID, Year, CountryName, TaxonName, CommonName, FleetGearName)
+## Create empty data frame to combine all catch information
+bigDataFrame <- data.frame()
 
-write.csv(masterSub, "int/master_index.csv")
+## Set function to read in each file, combine with Index.csv and Cells.csv, and save back into mazu
+combine_fis <- function(x) {
+  
+  ## This will be the name of the data frame (w/o extension)
+  name <- basename(x) %>% 
+    tools::file_path_sans_ext()
+  ## Save the data frame into R's memory
+  name <- readRDS(x)
+  
+  ## Create a totals column
+  df <- name %>%
+    mutate(Landings = Reported+IUU) %>% 
+    left_join(master, by = "ID") %>% 
+    left_join(spatialCells, by = "Cell")
+  
+  ## Save intermediate files into mazu with same name as raw
+  saveRDS(df, file.path(rawFolder,"int",basename(x)))
+  
+  ## Add catch data to single data frame
+  rbind(df,bigDataFrame)
+   
+}
 
 ```
 
+### Industrial Catch Data
+
+Create list of industrial catch file names and apply the `combine_fis` function to save each individual 5-year interval catch data. Then, create a single file that has all years of data.
+
+The `combine_fis` process should take about 7 minutes. Saving all years into a single file with `saveRDS` will take about 4 minutes.
+```{r}
+
+ind_files <- dir(rawFolder, pattern ="CatchInd", full.names=TRUE)
+
+## Wrangle and save each 5-year interval of data
+indCatch <- map_df(ind_files, combine_fis)
+## Save all years into single file
+saveRDS(indCatch, file.path(rawFolder,"int/CatchInd_all.rds"))
+
+```
+
+### Non-industrial Catch Data
+
+```{r}
+
+nind_files <- dir(rawFolder, pattern ="CatchNInd", full.names=TRUE)
+
+## Apply the combine_fis function, which saves each 5-year catch data
+nindCatch <- map_df(nind_files, combine_fis)
+## Save the 14 separate catch files into a single one
+saveRDS(nindCatch, file.path(rawFolder,"int/CatchNInd_all.rds"))
+
+```
 
