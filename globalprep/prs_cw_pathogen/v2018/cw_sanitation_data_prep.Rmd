@@ -72,7 +72,7 @@ Percentage of people without sanitation was multiplied by the coastal population
 ***
 
 
-#Setup
+# Setup
 
 ```{r setup, results="hide", message = FALSE, warning = FALSE}
 ## set working directory; comment out for knitting
@@ -87,7 +87,7 @@ library(tidyverse)
 
 ```
 
-#Import raw data
+# Import raw data
 
 ```{r raw_data, results="hide", message = FALSE, warning = FALSE}
 ##Directly from Mazu
@@ -105,9 +105,9 @@ head(sani_raw)
 
 ```
 
-#Methods
+# Methods
 
-##Data wrangling
+## Data wrangling
 Selecting and naming the columns of interest. Scale the percentage of population with access to improved sanitation to proportion (from 0-1). Transform population and percentage into a numeric variable.
 
 ```{r data_wrangling, results="hide", message = FALSE, warning = FALSE}
@@ -199,7 +199,7 @@ sort(table(sani_final$rgn_id))
 
 ```
 
-#Gapfilling
+# Gapfilling
 
 First step is to get an idea of what needs to be gapfilled.
 
@@ -251,7 +251,7 @@ sani_gf_lm <- sani_gf_lm %>%
 ```
 
 
-##Gapfilling 2: Georegional averages
+## Gapfilling 2: Georegional averages
 
 Georegional gapfilling for regions that do not have data.
 
@@ -308,7 +308,7 @@ dplyr::filter(sani_georgn_gf, is.na(basic_sani_prop)) %>%
 
 ```
 
-##Gapfilling 3: Replace scores for uninhabited regions
+## Gapfilling 3: Replace scores for uninhabited regions
 
 Uninhabited regions get a perfect score.
 
@@ -330,7 +330,7 @@ summary(sani_complete)
 ```
 
 
-#Save gapfilled data records
+# Save gapfilled data records
 
 ```{r, results="hide", message = FALSE, warning = FALSE}
 #write.csv(sani_complete, "intermediate/sani_complete.csv", row.names=FALSE)
@@ -356,7 +356,7 @@ gf_data_trend <- sani_complete %>%
 ```
 
 
-#Standarizing sanitation data by population density
+# Standarizing sanitation data by population density
 
 First calculate coastal population density (people/km^2^) is calculated by dividing the population within 25 miles of the coast by km^2^ within the 25 mile inland coastal area (yes! This is confusing because area is in km^2^, despite the boundary being 25 miles inland).
 
@@ -412,7 +412,7 @@ hist(unsani_pop$propWO_x_pop_log, main = "log of people without access")
 
 ```
 
-#Pressure Score
+# Pressure Score
 
 The reference point is the 99th quantile across all countries and years 2000-2009 as a reference point.
 
@@ -450,7 +450,7 @@ summary(unsani_prs)
 ```
 
 
-#Model Trend
+# Model Trend
 
 Using `CalculateTrend` function form the `ohicore`, trend is calculated by applying a linear regression model to the pressuere scores using a window of 5 years of data. The solope of the linear regression (annual change in pressure) is then divided by the earliest year to get proportional change and then multiplied by 5 to get estimate trend on pressure in the next five years. 
 
@@ -493,7 +493,7 @@ summary(trend_data)
 
 
 
-#Compare to previous years
+# Compare to previous years
 
 ### Trend data
 
