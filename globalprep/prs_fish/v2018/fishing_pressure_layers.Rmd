@@ -5,11 +5,15 @@ output: html_document
 
 # Summary
 
+The commercial fishing pressure layers are created from spatialized catch by gear data provided by Watson (2018), and net primary production data from the Vertically Generalized Production Model [(VGPM)](http://www.science.oregonstate.edu/ocean.productivity/) as described in [Behrenfeld and Falkowski (1997)](http://www.science.oregonstate.edu/ocean.productivity/references/L&O%201997a.pdf).
+
 This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining CatchInd_XXXX_XXXX and CatchNInd_XXXX_XXXX rds files wtih Index.csv and Cells.csv as well as a single file with all years.
 
 # Updates from previous assessment
 
 No longer using gear type to classify catch data as high or low bycatch, since the IMAS data now provides values for **discards**, which we consider as bycatch. Previously, the raw catch data was all in a single file. This year, we have to combine across three different data tables: catch data (CatchInd_XXXX_XXXX), master index file with country name, species, etc (Index.csv), and geospatial information (Cells.csv).
+
+One other change from last year is that we will gapfill the missing NPP data prior to using. We correct for system productivity by dividing catch by NPP: [quick review](https://www.researchgate.net/publication/312614653_Reconciling_fisheries_catch_and_ocean_productivity)
 
 # Data Source
 
@@ -45,20 +49,79 @@ rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheri
 
 # Import Raw Data
 
-_See data_download.R_ if new data is available. 
-
-Filter master file to only include `ID`, `Year`, `CountryName`, `TaxonName`, `CommonName`, `FleetGearName` (I actually don't think we will need the `CountryName` or `FleetGearName`, but it might be interesting).
+* Industrial Catch (1950 - 1954) - reported, iuu, and discard catch data for each cell location and unique identifier
+* Master Index File (Index.csv) - information associated with the unique identifiers in the Industrial Catch data
+* Spatial Cells Reference (Cell.csv) - contains geospatial information associated wtih the Industrial Catch data
 
 ```{r}
-master <- read.csv(file.path(rawFolder,"Index.csv")) %>% 
-  select(ID, Year, CountryName, TaxonName, CommonName, FleetGearName)
 
-spatialCells <- read.csv(file.path(rawFolder,"Cells.csv"))
+## Save download url suffixes 
+web_years <- c("Ind_1950_1954", "Ind_1955_1959", "Ind_1960_1964", "Ind_1965_1969", 
+               "Ind_1970_1974", "Ind_1975_1979", "Ind_1980_1984", "Ind_1985_1989",
+               "Ind_1990_1994", "Ind_1995_1999", "Ind_2000_2004", "Ind_2005_2009", 
+               "Ind_2010_2014", "Ind_2015_2019", "NInd_1950_1954", "NInd_1955_1959",
+               "NInd_1960_1964", "NInd_1965_1969", "NInd_1970_1974", "NInd_1975_1979",
+               "NInd_1980_1984", "NInd_1985_1989", "NInd_1990_1994", "NInd_1995_1999", 
+               "NInd_2000_2004", "NInd_2005_2009", "NInd_2010_2014", "NInd_2015_2019")
+
+reference <- c("Cells", "Index")
+
+## Download reference data from web and save into mazu
+for(ref in reference){ # ref <- "Ind_1950_1954"
+  
+  data <- read.csv(sprintf("http://data.imas.utas.edu.au/attachments/ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0/%s.csv", ref))
+  
+  write.csv(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/%s.csv", ref)), row.names=F)
+  
+}
+
+## Download catch data from web and save into mazu
+for(web_year in web_years){ # web_year <- "Ind_1950_1954"
+
+data <- read.csv(sprintf("http://data.imas.utas.edu.au/attachments/ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0/Catch%s.csv", web_year))
+
+saveRDS(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Catch%s.rds", web_year)))
+
+}
+
 ```
 
-# Preliminary Exploration
+# Explore Data
 
-_See explore_watson_data.Rmd_
+Filter master file to only include `ID`, `Year`, `CountryName`, `TaxonName`, `CommonName`, `FleetGearName` (I actually don't think we will need the `CountryName` or `FleetGearName`, but it might be interesting).
+```{r}
+
+## Look at single catch file
+data <- readRDS(file.path(rawFolder,"CatchInd_1950_1954.rds"))
+DT::datatable(head(data))
+
+## Master index file
+master <- read.csv(file.path(rawFolder,"Index.csv")) %>% 
+  select(ID, Year, CountryName, TaxonName, CommonName, FleetGearName)
+DT::datatable(head(master))
+
+## Spatial cells reference
+spatialCells <- read.csv(file.path(rawFolder,"Cells.csv"))
+DT::datatable(head(spatialCells))
+
+```
+
+Test to see whether the values for **IndReported**, **IndIUU**, and **IndDiscards** in the Master Index File are sum totals of Clams cockles arkshells in the Republic of Korea in year 1953.
+```{r}
+korea_clam <- data %>% 
+  filter(ID == 491423) %>% 
+  mutate(tot_Reported = sum(Reported),
+         tot_IUU = sum(IUU),
+         tot_Discards = sum(Discards))
+
+master_check <- master %>%
+  filter(ID == 491423)
+
+## IndReported, IndIUU, IndDiscards should match tot_Reported, tot_IUU, and tot_Discards
+DT::datatable(head(korea_clam))
+head(master_check)
+
+```
 
 # Methods
 
