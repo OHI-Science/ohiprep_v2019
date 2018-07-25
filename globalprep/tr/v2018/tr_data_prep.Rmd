@@ -77,7 +77,8 @@ source('R/tr_fxns.R')
 ```
 
 
-#Ep: Proportion of workforce directly employed in tourism
+# Ep: Proportion of workforce directly employed in tourism
+
 These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/d2018/README.md for instructions on obtaining data). The data extend to 2028, but these values are projections.  The actual data goes to 2018.
 
 These data are cleaned and formatted using the R/process_WTTC.R script. Missing values are gapfilled using the UN georegion information.
@@ -352,7 +353,7 @@ write.csv(warn_multiplier, "intermediate/warning.csv", row.names=FALSE)
 ```
 
 
-Step 4: Convert names to OHI regions and clean. 
+Step 5: Convert names to OHI regions and clean. 
 
 ```{r travel warnings}
 warn <- read.csv("intermediate/warning.csv")
@@ -377,7 +378,7 @@ sort(table(paste(warn_rgn$year, warn_rgn$rgn_id)))
 ```
 
 
-Step 5: Identify inhabited regions with no U.S. travel warning data and see if this information is available from the Canadian Government website and add warnings to the raw data csv. Make sure to label the column indicting the data source. 
+Step 6: Identify inhabited regions with no U.S. travel warning data and see if this information is available from the Canadian Government website and add warnings to the raw data csv. Make sure to label the column indicting the data source. 
 
 Next year, consider gapfilling missing territorial regions with administrative country data.
 
@@ -406,7 +407,7 @@ write.csv(no_us_warn, 'intermediate/v2018_no_data.csv', row.names=FALSE)
 
 ```
 
-Final step is to compare with previous year's data.
+Final step is to **compare with previous year's data**.
 
 Many European regions now have a travel warning due to increased terrorism (e.g., United Kingdom, Italy, Spain, Germany), although this doesn't show up in the following figure because previously, these regions had no travel warning (and were thus, NA).
 
@@ -433,7 +434,8 @@ abline(0,1, col="red")
 
 ```
 
-Save the travel warning data in the output folder
+### Save the travel warning data in the output folder
+
 ```{r}
 georegions <- georegion_labels %>%
   select(rgn_id)
@@ -769,8 +771,13 @@ tr_sust <- tr_sust %>%
 summary(tr_sust)
 
 write_csv(tr_sust, "output/tr_sustainability.csv")
+```
 
-## compare with previous year of data 
+
+## Compare with previous year of data 
+
+```{r}
+
 compare <- read.csv("../v2017/output/tr_sustainability.csv") %>% # change year
   select(rgn_id, old_S_score = S_score) %>%
   left_join(tr_sust, by = "rgn_id") %>%
