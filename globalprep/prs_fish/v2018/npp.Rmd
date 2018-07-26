@@ -16,14 +16,14 @@ pdf_document:
   toc: true
 ---
 
-#Summary
+# Summary
 
 This script calculates mean annual net primary production values globally from 2003 to 2015. This data is used to standardize commercial fishing catch to produce [fishing pressure layers for OHI](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/prs_fish/v2016/fishing_pressure_layers.html) and Cumulative Human Impacts.
 
 
 ***
 
-#Data Source
+# Data Source
 
 **Reference**: Behrenfeld, M.J. and Falkowski, P.G., 1997. Photosynthetic rates derived from satellite‐based chlorophyll concentration. Limnology and oceanography, 42(1), pp.1-20. 
 
