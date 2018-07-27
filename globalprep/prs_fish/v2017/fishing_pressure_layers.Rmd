@@ -14,6 +14,8 @@ output:
       in_header: '../../../src/templates/ohi_hdr.html'
 pdf_document:
   toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 #Summary
@@ -55,7 +57,7 @@ Load all relevant libraries including parallel processing packages.
 knitr::opts_chunk$set(warning=FALSE, message=FALSE,fig.width = 6, fig.height = 4, fig.path = 'figs/')
 
 # comment out when knitting
-# setwd("globalprep/prs_fish/v2017")
+# setwd("C:/Users/Melanie/github/ohiprep_v2018/globalprep/prs_fish/v2017")
 
 library(tidyverse)
 library(parallel)
@@ -68,7 +70,7 @@ library(RColorBrewer)
 library(cowplot)
 library(stringr)
 
-source('../../../src/R/common.R')
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/spatial_common.R')
 
 ocean <- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
 
@@ -114,7 +116,10 @@ years = c(2003:2014)
 foreach(yr = years) %dopar%{ #yr = 2014
   
   #read in raw data for the year
-  raw <- readRDS(paste0(file.path(dir_M,'marine_threats/impact_acceleration/stressors/comm_fish/int/catch_data_'),yr,'.rds'))
+  raw <- readRDS(paste0(file.path(dir_M,'git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data/catch_data_'),yr,'.rds'))
+  
+  sort(unique(raw$GearName))
+  # "explosives"
   
   #high bycatch
   high <- raw %>%
