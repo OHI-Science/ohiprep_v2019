@@ -20,13 +20,16 @@ pdf_document:
 
 The commercial fishing pressure layers are created from spatialized catch by gear data provided by Watson (2018), and net primary production data from the Vertically Generalized Production Model [(VGPM)](http://www.science.oregonstate.edu/ocean.productivity/) as described in [Behrenfeld and Falkowski (1997)](http://www.science.oregonstate.edu/ocean.productivity/references/L&O%201997a.pdf).
 
-This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining CatchInd_XXXX_XXXX and CatchNInd_XXXX_XXXX rds files wtih Index.csv and Cells.csv as well as a single file with all years.
+This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining CatchInd_XXXX_XXXX and CatchNInd_XXXX_XXXX rds files with Index.csv and Cells.csv as well as a single file with all years.
+
+We create raster files of total annual global catch from the Watson data and correct for system productivity by dividing catch by NPP: [quick review](https://www.researchgate.net/publication/312614653_Reconciling_fisheries_catch_and_ocean_productivity).
 
 # Updates from previous assessment
 
-No longer using gear type to classify catch data as high or low bycatch, since the IMAS data now provides values for **discards**, which we consider as bycatch. Previously, the raw catch data was all in a single file. This year, we have to combine across three different data tables: catch data (CatchInd_XXXX_XXXX), master index file with country name, species, etc (Index.csv), and geospatial information (Cells.csv).
-
-One other change from last year is that we will gapfill the missing NPP data prior to using. We correct for system productivity by dividing catch by NPP: [quick review](https://www.researchgate.net/publication/312614653_Reconciling_fisheries_catch_and_ocean_productivity)
+* No longer using gear type to classify catch data as high or low bycatch, since the IMAS data now provides values for **discards**, which we consider as bycatch. 
+* Previously, the raw catch data was all in a single file. This year, we have to combine across three different data tables: catch data (CatchInd_XXXX_XXXX), master index file with country name, species, etc (Index.csv), and geospatial information (Cells.csv).
+* Previously raw catch data was in tonnes/km^2^, but this year they are in tonnes. The area in km^2^ values are located in the Cells.csv file
+* One other change from last year is that we will gapfill the missing NPP data prior to using
 
 # Data Source
 
@@ -53,6 +56,8 @@ One other change from last year is that we will gapfill the missing NPP data pri
 
 library(tidyverse)
 library(purrr)
+library(here) # install.packages("here")
+setwd(here::here("globalprep","prs_fish","v2018"))
 
 source("https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R")
 
@@ -148,12 +153,12 @@ head(master_check)
 
 ## Wrangle 
 
-### Combine Fisheries Files
+### Tidy Fisheries Files
 
 1. Combine the Master Index and Spatial Cells with the CatchInd and CatchNInd files.
 2. Save each year of data as a separate file into: "globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/int"
 
-**Function for Combining & Saving Files**: Create function to read in each file name, combine with Index and Cells data frame, and save each year of catch data into a separate file.
+**Function for Combining & Saving Files**: Create function to read in each file name, combine with Index and Cells data frame, and save each year of catch data into a separate file in mazu.
 
 ```{r}
 
@@ -185,6 +190,7 @@ combine_fis <- function(x) {
       str_remove("_.*") # remove everything after the first underscore
     
     write_rds(single_yr_df, paste0(rawFolder, "/int/", ind_Nind, "_", yr, ".rds"))
+    
   }
   
   }
@@ -193,8 +199,7 @@ combine_fis <- function(x) {
 
 **Industrial Catch Data**
 
-* Create list of industrial catch file names and apply the `combine_fis` function to save each individual 5-year interval catch data. Then, create a single file that has all years of data.
-* The `combine_fis` process should take about 7 minutes. Saving all years into a single file with `saveRDS` will take about 4 minutes.
+Create list of industrial catch file names and apply the `combine_fis` function to save each individual 5-year interval catch data. Then, create a single file that has all years of data.
 
 ```{r}
 
@@ -207,6 +212,8 @@ indCatch <- map_df(ind_files, combine_fis)
 
 **Non-industrial Catch Data**
 
+Create list of non-industrial catch file names and apply the `combine_fis` function to save each individual 5-year interval catch data. Then, create a single file that has all years of data.
+
 ```{r}
 
 nind_files <- dir(rawFolder, pattern ="CatchNInd", full.names=TRUE)
@@ -217,95 +224,131 @@ nindCatch <- map_df(nind_files, combine_fis)
 ```
 
 
-### Convert to Annual Catch Rasters
+### Create Annual Catch Rasters
 
-**Industrial Catch Data**
+We want a landings raster and a discards raster for Industrial (commericial) and Non-Industrial (artisanal) data per year. 
+
+Note: Annual catch per cell contains values in units of kg per km^2^. Since values in `Reported`, `Discards`, `Landings`, and `IUU` are in tonnes, they must be first converted to kg then divided by the `Area` column.
+
+1. Setup 
+```{r}
+
+library(tidyverse)
+library(parallel)
+library(foreach)
+library(doParallel)
+library(raster)
+library(rasterVis)
+library(seaaroundus)
+library(RColorBrewer)
+library(cowplot)
+library(stringr)
+
+registerDoParallel(5) # registering cores for parallel processing
+
+ocean <- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
+
+options(scipen=999)
+
+## color palette
+cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+mytheme=rasterTheme(region=cols)
+
+## set mollweide projection CRS
+mollCRS=crs('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs')
+
+```
+
+2. First get the template raster with a resolution of 0.5 degree cells. The getcells() function comes from the seaaroundus R package.
+
+The values of these cells are the Cell ID numbers. In the fisheries catch dataset, these Cell ID numbers match up with the "Seq" numbers.
 
 ```{r}
 
-watson_data <- list.files(file.path(rawFolder, 'int'), full.names=TRUE, pattern = 'CatchInd')
+saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
 
-years = c(2003:2014)
+saup_rast <- raster(ncol=720, nrow=360)
+saup_rast[] <- saup_cells
+   
+plot(saup_rast,col=cols,main = "SAUP Cell IDs")
 
-registerDoParallel(10) #register cores
+```
 
-foreach(file = watson_data) %dopar% { # file = watson_data[1]
+3. Create commercial and artisanal rasters
+
+* comm_landings_XXXX.tif
+* comm_discards_XXXX.tif
+* artisanal_landings_XXXX.tif
+* artisanal_discards_XXXX.tif
+
+Catch data is in tonnes, so need to convert to kg then divide by `Area` (km^2^) to get catch per area. Since `Cell` is the identifier for a specific 30-min spatial cell, we want to add up total landings and total discards grouped by `Cell`.
+
+Note: Subset for data 2003 and onwards since NPP data starts at 2003. Since we will be taking 5-year averages, we will need years 1999-2003 to get the average value for year 2003.
+
+```{r}
+
+## Specify years of data, file locations, raster output location
+years = c(1999:2015)
+annual_files <- list.files(file.path(rawFolder, "int"), full.names=TRUE)
+rastFolder <- paste0(dir_M,"/git-annex/globalprep/prs_fish/v2018/int/")
+
+## Specify a list of arguments - commercial or artisanal - for reading in data and saving raster file name
+raw_suffx <- list(catchind = "CatchInd", catchnind = "CatchNInd")
+rast_prefx <- list(comm = "comm", artisanal = "artisanal")
+
+## Function for totalling landings/discards and saves raster files 
+catch2raster <- function(raw_suffx,rast_prefx){
   
-data <- readRDS(file)
-
-yrs <- unique(data$Year)
-
-for(i in 1:length(yrs)){
-  print(i)
+foreach(yr = years) %dopar% { #yr = 2003
   
-yr = yrs[i]
+  ## find file path of the respective year of data
+  yr <- as.character(yr)
+  ## Select the respective year of industrial catch data
+  dataname <- str_subset(annual_files, paste0(raw_suffx,"*.",yr))
+  ## read in raw data
+  raw_data <- readRDS(dataname)
+ 
+  ## Total Landings per Cell
+  landings <- raw_data %>%
+    dplyr::mutate(Landings_CR = (Landings * 1000)/Area) %>% # convert to catch rate (kg/km^2)
+    dplyr::group_by(Cell) %>%
+    dplyr::summarise(cell_catch = sum(Landings_CR, na.rm=TRUE)) %>% # usually no NAs, but just in case
+    dplyr::ungroup()
+
+  ## Total Discards per Cell
+  discards <- raw_data %>%
+    dplyr::mutate(Discards_CR = (Discards * 1000)/Area) %>% 
+    dplyr::group_by(Cell) %>%
+    dplyr::summarise(cell_catch = sum(Discards_CR)) %>% 
+    dplyr::ungroup()
   
-yr_data <- data%>%
-            filter(Year == yr)%>%
-            left_join(gear_taxa, by = c('Taxonkey','TaxonName','CommonName', 'Gear', 'GearName'))
-
-write_rds(yr_data,path = paste0(file.path(dir_M),'/git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data/catch_data_',yr,'.rds'))
-
+  ## Rasterize Catch: swapping template cell values with those in dataframe
+  raster::subs(saup_rast, landings, by = "Cell", which = "cell_catch", subsWithNA=TRUE, 
+               filename = paste0(rastFolder, rast_prefx, '_landings/annual_catch_', yr ,'.tif'), overwrite=TRUE)
+  raster::subs(saup_rast, discards, by = "Cell", which = "cell_catch", subsWithNA=TRUE, 
+               filename = paste0(rastFolder, rast_prefx, '_discards/annual_catch_', yr ,'.tif'), overwrite=TRUE) 
+  
+  }
 }
-}
+
+## Applies catch2raster function on commercial (industrial) then artisanal (non-industrial) files
+create_rast <- map2(raw_suffx, rast_prefx, catch2raster)
+
+```
+
+### Check Rasters
+
+```{r}
+
+commercial <- list.files(paste0(rastFolder,"comm_landings"),full.names = TRUE)
+check_rast <- raster(commercial[17])
+plot(check_rast)
+click(check_rast)
 
 ```
 
 
+# Gapfill
 
-
-### Tidy Data
-
-* Filter data to include current year and previous 4 years (so the 2014 pressure raster would be the yearly average of 2010 to 2014 catch data).
-* Group by everything except year (and Landings and Discards) and then average the Landings and Discard data across years
-* Group by cell and summarize sum of **Landings** and **Discards**
-
-Note: `indCatch` is quite a large file. May have an error if you read it back in from mazu that looks something like:
-
-> Error in readRDS(file.path(rawFolder, "int/CatchInd_all.rds")) : 
-  error reading from connection
-
-
-```{r}
-
-recentYR <- max(indCatch$Year)
-years <- recentYR:(recentYR-4) # want 5 years
-
-# years = c(2003:2014)
-# 
-# foreach(yr = years) %dopar%{ #yr = 2014
-#   
-#   #read in raw data for the year
-#   raw <- readRDS(paste0(file.path(dir_M,'marine_threats/impact_acceleration/stressors/comm_fish/int/catch_data_'),yr,'.rds'))
-#   
-#   #high bycatch
-#   high <- raw %>%
-#           dplyr::filter(bycatch == "high") %>%
-#           rowwise() %>%
-#           dplyr::mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000) %>% #there shouldnt be NAs but just in case, converting from tonnes to kg to get rid of low values
-#           dplyr::group_by(Seq) %>%
-#           dplyr::summarise(cell_catch = sum(catch))
-#           
-#     #rasterize catch by swapping cell ids with 
-# raster::subs(saup_rast, high, by = 1, which = 2, subsWithNA=TRUE, filename = paste0('int/high_bycatch/annual_catch/high_bc_',yr,'.tif'), overwrite=TRUE) 
-#   
-#   #low bycatch
-#   low <- raw%>%
-#           filter(bycatch == "low")%>%
-#           rowwise()%>%
-#           mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000)%>% #there shouldnt be NAs but just in case
-#           group_by(Seq)%>%
-#           summarise(cell_catch = sum(catch))
-# 
-# 
-# raster::subs(saup_rast, low, by = 1, which = 2, subsWithNA=TRUE, filename = paste0('int/low_bycatch/annual_catch/low_bc_',yr,'.tif'),overwrite=T) 
-#   
-#   #artisanal bycatch
-#   artisanal <- raw%>%
-#                group_by(Seq)%>%
-#               summarise(cell_catch = sum(SSF_CR * 1000)) #small scale fisheries catch rate
-#   
-# raster::subs(saup_rast, artisanal, by = 1, which = 2, subsWithNA=TRUE, filename = paste0('int/artisanal/annual_catch/art_',yr,'.tif'),overwrite=T)
-# }
-```
+# Data Checks
 
