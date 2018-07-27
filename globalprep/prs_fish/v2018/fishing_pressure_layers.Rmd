@@ -1,6 +1,19 @@
 ---
-title: "Global Fisheries Catch"
-output: html_document
+title: 'OHI 2017: Commercial Fishing Pressure Layers '
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
 ---
 
 # Summary
@@ -88,12 +101,11 @@ saveRDS(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/IMAS_Glob
 
 # Explore Data
 
-Filter master file to only include `ID`, `Year`, `CountryName`, `TaxonName`, `CommonName`, `FleetGearName` (I actually don't think we will need the `CountryName` or `FleetGearName`, but it might be interesting).
-```{r}
+Read in Master Index file, Spatial cells, and a single 5-year Catch dataset. 
 
-## Look at single catch file
-data <- readRDS(file.path(rawFolder,"CatchInd_1950_1954.rds"))
-DT::datatable(head(data))
+Filter master file to only include `ID`, `Year`, `CountryName`, `TaxonName`, `CommonName`, `FleetGearName` (I actually don't think we will need the `CountryName` or `FleetGearName`, but it might be interesting).
+
+```{r}
 
 ## Master index file
 master <- read.csv(file.path(rawFolder,"Index.csv")) %>% 
@@ -106,8 +118,17 @@ DT::datatable(head(spatialCells))
 
 ```
 
+```{r}
+
+## Look at single catch file
+data <- readRDS(file.path(rawFolder,"CatchInd_1950_1954.rds"))
+DT::datatable(head(data))
+
+```
+
 Test to see whether the values for **IndReported**, **IndIUU**, and **IndDiscards** in the Master Index File are sum totals of Clams cockles arkshells in the Republic of Korea in year 1953.
 ```{r}
+
 korea_clam <- data %>% 
   filter(ID == 491423) %>% 
   mutate(tot_Reported = sum(Reported),
@@ -127,68 +148,164 @@ head(master_check)
 
 ## Wrangle 
 
-Combine the Master Index and Spatial Cells with the CatchInd and CatchNInd files.
+### Combine Fisheries Files
 
-### Function for Combining Files
+1. Combine the Master Index and Spatial Cells with the CatchInd and CatchNInd files.
+2. Save each year of data as a separate file into: "globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/int"
 
-Create function to read in each file name, combine with Index and Cells data frame, and save everything into one single data file.
+**Function for Combining & Saving Files**: Create function to read in each file name, combine with Index and Cells data frame, and save each year of catch data into a separate file.
 
 ```{r}
 
-## Create empty data frame to combine all catch information
-bigDataFrame <- data.frame()
-
-## Set function to read in each file, combine with Index.csv and Cells.csv, and save back into mazu
+## Set function to read in each file, combine with Index.csv and Cells.csv, and save each year of data back into mazu
 combine_fis <- function(x) {
-  
-  ## This will be the name of the data frame (w/o extension)
-  name <- basename(x) %>% 
-    tools::file_path_sans_ext()
-  ## Save the data frame into R's memory
-  name <- readRDS(x)
-  
-  ## Create a totals column
-  df <- name %>%
+
+  ## Read in the catch data
+  ## Create a total Landings column
+  ## Join with master and spatial cells file
+  df <- readRDS(x) %>%
     mutate(Landings = Reported+IUU) %>% 
     left_join(master, by = "ID") %>% 
     left_join(spatialCells, by = "Cell")
   
-  ## Save intermediate files into mazu with same name as raw
-  saveRDS(df, file.path(rawFolder,"int",basename(x)))
   
-  ## Add catch data to single data frame
-  rbind(df,bigDataFrame)
-   
-}
+  ## Save each individual year as a single file
+  five_years <- sort(unique(df$Year)) 
+  
+  for(yr in five_years){
+    print(yr) # will show you your progress
+    
+    single_yr_df <- df %>%
+      filter(Year == yr)
+    
+    ## Save files with prefix CatchInd or CatchNInd
+    ## Remove the suffix starting with '_' to get CatchInd or CatchNInd
+    ind_Nind <- basename(x) %>% 
+      tools::file_path_sans_ext() %>% 
+      str_remove("_.*") # remove everything after the first underscore
+    
+    write_rds(single_yr_df, paste0(rawFolder, "/int/", ind_Nind, "_", yr, ".rds"))
+  }
+  
+  }
 
 ```
 
-### Industrial Catch Data
+**Industrial Catch Data**
 
-Create list of industrial catch file names and apply the `combine_fis` function to save each individual 5-year interval catch data. Then, create a single file that has all years of data.
+* Create list of industrial catch file names and apply the `combine_fis` function to save each individual 5-year interval catch data. Then, create a single file that has all years of data.
+* The `combine_fis` process should take about 7 minutes. Saving all years into a single file with `saveRDS` will take about 4 minutes.
 
-The `combine_fis` process should take about 7 minutes. Saving all years into a single file with `saveRDS` will take about 4 minutes.
 ```{r}
 
 ind_files <- dir(rawFolder, pattern ="CatchInd", full.names=TRUE)
 
-## Wrangle and save each 5-year interval of data
+## Wrangle and Save Each Year of Data Separately
 indCatch <- map_df(ind_files, combine_fis)
-## Save all years into single file
-saveRDS(indCatch, file.path(rawFolder,"int/CatchInd_all.rds"))
 
 ```
 
-### Non-industrial Catch Data
+**Non-industrial Catch Data**
 
 ```{r}
 
 nind_files <- dir(rawFolder, pattern ="CatchNInd", full.names=TRUE)
 
-## Apply the combine_fis function, which saves each 5-year catch data
+## Wrangle and Save Each Year of Data Separately
 nindCatch <- map_df(nind_files, combine_fis)
-## Save the 14 separate catch files into a single one
-saveRDS(nindCatch, file.path(rawFolder,"int/CatchNInd_all.rds"))
 
+```
+
+
+### Convert to Annual Catch Rasters
+
+**Industrial Catch Data**
+
+```{r}
+
+watson_data <- list.files(file.path(rawFolder, 'int'), full.names=TRUE, pattern = 'CatchInd')
+
+years = c(2003:2014)
+
+registerDoParallel(10) #register cores
+
+foreach(file = watson_data) %dopar% { # file = watson_data[1]
+  
+data <- readRDS(file)
+
+yrs <- unique(data$Year)
+
+for(i in 1:length(yrs)){
+  print(i)
+  
+yr = yrs[i]
+  
+yr_data <- data%>%
+            filter(Year == yr)%>%
+            left_join(gear_taxa, by = c('Taxonkey','TaxonName','CommonName', 'Gear', 'GearName'))
+
+write_rds(yr_data,path = paste0(file.path(dir_M),'/git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data/catch_data_',yr,'.rds'))
+
+}
+}
+
+```
+
+
+
+
+### Tidy Data
+
+* Filter data to include current year and previous 4 years (so the 2014 pressure raster would be the yearly average of 2010 to 2014 catch data).
+* Group by everything except year (and Landings and Discards) and then average the Landings and Discard data across years
+* Group by cell and summarize sum of **Landings** and **Discards**
+
+Note: `indCatch` is quite a large file. May have an error if you read it back in from mazu that looks something like:
+
+> Error in readRDS(file.path(rawFolder, "int/CatchInd_all.rds")) : 
+  error reading from connection
+
+
+```{r}
+
+recentYR <- max(indCatch$Year)
+years <- recentYR:(recentYR-4) # want 5 years
+
+# years = c(2003:2014)
+# 
+# foreach(yr = years) %dopar%{ #yr = 2014
+#   
+#   #read in raw data for the year
+#   raw <- readRDS(paste0(file.path(dir_M,'marine_threats/impact_acceleration/stressors/comm_fish/int/catch_data_'),yr,'.rds'))
+#   
+#   #high bycatch
+#   high <- raw %>%
+#           dplyr::filter(bycatch == "high") %>%
+#           rowwise() %>%
+#           dplyr::mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000) %>% #there shouldnt be NAs but just in case, converting from tonnes to kg to get rid of low values
+#           dplyr::group_by(Seq) %>%
+#           dplyr::summarise(cell_catch = sum(catch))
+#           
+#     #rasterize catch by swapping cell ids with 
+# raster::subs(saup_rast, high, by = 1, which = 2, subsWithNA=TRUE, filename = paste0('int/high_bycatch/annual_catch/high_bc_',yr,'.tif'), overwrite=TRUE) 
+#   
+#   #low bycatch
+#   low <- raw%>%
+#           filter(bycatch == "low")%>%
+#           rowwise()%>%
+#           mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000)%>% #there shouldnt be NAs but just in case
+#           group_by(Seq)%>%
+#           summarise(cell_catch = sum(catch))
+# 
+# 
+# raster::subs(saup_rast, low, by = 1, which = 2, subsWithNA=TRUE, filename = paste0('int/low_bycatch/annual_catch/low_bc_',yr,'.tif'),overwrite=T) 
+#   
+#   #artisanal bycatch
+#   artisanal <- raw%>%
+#                group_by(Seq)%>%
+#               summarise(cell_catch = sum(SSF_CR * 1000)) #small scale fisheries catch rate
+#   
+# raster::subs(saup_rast, artisanal, by = 1, which = 2, subsWithNA=TRUE, filename = paste0('int/artisanal/annual_catch/art_',yr,'.tif'),overwrite=T)
+# }
 ```
 
