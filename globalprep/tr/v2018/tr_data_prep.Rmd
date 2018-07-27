@@ -48,7 +48,7 @@ The TTCI data is available to download in an excel file directly from the source
 
 We were able to update the following data:
 * Tourism Sustainability - TTCI form WEF - No updates
-* Proportion of jobs in tourism - WTTC data reported until 2018 (downloaded: 07/12/2018)
+* Proportion of jobs in tourism - WTTC data reported until 2017 and unclear if 2018 is actual data or prediction so we used 2017 as the data_year (downloaded: 07/12/2018)
 * Travel warnings for 2018 (downloaded: U.S State Department 06/28/2018: Canada's Governement 07/06/2018)
 
 
@@ -69,7 +69,7 @@ library(WDI)
 source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
 
 ## maximum year of wttc data:
-year_max <- 2018
+year_max <- 2017
 
 source('R/tr_fxns.R')
 
@@ -323,10 +323,10 @@ Step 4: Transform the warnings into a multiplier that is used to calculate touri
 
 Travel warning  | Multiplier   | Description
 --------------- | ------------ | -------------------
-Level 1 | 0 (no penalty) | Exercise Normal Precautions: This is the lowest advisory level for safety and security risk. There is some risk in any international travel. 
-Level 2 | 0.25  | Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
-Level 3 | 0.50  | Reconsider Travel: Avoid travel due to serious risks to safety and security.
-Level 4 | 1 (full penalty) | Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
+Level 1 | 1 (no penalty) | Exercise Normal Precautions: This is the lowest advisory level for safety and security risk. There is some risk in any international travel. 
+Level 2 | 0.75  | Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
+Level 3 | 0.25  | Reconsider Travel: Avoid travel due to serious risks to safety and security.
+Level 4 | 0 (full penalty) | Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
 
 ```{r}
 scores <-  data.frame(level = c(1, 2, 3, 4), multiplier = c(1, 0.75, 0.25, 0)) 
