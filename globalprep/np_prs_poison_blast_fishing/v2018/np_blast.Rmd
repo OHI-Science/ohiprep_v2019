@@ -51,6 +51,9 @@ Previoulsly, this layer used data from Burke et al. (2011). Watson's data (2017)
 
 **Format**:  Tabular  
 
+#Citation information  
+Watson, R. A. (2017). A database of global marine commercial, small-scale, illegal and unreported fisheries catch 1950–2014. *Scientific Data*, 4.
+
 ***
   
 #Methods
@@ -121,78 +124,27 @@ For each year read in the raw data, filter for appropriate type (high, low and a
 
 years = c(2003:2014)
 
-headheadforeach(yr = years) %dopar%{ #yr = 2014
+foreach(yr = years) %dopar%{ #yr = 2014
   
   #read in raw data for the year
-  raw <- readRDS(paste0(file.path(dir_M,'git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data/catch_data_2012.rds'))
+  raw <- readRDS(paste0(file.path(dir_M,'git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data/catch_data_'),yr,'.rds'))
   
-  sort(unique(raw$GearName))
-  # "explosives"
+
   
-  
-  #high bycatch
-  high <- raw %>%
-          dplyr::filter(bycatch == "high") %>%
+ blast <- raw %>%
+          dplyr::filter(GearName == "explosives") %>%
           rowwise() %>%
-          dplyr::mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000) %>% #there shouldnt be NAs but just in case, converting from tonnes to kg to get rid of low values
+          dplyr::mutate(catch = sum(LSF_CR, SSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000) %>% #there shouldnt be NAs but just in case, converting from tonnes to kg to get rid of low values
           dplyr::group_by(Seq) %>%
           dplyr::summarise(cell_catch = sum(catch))
           
-    #rasterize catch by swapping cell ids with 
-raster::subs(saup_rast, high, by = 1, which = 2, subsWithNA=TRUE, filename = paste0('int/high_bycatch/annual_catch/high_bc_',yr,'.tif'), overwrite=TRUE) 
+    #rasterize catch by swapping cell ids with (calls the suap raster we made above)
+raster::subs(saup_rast, blast, by = 'Seq', which = 'cell_catch', subsWithNA=TRUE, filename = paste0('int/blast/annual_catch/blast_',yr,'.tif'), overwrite=TRUE) 
   
-  #low bycatch
-  low <- raw%>%
-          filter(bycatch == "low")%>%
-          rowwise()%>%
-          mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000)%>% #there shouldnt be NAs but just in case
-          group_by(Seq)%>%
-          summarise(cell_catch = sum(catch))
-
-
-raster::subs(saup_rast, low, by = 1, which = 2, subsWithNA=TRUE, filename = paste0('int/low_bycatch/annual_catch/low_bc_',yr,'.tif'),overwrite=T) 
-  
-  #artisanal bycatch
-  artisanal <- raw%>%
-               group_by(Seq)%>%
-              summarise(cell_catch = sum(SSF_CR * 1000)) #small scale fisheries catch rate
-  
-raster::subs(saup_rast, artisanal, by = 1, which = 2, subsWithNA=TRUE, filename = paste0('int/artisanal/annual_catch/art_',yr,'.tif'),overwrite=T)
 }
 
 ```
 
-### Meta-analyis
-
-I wanted to look at how well our high and low bycatch gear designations align with the reported discard rates per cell. While not perfect, the majority of cells show that catch caught with high bycatch gear leads to a higher proportion of discards than when caught with low bycatch gear.
-
-```{r}
-#read in raw data for the year
-  raw <- readRDS(paste0(file.path(dir_M,'marine_threats/impact_acceleration/stressors/comm_fish/int/catch_data_2012.rds')))
-
-  df <- raw %>% 
-        dplyr::select(Seq, OceanArea, LSF_CR, SSF_CR, IUU_CR, Discards_CR, bycatch) %>%
-        rowwise() %>%
-        mutate(catch = sum(SSF_CR, LSF_CR, IUU_CR, Discards_CR)*OceanArea,
-               discards = Discards_CR * OceanArea) %>%
-        group_by(Seq, bycatch) %>%
-        mutate(gear_cell_catch = sum(catch)) %>%
-        ungroup() %>%
-        dplyr::select(-LSF_CR, -OceanArea, -SSF_CR, -IUU_CR, -Discards_CR) %>%
-        group_by(Seq, bycatch) %>%
-        mutate(disc_cell_catch = sum(discards)) %>%
-        dplyr::select(-catch, -discards) %>%
-        distinct() %>%
-        ungroup() %>%
-        mutate(disc_prop = disc_cell_catch/gear_cell_catch) %>%
-        dplyr::select(Seq, bycatch, disc_prop) %>%
-        spread(bycatch, disc_prop) %>%
-        mutate(ratio = high/low)
-        
-plot(df$high ~ df$low, ylab = "Prop. of catch discarded using high bycatch gears", xlab = "Prop. of catch discarded using low bycatch gears")
-abline(0,1,col="red")
-  
-```
 
 ## Net Primary Production (NPP)
 
@@ -526,5 +478,4 @@ abline(0, 1, col="red")
 
 ***
 
-#Citation information  
-Watson, R. A. (2017). A database of global marine commercial, small-scale, illegal and unreported fisheries catch 1950–2014. *Scientific Data*, 4.
+
