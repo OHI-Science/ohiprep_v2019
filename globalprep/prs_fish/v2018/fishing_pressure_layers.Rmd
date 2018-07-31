@@ -344,6 +344,8 @@ Compare composite of newly created rasters with industrial landings figure creat
 
 library(colorspace)
 library(sp)
+library(RColorBrewer)
+cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
 
 ## Read in rasters for commercial landings between 2000 and 2015
 commercial <- list.files(paste0(rastFolder,"comm_landings"),full.names = TRUE)
@@ -358,14 +360,23 @@ tot_Catch <- sum(allRasters)
 log_Catch <- raster::calc(tot_Catch, function(x){log(x+1)},
              filename = paste0(rastFolder,"datacheck/commLand_2000_2015_log.tif"), overwrite=TRUE)
 
-## Plot raster
-plot(log_Catch, col=rev(rainbow(7, start=0, end=4/6)), alpha=0.5)
-plot(log_Catch, col=rev(sequential_hcl(7, h = 200, c = c(80, 0), l = c(30, 90))), alpha=1)
+## Plot & Save raster
+png(filename="figs/log_IndCatch_2000_2015.png")
+plot(log_Catch, col=cols, alpha=1)
+dev.off()
 
 ## Check out some values or zoom in on an area
 click(log_Catch)
 zoom(log_Catch)
 
+
+```
+
+### Net Primary Productivity
+
+* Prepare NPP data in [**npp.Rmd**](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/prs_fish/v2018/npp.html).
+
+```{r}
 
 ```
 
