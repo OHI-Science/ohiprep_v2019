@@ -59,7 +59,7 @@ library(purrr)
 library(here) # install.packages("here")
 setwd(here::here("globalprep","prs_fish","v2018"))
 
-source("https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R")
+
 
 rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018")
 
@@ -338,12 +338,34 @@ create_rast <- map2(raw_suffx, rast_prefx, catch2raster)
 
 ### Check Rasters
 
+Compare composite of newly created rasters with industrial landings figure created in [Watson (2018)](https://www.sciencedirect.com/science/article/pii/S0308597X18300605). See [Figure 2D](https://ars.els-cdn.com/content/image/1-s2.0-S0308597X18300605-gr2_lrg.jpg), which maps industrial landings in tonnes between 2000 and 2015.
+
 ```{r}
 
+library(colorspace)
+library(sp)
+
+## Read in rasters for commercial landings between 2000 and 2015
 commercial <- list.files(paste0(rastFolder,"comm_landings"),full.names = TRUE)
-check_rast <- raster(commercial[17])
-plot(check_rast)
-click(check_rast)
+
+## create a raster stack from the input raster files (exclude 1999 which is commercial[1])
+allRasters <- raster::stack(commercial[2:17])
+
+## run the sum function on the raster stack - i.e. add (non-cumulatively) the rasters together
+tot_Catch <- sum(allRasters)
+
+## apply log to adjust for really large values
+log_Catch <- raster::calc(tot_Catch, function(x){log(x+1)},
+             filename = paste0(rastFolder,"datacheck/commLand_2000_2015_log.tif"), overwrite=TRUE)
+
+## Plot raster
+plot(log_Catch, col=rev(rainbow(7, start=0, end=4/6)), alpha=0.5)
+plot(log_Catch, col=rev(sequential_hcl(7, h = 200, c = c(80, 0), l = c(30, 90))), alpha=1)
+
+## Check out some values or zoom in on an area
+click(log_Catch)
+zoom(log_Catch)
+
 
 ```
 
