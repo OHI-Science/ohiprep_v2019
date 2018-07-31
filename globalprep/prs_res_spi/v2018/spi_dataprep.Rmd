@@ -20,6 +20,8 @@ This script gapfills the social progress index data and formats it for the OHI g
 # Updates
 Previously, only one year of data were available, but now there are 4 years of data. Updated method of gapfilling.  Now use Hmisc's functions to gapfill missing data.  This method is used to gapfill subcategories with 1 or more subsubcategories of data.  We use the mean of 50 permutations using the "regression" method.
 
+For 2018 assesment. No updates in data.
+
 ***
 
 **Citation**: http://www.socialprogressimperative.org/
@@ -48,7 +50,7 @@ library(tidyr)
 library(Hmisc)
 
 ## comment out when knitting
-#setwd("globalprep/prs_res_spi/v2017")
+#setwd("~/github/ohiprep_v2018/globalprep/prs_res_spi/v2018")
 
 
 ### Load FAO-specific user-defined functions
