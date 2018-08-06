@@ -50,7 +50,7 @@ cetacean,Risso's dolphin,include
 cetacean,Rough-toothed dolphin,include
 cetacean,Sei whale,include
 cetacean,Short-finned pilot whale,include
-cetacean,South American sea lion,include
+pinniped,South American sea lion,exclude
 cetacean,Southern right whale,include
 cetacean,Sowerby's beaked whale,include
 cetacean,Spectacled porpoise,include
