@@ -20,7 +20,9 @@ This analysis converts FAO capture production data into the OHI 2018 targeted ha
 
 
 #Updates from previous assessment
+One more year of data
 
+The species2group.csv file was udated: South America Sea Lion is not a cetacean therefore was assigned the pinniped order and excluded from the target list. 
 
 
 ***
@@ -69,8 +71,8 @@ fis_fao_csv <-  read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_ca
 
 # species list 
 sp2grp <-  read.csv('raw/species2group.csv') %>%
-  filter(incl_excl == 'include') %>%
-  select(target, species); head(sp2grp)
+  dplyr::filter(incl_excl == 'include') %>%
+  dplyr::select(target, species); head(sp2grp)
 
 
 ```
@@ -81,20 +83,20 @@ sp2grp <-  read.csv('raw/species2group.csv') %>%
 ```{r}
 
 m <- fis_fao_csv %>%
-  rename(country = Country..Country.,
+  dplyr::rename(country = Country..Country.,
          species = Species..ASFIS.species.,
          area = Fishing.area..FAO.major.fishing.area.,
          Unit = Unit..Unit.) %>%
-  select(-Unit)
+  dplyr::select(-Unit)
 
 m <- m %>%
-  gather("year", "value", -(1:3)) %>%
-  mutate(year = gsub("X", "", year)) %>%
+  tidyr::gather("year", "value", -(1:3)) %>%
+  dplyr::mutate(year = gsub("X", "", year)) %>%
     fao_clean_data() 
 
 m <- m %>%
-  mutate(species = as.character(species)) %>%
-  mutate(species = ifelse(stringr::str_detect(species, "Henslow.*s swimming crab"), "Henslow's swimming crab", species))
+  dplyr::mutate(species = as.character(species)) %>%
+  dplyr::mutate(species = ifelse(stringr::str_detect(species, "Henslow.*s swimming crab"), "Henslow's swimming crab", species))
 
 
 ```
@@ -111,7 +113,7 @@ groups <-  c('turtle', 'seal', 'whale', 'sea lion', 'dolphin', 'porpoise')
 
 for (group in groups) { #group='dolphin'
 possibles <- spgroups[grep(group, spgroups)]
-d_missing_l = setdiff(possibles, sp2grp$species)
+d_missing_l <-  setdiff(possibles, sp2grp$species)
   if (length(d_missing_l)>0){
     cat(sprintf("\nMISSING in the lookup the following species in target='%s'.\n    %s\n", 
                 group, paste(d_missing_l, collapse='\n    ')))
@@ -119,7 +121,7 @@ d_missing_l = setdiff(possibles, sp2grp$species)
 }
 
 # check for species in lookup not found in data
-l_missing_d = setdiff(sp2grp$species, spgroups)
+l_missing_d <-  setdiff(sp2grp$species, spgroups)
 if (length(l_missing_d)>0){
   cat(sprintf('\nMISSING: These species in the lookup are not found in the FAO data \n'))
   print(l_missing_d)
@@ -127,8 +129,9 @@ if (length(l_missing_d)>0){
 
 
 ## filter data to include only target species ----
-m2 = m %>%
-  filter(species %in% sp2grp$species)
+m2 <-  m %>%
+  dplyr::filter(species %in% sp2grp$species)
+
 unique(m2$area) # confirm these are all marine
 
 
@@ -141,29 +144,32 @@ unique(m2$area) # confirm these are all marine
 
 # spread wide to expand years
 m_w = m2 %>%
-  spread(year, value) %>%
-  left_join(sp2grp, by='species'); head(m_w)
+  tidyr::spread(year, value) %>%
+  dplyr::left_join(sp2grp, by='species'); head(m_w)
 
 
 # gather long by target
 m_l = m_w %>%
-  select(-area) %>%
-  gather(year, value, -country, -species, -target, na.rm=T) %>%
-  mutate(year = as.integer(as.character(year))) %>%
-  arrange(country, target, year); head(m_l)
+  dplyr::select(-area) %>%
+  tidyr::gather(year, value, -country, -species, -target, na.rm=T) %>%
+  dplyr::mutate(year = as.integer(as.character(year))) %>%
+  dplyr::arrange(country, target, year); head(m_l)
+
+#Temporary note: data for Gabn goes oly to 2009
+
 
 # explore Japan[210]
 m_l %>% 
-  group_by(country, target, year) %>%
-  summarize(value = sum(value)) %>% 
-  filter(country == 'Japan', target == 'cetacean', year >= 2000) 
+  dplyr::group_by(country, target, year) %>%
+  dplyr::summarize(value = sum(value)) %>% 
+  dplyr::filter(country == 'Japan', target == 'cetacean', year >= 2000) 
 
 # summarize totals per region per year
 m_sum = m_l %>%
-  group_by(country, year) %>%
-  summarize(value = sum(value, na.rm=TRUE)) %>%
-  filter(value != 0) %>%
-  ungroup(); head(m_sum) 
+  dplyr::group_by(country, year) %>%
+  dplyr::summarize(value = sum(value, na.rm=TRUE)) %>%
+  dplyr::filter(value != 0) %>%
+  dplyr::ungroup(); head(m_sum) 
 
 ```
 
@@ -173,8 +179,8 @@ m_sum = m_l %>%
 
 
 m_sum <- m_sum %>%
-  mutate(country = as.character(country)) %>%
-  mutate(country = ifelse(country == "C\xf4te d'Ivoire", "Ivory Coast", country))
+  dplyr::mutate(country = as.character(country)) %>%
+  dplyr::mutate(country = ifelse(stringr::str_detect(country, "C.*te d'Ivoire"), "Ivory Coast", country))
 
 
 ### Function to convert to OHI region ID
@@ -183,13 +189,13 @@ m_sum_rgn <- name_2_rgn(df_in = m_sum,
                        flds_unique=c('year'))
 
 # these are duplicates for the same region
-filter(m_sum_rgn, country %in% c("Guadeloupe", "Martinique"))
+dplyr::filter(m_sum_rgn, country %in% c("Guadeloupe", "Martinique"))
 
 # They will be summed:
 m_sum_rgn <- m_sum_rgn %>%
-  group_by(rgn_id, rgn_name, year) %>%
-  summarize(value = sum(value)) %>%
-  ungroup()
+  dplyr::group_by(rgn_id, rgn_name, year) %>%
+  dplyr::summarize(value = sum(value)) %>%
+  dplyr::ungroup()
 
 ```
 
@@ -199,34 +205,39 @@ Data is rescaled by dividing by the 95th quantile of values across all regions f
 ```{r}
 
 target_harvest <- m_sum_rgn %>%
-  mutate(quant_95 = quantile(value[year %in% 2011:2014], 0.95, na.rm = TRUE)) %>%
-  mutate(score = value / quant_95) %>% 
-    mutate(score = ifelse(score>1, 1, score)) %>%
-    select(rgn_id, year, pressure_score = score) %>%
-    arrange(rgn_id, year); head(target_harvest); summary(target_harvest)
+  dplyr::mutate(quant_95 = quantile(value[year %in% 2011:2016], 0.95, na.rm = TRUE)) %>%
+  dplyr::mutate(score = value / quant_95) %>% 
+  dplyr::mutate(score = ifelse(score>1, 1, score)) %>%
+  dplyr::select(rgn_id, year, pressure_score = score) %>%
+  dplyr::arrange(rgn_id, year); head(target_harvest); summary(target_harvest)
   
+#quant_95= 160761
+
+
   # any regions that did not have a catch should have score = 0 
-  rgns = rgn_master %>%
-    filter(rgn_typ == "eez") %>%
-    select(rgn_id = rgn_id_2013) %>%
-    filter(rgn_id < 255) %>%
-    unique() %>%
-    arrange(rgn_id)
+rgns <-  rgn_master %>%
+  dplyr::filter(rgn_typ == "eez") %>%
+  dplyr::select(rgn_id = rgn_id_2013) %>%
+  dplyr::filter(rgn_id < 255) %>%
+  base::unique() %>%
+  dplyr::arrange(rgn_id)
+
+
   
-  rgns <- expand.grid(rgn_id = rgns$rgn_id, year = min(target_harvest$year):max(target_harvest$year))
+rgns <- expand.grid(rgn_id = rgns$rgn_id, year = min(target_harvest$year):max(target_harvest$year))
   
-  target_harvest = rgns %>%
-    left_join(target_harvest) %>%
-    mutate(pressure_score = ifelse(is.na(pressure_score), 0, pressure_score)) %>%
-    arrange(rgn_id); head(target_harvest); summary(target_harvest)
+target_harvest <-  rgns %>%
+  dplyr::left_join(target_harvest) %>%
+  dplyr::mutate(pressure_score = ifelse(is.na(pressure_score), 0, pressure_score)) %>%
+  dplyr::arrange(rgn_id); head(target_harvest); summary(target_harvest)
 
   write.csv(target_harvest, 'output/fao_targeted.csv', row.names = FALSE)
   
-  target_harvest_gf <- target_harvest %>%
-    mutate(gapfill = 0) %>%
-    select(rgn_id, year, gapfill)
+target_harvest_gf <- target_harvest %>%
+  dplyr::mutate(gapfill = 0) %>%
+  dplyr::select(rgn_id, year, gapfill)
   
-    write.csv(target_harvest_gf, 'output/fao_targeted_gf.csv', row.names = FALSE)
+  write.csv(target_harvest_gf, 'output/fao_targeted_gf.csv', row.names = FALSE)
 
 ```
 
@@ -236,17 +247,26 @@ The data from last year and this year should be the same unless there were chang
 In this case, all of the regions looked very similar.
 
 ```{r}
-new <- read.csv("output/fao_targeted.csv")
-old <- read.csv("../v2016/output/fao_targeted_updated.csv") %>%
-  mutate(year = year - 2) %>%
-  filter(year == 2014) %>%
-  select(rgn_id, year, pressure_score_old=pressure_score) %>%
-  left_join(new, by=c("rgn_id", "year"))
+new <- read.csv("output/fao_targeted.csv") %>% 
+  filter(year==2015)
+
+old <- read.csv("../v2017/output/fao_targeted.csv") %>%
+  #mutate(year== year-2) %>% 
+  dplyr::filter(year == 2015) %>%
+  dplyr::select(rgn_id, year, pressure_score_old=pressure_score) %>%
+  dplyr::left_join(new, by=c("rgn_id", "year"))
 old
 
 plot(pressure_score ~ pressure_score_old, data=old)
 abline(0, 1, col="red")
 
+
+compare_plot <- ggplot(data = old, aes(x=pressure_score_old, y= pressure_score, label=rgn_id))+
+  geom_point()+
+  geom_abline(color="red")
+
+plot(compare_plot)
+ggplotly(compare_plot)
 
 ```
 
