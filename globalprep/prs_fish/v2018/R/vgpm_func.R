@@ -142,7 +142,7 @@ vgpm.raster = function(file, w.lon, e.lon, n.lat, s.lat, log = TRUE,
        legend.lab=expression(paste('mg C /', m^2,'/ day')),
        legend.mar=4.3)
   
-  writeRaster(r,filename=paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2016/VGPM_primary_productivity/int/rasterized_rawdata/'),'npp',sep='_',strftime(day1,'%B %Y')),
+  writeRaster(r,filename=paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/rasterized_rawdata/'),'npp',sep='_',strftime(day1,'%B %Y')),
                                           format='GTiff',overwrite=T)
   
 }  # end of vgpm.raster() function
