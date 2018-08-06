@@ -123,8 +123,7 @@ head(master_check)
 
 ## Wrangle 
 
-### Tidy Fisheries Files
-
+Tidy Fisheries Files:
 1. Combine the Master Index and Spatial Cells with the CatchInd and CatchNInd files.
 2. Save each year of data as a separate file into: "globalprep/prs_fish/v2018/int/annual_catch"
 
@@ -194,7 +193,7 @@ nindCatch <- map_df(nind_files, combine_fis)
 ```
 
 
-### Create Annual Catch Rasters
+## Create Annual Catch Rasters
 
 We want a landings raster and a discards raster for Industrial (commericial) and Non-Industrial (artisanal) data per year. 
 
@@ -306,7 +305,7 @@ create_rast <- map2(raw_suffx, rast_prefx, catch2raster)
 
 ```
 
-### Check Rasters
+## Check Rasters
 
 Compare composite of newly created rasters with industrial landings figure created in [Watson (2018)](https://www.sciencedirect.com/science/article/pii/S0308597X18300605). See [Figure 2D](https://ars.els-cdn.com/content/image/1-s2.0-S0308597X18300605-gr2_lrg.jpg), which maps industrial landings in tonnes between 2000 and 2015.
 
@@ -348,7 +347,7 @@ res(catch) # 0.5 degree cells
 
 ```
 
-### Standardize Fisheries Catch
+## Standardize Fisheries Catch
 
 Use **net primary production** (NPP) data to correct global fisheries catch for spatial differences in ecosystem impact
 
@@ -432,11 +431,11 @@ click(raster(art_disc[30]))
 
 ```
 
-### Calculate 5-Year Means
+## Calculate 5-Year Means
 
-Set up foreach loop to start with the oldest year of data (2003) and end on the 5th most recent year of data (2011).
+Calculate 5-year means for commercial and artisanal landings & discards. Set up foreach loop to start with the oldest year of data (2003) and end on the 5th most recent year of data (2011).
 
-```{r}
+```{r catchmeans, eval=FALSE}
 
 commL_corr <- list.files(paste0(rastFolder,'comm_landings'), pattern="corr", full.names=TRUE)
 commD_corr <- list.files(paste0(rastFolder,'comm_discards'), pattern="corr", full.names=TRUE)
@@ -455,26 +454,46 @@ foreach (i = 2003:2011) %dopar%{ # i = 2010
   out_CL <- commL_corr[which(str_detect(commL_corr, pattern = paste(yrs,collapse = '|')))] %>%
             stack() %>%
             calc(fun=function(x){mean(x, na.rm=TRUE)}) %>%
-            calc(fun=function(x){log(x+1)}, filename = paste0('int/comm_landings/mean_catch_',yrs[1],'_',yrs[5],'.tif'),overwrite=TRUE)
+            calc(fun=function(x){log(x+1)}, filename = paste0(rastFolder, 'comm_landings/mean_catch_',yrs[1],'_',yrs[5],'.tif'), overwrite=TRUE)
   
   out_CD <- commD_corr[which(str_detect(commD_corr, pattern = paste(yrs,collapse = '|')))] %>%
             stack() %>%
             calc(fun=function(x){mean(x,na.rm=TRUE)}) %>%
-            calc(fun=function(x){log(x+1)}, filename = paste0('int/comm_discards/mean_catch_',yrs[1],'_',yrs[5],'.tif'), overwrite=TRUE)
+            calc(fun=function(x){log(x+1)}, filename = paste0(rastFolder, 'comm_discards/mean_catch_',yrs[1],'_',yrs[5],'.tif'), overwrite=TRUE)
   
   out_AL <- artL_corr[which(str_detect(artL_corr, pattern = paste(yrs,collapse = '|')))] %>%
             stack()%>%
             calc(fun=function(x){mean(x,na.rm=T)})%>%
-            calc(fun=function(x){log(x+1)}, filename = paste0('int/artisanal_landings/mean_catch_',yrs[1],'_',yrs[5],'.tif'),overwrite=T)
+            calc(fun=function(x){log(x+1)}, filename = paste0(rastFolder, 'artisanal_landings/mean_catch_',yrs[1],'_',yrs[5],'.tif'), overwrite=T)
   
   out_AD <- artD_corr[which(str_detect(artD_corr, pattern = paste(yrs,collapse = '|')))] %>%
             stack()%>%
             calc(fun=function(x){mean(x,na.rm=T)})%>%
-            calc(fun=function(x){log(x+1)}, filename = paste0('int/artisanal_discards/mean_catch_',yrs[1],'_',yrs[5],'.tif'),overwrite=T)
+            calc(fun=function(x){log(x+1)}, filename = paste0(rastFolder, 'artisanal_discards/mean_catch_',yrs[1],'_',yrs[5],'.tif'), overwrite=T)
   
 }
 ```
 
+## Reference Point
+
+Look at all mean catch data standardized by NPP and use the 99.99th quantile as the reference point.
+
+```{r}
+
+mean_CL <- list.files(paste0(rastFolder, 'comm_landings'), pattern = "mean_catch", full.names=TRUE)
+mean_CD <- list.files(paste0(rastFolder, 'comm_discards'), pattern = "mean_catch", full.names=TRUE)
+mean_AL <- list.files(paste0(rastFolder, 'artisanal_landings'), pattern = "mean_catch", full.names=TRUE)
+mean_AD <- list.files(paste0(rastFolder, 'artisanal_discards'), pattern = "mean_catch", full.names=TRUE)
+
+
+
+```
+
+## Rescale
+
+```{r}
+
+```
 
 # Data Checks
 
