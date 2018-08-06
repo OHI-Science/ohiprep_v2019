@@ -370,7 +370,7 @@ Create function standardizing catch by NPP
 * read in a single year of catch data
 * read in the same year of npp data
 * transform npp raster to match the crs and res of the catch raster (coarser resolution will run faster)
-* correct fisheries catch with npp raster
+* correct fisheries catch with npp raster (the land values should turn back to NAs since they are NA in catch rasters)
 * save corrected fish catch rasters!!
 
 ```{r, eval=FALSE}
@@ -380,7 +380,7 @@ catch_npp_fun <- function(file, layer){ # file = dem_d_files[1]  layer = 'dem_de
   
   catch <- raster(file)
   
-  yr <- substr(file, nchar(file)-7, nchar(file)-4) # extracts the year, may need to change numbers
+  yr <- str_extract(basename(file),"(\\d)+") # extracts the year, double check yr
   
   npp <- npp_files_gf[str_detect(npp_files_gf, yr)] %>% 
     raster()
@@ -394,7 +394,9 @@ catch_npp_fun <- function(file, layer){ # file = dem_d_files[1]  layer = 'dem_de
 
 ```
 
-```{r stdCatch}
+Create corrected catch rasters. Resolution and projection are matched with NPP rasters (8 x 10 km resolution and Mollweide coordinate system).
+
+```{r corrCatch, eval=FALSE}
 
 ## Specify years of catch data that match with years available in NPP data
 years_of_data <- 2003:2015
@@ -421,8 +423,58 @@ lapply(art_disc, catch_npp_fun, layer = 'artisanal_discards')
 
 ```
 
+Check corrected raster
+```{r}
 
-# Gapfill
+plot(raster(art_disc[30]))
+zoom(raster(art_disc[30]))
+click(raster(art_disc[30]))
+
+```
+
+### Calculate 5-Year Means
+
+Set up foreach loop to start with the oldest year of data (2003) and end on the 5th most recent year of data (2011).
+
+```{r}
+
+commL_corr <- list.files(paste0(rastFolder,'comm_landings'), pattern="corr", full.names=TRUE)
+commD_corr <- list.files(paste0(rastFolder,'comm_discards'), pattern="corr", full.names=TRUE)
+artL_corr <- list.files(paste0(rastFolder,'artisanal_landings'), pattern="corr", full.names=TRUE)
+artD_corr <- list.files(paste0(rastFolder,'artisanal_discards'), pattern="corr", full.names=TRUE)
+
+registerDoParallel(5)
+
+## check to see which years of data to run in the foreach() loop
+# years_of_data[[1]]:years_of_data[[length(years_of_data)-4]]
+
+foreach (i = 2003:2011) %dopar%{ # i = 2010
+  
+  yrs <- c(i:(i+4))
+  
+  out_CL <- commL_corr[which(str_detect(commL_corr, pattern = paste(yrs,collapse = '|')))] %>%
+            stack() %>%
+            calc(fun=function(x){mean(x, na.rm=TRUE)}) %>%
+            calc(fun=function(x){log(x+1)}, filename = paste0('int/comm_landings/mean_catch_',yrs[1],'_',yrs[5],'.tif'),overwrite=TRUE)
+  
+  out_CD <- commD_corr[which(str_detect(commD_corr, pattern = paste(yrs,collapse = '|')))] %>%
+            stack() %>%
+            calc(fun=function(x){mean(x,na.rm=TRUE)}) %>%
+            calc(fun=function(x){log(x+1)}, filename = paste0('int/comm_discards/mean_catch_',yrs[1],'_',yrs[5],'.tif'), overwrite=TRUE)
+  
+  out_AL <- artL_corr[which(str_detect(artL_corr, pattern = paste(yrs,collapse = '|')))] %>%
+            stack()%>%
+            calc(fun=function(x){mean(x,na.rm=T)})%>%
+            calc(fun=function(x){log(x+1)}, filename = paste0('int/artisanal_landings/mean_catch_',yrs[1],'_',yrs[5],'.tif'),overwrite=T)
+  
+  out_AD <- artD_corr[which(str_detect(artD_corr, pattern = paste(yrs,collapse = '|')))] %>%
+            stack()%>%
+            calc(fun=function(x){mean(x,na.rm=T)})%>%
+            calc(fun=function(x){log(x+1)}, filename = paste0('int/artisanal_discards/mean_catch_',yrs[1],'_',yrs[5],'.tif'),overwrite=T)
+  
+}
+```
+
 
 # Data Checks
 
