@@ -212,19 +212,20 @@ library(seaaroundus)
 library(RColorBrewer)
 library(cowplot)
 library(stringr)
+library(colorspace)
+library(sp)
 
 registerDoParallel(5) # registering cores for parallel processing
-
-ocean <- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
-rastFolder <- paste0(dir_M,"/git-annex/globalprep/prs_fish/v2018/int/")
-options(scipen=999)
 
 ## color palette
 cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
 mytheme=rasterTheme(region=cols)
 
-## set mollweide projection CRS
+## Set template ocean raster and mollweide projection CRS
+ocean <- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
 mollCRS=crs('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs')
+
+options(scipen=999)
 
 ```
 
@@ -310,11 +311,6 @@ create_rast <- map2(raw_suffx, rast_prefx, catch2raster)
 Compare composite of newly created rasters with industrial landings figure created in [Watson (2018)](https://www.sciencedirect.com/science/article/pii/S0308597X18300605). See [Figure 2D](https://ars.els-cdn.com/content/image/1-s2.0-S0308597X18300605-gr2_lrg.jpg), which maps industrial landings in tonnes between 2000 and 2015.
 
 ```{r, eval=FALSE}
-
-library(colorspace)
-library(sp)
-library(RColorBrewer)
-cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
 
 ## Read in rasters for commercial landings between 2000 and 2015
 commercial <- list.files(paste0(rastFolder,"comm_landings"),full.names = TRUE)
@@ -472,28 +468,149 @@ foreach (i = 2003:2011) %dopar%{ # i = 2010
             calc(fun=function(x){log(x+1)}, filename = paste0(rastFolder, 'artisanal_discards/mean_catch_',yrs[1],'_',yrs[5],'.tif'), overwrite=T)
   
 }
+
+```
+
+Check 5-year mean raster - make sure land values are NA not zero.
+
+```{r}
+
+plot(raster(commL_corr[1]))
+click(raster(art_disc[30]))
+
 ```
 
 ## Reference Point
 
-Look at all mean catch data standardized by NPP and use the 99.99th quantile as the reference point.
+Find 99.99th quantile to use as reference point:
 
-```{r}
+* `ref_clb` is reference point for Commercial Low Bycatch
+* `ref_chb` is reference point for Commercial High Bycatch
+* `ref_alb` is reference point for Artisanal Low Bycatch
+
+```{r, eval=FALSE}
 
 mean_CL <- list.files(paste0(rastFolder, 'comm_landings'), pattern = "mean_catch", full.names=TRUE)
 mean_CD <- list.files(paste0(rastFolder, 'comm_discards'), pattern = "mean_catch", full.names=TRUE)
 mean_AL <- list.files(paste0(rastFolder, 'artisanal_landings'), pattern = "mean_catch", full.names=TRUE)
-mean_AD <- list.files(paste0(rastFolder, 'artisanal_discards'), pattern = "mean_catch", full.names=TRUE)
-
-
+#mean_AD <- list.files(paste0(rastFolder, 'artisanal_discards'), pattern = "mean_catch", full.names=TRUE)
 
 ```
 
-## Rescale
+### Commercial Low Bycatch
 
-```{r}
+Get industrial landings catch values across all years 2003-2015.
+
+```{r, eval=FALSE}
+
+vals <- c()
+
+for(i in 2007:2014){ # i = 2007
+#print(i)
+  m <- mean_CL[which(str_detect(mean_CL, pattern = paste0("_",i,".tif")))] %>%
+    raster()%>%
+    getValues()
+  
+ n <- m[!is.na(m)]
+
+  vals <- c(vals, n)
+
+}
+
+ref_clb <- quantile(vals, prob = 0.9999, na.rm=T)  #11.88
 
 ```
+
+### Commercial High Bycatch
+
+Get industrial discards values across all years 2003-2015.
+
+```{r, eval=FALSE}
+
+vals <- c()
+
+for(i in 2007:2014){ # i = 2007
+#print(i)
+  m <- mean_CD[which(str_detect(mean_CD, pattern = paste0("_",i,".tif")))] %>%
+    raster()%>%
+    getValues()
+  
+ n <- m[!is.na(m)]
+
+  vals <- c(vals, n)
+
+}
+
+ref_chb <- quantile(vals, prob = 0.9999, na.rm=T)  #9.87
+
+```
+
+### Artisanal Low Bycatch
+
+Get artisanal discards values across all years 2003-2015.
+
+```{r, eval=FALSE}
+
+vals <- c()
+
+for(i in 2007:2014){ # i = 2007
+#print(i)
+  m <- mean_AL[which(str_detect(mean_AL, pattern = paste0("_",i,".tif")))] %>%
+    raster()%>%
+    getValues()
+  
+ n <- m[!is.na(m)]
+
+  vals <- c(vals, n)
+
+}
+
+ref_alb <- quantile(vals, prob = 0.9999, na.rm=T)  #10.69
+
+```
+
+Note: all quantiles increased slightly from last year's assessment (see [v2017 prep](https://github.com/OHI-Science/ohiprep_v2018/blob/master/globalprep/prs_fish/v2017/fishing_pressure_layers.Rmd)).
+
+## Rescale to 1-km Resolution
+
+Use reference points `ref_clb` on commercial landings data, `ref_chb` on commercial discards data, and `ref_alb` on artisanal landings data.
+
+Rasters are currently in resoution 8.35 km x 10.3 km (same as NPP rasters) and in Mollweide coordinate system. Convert to ocean raster 1-km x 1-km resolution.
+
+```{r, eval=FALSE}
+
+mean_CL <- list.files(paste0(rastFolder, 'comm_landings'), pattern = "mean_catch", full.names=TRUE)
+mean_CD <- list.files(paste0(rastFolder, 'comm_discards'), pattern = "mean_catch", full.names=TRUE)
+mean_AL <- list.files(paste0(rastFolder, 'artisanal_landings'), pattern = "mean_catch", full.names=TRUE)
+#mean_AD <- list.files(paste0(rastFolder, 'artisanal_discards'), pattern = "mean_catch", full.names=TRUE)
+
+foreach (i = 2003:2011) %dopar%{ # i = 2003
+  
+  yrs <- c(i:(i+4))
+  
+  # out_CL <- mean_CL[which(str_detect(mean_CL, pattern = paste0("_",i,"_")))] %>%
+  #           raster() %>%
+  #           calc(fun=function(x){ifelse(x > ref_clb, 1, x/ref_clb)}) %>%
+  #           calc(fun=function(x){ifelse(x < 0, 0, x)}) %>%
+  #           resample(ocean, method = 'ngb', filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2018/output/comm_low_bycatch/lb_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite = TRUE)
+  # 
+  # out_CD <- mean_CD[which(str_detect(mean_CD, pattern = paste0("_",i,"_")))] %>%
+  #           raster() %>%
+  #           calc(fun=function(x){ifelse(x > ref_chb, 1, x/ref_chb)}) %>%
+  #           calc(fun=function(x){ifelse(x < 0, 0, x)}) %>%
+  #           resample(ocean, method = 'ngb', filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2018/output/comm_high_bycatch/hb_fish_pressure_',yrs[1],'_',yrs[5], '.tif'), overwrite=TRUE)
+  # 
+  # 
+  out_AL <- mean_AL[which(str_detect(mean_AL, pattern = paste0("_",i,"_")))] %>%
+            raster() %>%
+            calc(fun = function(x){ifelse(x > ref_alb, 1, x/ref_alb)}) %>%
+            calc(fun = function(x){ifelse(x < 0, 0, x)}) %>%
+            resample(ocean, method = 'ngb', filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2018/output/art_low_bycatch/art_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite=TRUE)
+
+}
+```
+
+
 
 # Data Checks
 
