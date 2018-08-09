@@ -40,7 +40,7 @@ One additional year of data.
 **Reference**: The Ultraviolet Radiation pressures layer uses the [Aura OMI GLobal Surface UVB Data Product](http://disc.sci.gsfc.nasa.gov/Aura/data-holdings/OMI/omuvbd_v003.shtml).  
 **Native Data Resolution**: 1 degree  
 **Values**: Level-3 OMI Surface UV Irradiance and Erythemal Dose- OMUVBd  
-**Time Range**: Daily data from 2005 - 2017 (through 7/14/2018, but only full years of data are used)
+**Time Range**: Daily data from 2005 - 2017 (10/1/2004 through 7/14/2018, but only full years of data are used)
 **Format**: HDF5
 
 ***
@@ -54,7 +54,7 @@ One additional year of data.
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 ## comment out when knitting; set first when doing the data prep!
-# setwd("globalprep/prs_uv/v2018") # update to reflect current assessment year!
+# setwd("~/github/ohiprep_v2018/globalprep/prs_uv/v2018") # update to reflect current assessment year!
 
 ## rhdf5 package for working with HDF5 files, from bioconductor: http://bioconductor.org/packages/release/bioc/html/rhdf5.html 
 # source("http://bioconductor.org/biocLite.R")
@@ -74,7 +74,8 @@ library(doParallel)
 library(dplyr)
 library(readr)
 library(stringr)
-library(httr) # RCurl?
+library(httr)
+library(lubridate)
 
 ## update to reflect current assessment year, or whichever year data is being used!!!
 data_yr <- "d2018"
@@ -82,9 +83,9 @@ raw_data_dir <- file.path(dir_M, "git-annex/globalprep/_raw_data/NASA_OMI_AURA_U
 int_sp_data <- file.path(dir_M, "git-annex/globalprep/prs_uv/v2018/int")
 
 ## years of data we are using for this data layer
-yrs  <- c(2004:2017)
+yrs  <- c(2005:2017)
 mths <- str_pad(1:12, 2, "left", pad = "0")
-days <- seq(1, 358, 7)
+days_full <- seq(1, 358, 7)
 
 ## global ocean raster at 1km for resampling/projecting purposes
 ocean <- raster(file.path(dir_M, "model/GL-NCEAS-Halpern2008/tmp/ocean.tif"))
@@ -102,9 +103,18 @@ cols <- rev(colorRampPalette(brewer.pal(9, "Spectral"))(255))
 
 ## Downloading the HDF (.he5) files 
 
-Data files can be found in the [GES DISC EARTHDATA Data Archive](https://disc.gsfc.nasa.gov/datasets/OMUVBd_V003/summary). An EarthData account will be required, and will need to be linked to the GES DISC data archive, see [instructions here](https://disc.gsfc.nasa.gov/earthdata-login). Download the links list, specifying  HDF-EOS5 as the output file format (default). Note this list is __valid for only 2 days__ so a new one must be generated if data is to be downloaded after that time frame. Once the links list _.txt_ file has been downloaded from the portal and saved in the 'raw_data_dir' as defined above, the code below will use the list and earthdata portal login info (username and password) to download the raw HDF files into the raw data directory.
+Data files can be found in the [GES DISC EARTHDATA Data Archive](https://disc.gsfc.nasa.gov/datasets/OMUVBd_V003/summary). An EarthData account will be required, and will need to be linked to the GES DISC data archive, see [instructions here](https://disc.gsfc.nasa.gov/earthdata-login). Download the links list. Note this list is __valid for only 2 days__ so a new one must be generated if data is to be downloaded after that time frame. Once the links list _.txt_ file has been downloaded, the code below will use the list and earthdata login info (username and password) to download the new data files into the raw data directory. The naming convention of the downloaded files: 'OMI-Aura' refers to the instrument, 'L3' means it is a level 3 data product, 'OMUVBd' is the measurement, the first date is when the data was recorded, the second date and time corresponds to modification/upload of the data.
 
-```{r download the data}
+```{r earthdata login info, eval = F}
+## need  username and password, define in console when prompted (or read from secure file), don't save here!!
+usrname <- readline("Type earthdata username:")
+pass <- readline("Type earthdata password:")
+```
+
+
+```{r download the data, eval = F}
+## this doesn't run on Mazu for some reason; use 'uv_download_data.R' run locally on R to download locally, then move data files over to Mazu
+
 ## read in file list .text, downloaded from earthdata & saved in destination folder (same as raw_data_dir)
 file_list_raw <- read_delim(file.path(raw_data_dir, "file_list.txt"), delim = "\n", col_names = FALSE)
 file_list <- file_list_raw %>% 
@@ -112,10 +122,6 @@ file_list <- file_list_raw %>%
   mutate(check_netcdf = str_match(url_str, pattern = "http.*OMI-Aura_L3-OMUVBd.*nc")) %>%
   filter(!is.na(check_netcdf)) %>% 
   select(url_str)
-  
-## need  username and password, define in console when prompted (or read from secure file), don't save here!!
-usrname <- readline("Type earthdata username:")
-pass <- readline("Type earthdata password:")
 
 ## set up timekeeping for data download
 t0 = Sys.time()
@@ -140,115 +146,158 @@ for(i in 1:3){
 ```
 
 
-## Create rasters from HDF files
+## Create rasters from NetCDF files
+
+```{r list and check raw files, eval = F}
+
+## list all files from raw data folder
+files <- list.files(file.path(raw_data_dir, "data"), pattern = "OMI-Aura_L3-OMUVBd.*.he5.nc$", full.names = TRUE) # netcdf not hdf
+files <- files[substr(files, 96, 99) %in% yrs] # select only files for yrs we want
+
+## check all days are there; should go from Oct 2004 through Dec 31 of last full year of data
+files_df <- files %>% 
+  data.frame() %>% 
+  rename(fullname = ".") %>% 
+  mutate(post_modify_date = substr(fullname, 111, 119),
+         year = substr(fullname, 96, 99), 
+         mo = substr(fullname, 101, 102), 
+         dy = substr(fullname, 103, 104)) %>%
+  mutate(date = paste(year, mo, dy, sep = "-"),
+         wk_of_yr = lubridate::week(as_date(date))) %>% 
+  group_by(year, wk_of_yr) %>% 
+  mutate(nday_in_wk = n()) %>% 
+  ungroup() # View(files_df)
+
+check_ndays <- files_df %>%
+  group_by(year) %>% # group_by(year, mo) %>% 
+  summarize(ndays = n()) # View(check_ndays)
+```
+
 
 Calculate weekly means and standard deviations across all years:
 
-```{r calc weekly means and st devs, eval=F}
+```{r calc weekly means and st devs, eval = F}
 
-## list all files from raw data folder
-files = list.files(file.path(raw_data_dir, "data"), pattern="*.he5.nc$", full.names=T)
+## for every week in each year in the time series, calculate the weekly mean and standard deviation
+registerDoParallel(3)
 
-## function to turn HDF file into a raster 
-he_to_ras <- function(x){
-  
-    ncin <- nc_open(x)
-    
-    h <- h5read(x, attribute)
-    r <- raster(h, xmn = -90, ymn = -180, xmx = 90, ymx = 180, 
-                crs = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0") %>%
-            t() %>%
-            flip(direction='y')
-    
-    r[r<0] <- NA # where r = 0, set to NA
-    
-    return(r)
-}
+# j = 22; yr = 2016 for testing
+## note: wk 22 has only 4 layers (and 4th is all NA) and length(days)=52 because week 23 is all missing
 
-registerDoParallel(8)
-
-## for every week in each year in the time series, calculate the weekly mean and standard deviation.
-foreach (yr = yrs) %dopar%{
+foreach (yr = yrs) %dopar% { # yr = 2016
   
-  attribute = ifelse(yr == 2016,"/HDFEOS/GRIDS/OMI UVB Product/Data Fields/ErythemalDailyDose",
-                     "/HDFEOS/GRIDS/OMI UVB PRODUCT/Data Fields/ErythemalDailyDose")
+  l <- files[substr(files, 96, 99) == yr]
   
-  l <- files[substr(files[], 96, 99)==yr]
+  days_df <- files_df %>%
+    filter(year == yr) %>%
+    select(wk_of_yr, nday_in_wk) %>%
+    distinct() %>% # select just distinct weeks with number of data days they contain
+    tidyr::complete(wk_of_yr = seq(1:53)) %>% # possible max 53 weeks
+    mutate(nday_in_wk = replace(nday_in_wk, is.na(nday_in_wk), 0)) %>% # zeros if no data
+    mutate(lag_nday = lag(nday_in_wk),
+           lag_nday = replace(lag_nday, is.na(lag_nday), 1),
+           doy = cumsum(lag_nday)) # day-of-year for start of each week of data
   
-  if(yr == 2016){
+  days <- days_df$doy %>% unique() # eliminate duplicates
+  weeks <- days_df$wk_of_yr[days_df$nday_in_wk != 0]
+  
+  for (j in 1:length(days)) {
     
-    days <-  c(seq(1,148,7),   # 2 weeks in June are missing. need to account for that when assigning days
-               seq(152,351,7))
+    wk_files <- l[days[j]:(days[j+1]-1)]
     
-  } else { 
-    days <- days
-  }
-  
-  ## now grab weeks
-  if(yr == 2016){
-    weeks <- c(1:22,25:52) # 2 weeks in June are missing, need to remove these here
-  } else {
-    weeks <- length(days)
-  }
-  
-  for (j in 1:length(weeks)){
-    
-    week = weeks[j]
-    if(yr == 2016 & j == 22){
-      dys <- l[days[j]:(days[j]+3)]
-    } else {
-      dys   <- l[days[j]:(days[j]+7)] # get all files from the year for these 7 days
+    rasters <- raster(wk_files[1], varname = "ErythemalDailyDose") # lapply was not seeing varname arg (?)
+    for(i in wk_files[-1]){
+      r <- raster(i, varname = "ErythemalDailyDose")
+      rasters <- stack(rasters, r)
     }
+    uv_week <- rasters
+    week = str_pad(weeks[j], 2, "left", pad = "0")
     
-    rasters   <- lapply(dys[!is.na(dys)], he_to_ras)  # rasterize all of these .nc files. This function will assign NA to the empty ones
+    week_mean <- calc(uv_week, fun = function(x) {mean(x, na.rm = TRUE)},
+                      filename = sprintf("%s/weekly_means/weekly_means_%s_%s.tif", 
+                                         int_sp_data, yr, week), overwrite = TRUE)
     
-    uv_week   <- stack(rasters)
+    week_sd <- calc(uv_week, fun = function(x) {sd(x, na.rm = TRUE)},
+                    filename = sprintf("%s/weekly_sd/weekly_sd_%s_%s.tif", 
+                                       int_sp_data, yr, week), overwrite = TRUE)
     
-    ## calculate the mean
-    week_mean    <-  calc(uv_week, fun=function(x){mean(x, na.rm = T)},
-                          filename = paste0(int_sp_data, "/weekly_means/weekly_means_", yr, "_", week, ".tif"),
-                          overwrite = TRUE)
-    
-    
-    week_sd      <-  calc(uv_week, fun = function(x){sd(x, na.rm = T)},
-                          filename = paste0(int_sp_data, "weekly_sd/weekly_sd_", yr, "_", week, ".tif"),
-                          overwrite = TRUE)
-    
-    week_mean_sd <-  overlay(week_mean, week_sd, fun = function(x,y){x+y},
-                             filename = paste0(int_sp_data, "weekly_mean_sd/weekly_mean_sd_", yr, "_", week, ".tif"),
-                             overwrite = TRUE)
-  }
+    week_mean_sd <- overlay(week_mean, week_sd, fun = function(x, y) {x + y},
+                            filename = sprintf("%s/weekly_mean_sd/weekly_mean_sd_%s_%s.tif", 
+                                               int_sp_data, yr, week), overwrite = TRUE)
+  
+    }
+  
+  # ## 2 weeks in June are missing, need to account for that when assigning days
+  # if(yr == 2016){days = c(seq(1, 148, 7), seq(152, 351, 7))} else {days = days_full}
+  #
+  # ## now grab weeks; 2 weeks in June are missing, need to remove these
+  # if(yr == 2016){
+  #   weeks = c(1:22, 25:52)
+  # } else {
+  #   weeks = c(1:length(days))
+  # }
+  #
+  # for (j in weeks){
+  #
+  #   week = weeks[j]
+  #
+  #   if(yr == 2016 & j == 22){
+  #     dys <- l[days[j]:(days[j] + 3)]
+  #   } else {
+  #     dys   <- l[days[as.numeric(j)]:(days[as.numeric(j)] + 7)] # get all files from the year for these 7 days
+  #   }
+  #
+  #   rasters <- raster(dys[!is.na(dys)][1], varname = "ErythemalDailyDose") # lapply was not seeing varname arg
+  #   for(i in dys[!is.na(dys)][-1]){
+  #     r <- raster(i, varname = "ErythemalDailyDose")
+  #     rasters <- stack(rasters, r)
+  #   }
+  #   uv_week <- rasters
+  #
+  #   ## calculate the mean, weekly standard deviation, and weekly mean standard deviation
+  #   week_mean <- calc(uv_week, fun = function(x) {mean(x, na.rm = TRUE)},
+  #                     filename = paste0(int_sp_data, "/weekly_means/weekly_means_", yr, "_", week, ".tif"),
+  #                     overwrite = TRUE)
+  #
+  #   week_sd <- calc(uv_week, fun = function(x) {sd(x, na.rm = TRUE)},
+  #                   filename = paste0(int_sp_data, "/weekly_sd/weekly_sd_", yr, "_", week, ".tif"),
+  #                   overwrite = TRUE)
+  #
+  #   week_mean_sd <- overlay(week_mean, week_sd, fun = function(x, y) {x + y},
+  #                           filename = paste0(int_sp_data, "/weekly_mean_sd/weekly_mean_sd_", yr, "_", week, ".tif"),
+  #                           overwrite = TRUE)
+  # }
 }
 
 ## get weekly climatologies across all years in the time series
-names_weekly <- list.files(file.path(dir_M,'git-annex/globalprep/prs_uv/v2017/int/weekly_means'),full.names=T)
+names_weekly <- list.files(file.path(int_sp_data, "weekly_means"), full.names = TRUE)
 
-foreach(i = c(1:52)) %dopar% {
+foreach(i = c(1:length(names_weekly))) %dopar% {
   
   ## get all rasters for week i
-    if(i %in% c(1:9)){ #did this for the first 9 weeks for filepath naming only
-       w = names_weekly[(substr(names_weekly,87,91)==paste0(i,'.tif'))]%>%stack()
-    }else{
-      w  = names_weekly[(substr(names_weekly,87,88)==i)]%>%stack()
-    }
+  if(i %in% c(1:9)){ # did this for the first 9 weeks for filepath naming only
+    w = names_weekly[(substr(names_weekly, 87, 91) == paste0(i, ".tif"))] %>% stack()
+  } else {
+    w  = names_weekly[(substr(names_weekly, 87, 88) == i)]%>%stack()
+  }
   
   ## mean
   m  = calc(w,fun=function(x){mean(x,na.rm=T)},filename=paste0(file.path(dir_M),
-           '/git-annex/globalprep/prs_uv/v2017/int/weekly_climatologies/mean_week_',i,'.tif'),overwrite=T)
+                                                               '/git-annex/globalprep/prs_uv/v2017/int/weekly_climatologies/mean_week_',i,'.tif'),overwrite=T)
   
   ## sd
   sd = calc(w,fun=function(x){sd(x,na.rm=T)},progress='text',filename=paste0(file.path(dir_M),
-           '/git-annex/globalprep/prs_uv/v2017/int/weekly_climatologies/sd_week_',i,'.tif'),overwrite=T)
+                                                                             '/git-annex/globalprep/prs_uv/v2017/int/weekly_climatologies/sd_week_',i,'.tif'),overwrite=T)
   
   #mean plus sd
   m_sd = overlay(m,sd,fun=function(x,y){x+y},filename = paste0(file.path(dir_M),
-           '/git-annex/globalprep/prs_uv/v2017/int/weekly_climatologies/mean_sd_week_',i,'.tif'),overwrite=T)
+                                                               '/git-annex/globalprep/prs_uv/v2017/int/weekly_climatologies/mean_sd_week_',i,'.tif'),overwrite=T)
   
 }
 ```
 
 
-## Compare to climatology
+## Compare to Climatology
 
 Compare each week in each year to the climatology for that week. The climatology is equal to the mean plus one standard deviation
 
