@@ -740,18 +740,29 @@ Check masked rasters!
 ```{r}
 
 outFolder <-  "/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/output"
-cd_2003_2007 <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2003_2007.tif'))
-cd_2004_2008 <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2004_2008.tif'))
-cd_2005_2009 <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2005_2009.tif'))
-cd_2006_2010 <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2006_2010.tif'))
-cd_2007_2011 <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2007_2011.tif'))
-cd_2008_2012 <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2008_2012.tif'))
-cd_2009_2013 <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2009_2013.tif'))
-cd_2010_2014 <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2010_2014.tif'))
-cd_2011_2015 <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2011_2015.tif'))
+cd_2003_2007 <- raster(file.path(outFolder, 'art_low_bycatch/art_fish_pressure_2003_2007.tif'))
+cd_2004_2008 <- raster(file.path(outFolder, 'art_low_bycatch/art_fish_pressure_2004_2008.tif'))
+cd_2005_2009 <- raster(file.path(outFolder, 'art_low_bycatch/art_fish_pressure_2005_2009.tif'))
+cd_2006_2010 <- raster(file.path(outFolder, 'art_low_bycatch/art_fish_pressure_2006_2010.tif'))
+cd_2007_2011 <- raster(file.path(outFolder, 'art_low_bycatch/art_fish_pressure_2007_2011.tif'))
+cd_2008_2012 <- raster(file.path(outFolder, 'art_low_bycatch/art_fish_pressure_2008_2012.tif'))
+cd_2009_2013 <- raster(file.path(outFolder, 'art_low_bycatch/art_fish_pressure_2009_2013.tif'))
+cd_2010_2014 <- raster(file.path(outFolder, 'art_low_bycatch/art_fish_pressure_2010_2014.tif'))
+cd_2011_2015 <- raster(file.path(outFolder, 'art_low_bycatch/art_fish_pressure_2011_2015.tif'))
 all_cd <- stack(cd_2003_2007,cd_2004_2008,cd_2005_2009, cd_2006_2010,cd_2007_2011, cd_2008_2012,cd_2009_2013,  cd_2010_2014,cd_2011_2015)
 plot(all_cd, col=cols, axes=FALSE ,box=FALSE)
 
+cd_2003_2007 <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2003_2007.tif'))
+cd_2004_2008 <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2004_2008.tif'))
+cd_2005_2009 <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2005_2009.tif'))
+cd_2006_2010 <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2006_2010.tif'))
+cd_2007_2011 <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2007_2011.tif'))
+cd_2008_2012 <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2008_2012.tif'))
+cd_2009_2013 <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2009_2013.tif'))
+cd_2010_2014 <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2010_2014.tif'))
+cd_2011_2015 <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2011_2015.tif'))
+all_cd <- stack(cd_2003_2007,cd_2004_2008,cd_2005_2009, cd_2006_2010,cd_2007_2011, cd_2008_2012,cd_2009_2013,  cd_2010_2014,cd_2011_2015)
+plot(all_cd, col=cols, axes=FALSE ,box=FALSE)
 ```
 
 # Extract Data from Rasters
@@ -851,7 +862,7 @@ setdiff(rgn_data$ant_id, regions_stats2_hb$zone)
 
 Tidy and create output data
 ```{r}
-data <- merge(rgn_data, regions_stats_hb, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
+data <- merge(rgn_data, regions_stats2_hb, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
   tidyr::gather("year", "pressure_score", starts_with("hb")) 
 
 DT::datatable(data) # take a look
@@ -871,7 +882,7 @@ write.csv(hb_data, "output/comm_hb.csv", row.names=FALSE)
 ```{r}
 
 ## combine all years
-rasts_art <- list.files(file.path(dir_git,'output/artisanal'), full = TRUE)
+rasts_art <- list.files(file.path(outFolder,'art_low_bycatch'), full = TRUE)
 pressure_stack_art <- stack(rasts_art)
 
 # extract data for each region:
