@@ -20,9 +20,10 @@ editor_options:
 
 #Summary
 
-The area of blast fishing data layer is created from sapatialized bycatch by gear data provided by Watson (2017), 
-!!!!!!!!! YS OR NO? and net primary production data from the Vertically Generalized Production Model
+The area of blast fishing data layer is created from sapatialized bycatch by gear data provided by Watson (2017).
+!!!!!!! Describe standarization method!!!!!!!!!!
 
+Not needed!!!!!???
  [(VGPM)](http://www.science.oregonstate.edu/ocean.productivity/) as described in [Behrenfeld and Falkowski (1997)](http://www.science.oregonstate.edu/ocean.productivity/references/L&O%201997a.pdf)
 
 
@@ -47,6 +48,7 @@ Previoulsly, this layer used data from Burke et al. (2011). Watson's data (2017)
 
 **Native data resolution**: 0.5 degree    
 
+!!!!!!CHECK
 **Time range**: 2003 - 2014  (raw data goes back to 1950 but NPP data limits time series to 2003)
 
 **Format**:  Tabular  
@@ -69,7 +71,7 @@ knitr::opts_chunk$set(warning=FALSE, message=FALSE,fig.width = 6, fig.height = 4
 
 # comment out when knitting
 # setwd("~/github/ohiprep_v2018/globalprep/np_prs_poison_blast_fishing/v2018")
-
+library(plyr)
 library(tidyverse)
 library(parallel)
 library(foreach)
@@ -80,12 +82,14 @@ library(seaaroundus)
 library(RColorBrewer)
 library(cowplot)
 library(stringr)
+library(rgdal)
+library(sf)
 
 source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/spatial_common.R')
 
 ocean <- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
 
-registerDoParallel(14) #registering cores for parallel processing
+registerDoParallel(2) #registering cores for parallel processing
 
 options(scipen=999)
 
@@ -93,10 +97,10 @@ cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color sc
 mytheme=rasterTheme(region=cols)
 
 #set mollweide projection CRS
-  mollCRS=crs('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs')
+mollCRS=crs('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs')
   
-#paths
- dir_git <- file.path(dir_M,'git-annex/globalprep/prs_fish/v2017')
+#paths !!!!! SEE IF NECESARY - MODIFY
+ ##dir_git <- file.path(dir_M,'git-annex/globalprep/prs_fish/v2017')
  
   
 ```
@@ -118,7 +122,7 @@ The values of these cells are the Cell ID numbers. In the fisheries catch datase
 
 ```
 
-For each year read in the raw data, filter for appropriate type (high, low and artisanal) and then summarize total catch per cell (in tons/km^2^)
+For each year read in the raw data, filter for appropriate type of gear (explosives) and then summarize total catch per cell (in kg/km^2^)
 
 ```{r,eval=F}
 
@@ -129,105 +133,93 @@ foreach(yr = years) %dopar%{ #yr = 2014
   #read in raw data for the year
   raw <- readRDS(paste0(file.path(dir_M,'git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data/catch_data_'),yr,'.rds'))
   
-
+##NOTE: catch is in tonnes per square kilometer in a year.
   
  blast <- raw %>%
           dplyr::filter(GearName == "explosives") %>%
           rowwise() %>%
-          dplyr::mutate(catch = sum(LSF_CR, SSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000) %>% #there shouldnt be NAs but just in case, converting from tonnes to kg to get rid of low values
+          dplyr::mutate(catch = sum(LSF_CR, SSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000) %>% #converting from tonnes to kg to get rid of low values
           dplyr::group_by(Seq) %>%
           dplyr::summarise(cell_catch = sum(catch))
-          
+ 
     #rasterize catch by swapping cell ids with (calls the suap raster we made above)
-raster::subs(saup_rast, blast, by = 'Seq', which = 'cell_catch', subsWithNA=TRUE, filename = paste0('int/blast/annual_catch/blast_',yr,'.tif'), overwrite=TRUE) 
+raster::subs(saup_rast, blast, by = 'Seq', which = 'cell_catch', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/prs_blast/v2018/int/total_catch_cell/blast_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
   
 }
 
+
 ```
 
 
-## Net Primary Production (NPP)
+## Extract catch values for each OHI region
 
-The Net Primary Production data was prepared in [npp.Rmd](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/prs_fish/v2016/prim_productivity/npp.html).
+```{r}
 
-```{r npp}
+### convert density of fish (kg/km2) to catch total (kg)
 
-npp <- list.files(file.path(dir_M,'git-annex/globalprep/prs_fish/v2016/VGPM_primary_productivity/int/annual_npp'), pattern = 'npp_2', full.names=TRUE)
+blast_crs <- raster(file.path (dir_M,'git-annex/globalprep/prs_blast/v2018/int/total_catch_cell/blast_2003.tif'))
 
-plot(raster(npp[12]), col=cols, axes=FALSE, main = 'Net Primary Production (mg C/m2/day) \n 2014')
-```
+# raster_area <- area(blast_crs)
+# 
+# blast_rast_loc <- file.path(dir_M, "git-annex/globalprep/prs_blast/v2018/int/total_catch_cell")
 
-## Standardize by NPP
 
-Total catch per cell is standardized by the NPP values. This is done because the same fishing pressure can have different impacts depending on the productivity in the region. 
+##Code from: https://github.com/OHI-Science/ohiprep_v2018/blob/master/globalprep/hab_prs_hd_subtidal_soft_bottom/v2017/data_prep.R not sure this is needed. Did not run this loop. 
 
-Before standardizing, the NPP data is aggregated to the same spatial resolution as the catch data, 0.5 degree cells, to accurately calculate catch in tons/km2 standardized by mg C/m2/day.
+# for(catch_year in 2003:2014){ # catch_year = 2003
+#   
+#   cat(catch_year)
+#   
+#   catch <- raster(file.path(catch_rast_loc, sprintf("dem_dest_%s.tif", catch_year)))
+#   
+#   catch_count  <- overlay(catch, raster_area, fun = function(x,y){x*y}, progress = 'text',
+#                            filename = file.path(dir_M,
+#                           sprintf("git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2017/int/catch_count_%s.tif", catch_year))) 
+# }
 
-```{r,eval=F}
 
-npp_stand <- function(file,fname){
-  
-  yr <- substr(file,nchar(file)-7,nchar(file)-4)
-  
-  catch <- raster(file)
-  
-  #get net primary production for that year
-  n <- npp[substr(npp,111,114)==yr] %>%
-          raster() %>%
-          projectRaster(saup_rast) %>%
-          resample(.,saup_rast)
+## make crs the same for each ohi region
 
-  #3. Divide catch by npp and save to git-annex
-  overlay(catch,n,fun=function(x,y){x/y},filename = paste0('int/', fname,'/annual_catch_npp/annual_catch_npp_', yr, '.tif'), overwrite=TRUE, progress="text") 
+ohi_regions <- st_read(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017"), layer="regions_2017_update")
+
+ohi_regions_wgs <-  st_transform(ohi_regions, proj4string(blast_crs))
+
+blast_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/prs_blast/v2018/int/total_catch_cell"), full.names = TRUE) 
+
+
+for(blast_catch in blast_rasts){ # blast_catch = blast_rasts[1]
+
+cat(blast_catch)
+catch_year <- str_sub(blast_catch)
+
+catch <- raster(blast_catch)
+
+data <- raster::extract(catch, ohi_regions, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
+
+names(data) <- paste(ohi_regions$type_w_ant, ohi_regions$rgn_ant_id, sep="_") 
+blast_rgn   <- plyr::ldply(data, rbind)
+
+# the following code keeps the raster information when the raster lands partially on the land polygons
+blast_rgn <- blast_rgn %>%
+  tidyr::separate(.id, c("rgn_type", "rgn_id"), sep="_") %>%
+  dplyr::mutate(kg = value*weight) %>%
+  dplyr::group_by(rgn_type, rgn_id) %>%
+  dplyr::summarize(kg = sum(kg, na.rm=TRUE)) %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::summarize(kg = sum(kg, na.rm=TRUE)) %>%
+  dplyr::ungroup() %>%
+  dplyr::arrange(as.numeric(as.character(rgn_id))) %>%
+  dplyr::mutate(year = catch_year)
+
+write.csv(blast_rgn, sprintf("globalprep/np_prs_poison_blast_fishing/v2018/int/blast_catch_rgn_%s.csv", catch_year), row.names=FALSE)
 
 }
 
-#apply the function
-hb_files <- list.files('int/high_bycatch/annual_catch', full.names=TRUE)
-lb_files <- list.files('int/low_bycatch/annual_catch', full.names=TRUE)
-art_files <- list.files('int/artisanal/annual_catch', full.names=TRUE)
 
-lapply(hb_files,npp_stand,fname = "high_bycatch")
-lapply(lb_files,npp_stand,fname = "low_bycatch")
-lapply(art_files,npp_stand,fname = "artisanal")
 
 
 ```
 
-## Five year means
-
-Mean catch per cell is calculated over a rolling window of 5 years to account for interannual variability. The data is then log transformed.
-
-```{r mean_catch, eval=F}
-
-lb_npp <- list.files('int/low_bycatch/annual_catch_npp', full.names=TRUE)
-hb_npp <- list.files('int/high_bycatch/annual_catch_npp', full.names=TRUE)
-art_npp <- list.files('int/artisanal/annual_catch_npp', full.names=TRUE)
-
-registerDoParallel(6)
-
-foreach (i = 2003:2010) %dopar%{ # i = 2010
-  
-  yrs <- c(i:(i+4))
-  
-  out_lb <- lb_npp[which(substr(lb_npp, 51, 54) %in% yrs)] %>%
-            stack() %>%
-            calc(fun=function(x){mean(x, na.rm=TRUE)}) %>%
-            calc(fun=function(x){log(x+1)}, filename = paste0('int/low_bycatch/five_year_means/mean_catch_',yrs[1],'_',yrs[5],'.tif'),overwrite=TRUE)
-  
-  out_hb <- hb_npp[which(substr(hb_npp, 52, 55) %in% yrs)] %>%
-            stack() %>%
-            calc(fun=function(x){mean(x,na.rm=TRUE)}) %>%
-            calc(fun=function(x){log(x+1)}, filename = paste0('int/high_bycatch/five_year_means/mean_catch_',yrs[1],'_',yrs[5],'.tif'), overwrite=TRUE)
-  
-  out_art <- art_npp[which(substr(art_npp,49,52) %in% yrs)]%>%
-            stack()%>%
-            calc(fun=function(x){mean(x,na.rm=T)})%>%
-            calc(fun=function(x){log(x+1)}, filename = paste0('int/artisanal/five_year_means/mean_catch_',yrs[1],'_',yrs[5],'.tif'),overwrite=T)
-  
-}
-
-```
 
 
 ## Reference Point
