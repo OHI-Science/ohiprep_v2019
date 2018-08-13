@@ -393,67 +393,6 @@ catch_npp_fun <- function(file, layer){ # file = dem_d_files[1]  layer = 'dem_de
 
 ```
 
-Testing `projectRaster` and `projectRaster`+`resample`
-```{r}
-  
-# file = art_land[1] 
-# file = comm_disc[1]
-# 
-# # res 0.5 deg and lat lon crs; rectangular extent
-# catch <- raster(file)
-# 
-# 
-# 
-# ## METHOD 1: OF PROJECTRASTER(CRS=CRS(NPP), RES=RES(NPP), METHOD=....) 
-# ## BUT OVERLAY WON'T WORK BECAUSE 
-# # 8.3 by 10,3 km res and mollweide, also double plotting issue over=TRUE supposed to fix
-# catch_resample <-  raster("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/tmp/temp_resample.tif")
-# plot(catch_resample)
-# catch_resample
-# 
-# ## METHOD 2: check method of projectRaster then Resample PROJCETRASTER(CRS=CRS(NPP)), RESAMPLE(NPP...)
-# ## See if catch_resample2_! changed its resolution; NOPE JUST CONVERTED DEG TO METERS, 
-# ## PROJECT RASTER MOLLWEIDE
-# catch_resample2_1 <- raster("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/tmp/temp_resample2-1.tif")
-# plot(catch_resample2_1)
-# catch_resample2_1
-# extent(catch_resample2_1)
-# ## RESAMPLE: now CORRECT RES AND MOLL AS NPP NOW TRY OVERLAY!! EXTENT CHANGRED!!!!! now extent same as NPP
-# ## NPP IS FUNNY LOOKING, BUT RESAMPLE(NPP) GRABS EXTENT BUT DOESNT DO WEIRD WRAPPING
-# catch_resample2_2 <- raster("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/tmp/temp_resample2-2.tif")
-# plot(catch_resample2_2)
-# catch_resample2_2
-# extent(catch_resample2_2)
-# extent(npp) 
-# 
-# ## METHOD 3: projectraster(npp, method=...) 
-# ## matches up extent, matches up res and matches up crs
-# ##WTH IT LOOKS FINE.....
-# catch_resample_final <- raster(file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/tmp/temp_resample_final.tif"))
-# catch_resample_final
-# plot(catch_resample_final)
-# 
-# 
-# 
-# 
-
-# ## METHOD 1
-# ## ERROR: Error in compareRaster(x) : different extent
-# catch_corr_1 <- overlay(catch_resample, npp, fun=function(x,y){x/y}, filename = file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/tmp/temp_corr_1.tif"), overwrite=TRUE)
-# 
-# ## METHOD 2
-# catch_corr_2 <- overlay(catch_resample2_2, npp, fun=function(x,y){x/y}, filename = file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/tmp/temp_corr_2_2.tif"), overwrite=TRUE)
-# 
-# ## METHOD 3
-# catch_corr_final <- overlay(catch_resmp_final, npp, fun=function(x,y){x/y}, filename = file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/tmp/temp_corr_final.tif"), overwrite=TRUE)
-# plot(catch_corr_final)
-# 
-# 
-# 
-# 
-# 
-
-```
 
 Create corrected catch rasters - apply `catch_npp_fun` function. Resolution and projection will be matched with NPP rasters (8 x 10 km resolution and Mollweide coordinate system).
 
@@ -464,16 +403,16 @@ years_of_data <- 2003:2015
 years_filter <-  paste(years_of_data, collapse="|")
 
 ## Get file names in each of the four catch categories
-comm_land <- list.files(paste0(rastFolder,"comm_landings"), pattern = "annual_catch", full.names = TRUE)
+comm_land <- list.files(paste0(rastFolder,"comm_landings"), pattern = "annual_catch_20", full.names = TRUE)
 comm_land <- comm_land[grep(years_filter, comm_land)]
 
-comm_disc <- list.files(paste0(rastFolder,"comm_discards"), pattern = "annual_catch", full.names = TRUE)
+comm_disc <- list.files(paste0(rastFolder,"comm_discards"), pattern = "annual_catch_20", full.names = TRUE)
 comm_disc <- comm_disc[grep(years_filter, comm_disc)]
   
-art_land <- list.files(paste0(rastFolder,"artisanal_landings"), pattern = "annual_catch", full.names = TRUE)
+art_land <- list.files(paste0(rastFolder,"artisanal_landings"), pattern = "annual_catch_20", full.names = TRUE)
 art_land <- art_land[grep(years_filter, art_land)]
 
-art_disc <- list.files(paste0(rastFolder,"artisanal_discards"), pattern = "annual_catch", full.names = TRUE)
+art_disc <- list.files(paste0(rastFolder,"artisanal_discards"), pattern = "annual_catch_20", full.names = TRUE)
 art_disc <- art_disc[grep(years_filter, art_disc)]
 
 lapply(comm_land, catch_npp_fun, layer = 'comm_landings')
@@ -500,7 +439,7 @@ artL_corr <- list.files(paste0(rastFolder,'artisanal_landings'), pattern="corr",
 artD_corr <- list.files(paste0(rastFolder,'artisanal_discards'), pattern="corr", full.names=TRUE)
 
 ## Check out 2015 catch corrected raster
-plot(raster(commL_corr[13]))
+plot(raster(artD_corr[13]))
 zoom(raster(commL_corr[13]))
 click(raster(commL_corr[13]))
 
@@ -900,6 +839,7 @@ setdiff(rgn_data$ant_id, regions_stats2_art$zone) # 213 is in there, that makes 
 
 Tidy and create output data
 ```{r}
+
 data <- merge(rgn_data, regions_stats2_art, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
   tidyr::gather("year", "pressure_score", starts_with("art")) 
 
@@ -913,6 +853,45 @@ write.csv(art_data, "output/art_lb.csv", row.names=FALSE)
 
 ```
 
+# Data check
+```{r}
+
+## compare with previous year's data
+
+new <- read.csv("output/comm_lb.csv") %>%
+  filter(year == 2014) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+old_new <- read.csv("../v2017/output/lb.csv") %>%
+  filter(year == 2014) %>% 
+  left_join(new, by = 'rgn_id')
+
+plot(old$new_pressure_score, old$pressure_score)
+abline(0, 1, col="red")
+
+
+new <- read.csv("output/hb.csv") %>%
+  filter(year == 2010) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+old <- read.csv("../v2016/output/comm_fish_hb_2016.csv") %>%
+  left_join(new, by = 'rgn_id')
+
+plot(old$new_pressure_score, old$pressure_score)
+abline(0, 1, col="red")
+
+
+new <- read.csv("output/art.csv") %>%
+  filter(year == 2010) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+old <- read.csv("../v2016/output/artisanal_fish_lb_2016.csv") %>%
+  left_join(new, by = 'rgn_id')
+
+plot(old$new_pressure_score, old$pressure_score)
+abline(0, 1, col="red")
+
+```
 
 
 
