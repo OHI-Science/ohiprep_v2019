@@ -26,10 +26,7 @@ The area of blast fishing data layer is created from sapatialized bycatch by gea
 Not needed!!!!!???
  [(VGPM)](http://www.science.oregonstate.edu/ocean.productivity/) as described in [Behrenfeld and Falkowski (1997)](http://www.science.oregonstate.edu/ocean.productivity/references/L&O%201997a.pdf)
 
-
-
-***UPDSTE THIS INFO***
-Three layers are created in this analysis, commercial fishing pressure from **high bycatch** gear and **low bycatch** gear as well as artisanal fishing pressure. 
+This infromation will replace the historically used data for the blast pressure.
 
 #Updates from previous assessment
 
@@ -58,9 +55,9 @@ Watson, R. A. (2017). A database of global marine commercial, small-scale, illeg
 
 ***
   
-#Methods
+# Methods
 
-##Setup
+## Setup
 
 Load all relevant libraries including parallel processing packages.
 
@@ -89,7 +86,6 @@ source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R
 
 ocean <- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
 
-registerDoParallel(2) #registering cores for parallel processing
 
 options(scipen=999)
 
@@ -105,7 +101,7 @@ mollCRS=crs('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs')
   
 ```
 
-## Aggregate annual catch by type
+## Aggregate annual catch by type of gear
 
 First get the template raster with a resolution of 0.5 degree cells. The `getcells()` function comes from the [seaaroundus R package](https://github.com/ropensci/seaaroundus).
 
@@ -186,11 +182,16 @@ ohi_regions_wgs <-  st_transform(ohi_regions, proj4string(blast_crs))
 
 blast_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/prs_blast/v2018/int/total_catch_cell"), full.names = TRUE) 
 
+blast_rasts = blast_rasts[c(9:12)]
 
-for(blast_catch in blast_rasts){ # blast_catch = blast_rasts[1]
+#registering cores for parallel processing
+registerDoParallel(3) 
+
+#Loop process in parallel cores
+foreach(blast_catch = blast_rasts) %dopar% { # blast_catch = blast_rasts[1]
 
 cat(blast_catch)
-catch_year <- str_sub(blast_catch)
+catch_year <- str_sub(blast_catch, -8, -5)
 
 catch <- raster(blast_catch)
 
@@ -211,7 +212,7 @@ blast_rgn <- blast_rgn %>%
   dplyr::arrange(as.numeric(as.character(rgn_id))) %>%
   dplyr::mutate(year = catch_year)
 
-write.csv(blast_rgn, sprintf("globalprep/np_prs_poison_blast_fishing/v2018/int/blast_catch_rgn_%s.csv", catch_year), row.names=FALSE)
+write.csv(blast_rgn, sprintf("int/blast_catch_rgn_%s.csv", catch_year), row.names=FALSE)
 
 }
 
