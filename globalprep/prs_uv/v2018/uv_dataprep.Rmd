@@ -154,7 +154,6 @@ for(i in 1:3){
 
 ## Create rasters from NetCDF files
 
-
 ```{r list and check raw files, eval = F}
 ## list and check missing dates in NetCDF data files
 
@@ -273,7 +272,7 @@ foreach(i = match_weeks) %dopar% {
   
   m_sd <- overlay(m, sd, fun = function(x, y){x + y},
                   filename = sprintf("%s/weekly_climatologies/mean_sd_week_%s", int_sp_data, i),
-                  overwrite = TRUE)
+                  overwrite = TRUE) ## climatologies based on mean & sd of all years, additional year each assessment...
 }
 ```
 
@@ -292,22 +291,23 @@ foreach (i = yrs) %dopar% {
   s = stack()
   
   for(j in match_weeks$wk) {
-    w_mean = raster(sprintf("%s/weekly_means/weekly_means_%s_%s.tif", int_sp_data, i, j)) # mean UV for week i
-    w_anom = raster(sprintf("%s/weekly_climatologies/mean_sd_week_%s.tif", int_sp_data, j)) # the week climatology
+    w_mean = raster(sprintf("%s/weekly_means/weekly_means_%s_%s.tif", int_sp_data, i, j)) # mean UV for week j, year i
+    w_anom = raster(sprintf("%s/weekly_climatologies/mean_sd_week_%s.tif", int_sp_data, j)) # week j climatology
     count = overlay(w_mean, w_anom, fun = function(x, y){ifelse(x > y, 1, 0)}) # compare to average anomaly for that week 
     s = stack(s, count)
   }
   
   year = calc(s, fun = function(x){sum(x, na.rm = TRUE)},
-              filename = paste0("int/annual_pos_anomalies_", i, ".tif"), 
-              overwrite = TRUE)
+              filename = sprintf("%s/annual_anomalies_diff/annual_pos_anomalies_%s.tif", int_sp_data, i)
+              overwrite = TRUE) ## each assessment get new year of data, another layer in this calculation...
 }
 
 ## visualize anomalies, takes a while
 library(animation)
 
 pal <- colorRampPalette(rev(brewer.pal(9, "RdYlBu")))(35)
-anomalies <- list.files("int", pattern = "anomalies", full.names = TRUE)
+anomalies <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
+                        pattern = "anomalies", full.names = TRUE)
 
 saveGIF({expr = for (i in anomalies){
   plot(raster(i), 
@@ -324,23 +324,23 @@ saveGIF({expr = for (i in anomalies){
 ## Calculate Differences
 
 Calculate the difference in total number of anomalies over a 5 year period compared to the first 5 years (2005-2009)
-
 ```{r ref_period, eval = F}
 
-l <- list.files("int", full.names = TRUE, pattern = "anomalies")
+l <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
+                        pattern = "anomalies", full.names = TRUE)
 
 ## reference period is 2005-2009
-ref <- list.files("int", pattern = "anomalies", full.names = TRUE)[1:5] %>%
-        stack() %>%
+ref <- l[1:5] %>% stack() %>%
         calc(., fun = function(x){sum(x, na.rm = TRUE)})
 
 plot(ref, col = cols, axes = FALSE, main = "Total Number of Anomalies 2005-2009")
 plot(land, add = TRUE)
 ```
 
+
 ```{r calc_differences, eval = F}
 
-registerDoParallel(5)
+registerDoParallel(4)
 
 foreach(i = 2005:(max(yrs) - 4)) %dopar% {
   
@@ -350,7 +350,9 @@ foreach(i = 2005:(max(yrs) - 4)) %dopar% {
   diff <- s - ref
   projection(diff) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
   
-  writeRaster(diff, filename = sprintf("int/annual_diff_%s_%s.tif", y[1], y[5]), 
+  writeRaster(diff, 
+              filename = sprintf("%s/annual_anomalies_diff/annual_diff_%s_%s.tif", 
+                                 int_sp_data, y[1], y[5]), 
               overwrite = TRUE)
   
 }
@@ -363,28 +365,24 @@ foreach(i = 2005:(max(yrs) - 4)) %dopar% {
 
 out_files <- list.files("int", full.names = TRUE, pattern = "diff")
 
-## this says 41..my calcs say 36
-## I think this has to do with how we calculate the mean and SD using new years of data
-## it will change the reference point
+## this says reference point is 41
 read.csv("../../supplementary_information/v2016/reference_points_pressures.csv", stringsAsFactors = FALSE) %>%
              filter(pressure == "Ultraviolet Radiation Anomalies") %>%
              dplyr::select(ref_point) %>%
              as.numeric(.$ref_point)
 
 registerDoParallel(5)
-
-foreach(i = c(2005:2012)) %dopar% { # i=2006
+foreach(i = 2005:(max(yrs) - 4)) %dopar% {
+  max_yr <- i + 4
   
-  max_yr <- i+4
-
-  out_rescale = out_files[str_sub(out_files, -13, -10) == i] %>%
-                 raster() %>%
-                  projectRaster(crs = mollCRS, progress='text', over=TRUE, method = 'ngb') %>%
-                  resample(ocean, method='ngb') %>%
-                  mask(ocean,  filename= file.path(dir_M,      
-                      sprintf('git-annex/globalprep/prs_uv/v2017/int/uv_%s_%s-2005_2009_mol_1km.tif', i, max_yr)), overwrite=TRUE)
-  
-  }
+  out_rescale <- out_files[str_sub(out_files, -13, -10) == i] %>%
+    raster() %>% 
+    projectRaster(crs = mollCRS, over = TRUE, method = "ngb") %>%
+    resample(ocean, method = "ngb") %>%
+    mask(ocean, 
+         filename = file.path(int_sp_data, sprintf("uv_%s_%s-2005_2009_mol_1km.tif", i, max_yr)),
+         overwrite = TRUE)
+}
 
 ref_files <- list.files(file.path(dir_M, "git-annex/globalprep/prs_uv/v2017/int/"),
                         full.names = TRUE, pattern = 'mol_1km')
