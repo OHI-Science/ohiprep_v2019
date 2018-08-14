@@ -870,7 +870,7 @@ Tidy and create output data
 ```{r}
 
 data <- merge(rgn_data, regions_stats2_art, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
-  tidyr::gather("year", "pressure_score", starts_with("art")) 
+  tidyr::gather("year", "pressure_score", starts_with("alb")) 
 
 art_data <- data %>%
   dplyr::mutate(year = stringr::str_sub(year, -4, -1)) %>%
@@ -899,15 +899,15 @@ write.csv(regions_stats2_art, "int/art_high_bycatch.csv", row.names = FALSE)
 Compare zone IDs between intermediate data with **regionData.csv**. Should be no difference in `ant_id` zone ids and the `zone` column in the new data frame.
 
 ```{r}
-setdiff(regions_stats2_art$zone, rgn_data$ant_id) # antarctica regions are in there, makes sense....no land
-setdiff(rgn_data$ant_id, regions_stats2_art$zone) # 213 is in there, that makes sense (Antarctica)
+setdiff(regions_stats2_art$zone, rgn_data$ant_id) 
+setdiff(rgn_data$ant_id, regions_stats2_art$zone) 
 ```
 
 Tidy and create output data
 ```{r}
 
 data <- merge(rgn_data, regions_stats2_art, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
-  tidyr::gather("year", "pressure_score", starts_with("art")) 
+  tidyr::gather("year", "pressure_score", starts_with("ahb")) 
 
 art_data <- data %>%
   dplyr::mutate(year = stringr::str_sub(year, -4, -1)) %>%
@@ -920,10 +920,11 @@ write.csv(art_data, "output/art_hb.csv", row.names=FALSE)
 ```
 
 # Data check
+
+Compare with previous year's data
 ```{r}
 
-## compare with previous year's data
-
+## Commercial Low Bycatch pressure 
 new <- read.csv("output/comm_lb.csv") %>%
   filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
@@ -932,31 +933,87 @@ old_new <- read.csv("../v2017/output/lb.csv") %>%
   filter(year == 2014) %>% 
   left_join(new, by = 'rgn_id')
 
-plot(old$new_pressure_score, old$pressure_score)
+plot(old_new$new_pressure_score, old_new$pressure_score)
 abline(0, 1, col="red")
 
-
-new <- read.csv("output/hb.csv") %>%
-  filter(year == 2010) %>%
+## Commercial High Bycatch pressure 
+new <- read.csv("output/comm_hb.csv") %>%
+  filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
 
-old <- read.csv("../v2016/output/comm_fish_hb_2016.csv") %>%
+old <- read.csv("../v2017/output/hb.csv") %>%
+  filter(year == 2014) %>% 
   left_join(new, by = 'rgn_id')
 
 plot(old$new_pressure_score, old$pressure_score)
 abline(0, 1, col="red")
 
-
-new <- read.csv("output/art.csv") %>%
-  filter(year == 2010) %>%
+## Artisanal Low Bycatch pressure 
+new <- read.csv("output/art_lb.csv") %>%
+  filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
 
-old <- read.csv("../v2016/output/artisanal_fish_lb_2016.csv") %>%
+old <- read.csv("../v2017/output/art.csv") %>%
+  filter(year == 2014) %>% 
   left_join(new, by = 'rgn_id')
 
 plot(old$new_pressure_score, old$pressure_score)
 abline(0, 1, col="red")
 
+## Artisanal High Bycatch pressure was calculated using different data before
+new <- read.csv("output/art_hb.csv") %>% 
+  filter(year == 2014) %>% 
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+old <- read.csv("../../np_prs_poison_blast_fishing/v2013/data/blast_poison_3nm.csv") %>% 
+  dplyr::select(-year) %>% 
+  left_join(new, by = 'rgn_id')
+
+plot(old$new_pressure_score, old$pressure_score)
+abline(0, 1, col="red")
+
+```
+
+Check for variation in data years for 2018 AY - esp. bycatch data
+
+```{r}
+
+## Commercial Low Bycatch - 8/14/18 not much change from year to year within same assessment year
+new <- read.csv("output/comm_lb.csv") %>%
+  filter(year == 2014) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+new2 <- read.csv("output/comm_lb.csv") %>%
+    filter(year == 2013) %>%
+  left_join(new, by = 'rgn_id')
+
+plot(new$new_pressure_score, new2$pressure_score)
+abline(0,1, col="red")
+
+
+## Commercial High Bycatch - 8/14/18 not much variation from year to year within same assessment year
+new <- read.csv("output/comm_hb.csv") %>%
+  filter(year == 2014) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+new2 <- read.csv("output/comm_hb.csv") %>%
+    filter(year == 2010) %>%
+  left_join(new, by = 'rgn_id')
+
+plot(new$new_pressure_score, new2$pressure_score)
+abline(0,1, col="red")
+
+## Artisanal Low Bycatch - 8/14/18 not much variation from year to year within same assessment year
+new <- read.csv("output/art_lb.csv") %>%
+  filter(year == 2014) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+new2 <- read.csv("output/art_lb.csv") %>%
+    filter(year == 2013) %>%
+  left_join(new, by = 'rgn_id')
+
+plot(new$new_pressure_score, new2$pressure_score)
+abline(0,1, col="red")
 ```
 
 
