@@ -66,6 +66,8 @@ library(tidyr)
 library(readr)
 library(sf)
 library(ggplot2)
+library(here) 
+setwd(here::here("globalprep","fis","v2018"))
 
 source('../../../src/R/common.R')
 

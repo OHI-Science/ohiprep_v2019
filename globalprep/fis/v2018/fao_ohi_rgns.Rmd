@@ -1,0 +1,120 @@
+---
+title: "Untitled"
+author: "Iwen Su"
+output: html_document
+---
+
+
+```{r}
+
+## Libraries
+library(dplyr)
+library(tidyr)
+library(readr)
+library(sf)
+library(ggplot2)
+library(here) 
+setwd(here::here("globalprep","fis","v2018"))
+
+source('../../../src/R/common.R')
+
+```
+
+## Check Newly Added Stocks
+```{r}
+
+## old stocks
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2017/RAM v3.80/DB Files With Assessment Data/DBdata.RData"))
+
+ram_bmsy_old <- data.frame(timeseries) %>%
+  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
+  dplyr::filter(!is.na(tsvalue)) %>%
+  dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
+  dplyr::filter(tsyear > 1979) %>%
+  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
+
+old_stocklong <- unique(ram_bmsy_old$stocklong)
+old_stockid <- unique(ram_bmsy_old$stockid)
+old_assessid <- unique(ram_bmsy_old$assessid)
+
+## new stocks
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
+
+ram_bmsy <- data.frame(timeseries) %>%
+  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
+  dplyr::filter(!is.na(tsvalue)) %>%
+  dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
+  dplyr::filter(tsyear > 1979) %>%
+  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
+
+new_stocklong <- unique(ram_bmsy$stocklong)
+new_stockid <- unique(ram_bmsy$stockid)
+new_assessid <- unique(ram_bmsy$assessid)
+
+## find diff
+setdiff(new_stocklong, old_stocklong)
+newStocks <- setdiff(new_stockid, old_stockid); length(newStocks)
+setdiff(new_assessid, old_assessid)
+
+
+
+```
+
+
+Subset for just new stocks in 2018 RAM data - for some reason, some of the id prefixes specifying RAM regions are not found in the RLSADB v4.40 excel file
+```{r}
+
+ram_bmsy <- ram_bmsy %>% 
+  filter(stockid %in% newStocks)
+
+## some stockid values are repeated in more than one observation due to multiple assessid years
+id_new <- ram_bmsy %>% 
+  select(assessid, stockid, stocklong) %>% 
+  distinct()
+
+```
+
+
+## Combine old RAM_fao_ohi_rgns with other stock information
+
+Combine the data table Mel created `RAM_fao_ohi_rgns` that contains fao id, ohi id, and assessid from RAM with the old RAM data to match each row with the appropriate stockid and stocklong information
+```{r}
+## Grab last year's fao-ohi-assessid data table
+RAM_fao_ohi_rgns <- read.csv("../v2017/int/RAM_fao_ohi_rgns.csv")
+
+## create unique values of assessid, stock id, and stock long
+id_old <- ram_bmsy_old %>% 
+  select(assessid, stockid, stocklong) %>% 
+  distinct()
+
+## join tables
+all_old <- RAM_fao_ohi_rgns %>% 
+  full_join(id_old, by="assessid")
+
+```
+
+## Combine new stocks with old stock metadata
+
+```{r}
+
+RAM_rgns_new <- all_old %>% 
+  full_join(id_new, by = c("assessid","stockid","stocklong"))
+
+write.csv(RAM_rgns_new, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
+```
+
+
+
+```{r}
+
+fao_ohi <- st_read(file.path(dir_M, "git-annex/globalprep/fis/v2017/int"), 
+        layer = "ohi_fao_rgns")
+
+fao_ohi <- fao_ohi %>% 
+  filter(rgn_type %in% c("eez", "eez-disputed", "fao")) %>%
+  dplyr::select(rgn_id, rgn_name, fao_id=F_CODE, OCEAN)
+
+## Remove geometry so it's easier to manipulate as data table
+st_geometry(fao_ohi) <- NULL
+```
+
