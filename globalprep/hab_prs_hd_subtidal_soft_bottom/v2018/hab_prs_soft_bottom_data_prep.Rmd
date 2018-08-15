@@ -1,0 +1,178 @@
+---
+title: "OHI 2018 - Soft bottom pressure data prep"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+[REFERENCE RMD FILE: ADD!!!! after pushing the changes in this file]
+
+# Summary
+The habitat pressure data layer is created from catch by gear data of industrial and non industrial fishing profided by Watson (2018). Data is standarized by!!!!!!!!!!!! ADD!!!!!!!
+
+# Updates from previous assessment
+[Any significant changes in methods from previous analyses?]
+This year we are using the Watson (2018) data to calculate the soft bottom pressure. Data reports catch by gear. 
+To each gear we assing a multiplier acording to how much the affect the sea bottom. Here the table with the multipliers (1 is extramly harmfull and 0 is not harmful)
+
+Gear  | Multiplier
+------|-----------
+Trawl | 1
+Dredge | 1
+Gillnet | 0.5
+Trap  | 0.5
+Other | 0.25
+Trawl midwater | 0
+Pole and Line | 0
+Longline | 0
+Purse seine | 0
+Seine | 0
+
+***
+
+# Data Source 
+**Reference**: Watson, R. A. and Tidd, A. 2018. Mapping nearly a century and a half of global marine fishing: 1869–2015. Marine Policy, 93, pp. 171-177. [(Paper URL)](https://www.sciencedirect.com/science/article/pii/S0308597X18300605?via%3Dihub)
+
+**Downloaded**: July 17, 2018 from IMAS portal (see prs_fish layer for more details)
+
+**Description**:  Global fisheries landings data per cell separated by Industrial versus Non-Industrial catch, IUU, and discards.
+
+**Native data resolution**: 
+
+**Time range**: 1950 - 2015
+
+**Format**:  csv format
+
+***
+  
+# Methods !!!!!!!!!!!!!
+[R code used to generate the data. Or, alternatively, description of the code/data files used to generate the data.]
+
+***
+
+## Setup
+
+```{r}
+library(plyr)
+library(tidyverse)
+library(parallel)
+library(foreach)
+library(doParallel)
+library(raster)
+library(rasterVis)
+library(seaaroundus)
+library(RColorBrewer)
+library(cowplot)
+library(stringr)
+library(colorspace)
+library(sp)
+library(rgdal)
+library(sf)
+
+#setwd("~/github/ohiprep_v2018/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018")
+
+registerDoParallel(3) # registering cores for parallel processing
+
+
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/spatial_common.R')
+
+
+## color palette
+cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+mytheme=rasterTheme(region=cols)
+
+## Set template ocean raster and mollweide projection CRS
+ocean <- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
+mollCRS=crs('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs')
+
+options(scipen=999)
+
+
+```
+
+## Aggregate annual industrial catch by type of gear
+
+First get the template raster with a resolution of 0.5 degree cells. The `getcells()` function comes from the [seaaroundus R package](https://github.com/ropensci/seaaroundus).
+
+The values of these cells are the Cell ID numbers. In the fisheries catch dataset, these Cell ID numbers match up with the "Seq" numbers.
+
+```{r}
+
+  saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
+
+   saup_rast <- raster(ncol=720, nrow=360)
+   saup_rast[] <- saup_cells
+   
+   plot(saup_rast,col=cols,main = "SAUP Cell IDs")
+
+```
+
+
+Create the rasters for industrial catches
+
+```{r}
+
+years <-  c(2003:2015)
+
+multipliers <- data.frame(FleetGearName = c("Dredge", "Gillnet", "Lines Non-tuna", "Longline Non-tuna", "LonglineTuna", "Other", "Pole and Line Tuna", "Purse seine Non-tuna", "Purse seine Tuna", "Seine", "Trap", "Trawl", "Trawl midwater"), multiplier = c(1, 0.5, 0, 0, 0, 0.25, 0, 0, 0, 0, 0.5, 1, 0))
+
+
+foreach(yr = years) %dopar%{ #yr = 2015
+  
+  #read in raw data for the year
+  raw_ind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchInd_'),yr,'.rds'))
+  
+  catch_ind <- raw_ind %>%
+    dplyr::left_join(multipliers, by = "FleetGearName") %>% 
+    dplyr::rowwise() %>%
+    dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
+    dplyr::ungroup() %>% 
+    dplyr::mutate(catch_discount = catch*multiplier) %>% 
+    dplyr::group_by("Cell") %>%
+    dplyr::summarise(cell_catch_ind = sum(catch_discount))
+    
+  
+  raw_non_ind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_'),yr,'.rds'))
+  
+  catch_Nind <- raw %>%
+    left_join(multipliers, by = "FleetGearName") %>% 
+    rowwise() %>%
+    dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
+    dplyr::mutate(catch_discount = catch*multiplier) %>% 
+    dplyr::group_by("Cell") %>%
+    dplyr::summarise(cell_catch_Nind = sum(catch_discount))
+    
+   
+   
+  catch_total <- catch_ind %>% 
+    dplyr::left_join(catch_non_ind, by = "Cell") %>% 
+    dplyr::rowwise() %>% 
+    dplyr::mutate(cell_catch_total = cell_catch_ind + cell_catch_Nind)
+  
+   
+    #rasterize catch by swapping cell ids with (calls the suap raster we made above)
+raster::subs(saup_rast, blast, by = 'Seq', which = 'cell_catch', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/prs_blast/v2018/int/total_catch_cell/blast_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
+
+  
+}
+
+```
+
+
+
+
+
+
+
+
