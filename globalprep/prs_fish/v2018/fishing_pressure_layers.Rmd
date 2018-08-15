@@ -1014,6 +1014,18 @@ new2 <- read.csv("output/art_lb.csv") %>%
 
 plot(new$new_pressure_score, new2$pressure_score)
 abline(0,1, col="red")
+
+## Artisanal Low Bycatch - 8/14/18 not much variation from year to year within same assessment year
+new <- read.csv("output/art_lb.csv") %>%
+  filter(year == 2014) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+new2 <- read.csv("output/art_lb.csv") %>%
+    filter(year == 2013) %>%
+  left_join(new, by = 'rgn_id')
+
+plot(new$new_pressure_score, new2$pressure_score)
+abline(0,1, col="red")
 ```
 
 
