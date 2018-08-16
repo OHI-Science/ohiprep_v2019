@@ -1,0 +1,164 @@
+---
+title: "Untitled"
+author: "Iwen Su"
+output: html_document
+---
+
+
+```{r}
+
+## Libraries
+library(dplyr)
+library(tidyr)
+library(readr)
+library(sf)
+library(ggplot2)
+library(stringr)
+library(here) 
+setwd(here::here("globalprep","fis","v2018"))
+
+source('../../../src/R/common.R')
+
+```
+
+## Check Newly Added Stocks
+```{r}
+
+## old stocks
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2017/RAM v3.80/DB Files With Assessment Data/DBdata.RData"))
+
+ram_bmsy_old <- data.frame(timeseries) %>%
+  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
+  dplyr::filter(!is.na(tsvalue)) %>%
+  dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
+  dplyr::filter(tsyear > 1979) %>%
+  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
+
+old_stocklong <- unique(ram_bmsy_old$stocklong)
+old_stockid <- unique(ram_bmsy_old$stockid)
+old_assessid <- unique(ram_bmsy_old$assessid)
+
+## new stocks
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
+
+ram_bmsy <- data.frame(timeseries) %>%
+  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
+  dplyr::filter(!is.na(tsvalue)) %>%
+  dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
+  dplyr::filter(tsyear > 1979) %>%
+  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
+
+new_stocklong <- unique(ram_bmsy$stocklong)
+new_stockid <- unique(ram_bmsy$stockid)
+new_assessid <- unique(ram_bmsy$assessid)
+
+## find diff
+setdiff(new_stocklong, old_stocklong)
+newStocks <- setdiff(new_stockid, old_stockid); length(newStocks)
+setdiff(new_assessid, old_assessid)
+
+
+
+```
+
+
+Subset for just new stocks in 2018 RAM data - for some reason, some of the id prefixes specifying RAM regions are not found in the RLSADB v4.40 excel file
+```{r}
+
+ram_bmsy <- ram_bmsy %>% 
+  filter(stockid %in% newStocks)
+
+## some stockid values are repeated in more than one observation due to multiple assessid years
+id_new <- ram_bmsy %>% 
+  select(assessid, stockid, stocklong) %>% 
+  distinct()
+
+```
+
+
+## Combine old RAM_fao_ohi_rgns with other stock information
+
+Combine the data table Mel created `RAM_fao_ohi_rgns` that contains fao id, ohi id, and assessid from RAM with the old RAM data to match each row with the appropriate stockid and stocklong information
+```{r}
+## Grab last year's fao-ohi-assessid data table
+RAM_fao_ohi_rgns <- read.csv("../v2017/int/RAM_fao_ohi_rgns.csv")
+
+## create unique values of assessid, stock id, and stock long
+id_old <- ram_bmsy_old %>% 
+  select(assessid, stockid, stocklong) %>% 
+  distinct()
+
+## join tables
+all_old <- RAM_fao_ohi_rgns %>% 
+  full_join(id_old, by="assessid")
+
+```
+
+## Combine new stocks with old stock metadata
+
+```{r}
+
+RAM_rgns_new <- all_old %>% 
+  full_join(id_new, by = c("assessid","stockid","stocklong"))
+
+write.csv(RAM_rgns_new, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
+```
+
+## Fill in OHI and FAO regions
+
+Investigate what FAO/OHI region each stock belongs to: 
+* Full intermediate stock data table [here](https://github.com/OHI-Science/ohiprep_v2018/blob/master/globalprep/fis/v2018/int/RAM_fao_ohi_rgns.csv)
+* Primarily used www.fishsource.org to find stock distribution information. 
+* Referenced FAO_AREAS shapefile from mazu on ArcGIS. 
+* Searched and tested key words in data table viewer (`DT::datatable`) to use in `str_detect`. See which stocks have the same FAO id assignment(s).
+
+Some regions have more than 1 `fao_id`:
+* Alaska skate Bering Sea and Aleutian Islands,	Kamchatka flounder Bering Sea and Aleutian Islands have `fao_id` 61 and 67 
+
+```{r}
+
+RAM <- RAM_rgns_new %>% 
+  filter(is.na(fao_id)) %>% 
+  select(-RAM_area_m2)
+
+
+RAM <- RAM %>%
+  mutate(fao_id  = 
+           ifelse(str_detect(stocklong, "Bering Sea"), 61, 
+           ifelse(str_detect(stocklong, "Gulf of Alaska$"), 61,
+           ifelse(str_detect(stocklong, "Sicily$"), 37,
+
+           
+           NA)))) %>% 
+  mutate(fao_id_2  = 
+           ifelse(str_detect(stocklong, "Bering Sea"), 67, 
+
+           
+           NA)) %>% 
+  mutate(rgn_id  = 
+           ifelse(str_detect(stocklong, "Bering Sea"), 163, #united states
+           ifelse(str_detect(stocklong, "Gulf of Alaska$"), 163, #united states
+           ifelse(str_detect(stocklong, "Sicily$"), 184,
+
+           
+           NA)))) %>% 
+  mutate(rgn_id2  = 
+           ifelse(str_detect(stocklong, "Bering Sea"), 73, #russia
+           ifelse(str_detect(stocklong, "Sicily$"), 68,
+
+           
+           NA))) %>% 
+  mutate(rgn_id3 = 
+           ifelse(str_detect(stocklong, "Sicily$"), 61,
+                  
+           
+           NA))
+
+
+DT::datatable(RAM,rownames = F)
+
+
+
+
+```
+
