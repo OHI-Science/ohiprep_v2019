@@ -109,12 +109,12 @@ The values of these cells are the Cell ID numbers. In the fisheries catch datase
 
 ```{r}
 
-  saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
+saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
 
-   saup_rast <- raster(ncol=720, nrow=360)
-   saup_rast[] <- saup_cells
-   
-   plot(saup_rast,col=cols,main = "SAUP Cell IDs")
+saup_rast <- raster(ncol=720, nrow=360)
+saup_rast[] <- saup_cells
+
+plot(saup_rast,col=cols,main = "SAUP Cell IDs")
 
 ```
 
@@ -134,43 +134,144 @@ foreach(yr = years) %dopar%{ #yr = 2015
   raw_ind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchInd_'),yr,'.rds'))
   
   catch_ind <- raw_ind %>%
-    dplyr::left_join(multipliers, by = "FleetGearName") %>% 
     dplyr::rowwise() %>%
     dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
-    dplyr::ungroup() %>% 
+    dplyr::left_join(multipliers, by = "FleetGearName") %>% 
     dplyr::mutate(catch_discount = catch*multiplier) %>% 
-    dplyr::group_by("Cell") %>%
-    dplyr::summarise(cell_catch_ind = sum(catch_discount))
-    
+    dplyr::group_by(Cell) %>%
+    dplyr::summarise(cell_catch_ind = sum(catch_discount)) 
   
-  raw_non_ind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_'),yr,'.rds'))
   
-  catch_Nind <- raw %>%
-    left_join(multipliers, by = "FleetGearName") %>% 
+  
+  #rasterize catch by swapping cell ids with (calls the suap raster we made above)
+  raster::subs(saup_rast, catch_ind, by = 'Cell', which = 'cell_catch_ind', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/disc_ind_catch_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
+
+}
+
+
+```
+
+
+Creat rasters for non industrial catches
+
+```{r}
+ 
+
+foreach(yr = years) %dopar%{ #yr = 2003
+  
+  raw_Nind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_'),yr,'.rds'))
+  
+  catch_Nind <- raw_Nind %>%
     rowwise() %>%
     dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
+    left_join(multipliers, by = "FleetGearName") %>% 
     dplyr::mutate(catch_discount = catch*multiplier) %>% 
-    dplyr::group_by("Cell") %>%
+    dplyr::group_by(Cell) %>%
     dplyr::summarise(cell_catch_Nind = sum(catch_discount))
-    
-   
-   
-  catch_total <- catch_ind %>% 
-    dplyr::left_join(catch_non_ind, by = "Cell") %>% 
-    dplyr::rowwise() %>% 
-    dplyr::mutate(cell_catch_total = cell_catch_ind + cell_catch_Nind)
   
-   
-    #rasterize catch by swapping cell ids with (calls the suap raster we made above)
-raster::subs(saup_rast, blast, by = 'Seq', which = 'cell_catch', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/prs_blast/v2018/int/total_catch_cell/blast_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
-
+  raster::subs(saup_rast, catch_Nind, by = 'Cell', which = 'cell_catch_Nind', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/disc_Nind_catch_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
   
 }
 
 ```
 
+Combining information from industrial and non industrial raster
+
+```{r}
+
+disc_catch_rast_loc <- file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int")
 
 
+for(catch_year in 2003:2015){ # catch_year = 2003
+
+  cat(catch_year)
+
+  catch_ind_rast <- raster(file.path(disc_catch_rast_loc, sprintf("disc_ind_catch_%s.tif", catch_year)))
+  
+  catch_Nind_rast <- raster(file.path(disc_catch_rast_loc, sprintf("disc_Nind_catch_%s.tif", catch_year)))
+
+  catch_count  <- overlay(catch_ind_rast, catch_Nind_rast, fun = function(x,y){x+y}, na.rm= TRUE, progress = 'text',
+                           filename = file.path(dir_M,
+                          sprintf("git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_%s.tif", catch_year)), overwrite=TRUE)
+}
+
+
+test_total <- raster(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2003.tif"))
+
+plot(test_total)
+
+
+test_ind <- raster(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/disc_ind_catch_2015.tif"))
+
+plot(test_ind)
+
+
+test_Nind <- raster(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/disc_Nind_catch_2015.tif"))
+
+plot(test_Nind)
+
+
+```
+
+
+Alternative 1 (just create one raster with complete info on industrial and non-industrial)
+
+
+```{r}
+years <-  c(2003:2015)
+
+multipliers <- data.frame(FleetGearName = c("Dredge", "Gillnet", "Lines Non-tuna", "Longline Non-tuna", "LonglineTuna", "Other", "Pole and Line Tuna", "Purse seine Non-tuna", "Purse seine Tuna", "Seine", "Trap", "Trawl", "Trawl midwater"), multiplier = c(1, 0.5, 0, 0, 0, 0.25, 0, 0, 0, 0, 0.5, 1, 0))
+
+
+foreach(yr = years) %dopar%{ #yr = 2015
+  
+  #read in raw data for the year
+  raw_ind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchInd_'),yr,'.rds'))
+  
+  catch_ind <- raw_ind %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
+    dplyr::left_join(multipliers, by = "FleetGearName") %>% 
+    dplyr::mutate(catch_discount = catch*multiplier) %>% 
+    dplyr::group_by(Cell) %>%
+    dplyr::summarise(cell_catch_ind = sum(catch_discount)) 
+  
+  raw_Nind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_'),yr,'.rds'))
+  
+  catch_Nind <- raw_Nind %>%
+    rowwise() %>%
+    dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
+    left_join(multipliers, by = "FleetGearName") %>% 
+    dplyr::mutate(catch_discount = catch*multiplier) %>% 
+    dplyr::group_by(Cell) %>%
+    dplyr::summarise(cell_catch_Nind = sum(catch_discount))
+  
+  catch_total <- catch_ind %>% 
+    dplyr::full_join(catch_Nind, by= "Cell") %>% 
+    dplyr::mutate(total = cell_catch_ind + cell_catch_Nind) %>% 
+    dplyr::mutate(total = ifelse(is.na(total), cell_catch_ind, total)) %>% 
+    dplyr::select(Cell, total)
+  
+  
+  catch_total <- catch_ind %>% 
+    dplyr::full_join(catch_Nind, by= "Cell") %>%
+    dplyr::rowwise() %>% 
+    dplyr::mutate(total = sum(cell_catch_ind, cell_catch_Nind, na.rm = TRUE)) %>%
+    dplyr::select(Cell, total)
+     
+  
+  #rasterize catch by swapping cell ids with (calls the suap raster we made above)
+  raster::subs(saup_rast, catch_total, by = 'Cell', which = 'total', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
+  
+}
+
+test_test <- raster(file.path(dir_M, ('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2015.tif')))
+
+plot(test_test)
+
+
+
+```
 
 
 
