@@ -47,6 +47,8 @@ library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
 library(dplyr)
 library(stringr)
 library(tidyr)
+library(ggplot2)
+library(plotly)
 
 ## comment out when knitting
 #setwd("globalprep/prs_targetedharvest/v2018")
