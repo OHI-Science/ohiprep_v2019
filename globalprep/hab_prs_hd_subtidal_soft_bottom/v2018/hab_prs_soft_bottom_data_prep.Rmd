@@ -19,10 +19,9 @@ pdf_document:
 [REFERENCE RMD FILE: ADD!!!! after pushing the changes in this file]
 
 # Summary
-The habitat pressure data layer is created from catch by gear data of industrial and non industrial fishing profided by Watson (2018). Data is standarized by!!!!!!!!!!!! ADD!!!!!!!
+The habitat pressure data layer is created from catch by gear data of industrial and non industrial fishing profided by Watson (2018). Catches are calculated for each OHI region and then standarized by soft-bottom habitat in each region. Then rescale!!!!!!!!??????
 
 # Updates from previous assessment
-[Any significant changes in methods from previous analyses?]
 This year we are using the Watson (2018) data to calculate the soft bottom pressure. Data reports catch by gear. 
 To each gear we assing a multiplier acording to how much the affect the sea bottom. Here the table with the multipliers (1 is extramly harmfull and 0 is not harmful)
 
@@ -38,6 +37,9 @@ Pole and Line | 0
 Longline | 0
 Purse seine | 0
 Seine | 0
+
+Also this year artisanal catches were included in our analysis becasue source provided the necesary data. Finally, there where changes in the metos of the source data. 
+
 
 ***
 
@@ -56,8 +58,10 @@ Seine | 0
 
 ***
   
-# Methods !!!!!!!!!!!!!
-[R code used to generate the data. Or, alternatively, description of the code/data files used to generate the data.]
+# Methods 
+First create one raster a year with all catches (industrial and non industrial) using gear that harm soft-bottom. 
+Then esxtract catches per OHI regions and standarize by soft-bottom habitat of each region.
+Finally, rescale!!!!!!!!!!!!!!!!!
 
 ***
 
@@ -119,102 +123,7 @@ plot(saup_rast,col=cols,main = "SAUP Cell IDs")
 ```
 
 
-Create the rasters for industrial catches
-
-```{r}
-
-years <-  c(2003:2015)
-
-multipliers <- data.frame(FleetGearName = c("Dredge", "Gillnet", "Lines Non-tuna", "Longline Non-tuna", "LonglineTuna", "Other", "Pole and Line Tuna", "Purse seine Non-tuna", "Purse seine Tuna", "Seine", "Trap", "Trawl", "Trawl midwater"), multiplier = c(1, 0.5, 0, 0, 0, 0.25, 0, 0, 0, 0, 0.5, 1, 0))
-
-
-foreach(yr = years) %dopar%{ #yr = 2015
-  
-  #read in raw data for the year
-  raw_ind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchInd_'),yr,'.rds'))
-  
-  catch_ind <- raw_ind %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
-    dplyr::left_join(multipliers, by = "FleetGearName") %>% 
-    dplyr::mutate(catch_discount = catch*multiplier) %>% 
-    dplyr::group_by(Cell) %>%
-    dplyr::summarise(cell_catch_ind = sum(catch_discount)) 
-  
-  
-  
-  #rasterize catch by swapping cell ids with (calls the suap raster we made above)
-  raster::subs(saup_rast, catch_ind, by = 'Cell', which = 'cell_catch_ind', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/disc_ind_catch_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
-
-}
-
-
-```
-
-
-Creat rasters for non industrial catches
-
-```{r}
- 
-
-foreach(yr = years) %dopar%{ #yr = 2003
-  
-  raw_Nind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_'),yr,'.rds'))
-  
-  catch_Nind <- raw_Nind %>%
-    rowwise() %>%
-    dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
-    left_join(multipliers, by = "FleetGearName") %>% 
-    dplyr::mutate(catch_discount = catch*multiplier) %>% 
-    dplyr::group_by(Cell) %>%
-    dplyr::summarise(cell_catch_Nind = sum(catch_discount))
-  
-  raster::subs(saup_rast, catch_Nind, by = 'Cell', which = 'cell_catch_Nind', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/disc_Nind_catch_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
-  
-}
-
-```
-
-Combining information from industrial and non industrial raster
-
-```{r}
-
-disc_catch_rast_loc <- file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int")
-
-
-for(catch_year in 2003:2015){ # catch_year = 2003
-
-  cat(catch_year)
-
-  catch_ind_rast <- raster(file.path(disc_catch_rast_loc, sprintf("disc_ind_catch_%s.tif", catch_year)))
-  
-  catch_Nind_rast <- raster(file.path(disc_catch_rast_loc, sprintf("disc_Nind_catch_%s.tif", catch_year)))
-
-  catch_count  <- overlay(catch_ind_rast, catch_Nind_rast, fun = function(x,y){x+y}, na.rm= TRUE, progress = 'text',
-                           filename = file.path(dir_M,
-                          sprintf("git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_%s.tif", catch_year)), overwrite=TRUE)
-}
-
-
-test_total <- raster(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2003.tif"))
-
-plot(test_total)
-
-
-test_ind <- raster(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/disc_ind_catch_2015.tif"))
-
-plot(test_ind)
-
-
-test_Nind <- raster(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/disc_Nind_catch_2015.tif"))
-
-plot(test_Nind)
-
-
-```
-
-
-Alternative 1 (just create one raster with complete info on industrial and non-industrial)
+Then create one raster per year for industrial and non industrial catches using gear that harm soft bottom. 
 
 
 ```{r}
@@ -265,13 +174,190 @@ foreach(yr = years) %dopar%{ #yr = 2015
   
 }
 
-test_test <- raster(file.path(dir_M, ('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2015.tif')))
+##Reading in the raster to make sure it looks as expected
+test<- raster(file.path(dir_M, ('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2015.tif')))
 
-plot(test_test)
+plot(test_test) ##Looks good!
+
+
+```
+
+
+## Extract values for each OHI region
+
+```{r}
+
+## Read tif as rasters for all catches using gear that harm soft bottom
+
+## Reference raster
+catch_crs <- raster(file.path (dir_M,'git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2003'))
+
+## OHI region polygons
+ohi_regions <- st_read(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017"), layer="regions_2017_update")
+
+## ASK MEL ABOUT THIS LINE
+ohi_regions_wgs <-  st_transform(ohi_regions, proj4string(catch_crs))
+
+## List of all tifs with catches that need to be read in the loop
+catch_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int"), pattern = 'catch_count_.*.tif', full.names = TRUE)
+
+#registering cores for parallel processing
+registerDoParallel(4)
+
+foreach(sb_catch = catch_rasts) %dopar% { # sb_catch = catch_rasts[12]
+
+cat(sb_catch)
+
+catch_year <- str_sub(sb_catch, -8, -5) ##extract the correspending year for each file
+
+catch <- raster(sb_catch)
+
+data <- raster::extract(catch, ohi_regions, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
+
+names(data) <- paste(ohi_regions$type_w_ant, ohi_regions$rgn_ant_id, sep="_") 
+sb_catch_rgn   <- plyr::ldply(data, rbind)
+
+# the following code keeps the raster information when the raster lands partially on the land polygons
+sb_catch_rgn <- sb_catch_rgn %>%
+  tidyr::separate(.id, c("rgn_type", "rgn_id"), sep="_") %>%
+  dplyr::mutate(tonnes = value*weight) %>%
+  dplyr::group_by(rgn_type, rgn_id) %>%
+  dplyr::summarize(tonnes = sum(tonnes, na.rm=TRUE)) %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::summarize(tonnes = sum(tonnes, na.rm=TRUE)) %>%
+  dplyr::ungroup() %>%
+  dplyr::arrange(as.numeric(as.character(rgn_id))) %>%
+  dplyr::mutate(year = catch_year)
+
+write.csv(sb_catch_rgn, sprintf("int/sb_catch_rgn_%s.csv", catch_year), row.names=FALSE)
+
+}
+
+
+```
+
+## Standarized catches per soft-bottom area
+
+```{r}
+area <-  read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/globalprep/hab_prs_hd_subtidal_soft_bottom/v2016/output/habitat_extent_softbottom.csv")
+
+
+## Read in csv for each year and combine them in one data frame
+
+files <- list.files("int", pattern = "sb_catch_rgn_.*.csv", full.names = TRUE) 
+
+
+sb_catch_all <- data.frame()
+
+for(file in files) { # file = files[1]
+  tmp <- read.csv(file)
+  sb_catch_all <- rbind(sb_catch_all, tmp)
+}
+
+
+data_density <- sb_catch_all %>%
+  left_join(area, by="rgn_id") %>%
+  filter(rgn_id <= 250) %>%
+  mutate(density = tonnes/km2)
+
+
+## find max density across all years
+max <- data_density %>%
+  group_by(year) %>%
+  summarize(maxDensity = max(density, na.rm=TRUE)) %>%
+  data.frame()
+
+##max density for 2014: 6792.767
+
+write.csv(max, "int/reference_point_max.csv", row.names=FALSE) ##Make sure you are working in the correct working directory
+
+
+## Referenc point = max values accroass all years
+ref_point <- read.csv("int/reference_point_max.csv")
+ref_point_max <- max(ref_point$maxDensity)
+
+
+## cheking for distribution of data. In the past density data happens to be very skewed
+hist(data_density$density) ## Yes, very skewed data
+
+## rescale the density: 
+## density is rescaled twice to reduce skew
+
+data_rescaled <- data_density %>%
+  mutate(density_rescaled_max = log(density + 1)/log(ref_point_max + 1)) %>% #pressure-type measure
+  mutate(inv_dens_rescaled_max = 1 - density_rescaled_max)  # health-type measure
+
+hist(data_rescaled$density_rescaled_max)
+
+## Find the second rescaling point
+ref_median <- data_rescaled %>%
+  group_by(year) %>%
+  summarize(ref_median = median(inv_dens_rescaled_max, na.rm=TRUE)) %>%
+  data.frame()
+
+write.csv(ref_median, "int/reference_point_median.csv", row.names=FALSE)
+
+ref_point_median <- min(ref_median$ref_median) # 0.8999136
+
+## Rescale for second time:  
+  data_rescaled_2 <- data_rescaled %>%
+    mutate(density_rescaled_median = inv_dens_rescaled_max/ref_point_median) %>%
+    mutate(density_rescaled_median_capped = ifelse(density_rescaled_median > 1, 
+                                                   1, 
+                                                   density_rescaled_median))
+hist(data_rescaled_2$density_rescaled_median_capped)
+  
+ 
+  hist(data_rescaled_2$density_rescaled_median_capped[data_rescaled_2$year==2010])
+  filter(data_rescaled_2, rgn_id==163)
+  filter(data_rescaled_2, year==2010)
 
 
 
 ```
+
+## Comparing to old data
+
+```{r}
+
+  ## check against old data
+old <- read.csv("../v2017/output/habitat_health_softbottom.csv") %>%
+  dplyr::filter(year == 2014) %>% 
+  dplyr::select(rgn_id, old_health=health)
+  
+
+test <- data_rescaled_2 %>%
+  ##filter(year==2010) %>%
+  dplyr::select(rgn_id, health = density_rescaled_median_capped) %>%
+  left_join(old)
+
+plot(health ~old_health, data=test)
+abline(0,1, col = 'red')
+## Not a great correlation, but different years data and fisheries data is very different
+## some new NA values, but it doesn't seem like these have soft-bottom habitat
+## (at least according to our raster data)
+
+
+
+
+## LAST YEAR COMPARISON
+V2016 <- read.csv("../v2016/output/habitat_health_softbottom_v2010.csv") %>%
+  dplyr::select(rgn_id, v16_health=health)
+
+V2017 <- read.csv("../v2017/output/habitat_health_softbottom.csv") %>%
+  filter(year==2010) %>%
+  dplyr::select(rgn_id, v17_health=health)
+
+test <- V2016 %>%
+  left_join(V2017)
+
+plot(v17_health ~v16_health, data=test)
+abline(0,1, col= 'red')
+
+
+```
+
+
 
 
 
