@@ -86,7 +86,7 @@ library(sf)
 
 #setwd("~/github/ohiprep_v2018/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018")
 
-registerDoParallel(3) # registering cores for parallel processing
+registerDoParallel(4) # registering cores for parallel processing
 
 
 source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/spatial_common.R')
@@ -177,7 +177,7 @@ foreach(yr = years) %dopar%{ #yr = 2015
 ##Reading in the raster to make sure it looks as expected
 test<- raster(file.path(dir_M, ('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2015.tif')))
 
-plot(test_test) ##Looks good!
+plot(test) ##Looks good!
 
 
 ```
@@ -190,7 +190,7 @@ plot(test_test) ##Looks good!
 ## Read tif as rasters for all catches using gear that harm soft bottom
 
 ## Reference raster
-catch_crs <- raster(file.path (dir_M,'git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2003'))
+catch_crs <- raster(file.path (dir_M,'git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2003.tif'))
 
 ## OHI region polygons
 ohi_regions <- st_read(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017"), layer="regions_2017_update")
@@ -200,6 +200,8 @@ ohi_regions_wgs <-  st_transform(ohi_regions, proj4string(catch_crs))
 
 ## List of all tifs with catches that need to be read in the loop
 catch_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int"), pattern = 'catch_count_.*.tif', full.names = TRUE)
+
+##catch_rasts <- catch_rasts[c(1,2,3,4,5,6,7,8,9,10,11,13)] Filter for the 12 missing rasters to run in the loop
 
 #registering cores for parallel processing
 registerDoParallel(4)
