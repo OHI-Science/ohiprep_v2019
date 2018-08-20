@@ -21,7 +21,7 @@ source('../../../src/R/common.R')
 
 ```
 
-## Check Newly Added Stocks
+## Identify Newly Added Stocks
 ```{r}
 
 ## old stocks
@@ -76,7 +76,7 @@ id_new <- ram_bmsy %>%
 ```
 
 
-## Combine old RAM_fao_ohi_rgns with other stock information
+## Add Stock Info to Old RAM_fao_ohi_rgns
 
 Combine the data table Mel created `RAM_fao_ohi_rgns` that contains fao id, ohi id, and assessid from RAM with the old RAM data to match each row with the appropriate stockid and stocklong information
 ```{r}
@@ -94,7 +94,7 @@ all_old <- RAM_fao_ohi_rgns %>%
 
 ```
 
-## Combine new stocks with old stock metadata
+## Combine New and Old Stock Data
 
 ```{r}
 
@@ -104,61 +104,61 @@ RAM_rgns_new <- all_old %>%
 write.csv(RAM_rgns_new, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
 ```
 
-## Fill in OHI and FAO regions
+## Fill Region IDs for New Stocks
 
 Investigate what FAO/OHI region each stock belongs to: 
 * Full intermediate stock data table [here](https://github.com/OHI-Science/ohiprep_v2018/blob/master/globalprep/fis/v2018/int/RAM_fao_ohi_rgns.csv)
 * Primarily used www.fishsource.org to find stock distribution information. 
-* Referenced FAO_AREAS shapefile from mazu on ArcGIS. 
+* Referenced FAO_AREAS (filtered for MAJOR) and ohi_fao_rgns shapefile from mazu on ArcGIS (can use other map visuals to identify stock extent). 
 * Searched and tested key words in data table viewer (`DT::datatable`) to use in `str_detect`. See which stocks have the same FAO id assignment(s).
 
-Some regions have more than 1 `fao_id`:
-* Alaska skate Bering Sea and Aleutian Islands,	Kamchatka flounder Bering Sea and Aleutian Islands have `fao_id` 61 and 67 
+Some regions have more than 1 `fao_id` or `rgn_id` (e.g. Alaska skate Bering Sea and Aleutian Islands,	Kamchatka flounder Bering Sea and Aleutian Islands have `fao_id` 61 and 67)
 
 ```{r}
 
-RAM <- RAM_rgns_new %>% 
-  filter(is.na(fao_id)) %>% 
-  select(-RAM_area_m2)
-
-
-RAM <- RAM %>%
-  mutate(fao_id  = 
-           ifelse(str_detect(stocklong, "Bering Sea"), 61, 
-           ifelse(str_detect(stocklong, "Gulf of Alaska$"), 61,
-           ifelse(str_detect(stocklong, "Sicily$"), 37,
-
-           
-           NA)))) %>% 
-  mutate(fao_id_2  = 
-           ifelse(str_detect(stocklong, "Bering Sea"), 67, 
-
-           
-           NA)) %>% 
-  mutate(rgn_id  = 
-           ifelse(str_detect(stocklong, "Bering Sea"), 163, #united states
-           ifelse(str_detect(stocklong, "Gulf of Alaska$"), 163, #united states
-           ifelse(str_detect(stocklong, "Sicily$"), 184,
-
-           
-           NA)))) %>% 
-  mutate(rgn_id2  = 
-           ifelse(str_detect(stocklong, "Bering Sea"), 73, #russia
-           ifelse(str_detect(stocklong, "Sicily$"), 68,
-
-           
-           NA))) %>% 
-  mutate(rgn_id3 = 
-           ifelse(str_detect(stocklong, "Sicily$"), 61,
-                  
-           
-           NA))
-
-
+RAM <- RAM_filt %>% 
+  ## ADDING FAO REGION ID
+  mutate(fao_id = 
+           case_when(
+             str_detect(stocklong, paste(c("Bering Sea","Gulf of Alaska$"), collapse = "|")) ~ 61,
+             str_detect(stocklong, "Sicily$") ~ 37,
+             str_detect(stocklong, paste(c("^Jackass morwong Western","^Jackass morwong Eastern","Redfish Eastern Australia","Blue grenadier New South Wales"), collapse = "|")) ~ 57,
+             str_detect(stocklong, paste(c("Scotian Shelf","Haddock","NAFO"), collapse = "|")) ~ 21,
+             str_detect(stocklong, paste(c("Japan", "Mikawa Bay", "East China Sea", "Tsushima Strait","Kichiji", "^Pacific cod North", "Northwest Pacific", "Snow crab North Pacific", "Willowy flounder North Pacific"), collapse = "|")) ~ 61
+           )) %>% 
+  mutate(fao_id_2 =
+           case_when(
+             str_detect(stocklong, "Bering Sea") ~ 67,
+             str_detect(stocklong,  paste(c("^Jackass morwong Eastern","Redfish Eastern Australia","Blue grenadier New South Wales"), collapse = "|")) ~ 81
+             )) %>% 
+  
+  ## ADDING OHI REGION ID
+  mutate(rgn_id = 
+           case_when(
+             str_detect(stocklong, paste(c("Bering Sea","Gulf of Alaska$"), collapse = "|")) ~ 163,
+             str_detect(stocklong, "Sicily$") ~ 184,
+             str_detect(stocklong, "Australia$") ~ 16,
+             str_detect(stocklong, paste(c("Scotian Shelf","NAFO"), collapse = "|")) ~ 218,
+             str_detect(stocklong, "^Haddock Georges") ~ 163,
+             str_detect(stocklong, paste(c("Japan","Tsushima Strait", "East China Sea$", "^Kichiji", "^Pacific cod North", "Northwest Pacific", "Snow crab North Pacific", "Willowy flounder North Pacific"), collapse = "|")) ~ 210
+           )) %>% 
+  mutate(rgn_id_2 =
+           case_when(
+             str_detect(stocklong, paste(c("Bering Sea", "Japanese anchovy Pacific Coast", "Japanese sardine Pacific Coast", "Northwest Pacific", "Snow crab North Pacific"), collapse = "|")) ~ 73,
+             str_detect(stocklong, "Sicily$") ~ 68,
+             str_detect(stocklong, paste(c("Japanese flying squid", "Tsushima Strait", "East China Sea$", "Willowy flounder North Pacific"), collapse="|")) ~ 20
+           )) %>% 
+  mutate(rgn_id_3 =
+           case_when(
+              str_detect(stocklong, "Sicily$") ~ 61,
+              str_detect(stocklong, paste(c("Japanese flying squid", "Tsushima Strait","East China Sea$", "Willowy flounder North Pacific"), collapse="|")) ~ 209,
+              str_detect(stocklong, "Snow crab North Pacific") ~ 20
+           )) %>% 
+  mutate(rgn_id_4 = 
+           case_when(
+             str_detect(stocklong, "Snow crab North Pacific") ~ 21
+           ))
+             
 DT::datatable(RAM,rownames = F)
-
-
-
-
 ```
 

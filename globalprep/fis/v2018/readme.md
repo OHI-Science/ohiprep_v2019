@@ -39,4 +39,4 @@ A description of files:
    - `data/fis_bbmsy.csv`
 
 
-  
+* fao_ohi_rgns.Rmd: Adds FAO and OHI region IDs to newly added stocks with no spatial information. Serves as documentation and only needed if adding new stocks without existing region identification.

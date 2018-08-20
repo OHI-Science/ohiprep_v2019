@@ -76,12 +76,14 @@ library(readr)
 library(stringr)
 library(httr)
 library(lubridate)
+library(googleVis)
+library(animation)
 
 ## update these 3 to reflect current assessment year, or whichever year data is being used!!!
 data_yr <- "d2018"
 raw_data_dir <- file.path(dir_M, "git-annex/globalprep/_raw_data/NASA_OMI_AURA_UV", data_yr)
 int_sp_data <- file.path(dir_M, "git-annex/globalprep/prs_uv/v2018/int")
-
+out_dir <- file.path(dir_M, sprintf("git-annex/globalprep/prs_uv/v2018/output/"))
 
 ## years of data we are using for this data layer
 yrs  <- c(2005:2017)
@@ -91,7 +93,6 @@ days_full <- seq(1, 358, 7)
 ## global ocean raster at 1km for resampling/projecting purposes
 ocean <- raster(file.path(dir_M, "model/GL-NCEAS-Halpern2008/tmp/ocean.tif"))
 ocean_shp <- st_read(file.path(dir_M, "git-annex/globalprep/spatial/d2014/data"), layer = "regions_gcs")
-# ocean_shp <- readOGR(file.path(dir_M, "git-annex/globalprep/spatial/d2014/data"), layer = "regions_gcs", verbose=F)
 land <- ocean_shp %>% filter(rgn_typ %in% c("land", "land-disputed", "land-noeez")) %>% st_geometry()
 
 ## set mollweide projection CRS
@@ -117,7 +118,7 @@ pass <- readline("Type earthdata password:")
 
 
 ```{r download the data, eval = F}
-## this doesn't run on Mazu for some reason; use 'uv_download_data.R' run locally on R to download locally, then move data files over to Mazu
+## this doesn't run on Mazu for some reason; use 'uv_download_data.R' run locally on R to download locally, then map Mazu at manually move over files
 
 ## read in file list .text, downloaded from earthdata & saved in destination folder (same as raw_data_dir)
 file_list_raw <- read_delim(file.path(raw_data_dir, "file_list.txt"), delim = "\n", col_names = FALSE)
@@ -164,7 +165,7 @@ files <- files[substr(files, 96, 99) %in% yrs] # select only files for yrs we wa
 ## check all days are there; should go from Oct 2004 through Dec 31 of last full year of data
 files_df <- files %>% 
   data.frame() %>% 
-  rename(fullname = ".") %>% 
+  rename(fullname = ".") %>% # View(files_df)
   mutate(post_modify_date = substr(fullname, 111, 119),
          year = substr(fullname, 96, 99), 
          mo = substr(fullname, 101, 102), 
@@ -173,7 +174,7 @@ files_df <- files %>%
          wk_of_yr = lubridate::week(as_date(date))) %>% 
   group_by(year, wk_of_yr) %>% 
   mutate(nday_in_wk = n()) %>% 
-  ungroup() # View(files_df)
+  ungroup() 
 
 check_ndays <- files_df %>%
   group_by(year, mo) %>% # group_by(year) %>% 
@@ -208,14 +209,19 @@ foreach (yr = yrs) %dopar% {
            lag_nday = replace(lag_nday, is.na(lag_nday), 1),
            doy = cumsum(lag_nday)) # day-of-year for start of each week of data
   
+  days <- days_df$doy
+  weeks <- days_df$wk_of_yr
   
-  days <- days_df$doy %>% unique() # eliminate duplicates
-  weeks <- days_df$wk_of_yr[days_df$nday_in_wk != 0]
   
-  
-  for (j in 1:(length(days)-1)) { # print(days[j]:(days[j+1]-1))
+  for (j in weeks[-length(weeks)]) { # print(days[j]:(days[j+1]-1))
     
-    wk_files <- l[days[j]:(days[j+1]-1)]
+    ## gapfill for weeks with 1 or fewer days using prev + subseq. weeks
+    if(days_df$nday_in_wk[j] < 2){
+      wk_files <- l[days[j-1]:(days[j+2]-1)]
+      
+    } else {
+      wk_files <- l[days[j]:(days[j+1]-1)]
+    }
     
     rasters <- raster(wk_files[1], varname = "ErythemalDailyDose")
     for(i in wk_files[-1]){
@@ -223,7 +229,7 @@ foreach (yr = yrs) %dopar% {
       rasters <- stack(rasters, r)
     }
     uv_week <- rasters
-    week = str_pad(weeks[j], 2, "left", pad = "0")
+    week = str_pad(weeks[j], 2, "left", pad = "0") 
     
     
     week_mean <- calc(uv_week, fun = function(x) {mean(x, na.rm = TRUE)},
@@ -241,19 +247,20 @@ foreach (yr = yrs) %dopar% {
   }
 }
 
+
 ## get weekly climatologies across all years in the time series
 names_weekly <- list.files(file.path(int_sp_data, "weekly_means"), full.names = TRUE)
-match_weeks <- substr(names_weekly, 87, 92)
+match_weeks <- substr(names_weekly, 87, 92) %>% unique()
 
 ## check all weeks expected to be there are there
 names_weekly_df <- names_weekly %>% 
   data.frame() %>%
   rename(fullname = ".") %>% 
   mutate(yr = substr(fullname, 82, 85),
-         wk = substr(fullname, 87, 88))
+         wk = substr(fullname, 87, 88)) # View(names_weekly_df)
 
-tmp <- names_weekly_df %>% 
-  select(yr, wk) %>% # View(names_weekly_df)
+tmp <- names_weekly_df %>% # View(tmp)
+  select(yr, wk) %>%
   group_by(yr) %>% 
   summarize(maxwk = max(wk))
 
@@ -289,41 +296,47 @@ foreach (i = yrs) %dopar% {
   
   match_weeks <- names_weekly_df %>% filter(yr == i)
   s = stack()
-  
+
   for(j in match_weeks$wk) {
     w_mean = raster(sprintf("%s/weekly_means/weekly_means_%s_%s.tif", int_sp_data, i, j)) # mean UV for week j, year i
     w_anom = raster(sprintf("%s/weekly_climatologies/mean_sd_week_%s.tif", int_sp_data, j)) # week j climatology
-    count = overlay(w_mean, w_anom, fun = function(x, y){ifelse(x > y, 1, 0)}) # compare to average anomaly for that week 
+    count = overlay(w_mean, w_anom, fun = function(x, y){ifelse(x > y, 1, 0)}) # compare to average anomaly for that week
     s = stack(s, count)
   }
   
   year = calc(s, fun = function(x){sum(x, na.rm = TRUE)},
-              filename = sprintf("%s/annual_anomalies_diff/annual_pos_anomalies_%s.tif", int_sp_data, i)
+              filename = sprintf("%s/annual_anomalies_diff/annual_pos_anomalies_%s.tif", int_sp_data, i),
               overwrite = TRUE) ## each assessment get new year of data, another layer in this calculation...
 }
+```
 
-## visualize anomalies, takes a while
-library(animation)
+```{r ref_period, eval = F}
+## in 2018 assessment gapfilled, testing here, can be deleted next year
+## visualize anomalies, effect of gapfilling
 
-pal <- colorRampPalette(rev(brewer.pal(9, "RdYlBu")))(35)
+pal <- colorRampPalette(rev(brewer.pal(9, "RdBu")))(35)
 anomalies <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
                         pattern = "anomalies", full.names = TRUE)
+anomalies_not_gf <- list.files(file.path(int_sp_data, "annual_anomalies_diff_before_gf"), 
+                        pattern = "anomalies", full.names = TRUE)
 
-saveGIF({expr = for (i in anomalies){
-  plot(raster(i), 
+saveGIF({expr = for (i in 1:length(anomalies)){
+  r <- overlay(raster(anomalies[[i]]), raster(anomalies_not_gf[[i]]), fun = function(x, y) {x-y})
+  plot(r, 
        col = pal, 
        axes = FALSE, box = FALSE, legend = FALSE, 
-       main = sprintf("Number UV Anomalies %s", substr(i, 26, 29)))
+       main = sprintf("Number UV Anomalies %s", substr(anomalies[[i]], 99, 102)))
   plot(land, add = TRUE)}},
   ani.width = 800,
   ani.height = 400,
-  movie.name = file.path(int_sp_data, "num_anom.gif"))
+  movie.name = file.path(int_sp_data, "num_anom_gf_diff.gif"))
 ```
 
 
 ## Calculate Differences
 
 Calculate the difference in total number of anomalies over a 5 year period compared to the first 5 years (2005-2009)
+
 ```{r ref_period, eval = F}
 
 l <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
@@ -363,7 +376,8 @@ foreach(i = 2005:(max(yrs) - 4)) %dopar% {
 
 ```{r rescale, eval = F}
 
-out_files <- list.files("int", full.names = TRUE, pattern = "diff")
+ref_files <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
+                        full.names = TRUE, pattern = "diff")
 
 ## this says reference point is 41
 read.csv("../../supplementary_information/v2016/reference_points_pressures.csv", stringsAsFactors = FALSE) %>%
@@ -371,136 +385,101 @@ read.csv("../../supplementary_information/v2016/reference_points_pressures.csv",
              dplyr::select(ref_point) %>%
              as.numeric(.$ref_point)
 
-registerDoParallel(5)
+## get the reference point (resc_num = rescale number)
+vals <- c()
+for(i in 2006:(max(yrs) - 4)){
+  max_yr <- i + 4
+  m <- raster(ref_files[str_sub(ref_files, -13, -10) == i]) %>% 
+    mask(as(land, "Spatial"), inverse = TRUE) %>% getValues()
+  vals <- c(vals, m)
+}
+resc_num  <- stats::quantile(vals, prob = 0.9999, na.rm = TRUE) # 42 for v2018
+
+## rescale using reference point
+for(file in ref_files){
+  
+  print(file)
+  
+  the_name <- gsub(".tif", "", basename(file))
+  m <- raster(file) %>% 
+    calc(fun = function(x){ifelse(x > 0, ifelse(x > resc_num, 1, x/resc_num), 0)}, 
+         filename = file.path(int_sp_data, sprintf("rescaled/%s_rescaled.tif", the_name)),
+         overwrite = TRUE)
+}
+
+resc_files <- list.files(file.path(int_sp_data, "rescaled"), 
+                        full.names = TRUE, pattern = "rescaled.tif")
+
+## resample to ocean raster scale (~1km) and then mask
+registerDoParallel(4)
 foreach(i = 2005:(max(yrs) - 4)) %dopar% {
   max_yr <- i + 4
   
-  out_rescale <- out_files[str_sub(out_files, -13, -10) == i] %>%
+  mol1km_masked <- resc_files[str_sub(resc_files, -22, -19) == i] %>%
     raster() %>% 
     projectRaster(crs = mollCRS, over = TRUE, method = "ngb") %>%
     resample(ocean, method = "ngb") %>%
     mask(ocean, 
-         filename = file.path(int_sp_data, sprintf("uv_%s_%s-2005_2009_mol_1km.tif", i, max_yr)),
+         filename = file.path(out_dir, sprintf("uv_%s_%s-2005_2009_mol_1km.tif", i, max_yr)),
          overwrite = TRUE)
 }
-
-ref_files <- list.files(file.path(dir_M, "git-annex/globalprep/prs_uv/v2017/int/"),
-                        full.names = TRUE, pattern = 'mol_1km')
-
-ref_files <- grep("2006_2010|2007_2011|2008_2012|2009_2013|2010_2014|2011_2015", ref_files, value=TRUE)
-
-#get data across all years
-
-for(file in ref_files){ # file <- ref_files[1]
-  
-  print(file)
-  
-  the_name <- basename(file)
-  the_name <- gsub(".tif", "", the_name)
-
-  m <- raster(file)%>%
-    getValues()
-  
-  saveRDS(na.omit(m), file.path(dir_M, sprintf("git-annex/globalprep/prs_uv/v2017/int/%s_vals.rds", the_name)))
-    
-}
-
-
-### put all the data together (otherwise it keeps crashing computer)
-
-val_files <- list.files(file.path(dir_M, "git-annex/globalprep/prs_uv/v2017/int"), pattern = "rds", full = TRUE)
-
-vals <- c()
-
-for(file in val_files){ # file <- ref_files[1]
-  
-  print(file)
-  
-  m <- readRDS(file)
-  
-  vals <- c(vals, m)
-  
-}
-
-resc_num  <- quantile(vals, prob=0.9999, na.rm=TRUE)  
-
-resc_num <- 36
-
-ref_files <- list.files(file.path(dir_M, "git-annex/globalprep/prs_uv/v2017/int/"),
-                        full.names = TRUE, pattern = 'mol_1km.tif')
-
-for(file in ref_files){ # file <- ref_files[1]
-  
-  print(file)
-  
-  the_name <- basename(file)
-  the_name <- gsub(".tif", "", the_name)
-  
-  m <- raster(file)%>%
-        calc(fun=function(x){ifelse(x>0, 
-                             ifelse(x>resc_num, 1, x/resc_num), 
-                             0)}, 
-                      filename= file.path(dir_M,      
-                      sprintf('git-annex/globalprep/prs_uv/v2017/output/%s_rescaled.tif', the_name)), overwrite=TRUE)
-
-}
-
-
 ```
 
 ***
 
 # Results
  
-```{r output}
+```{r view_output}
 
-out <- raster(file.path(dir_M,'git-annex/globalprep/prs_uv/v2017/output/uv_2012_2016-2005_2009_mol_1km_rescaled.tif'))
-plot(out, box=FALSE, col=cols, axes=FALSE, main = 'UV Pressure Layer \n OHI 2017')
-
+mol1km_masked <- list.files(out_dir, pattern = "uv_.*_mol_1km.tif", full.names = TRUE)
+out <- raster(mol1km_masked[length(mol1km_masked)])
+plot(out, box = FALSE, col = cols, axes = FALSE, main = "UV Pressure Layer \n OHI 2018")
 ```
 
 
-## Extract data for each region
+## Extract Data for Each Region
 
-```{r extract_region_results}
+```{r extract_region_data}
 
-# raster/zonal data
+## load raster/zonal data
 zones <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/regions_eez_with_fao_ant.tif"))
-rgn_data <- read.csv("../../../../ohi-global/eez/spatial/rgns_list.csv") %>%
-  filter(rgn_id <=250)
+rgn_data <- read.csv("~/github/ohi-global/eez/spatial/regions_list.csv") %>%
+  filter(rgn_id <= 250)
 
-# get raster data:
-rasts <- list.files(file.path(dir_M,'git-annex/globalprep/prs_uv/v2017/output'), full=TRUE, pattern =  "rescaled")
-
+## get raster data
+rasts <- list.files(out_dir, full = TRUE, pattern = "uv_.*_mol_1km.tif")
 pressure_stack <- stack(rasts)
-
 ```
-
 
 ```{r gif}
+pal <- colorRampPalette(rev(brewer.pal(9, "RdYlBu")))(35)
 
-library(animation) 
 saveGIF({
   for(i in 1:nlayers(pressure_stack)){
-      # don't forget to fix the zlimits
-      plot(pressure_stack[[i]], zlim = c(0,1),axes=F, col=cols,
-           main=names(pressure_stack[[i]]))
-      
-  }
-}, movie.name = 'uv.gif')
+    n = sprintf("UV Pressure %s", 
+                substr(names(pressure_stack[[i]]), 4, 12))
+    plot(pressure_stack[[i]], 
+         zlim = c(0, 1), # don't forget to fix the zlimits
+         axes = FALSE, box = FALSE, col = pal,
+         main = n)}}, 
+  ani.width = 750,
+  ani.height = 400,
+  movie.name = "uv.gif")
 
 ```
 
+```{r extract_region_results, eval = F}
 
-```{r,eval=F}
-# extract data for each region:
-regions_stats <- zonal(pressure_stack,  zones, fun="mean", na.rm=TRUE, progress="text")
-regions_stats2 <- data.frame(regions_stats)
-write.csv(regions_stats2, "int/UV_mean_rgn.csv", row.names = FALSE)
-setdiff(regions_stats2$zone, rgn_data$rgn_id) # high seas and Antarctica
-setdiff(rgn_data$rgn_id, regions_stats2$zone) # Antarctica is 213
+## extract data for each region
+regions_stats <- zonal(pressure_stack, zones, fun = "mean", na.rm = TRUE, 
+                       progress = "text") %>% data.frame()
+write.csv(regions_stats, "int/uv_mean_rgn.csv", row.names = FALSE)
 
-data <- merge(rgn_data, regions_stats2, all.y = TRUE, by.x="rgn_id", by.y="zone") %>%
+## check regions are all present or missing as expected
+setdiff(regions_stats$zone, rgn_data$rgn_id) # high seas and Antarctica
+setdiff(rgn_data$rgn_id, regions_stats$zone) # Antarctica is 213
+
+data <- merge(rgn_data, regions_stats, all.y = TRUE, by.x = "rgn_id", by.y = "zone") %>%
   tidyr::gather("year", "pressure_score", starts_with("uv")) %>%
   filter(rgn_id <= 250) # filter out non OHI global regions
 
@@ -508,41 +487,42 @@ uv_data <- data %>%
   mutate(year = substring(year, 9, 12)) %>%
   mutate(year = as.numeric(year)) %>%
   dplyr::select(rgn_id, rgn_name, year, pressure_score)
+```
 
 
-### visualize data using googleVis plot
-library(googleVis)
+```{r save_results}
+
+## visualize data using googleVis plot
 plotData <- uv_data %>%
   dplyr::select(rgn_name, year, pressure_score)
-
-Motion=gvisMotionChart(plotData, 
-                       idvar="rgn_name", 
-                       timevar="year")
-plot(Motion)
-
-print(Motion, file='uv.html')
+motion = gvisMotionChart(plotData, 
+                         idvar = "rgn_name", 
+                         timevar = "year")
+plot(motion)
+print(motion, file = "uv.html")
 
 
 ## save data layer
 uv_data <- uv_data %>%
   dplyr::select(rgn_id, year, pressure_score)
 write.csv(uv_data, "output/uv.csv", row.names = FALSE)
-## quick compare
+```
+
+
+```{r compare_previous_year}
 
 uv_data <- read.csv("output/uv.csv")
-old <- read.csv("../v2016/output/uv_2016.csv") %>%
-  mutate(year = 2015) %>%
-  select(rgn_id, year, old_pressure = pressure_score) %>%
-  left_join(uv_data, by = c("year", "rgn_id"))
-plot(old$pressure_score, old$old_pressure)
-abline(0,1, col="red")
 
-old <- read.csv("../v2016/output/uv_2016.csv") %>%
-  select(rgn_id, old_pressure = pressure_score) %>%
-  left_join(read.csv("output/uv_2016.csv"), by = c("rgn_id"))
-plot(old$pressure_score, old$old_pressure)
-abline(0,1, col="red")
+old <- uv_data %>% 
+  filter(year == 2014) %>% # data years lag assessment yrs by 1
+  select(-year, new_pressure = pressure_score) %>% 
+  left_join(read.csv("../v2017/output/uv_2015.csv"),
+             by = c("rgn_id"))
 
+plot_diff <- ggplot(old, aes(new_pressure, pressure_score)) + 
+  geom_point() + 
+  geom_abline()
+ggplotly(plot_diff)
 ```
 
 
