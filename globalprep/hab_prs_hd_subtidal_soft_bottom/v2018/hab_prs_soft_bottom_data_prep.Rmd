@@ -14,16 +14,18 @@ output:
       in_header: '../../../src/templates/ohi_hdr.html'
 pdf_document:
   toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
-[REFERENCE RMD FILE: ADD!!!! after pushing the changes in this file]
 
 # Summary
-The habitat pressure data layer is created from catch by gear data of industrial and non industrial fishing profided by Watson (2018). Catches are calculated for each OHI region and then standarized by soft-bottom habitat in each region. Then rescale!!!!!!!!??????
+The habitat pressure data layer is created from fish catch by gear type of industrial and non industrial fishing profided by Watson (2018). Total tonnes of catch are calculated for each OHI region and then standarized by area (km^2) soft-bottom habitat in each region. These values are then rescaled to be between 0 and 1. 
 
 # Updates from previous assessment
-This year we are using the Watson (2018) data to calculate the soft bottom pressure. Data reports catch by gear. 
-To each gear we assing a multiplier acording to how much the affect the sea bottom. Here the table with the multipliers (1 is extramly harmfull and 0 is not harmful)
+This year we are using the Watson (2018) data to calculate the soft bottom pressure rather than Sea Around Us. 
+
+Data reports catch by gear type. For each gear type we assing a multiplier acording to how much the gear affects the sea bottom. Here the table with the multipliers (1 is extramly harmfull and 0 is not harmful)
 
 Gear  | Multiplier
 ------|-----------
@@ -38,7 +40,7 @@ Longline | 0
 Purse seine | 0
 Seine | 0
 
-Also this year artisanal catches were included in our analysis becasue source provided the necesary data. Finally, there where changes in the metos of the source data. 
+Also this year artisanal catches were included in our analysis because the small scale fisheries includes catch from soft-bottom destructive gear types. 
 
 
 ***
@@ -60,7 +62,7 @@ Also this year artisanal catches were included in our analysis becasue source pr
   
 # Methods 
 First create one raster a year with all catches (industrial and non industrial) using gear that harm soft-bottom. 
-Then esxtract catches per OHI regions and standarize by soft-bottom habitat of each region.
+Then extract catches per OHI regions and standarize by soft-bottom habitat of each region.
 Finally, rescale!!!!!!!!!!!!!!!!!
 
 ***
@@ -68,7 +70,7 @@ Finally, rescale!!!!!!!!!!!!!!!!!
 ## Setup
 
 ```{r}
-library(plyr)
+
 library(tidyverse)
 library(parallel)
 library(foreach)
@@ -84,6 +86,7 @@ library(rgdal)
 library(sf)
 
 #setwd("~/github/ohiprep_v2018/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018")
+#setwd("globalprep/hab_prs_hd_subtidal_soft_bottom/v2018")
 
 registerDoParallel(4) # registering cores for parallel processing
 
@@ -95,9 +98,6 @@ source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R
 cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
 mytheme=rasterTheme(region=cols)
 
-## Set template ocean raster and mollweide projection CRS
-ocean <- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
-mollCRS=crs('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs')
 
 options(scipen=999)
 
@@ -159,14 +159,17 @@ foreach(yr = years) %dopar%{ #yr = 2015
     dplyr::group_by(Cell) %>%
     dplyr::summarise(cell_catch_Nind = sum(catch_discount))
   
+<<<<<<< HEAD
   ##Sum industrian and non-industrial
   catch_total <- catch_ind %>% 
+=======
+  catch_total <- catch_ind %>%
+>>>>>>> 0d68442e71cc47057bd498f6faf39c2975d065af
     dplyr::full_join(catch_Nind, by= "Cell") %>%
-    dplyr::rowwise() %>% 
-    dplyr::mutate(total = sum(cell_catch_ind, cell_catch_Nind, na.rm = TRUE)) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(total = sum(cell_catch_ind, cell_catch_Nind, na.rm=TRUE)) %>%
     dplyr::select(Cell, total)
-     
-  
+
   #rasterize catch by swapping cell ids with (calls the suap raster we made above)
   raster::subs(saup_rast, catch_total, by = 'Cell', which = 'total', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
   
@@ -193,8 +196,9 @@ catch_crs <- raster(file.path (dir_M,'git-annex/globalprep/hab_prs_hd_subtidal_s
 ## OHI region polygons
 ohi_regions <- st_read(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017"), layer="regions_2017_update")
 
-## ASK MEL ABOUT THIS LINE
+## Make the region coordinate reference system the same as the catch data
 ohi_regions_wgs <-  st_transform(ohi_regions, proj4string(catch_crs))
+
 
 ## List of all tifs with catches that need to be read in the loop
 catch_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int"), pattern = 'catch_count_.*.tif', full.names = TRUE)
@@ -249,21 +253,16 @@ area <-  read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/m
 files <- list.files("int", pattern = "sb_catch_rgn_.*.csv", full.names = TRUE) 
 
 
-sb_catch_all <- data.frame()
-
-for(file in files) { # file = files[1]
-  tmp <- read.csv(file)
-  sb_catch_all <- rbind(sb_catch_all, tmp)
-}
-
+sb_catch_list <- lapply(files, function(x){read.csv(file=x)})
+sb_catch_all <- bind_rows(sb_catch_list)
+  
 
 data_density <- sb_catch_all %>%
   left_join(area, by="rgn_id") %>%
   filter(rgn_id <= 250) %>%
   mutate(density = tonnes/km2)
 
-
-## find max density across all years
+## find max density for each year
 max <- data_density %>%
   group_by(year) %>%
   summarize(maxDensity = max(density, na.rm=TRUE)) %>%
@@ -272,7 +271,7 @@ max <- data_density %>%
 write.csv(max, "int/reference_point_max.csv", row.names=FALSE) ##Make sure you are working in the correct working directory
 
 
-## Referenc point = max values accroass all years
+## Reference point = max values accroass all years
 ref_point <- read.csv("int/reference_point_max.csv")
 ref_point_max <- max(ref_point$maxDensity)
 
@@ -300,11 +299,15 @@ ref_median <- data_rescaled %>%
 
 write.csv(ref_median, "int/reference_point_median.csv", row.names=FALSE)
 
+<<<<<<< HEAD
 ## Why min of the medianns?? Should it be median??
 ref_point_median <- min(ref_median$ref_median) # 0.8590695
 
 median(ref_median$ref_median)
 
+=======
+ref_point_median <- min(ref_median$ref_median) 
+>>>>>>> 0d68442e71cc47057bd498f6faf39c2975d065af
 
 ## Rescale for second time:  
   data_rescaled_2 <- data_rescaled %>%
@@ -319,7 +322,6 @@ median(ref_median$ref_median)
   hist(data_rescaled_2$density_rescaled_median_capped[data_rescaled_2$year==2014])
   filter(data_rescaled_2, rgn_id==163)
   filter(data_rescaled_2, year==2010)
-
 
 
 ```
