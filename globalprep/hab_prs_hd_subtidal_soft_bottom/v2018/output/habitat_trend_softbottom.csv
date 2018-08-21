@@ -38,7 +38,7 @@
 43,2011,"soft_bottom",0
 44,2011,"soft_bottom",0
 45,2011,"soft_bottom",0
-46,2011,"soft_bottom",-2e-04
+46,2011,"soft_bottom",-0.0002
 47,2011,"soft_bottom",0.0169
 48,2011,"soft_bottom",0
 49,2011,"soft_bottom",-0.008
@@ -57,7 +57,7 @@
 62,2011,"soft_bottom",0.0229
 63,2011,"soft_bottom",0
 64,2011,"soft_bottom",-0.0317
-65,2011,"soft_bottom",5e-04
+65,2011,"soft_bottom",0.0005
 66,2011,"soft_bottom",-0.0097
 67,2011,"soft_bottom",0
 68,2011,"soft_bottom",0
@@ -225,7 +225,7 @@
 20,2012,"soft_bottom",0
 21,2012,"soft_bottom",0.0061
 24,2012,"soft_bottom",-0.1252
-25,2012,"soft_bottom",9e-04
+25,2012,"soft_bottom",0.0009
 26,2012,"soft_bottom",-0.0296
 28,2012,"soft_bottom",0.1106
 29,2012,"soft_bottom",0.0022
@@ -236,7 +236,7 @@
 34,2012,"soft_bottom",-0.0374
 37,2012,"soft_bottom",0
 38,2012,"soft_bottom",0
-39,2012,"soft_bottom",-4e-04
+39,2012,"soft_bottom",-0.0004
 40,2012,"soft_bottom",-0.0502
 41,2012,"soft_bottom",-0.0551
 42,2012,"soft_bottom",0
@@ -262,7 +262,7 @@
 62,2012,"soft_bottom",0.0771
 63,2012,"soft_bottom",0
 64,2012,"soft_bottom",-0.0535
-65,2012,"soft_bottom",-1e-04
+65,2012,"soft_bottom",-0.0001
 66,2012,"soft_bottom",-0.0115
 67,2012,"soft_bottom",0
 68,2012,"soft_bottom",0
@@ -348,7 +348,7 @@
 161,2012,"soft_bottom",-0.0027
 162,2012,"soft_bottom",0
 163,2012,"soft_bottom",0
-164,2012,"soft_bottom",-3e-04
+164,2012,"soft_bottom",-0.0003
 166,2012,"soft_bottom",-0.0176
 167,2012,"soft_bottom",0
 168,2012,"soft_bottom",0
@@ -383,7 +383,7 @@
 199,2012,"soft_bottom",0
 200,2012,"soft_bottom",-0.0112
 202,2012,"soft_bottom",-0.0569
-203,2012,"soft_bottom",-2e-04
+203,2012,"soft_bottom",-0.0002
 204,2012,"soft_bottom",-0.0191
 205,2012,"soft_bottom",-0.0019
 206,2012,"soft_bottom",0.0035
@@ -402,7 +402,7 @@
 223,2012,"soft_bottom",-0.0177
 224,2012,"soft_bottom",0.0057
 227,2012,"soft_bottom",0.0028
-228,2012,"soft_bottom",8e-04
+228,2012,"soft_bottom",0.0008
 231,2012,"soft_bottom",-0.0039
 232,2012,"soft_bottom",0.106
 237,2012,"soft_bottom",-0.0203
@@ -626,7 +626,7 @@
 10,2014,"soft_bottom",0.0355
 11,2014,"soft_bottom",0.0076
 13,2014,"soft_bottom",0
-14,2014,"soft_bottom",-6e-04
+14,2014,"soft_bottom",-0.0006
 15,2014,"soft_bottom",0.0419
 16,2014,"soft_bottom",0
 17,2014,"soft_bottom",0
@@ -735,7 +735,7 @@
 132,2014,"soft_bottom",0
 133,2014,"soft_bottom",0
 134,2014,"soft_bottom",0
-135,2014,"soft_bottom",-9e-04
+135,2014,"soft_bottom",-0.0009
 136,2014,"soft_bottom",0
 137,2014,"soft_bottom",-0.0233
 138,2014,"soft_bottom",-0.0088
@@ -781,7 +781,7 @@
 187,2014,"soft_bottom",0
 188,2014,"soft_bottom",-0.0421
 189,2014,"soft_bottom",0
-190,2014,"soft_bottom",-1e-04
+190,2014,"soft_bottom",-0.0001
 191,2014,"soft_bottom",0
 192,2014,"soft_bottom",0.1777
 193,2014,"soft_bottom",0
@@ -835,7 +835,7 @@
 15,2015,"soft_bottom",0.0337
 16,2015,"soft_bottom",0
 17,2015,"soft_bottom",0
-18,2015,"soft_bottom",-9e-04
+18,2015,"soft_bottom",-0.0009
 19,2015,"soft_bottom",0
 20,2015,"soft_bottom",0
 21,2015,"soft_bottom",-0.0085
@@ -865,7 +865,7 @@
 50,2015,"soft_bottom",-0.0207
 51,2015,"soft_bottom",-0.0321
 52,2015,"soft_bottom",-0.0412
-53,2015,"soft_bottom",-4e-04
+53,2015,"soft_bottom",-0.0004
 54,2015,"soft_bottom",0
 55,2015,"soft_bottom",0.2185
 56,2015,"soft_bottom",0
@@ -940,7 +940,7 @@
 132,2015,"soft_bottom",0
 133,2015,"soft_bottom",0
 134,2015,"soft_bottom",0
-135,2015,"soft_bottom",9e-04
+135,2015,"soft_bottom",0.0009
 136,2015,"soft_bottom",0
 137,2015,"soft_bottom",-0.0167
 138,2015,"soft_bottom",0.0204
