@@ -207,7 +207,7 @@ catch_year <- str_sub(sb_catch, -8, -5) ##extract the correspending year for eac
 
 catch <- raster(sb_catch)
 
-data <- raster::extract(catch, ohi_regions, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
+data <- raster::extract(catch, ohi_regions_wgs, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
 
 names(data) <- paste(ohi_regions$type_w_ant, ohi_regions$rgn_ant_id, sep="_") 
 sb_catch_rgn   <- plyr::ldply(data, rbind)
