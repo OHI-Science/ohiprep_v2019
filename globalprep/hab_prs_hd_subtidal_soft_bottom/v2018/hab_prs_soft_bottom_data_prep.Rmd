@@ -78,7 +78,6 @@ library(rasterVis)
 library(seaaroundus)
 library(RColorBrewer)
 library(cowplot)
-library(stringr)
 library(colorspace)
 library(sp)
 library(rgdal)
@@ -129,14 +128,17 @@ Then create one raster per year for industrial and non industrial catches using 
 ```{r}
 years <-  c(2003:2015)
 
+##Data frame with each gear in the dataset with the corresponding multiplier according to how much they harm the ocean bottom
 multipliers <- data.frame(FleetGearName = c("Dredge", "Gillnet", "Lines Non-tuna", "Longline Non-tuna", "LonglineTuna", "Other", "Pole and Line Tuna", "Purse seine Non-tuna", "Purse seine Tuna", "Seine", "Trap", "Trawl", "Trawl midwater"), multiplier = c(1, 0.5, 0, 0, 0, 0.25, 0, 0, 0, 0, 0.5, 1, 0))
 
+##Loop to create rasters of catches using gear that hasr the soft bottom.
 
 foreach(yr = years) %dopar%{ #yr = 2015
   
-  #read in raw data for the year
+  ##read in raw data for indurtrial catch per the year
   raw_ind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchInd_'),yr,'.rds'))
   
+  ## Wrangle data, discount catch by multipleir and add catches per cell
   catch_ind <- raw_ind %>%
     dplyr::rowwise() %>%
     dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
@@ -145,8 +147,10 @@ foreach(yr = years) %dopar%{ #yr = 2015
     dplyr::group_by(Cell) %>%
     dplyr::summarise(cell_catch_ind = sum(catch_discount)) 
   
+   ##read in raw data for non-indurtrial catch per the year
   raw_Nind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_'),yr,'.rds'))
   
+  ## Wrangle data, discount catch by multipleir and add catches per cell
   catch_Nind <- raw_Nind %>%
     rowwise() %>%
     dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
@@ -155,13 +159,7 @@ foreach(yr = years) %dopar%{ #yr = 2015
     dplyr::group_by(Cell) %>%
     dplyr::summarise(cell_catch_Nind = sum(catch_discount))
   
-  catch_total <- catch_ind %>% 
-    dplyr::full_join(catch_Nind, by= "Cell") %>% 
-    dplyr::mutate(total = cell_catch_ind + cell_catch_Nind) %>% 
-    dplyr::mutate(total = ifelse(is.na(total), cell_catch_ind, total)) %>% 
-    dplyr::select(Cell, total)
-  
-  
+  ##Sum industrian and non-industrial
   catch_total <- catch_ind %>% 
     dplyr::full_join(catch_Nind, by= "Cell") %>%
     dplyr::rowwise() %>% 
@@ -203,6 +201,8 @@ catch_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subt
 
 ##catch_rasts <- catch_rasts[c(1,2,3,4,5,6,7,8,9,10,11,13)] Filter for the 12 missing rasters to run in the loop
 
+str_extract(basename(catch_rasts), "(\\d)+")
+
 #registering cores for parallel processing
 registerDoParallel(4)
 
@@ -210,7 +210,7 @@ foreach(sb_catch = catch_rasts) %dopar% { # sb_catch = catch_rasts[12]
 
 cat(sb_catch)
 
-catch_year <- str_sub(sb_catch, -8, -5) ##extract the correspending year for each file
+catch_year <- str_extract(basename(sb_catch), "(\\d)+") ##extract the correspending year for each file
 
 catch <- raster(sb_catch)
 
@@ -269,8 +269,6 @@ max <- data_density %>%
   summarize(maxDensity = max(density, na.rm=TRUE)) %>%
   data.frame()
 
-##max density for 2014: 6792.767
-
 write.csv(max, "int/reference_point_max.csv", row.names=FALSE) ##Make sure you are working in the correct working directory
 
 
@@ -278,6 +276,7 @@ write.csv(max, "int/reference_point_max.csv", row.names=FALSE) ##Make sure you a
 ref_point <- read.csv("int/reference_point_max.csv")
 ref_point_max <- max(ref_point$maxDensity)
 
+##ref_point = 7052.172 (year 2015)
 
 ## cheking for distribution of data. In the past density data happens to be very skewed
 hist(data_density$density) ## Yes, very skewed data
@@ -290,8 +289,10 @@ data_rescaled <- data_density %>%
   mutate(inv_dens_rescaled_max = 1 - density_rescaled_max)  # health-type measure
 
 hist(data_rescaled$density_rescaled_max)
+hist(data_rescaled$inv_dens_rescaled_max)
 
-## Find the second rescaling point
+
+## Find the second rescaling point - median value of healthy-type meassure for each year
 ref_median <- data_rescaled %>%
   group_by(year) %>%
   summarize(ref_median = median(inv_dens_rescaled_max, na.rm=TRUE)) %>%
@@ -299,7 +300,11 @@ ref_median <- data_rescaled %>%
 
 write.csv(ref_median, "int/reference_point_median.csv", row.names=FALSE)
 
-ref_point_median <- min(ref_median$ref_median) # 0.8999136
+## Why min of the medianns?? Should it be median??
+ref_point_median <- min(ref_median$ref_median) # 0.8590695
+
+median(ref_median$ref_median)
+
 
 ## Rescale for second time:  
   data_rescaled_2 <- data_rescaled %>%
@@ -307,10 +312,11 @@ ref_point_median <- min(ref_median$ref_median) # 0.8999136
     mutate(density_rescaled_median_capped = ifelse(density_rescaled_median > 1, 
                                                    1, 
                                                    density_rescaled_median))
-hist(data_rescaled_2$density_rescaled_median_capped)
+
+  hist(data_rescaled_2$density_rescaled_median_capped)
   
  
-  hist(data_rescaled_2$density_rescaled_median_capped[data_rescaled_2$year==2010])
+  hist(data_rescaled_2$density_rescaled_median_capped[data_rescaled_2$year==2014])
   filter(data_rescaled_2, rgn_id==163)
   filter(data_rescaled_2, year==2010)
 
@@ -329,7 +335,7 @@ old <- read.csv("../v2017/output/habitat_health_softbottom.csv") %>%
   
 
 test <- data_rescaled_2 %>%
-  ##filter(year==2010) %>%
+  filter(year==2014) %>%
   dplyr::select(rgn_id, health = density_rescaled_median_capped) %>%
   left_join(old)
 
@@ -340,6 +346,13 @@ abline(0,1, col = 'red')
 ## (at least according to our raster data)
 
 
+
+compare_plot <- ggplot(data = test, aes(x = old_health, y = health, label = rgn_id))+
+  geom_point()+
+  geom_abline(color = "red")
+
+plot(compare_plot)
+ggplotly(compare_plot)
 
 
 ## LAST YEAR COMPARISON
@@ -357,6 +370,62 @@ plot(v17_health ~v16_health, data=test)
 abline(0,1, col= 'red')
 
 
+```
+
+
+
+```{r}
+### Get relevant data
+
+save_dir <- "output"
+
+condition_pressure <- data_rescaled_2 %>%
+  mutate(habitat = "soft_bottom") %>%
+  mutate(pressure = 1 - density_rescaled_median_capped) %>% ##trasnfomes it back into pressure-measssure
+  dplyr::select(rgn_id, year, habitat, health=density_rescaled_median_capped, pressure) %>%
+  filter(!is.na(pressure))
+
+hist(condition_pressure$pressure)
+
+# get habitat trends
+stop_year <- max(condition_pressure$year)
+
+trend <- data.frame()
+
+for (status_year in (stop_year-4):stop_year){ #status_year = 2011
+  trend_years <- status_year:(status_year - 4)
+  first_trend_year <- min(trend_years)
+  
+  trend_new <- condition_pressure %>%
+    filter(year %in% trend_years) %>%
+    group_by(rgn_id) %>%
+    do(mdl = lm(health ~ year, data=.),
+       adjust_trend = .$health[.$year == first_trend_year]) %>%
+    summarize(rgn_id = rgn_id,
+              trend = round(coef(mdl)['year']/adjust_trend * 5, 4)) %>%
+    ungroup() %>%
+    mutate(trend = ifelse(trend > 1, 1, trend)) %>%
+    mutate(trend = ifelse(trend < (-1), (-1), trend))
+  
+  trend_new <- trend_new %>%
+    mutate(habitat = "soft_bottom") %>%
+    mutate(year = status_year) %>%
+    select(rgn_id, year, habitat, trend)
+  
+  trend <- rbind(trend, trend_new)
+}
+  
+write.csv(trend, file.path(save_dir, "habitat_trend_softbottom.csv"), row.names=FALSE)
+ 
+  health <- condition_pressure %>%
+    mutate(habitat = "soft_bottom") %>%
+    select(rgn_id, year, habitat, health)
+  write.csv(health, file.path(save_dir, "habitat_health_softbottom.csv"), row.names=FALSE)
+  
+  pressure <- condition_pressure %>%
+    select(rgn_id, year, pressure_score = pressure)
+  write.csv(pressure, file.path(save_dir, "hd_sb_subtidal.csv"), row.names=FALSE)
+  
 ```
 
 
