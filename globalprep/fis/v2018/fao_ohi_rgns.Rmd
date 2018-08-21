@@ -94,14 +94,12 @@ all_old <- RAM_fao_ohi_rgns %>%
 
 ```
 
-## Combine New and Old Stock Data
+## Combine New and Old Stock Data to Compare
 
 ```{r}
 
 RAM_rgns_new <- all_old %>% 
   full_join(id_new, by = c("assessid","stockid","stocklong"))
-
-write.csv(RAM_rgns_new, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
 
 ```
 
@@ -293,9 +291,33 @@ RAM <- RAM_filt %>%
 DT::datatable(RAM,rownames = F)
 ```
 
-## Gather FAO and OHI ids
+## Tidy Final Datatable
+
+### Gather FAO and OHI ids
 
 ```{r}
+
+RAM_final <- RAM %>% 
+  gather(fao, fao_values, contains("fao_id")) %>% 
+  rename(fao_id = fao_values) %>% 
+  select(-fao) %>% 
+  gather(ohi, ohi_values, contains("rgn_id")) %>% 
+  rename(rgn_id = ohi_values) %>% 
+  select(-ohi) %>% 
+  na.omit()
+
+
+```
+
+### Combine with full dataset
+
+```{r}
+
+RAM_rgns_new <- all_old %>% 
+  full_join(RAM_final, by = c("rgn_id", "fao_id", "assessid", "stockid", "stocklong")) %>% 
+  select(-RAM_area_m2)
+
+write.csv(RAM_rgns_new, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
 
 ```
 
