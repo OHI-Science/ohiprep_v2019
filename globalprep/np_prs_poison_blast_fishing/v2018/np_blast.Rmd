@@ -182,7 +182,6 @@ ohi_regions_wgs <-  st_transform(ohi_regions, proj4string(blast_crs))
 
 blast_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/prs_blast/v2018/int/total_catch_cell"), full.names = TRUE) 
 
-blast_rasts = blast_rasts[c(9:12)]
 
 #registering cores for parallel processing
 registerDoParallel(3) 
@@ -222,10 +221,29 @@ write.csv(blast_rgn, sprintf("int/blast_catch_rgn_%s.csv", catch_year), row.name
 ```
 
 
+## Mean Value
+
+```{r}
+## For one cvs (year 2012 to compare with old data)
+
+blast_rgn_df <- read.csv('int/blast_catch_rgn_2012.csv')
+##There are 13 regions with data
+
+
+##read the old data
+blast_old <- read.csv('../v2013/data/blast_poison_3nm.csv')
+
+
+
+
+```
+
+
+
 
 ## Reference Point
 
-Look at all mean catch data standardized by NPP and use the 99.99th quantile as the reference point.
+Look at all mean catch data standardized by the 95th quantile as the reference point.
 
 ```{r ref_point}
 

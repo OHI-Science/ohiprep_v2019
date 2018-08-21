@@ -62,7 +62,7 @@ setdiff(new_assessid, old_assessid)
 ```
 
 
-Subset for just new stocks in 2018 RAM data - for some reason, some of the id prefixes specifying RAM regions are not found in the RLSADB v4.40 excel file
+Subset for just new stocks in 2018 RAM data
 ```{r}
 
 ram_bmsy <- ram_bmsy %>% 
@@ -102,19 +102,27 @@ RAM_rgns_new <- all_old %>%
   full_join(id_new, by = c("assessid","stockid","stocklong"))
 
 write.csv(RAM_rgns_new, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
+
 ```
 
 ## Fill Region IDs for New Stocks
 
 Investigate what FAO/OHI region each stock belongs to: 
 * Full intermediate stock data table [here](https://github.com/OHI-Science/ohiprep_v2018/blob/master/globalprep/fis/v2018/int/RAM_fao_ohi_rgns.csv)
-* Primarily used www.fishsource.org to find stock distribution information. 
+* Primarily used www.fishsource.org to find stock distribution information. ICES sub-region codes found here: https://www.researchgate.net/figure/Stock-units-defined-by-ICES-for-white-anglerfish-southern-stock-in-Divisions-VIIIc-and_fig1_31198841 and http://gis.ices.dk/sf/
 * Referenced FAO_AREAS (filtered for MAJOR) and ohi_fao_rgns shapefile from mazu on ArcGIS (can use other map visuals to identify stock extent). 
 * Searched and tested key words in data table viewer (`DT::datatable`) to use in `str_detect`. See which stocks have the same FAO id assignment(s).
 
-Some regions have more than 1 `fao_id` or `rgn_id` (e.g. Alaska skate Bering Sea and Aleutian Islands,	Kamchatka flounder Bering Sea and Aleutian Islands have `fao_id` 61 and 67)
+Some regions have more than 1 `fao_id` or `rgn_id` (e.g. Alaska skate Bering Sea and Aleutian Islands,	Kamchatka flounder Bering Sea and Aleutian Islands have `fao_id` 61 and 67).
+
+Note: In `str_detect`, it doesn't always work when you type out "Bering Sea | Gulf of Alaska$". Using `paste` with the `collapse = "|"` argument seems to work best.
 
 ```{r}
+
+## Subset for rows with missing FAO and OHI ids
+RAM_filt <- RAM_rgns_new %>% 
+  filter(is.na(fao_id)) %>% 
+  select(-RAM_area_m2)
 
 RAM <- RAM_filt %>% 
   ## ADDING FAO REGION ID
@@ -123,14 +131,36 @@ RAM <- RAM_filt %>%
              str_detect(stocklong, paste(c("Bering Sea","Gulf of Alaska$"), collapse = "|")) ~ 61,
              str_detect(stocklong, "Sicily$") ~ 37,
              str_detect(stocklong, paste(c("^Jackass morwong Western","^Jackass morwong Eastern","Redfish Eastern Australia","Blue grenadier New South Wales"), collapse = "|")) ~ 57,
-             str_detect(stocklong, paste(c("Scotian Shelf","Haddock","NAFO"), collapse = "|")) ~ 21,
-             str_detect(stocklong, paste(c("Japan", "Mikawa Bay", "East China Sea", "Tsushima Strait","Kichiji", "^Pacific cod North", "Northwest Pacific", "Snow crab North Pacific", "Willowy flounder North Pacific"), collapse = "|")) ~ 61
-           )) %>% 
+             str_detect(stocklong, paste(c("Scotian Shelf","Haddock","NAFO", "Georges Bank", "Atlantic Coast", "Atlantic coast"), collapse = "|")) ~ 21,
+             str_detect(stocklong, paste(c("Japan", "Mikawa Bay", "East China Sea", "Tsushima Strait","Kichiji", "^Pacific cod North", "Northwest Pacific", "Snow crab North Pacific", "Willowy flounder North Pacific"), collapse = "|")) ~ 61,
+             str_detect(stocklong, ".*Chile$") ~ 87,
+             str_detect(stocklong, ".*Argentina$") ~ 41,
+             str_detect(stocklong, paste(c("China rockfish Northern", "China rockfish Central", "Blue shark North Pacific"), collapse = "|")) ~ 67,
+             str_detect(stocklong, paste(c("China rockfish Southern", "Striped marlin North Pacific"), collapse = "|")) ~ 77,
+             str_detect(stocklong, paste(c("^Black bellied angler", "^Megrim", "Roundnose grenadier", "Greenland halibut", "Northern shrimp"), collapse = "|")) ~ 27,
+             str_detect(stocklong, "Abalone South Africa") ~ 47,
+             str_detect(stocklong, "Cobia Gulf of Mexico") ~ 31
+           )) %>%
+  
   mutate(fao_id_2 =
            case_when(
              str_detect(stocklong, "Bering Sea") ~ 67,
-             str_detect(stocklong,  paste(c("^Jackass morwong Eastern","Redfish Eastern Australia","Blue grenadier New South Wales"), collapse = "|")) ~ 81
+             str_detect(stocklong,  paste(c("^Jackass morwong Eastern","Redfish Eastern Australia","Blue grenadier New South Wales"), collapse = "|")) ~ 81,
+             str_detect(stocklong, paste(c("Southern blue whiting Chile", "Southern hake Chile", "Patagonian Toothfish Chile"), collapse = "|")) ~ 41,
+             str_detect(stocklong, paste(c("China rockfish Central","Blue shark North Pacific"), collapse = "|")) ~ 77,
+             str_detect(stocklong, "Striped marlin North Pacific") ~ 87,
+             str_detect(stocklong, paste(c("Blueline tilefish", "Cobia Southern"), collapse = "|")) ~ 31
              )) %>% 
+  
+  mutate(fao_id_3 =
+           case_when(
+             str_detect(stocklong, "Blue shark North Pacific") ~ 61
+           )) %>% 
+  
+  mutate(fao_id_4 =
+           case_when(
+             str_detect(stocklong, "Blue shark North Pacific") ~ 71
+           )) %>% 
   
   ## ADDING OHI REGION ID
   mutate(rgn_id = 
@@ -139,24 +169,122 @@ RAM <- RAM_filt %>%
              str_detect(stocklong, "Sicily$") ~ 184,
              str_detect(stocklong, "Australia$") ~ 16,
              str_detect(stocklong, paste(c("Scotian Shelf","NAFO"), collapse = "|")) ~ 218,
-             str_detect(stocklong, "^Haddock Georges") ~ 163,
-             str_detect(stocklong, paste(c("Japan","Tsushima Strait", "East China Sea$", "^Kichiji", "^Pacific cod North", "Northwest Pacific", "Snow crab North Pacific", "Willowy flounder North Pacific"), collapse = "|")) ~ 210
+             str_detect(stocklong, paste(c("^Haddock Georges", "^China rockfish.*Pacific Coast$", "Blue shark North Pacific", "^Monkfish", "Yellowtail flounder","Atlantic Coast","Atlantic coast"), collapse = "|")) ~ 163,
+             str_detect(stocklong, paste(c("Japan","Tsushima Strait", "East China Sea$", "^Kichiji", "^Pacific cod North", "Northwest Pacific", "Snow crab North Pacific", "Willowy flounder North Pacific"), collapse = "|")) ~ 210,
+             str_detect(stocklong, ".*Chile$") ~ 224,
+             str_detect(stocklong, ".*Argentina$") ~ 172,
+             str_detect(stocklong, "^Black bellied angler") ~ 182,
+             str_detect(stocklong, paste(c("^Megrim", "Roundnose grenadier", "Greenland halibut"), collapse = "|")) ~ 181,
+             str_detect(stocklong, "Northern shrimp") ~ 180,
+             str_detect(stocklong, "Abalone South Africa") ~ 102
            )) %>% 
+  
   mutate(rgn_id_2 =
            case_when(
              str_detect(stocklong, paste(c("Bering Sea", "Japanese anchovy Pacific Coast", "Japanese sardine Pacific Coast", "Northwest Pacific", "Snow crab North Pacific"), collapse = "|")) ~ 73,
              str_detect(stocklong, "Sicily$") ~ 68,
-             str_detect(stocklong, paste(c("Japanese flying squid", "Tsushima Strait", "East China Sea$", "Willowy flounder North Pacific"), collapse="|")) ~ 20
+             str_detect(stocklong, paste(c("Japanese flying squid", "Tsushima Strait", "East China Sea$", "Willowy flounder North Pacific"), collapse="|")) ~ 20,
+             str_detect(stocklong, paste(c("Southern blue whiting Chile", "Southern hake Chile", "Patagonian Toothfish Chile"), collapse = "|")) ~ 172,
+             str_detect(stocklong, ".*Northern Argentina$") ~ 173,
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 218,
+             str_detect(stocklong, "^Black bellied angler") ~ 183,
+             str_detect(stocklong, paste(c("^Megrim", "Roundnose grenadier", "Greenland halibut"), collapse = "|")) ~ 180,
+             str_detect(stocklong, "Northern shrimp") ~ 223
            )) %>% 
+  
   mutate(rgn_id_3 =
            case_when(
               str_detect(stocklong, "Sicily$") ~ 61,
               str_detect(stocklong, paste(c("Japanese flying squid", "Tsushima Strait","East China Sea$", "Willowy flounder North Pacific"), collapse="|")) ~ 209,
-              str_detect(stocklong, "Snow crab North Pacific") ~ 20
+              str_detect(stocklong, "Snow crab North Pacific") ~ 20,
+              str_detect(stocklong, ".*Northern Argentina$") ~ 171,
+              str_detect(stocklong, "Patagonian Toothfish Chile") ~ 173,
+              str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 135,
+              str_detect(stocklong, paste(c("Roundnose grenadier"), collapse = "|")) ~ 179,
+              str_detect(stocklong, "Greenland halibut") ~ 143,
+              str_detect(stocklong, "Northern shrimp") ~ 175
            )) %>% 
+  
   mutate(rgn_id_4 = 
            case_when(
-             str_detect(stocklong, "Snow crab North Pacific") ~ 21
+             str_detect(stocklong, "Snow crab North Pacific") ~ 21,
+             str_detect(stocklong, "Patagonian Toothfish Chile") ~ 95,
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 136,
+             str_detect(stocklong, paste(c("Roundnose grenadier", "Greenland halibut"), collapse = "|")) ~ 141,
+             str_detect(stocklong, "Northern shrimp") ~ 222
+           )) %>% 
+  mutate(rgn_id_5 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 134,
+             str_detect(stocklong, "Greenland halibut") ~ 145
+           )) %>% 
+  mutate(rgn_id_6 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 131
+           )) %>% 
+  mutate(rgn_id_7 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 130
+           )) %>% 
+  mutate(rgn_id_8 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 129
+           )) %>% 
+  mutate(rgn_id_9 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 159
+           )) %>% 
+  mutate(rgn_id_10 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 150
+           )) %>% 
+  mutate(rgn_id_11 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 207
+           )) %>% 
+  mutate(rgn_id_12 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 206
+           )) %>% 
+  mutate(rgn_id_13 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 25
+           )) %>% 
+  mutate(rgn_id_14 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 14
+           )) %>% 
+  mutate(rgn_id_15 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 15
+           )) %>% 
+  mutate(rgn_id_16 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 8
+           )) %>% 
+  mutate(rgn_id_17 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 9
+           )) %>% 
+  mutate(rgn_id_18 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 13
+           )) %>% 
+  mutate(rgn_id_19 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 210
+           )) %>% 
+  mutate(rgn_id_20 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 12
+           )) %>% 
+  mutate(rgn_id_21 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 11
+           )) %>% 
+  mutate(rgn_id_22 =
+           case_when(
+             str_detect(stocklong, paste(c("Blue shark North Pacific"), collapse = "|")) ~ 73
            ))
              
 DT::datatable(RAM,rownames = F)
