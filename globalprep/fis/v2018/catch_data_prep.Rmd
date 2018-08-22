@@ -217,7 +217,7 @@ catch <- catch %>%
 ```
 
 Take a look at a few stocks
-```{r}
+```{r, eval=FALSE}
 data.frame(dplyr::filter(catch, stock_id == "Elasmobranchii-57" & rgn_id==1))
 data.frame(dplyr::filter(catch, stock_id == "Carcharhinidae-57" & rgn_id==1))
 data.frame(dplyr::filter(catch, stock_id == "Marine_fishes_not_identified-57" & rgn_id==1))
@@ -225,7 +225,7 @@ data.frame(dplyr::filter(catch, stock_id == "Marine_fishes_not_identified-57" & 
 
 ## Fill in Zeros
 For years with no reported catch, add zero values (after first reported catch)
-```{r}
+```{r, eval=FALSE}
 
 ## these data have no zero catch values, so add years with no reported catch to data table:
 catch_zeros <- catch %>%
@@ -247,7 +247,7 @@ catch_zeros <- catch_zeros %>%
 
 ## Calculate Mean Catch
 Calculate mean catch for ohi regions (using data from 1980 onward). These data are used to weight the RAM b/bmys values 
-```{r}
+```{r, eval=FALSE}
 mean_catch <- catch_zeros %>%
   filter(year >= 1980) %>%
   group_by(rgn_id, fao_id, taxon_key, stock_id) %>%
@@ -257,14 +257,14 @@ mean_catch <- catch_zeros %>%
 ```
 
 Check out the data
-```{r}
+```{r, eval=FALSE}
 data.frame(filter(mean_catch, stock_id == "Elasmobranchii-57" & rgn_id==1))
 data.frame(filter(mean_catch, stock_id == "Carcharhinidae-57" & rgn_id==1))
 data.frame(filter(mean_catch, stock_id == "Marine_fishes_not_identified-57" & rgn_id==1))
 ```
 
 ## Toolbox formatting and save
-```{r}
+```{r, eval=FALSE}
 
 mean_catch_toolbox <- mean_catch %>%
   mutate(stock_id_taxonkey = paste(stock_id, taxon_key, sep="_")) %>%
