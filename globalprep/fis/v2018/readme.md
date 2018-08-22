@@ -18,7 +18,7 @@ A description of files:
    - `git-annex/globalprep/fis/v2017/int/stock_catch_by_rgn.csv`
    - `data/stock_catch.csv`
    - `data/mean_catch.csv`
-   - 'data/FP_fis_catch.csv'
+   - `data/FP_fis_catch.csv`
 
 * calculate_bbmsy.Rmd: Calculates B/Bmsy estimates for all stocks using catch-MSY. Outputs:
   
@@ -40,3 +40,5 @@ A description of files:
 
 
 * fao_ohi_rgns.Rmd: Adds FAO and OHI region IDs to newly added stocks with no spatial information. Serves as documentation and only needed if adding new stocks without existing region identification.
+
+  - `int/RAM_fao_ohi_rgns.csv`

@@ -276,6 +276,24 @@ write.csv(mean_catch_toolbox, "data/mean_catch.csv", row.names=FALSE)
 
 ```
 
+Compare with last year - should be the same
+```{r}
+new <- read.csv("data/mean_catch.csv")
+new_filt <- new %>% 
+  filter(stock_id_taxonkey == "Carangidae-31_400314") %>% 
+  rename(new_mean_catch = mean_catch)
+
+old <- read.csv("../v2017/data/mean_catch.csv")
+old_filt <- old %>% 
+  filter(stock_id_taxonkey == "Carangidae-31_400314")
+
+check <- old_filt %>% 
+  left_join(new_filt, by = c("rgn_id","stock_id_taxonkey","year"))
+
+plot(check$mean_catch,check$new_mean_catch)
+abline(col="red", 1,1)
+```
+
 # Prep data for food provision weights 
 
 These data determine the tonnes of food provided by fisheries.  Ultimately, the proportion of food from fisheries relative to mariculture will be calculated to weight the contributions of fishery and mariculture scores to final food provision scores.  
