@@ -18,33 +18,39 @@ pdf_document:
 
 # Summary
 
-This script takes the Sea Around Us Project (SAUP) catch data, provided at a resolution of half-degree cells globally, and aggregates catch to **stock levels**. For the Ocean Health Index, we assume a stock is represented by the FAO region in which the species is caught.
+This script takes the Watson 2018 catch data, provided at a resolution of half-degree cells globally, and aggregates catch to **stock levels**. For the Ocean Health Index, we assume a stock is represented by the FAO region in which the species is caught.
 
 In order to aggregate to FAO regions, we associate each cell to the FAO region and the OHI region in which it is located.
 
 An example of our aggregation proces: New Zealand is located entirely in FAO region 81. All catch reported by New Zealand will be aggregated by species to the FAO region. If a species was reported as caught in both New Zealand waters and in the High Seas of area 81, these two records will be combined into one by summing the catch.
 
 ## Updates from previous assessment
-Catch data now goes from 1950 - 2014. Previously catch data was only available through 2014.
+
+Using Watson 2018 data this year. Catch data now goes from 1950 - 2015. Previously catch data was only available through 2014 from the Sea Around Us (SAUP). No longer using SAUP to create cells.csv - took a raster template of Watson (watson_cell_id_rast.tif) created by Casey for a different project.
 
 ***
 
-# Data
-The Sea Around Us Project shared the spatialized catch data with OHI on joined to a lookup table that links SAUP region names and ids to the FAO region they are located in. The proportional area of each EEZ within the FAO region was also calculated for overlapping EEZs.
+# Data Source
 
+**Reference**: Watson, R. A. and Tidd, A. 2018. Mapping nearly a century and a half of global marine fishing: 1869–2015. Marine Policy, 93, pp. 171-177. [(Paper URL)](https://doi.org/10.1016/j.marpol.2018.04.023)
 
-Reference: 
+**Downloaded**: July 17, 2018 from [IMAS portal](http://data.imas.utas.edu.au/portal/search?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0) - clikc on download tab, step 3
 
-* Downloaded: June 22, 2017
-* Description: Tons per half degree cell with information on sector type, industry type, fishing entity, reporting status and taxonomic information
-* Native data resolution: 0.5 degree grid cells
-* Time range: 1950 - 2014
-* Format: R data files (.rds)
+**Description**:  Global fisheries landings data per cell separated by Industrial versus Non-Industrial catch, IUU, and discards.
+
+**Native data resolution**:   
+
+**Time range**: 1950 - 2015
+
+**Format**:  CSV format
+
+**Additional Information**: [Metadata](http://metadata.imas.utas.edu.au/geonetwork/srv/eng/metadata.show?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0), [Supplementary Material](https://ars.els-cdn.com/content/image/1-s2.0-S0308597X18300605-mmc1.docx)
 
 ***
 
 ## Setup
 
+Note: the same data was used to prepare fishing pressures (prs_fish). We will be using annual catch .rds files prepared in the mazu prs_fish folder
 ``` {r setup, message = FALSE, warning = FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
@@ -55,20 +61,72 @@ library(dplyr)
 library(raster)
 library(parallel)
 library(purrr)
+library(stringr)
 library(tidyr)
+library(foreach)
 library(here)
 
 setwd(here::here("globalprep/fis/v2018"))
 source('../../../src/R/common.R')
+source('../../../src/R/spatial_common.R')
 
 ## Paths for data
-path_data = file.path(dir_M, "git-annex/globalprep/_raw_data/SAUP/d2017/annual_data")
+path_data = file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/int")
+fis_path = file.path(dir_M,"git-annex/globalprep/fis/v2018/int")
+#old_path = file.path(dir_M, "git-annex/globalprep/_raw_data/SAUP/d2017/annual_data")
 
 ```
 
-## Load Data
+***
 
-These files are large so using the data.table package is recommended due to R memory limitations.
+# Load Data 
+
+## Combine Industrial and Non-Industrial Catch
+
+The raw Watson data is separated into industrial and non-industrial fishing. Combine both types for each year from 1950-2015.
+
+```{r}
+
+years <- c(1950:2015)
+data_files <- list.files(file.path(path_data, "annual_catch"), full.names = T)
+
+doParallel::registerDoParallel(3)
+getDoParWorkers()
+
+foreach(yr = years) %dopar% { #yr = 2015
+  
+  ## find file path of the respective year of data
+  yr <- as.character(yr)
+  ## Select the catch data for the respective year
+  datanames <- data_files[which(str_detect(data_files, yr))]
+  ## read in the two data tables
+  list_data <- map(datanames, readRDS)
+  
+  ## combine the two data tables in your list
+  combined <- bind_rows(list_data)
+  
+  ## save to fis folder in mazu
+  saveRDS(combined, paste0(fis_path, "annual_catch/", sprintf("Catch_%s.rds",yr)))
+  
+  }
+
+```
+
+Look at catch data
+```{r}
+
+## read in one of the catch data
+catch <- readRDS(paste0(fis_path, "annual_catch/","Catch_2015.rds"))
+dim(catch)
+summary(catch)
+
+```
+
+## Read in Cells Datatable
+
+Since we are using a new data source, we recreate the cells.csv file, which will include cell ids and corresponding OHI and FAO region ids, which is later used to align catch data with appropriate regions. This file is prepared in clean_cells.Rmd.
+
+These files are large so using the data.table package is recommended due to R memory limitations. Check that the cell values match up with the cell values in the catch data.
 
 ```{r load_data, eval=F}
 
@@ -77,8 +135,6 @@ cells <- read_csv('cells.csv') %>%
   dplyr::select(-X1)
 
 ```
-
-***
 
 # Aggregate catch
 
@@ -91,13 +147,13 @@ Aggregate catch per OHI region and FAO area. This catch will be used twice.
 ```{r, eval=F}
 
 ## list all data files
-data_files <- list.files(file.path(path_data), full.names = T)
+data_files <- list.files(file.path(fis_path, "annual_catch"), full.names = T)
 
 ## function to wrangle data into what we need (total catch per OHI region per stock)
 stock_rgn_catch <- function(df) {
 
 output_df <- readRDS(df) %>%
-        dplyr::select(year, taxon_scientific_name, taxon_common_name, cell_id, catch_sum, taxon_key) %>%
+        dplyr::select(Year, TaxonName, CommonName, Cell, Landings, taxon_key) %>%
         dplyr::rename(CellID = cell_id) %>% #change cellid name to match what is in cells.csv
         dplyr::left_join(cells) %>%
         dplyr::mutate(catch_prop = catch_sum * area) %>%
@@ -111,6 +167,7 @@ output_df <- readRDS(df) %>%
 return(output_df)
 
 }
+
 
 ## use purrr::map to apply the function to all yearly datasets
 all_data <- map_df(data_files, stock_rgn_catch)
