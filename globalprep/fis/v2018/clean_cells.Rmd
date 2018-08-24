@@ -8,6 +8,8 @@ output: html_document
 
 From Jamie's clean_cells.R script in v2017. This script fixes the issue of some half degree cells that slighlty overlap the OHI regions shapefile, leaving them with a proportional area less than 1. This would cause us to lose catch when assigning catch to cells. To fix this, we define a vector of cellids that have a proportionArea <1 and are NOT duplicated (i.e. the other portion of the area missing is not accounted for) and assign a proportionArea of 1 to these cells.
 
+Also takes code from [saup_rasters_to_ohi_rgns.R](https://github.com/OHI-Science/ohiprep_v2018/blob/9ed3d24d6ef293ef21443fb0957e0aa0d4cb8970/globalprep/fis/v2016/saup_rasters_to_ohi_rgns.R) to re-write fao and ohi regions with cell information.
+
 The output is saved as cells.csv
 
 # Setup 
@@ -74,9 +76,9 @@ write.csv(ocean_df, file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_
 
 ```
 
-## Check Cell Proportions
+### Check Cell Proportions
 
-Calculate total proportion of each cell within each eez - should add up to 1..
+Calculate total proportion of each cell within each eez - should add up to 1.
 ```{r}
 cells_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns.csv")) %>%
   rename(CellID = wat_cell_id) %>%
@@ -93,10 +95,13 @@ bad_ones <- cells_raw %>%
 data.frame(bad_ones)
 ```
 
-## Compile List of Region Types
+### Compile List of Region Types
 
-For each cell ID, create new column listing all the associated region types. Helps to identify cells with EEZ or FAO categories and used later to determine whether cells with OHI regions but no FAO region are an issue:
+For each cell ID, create new column listing all the associated region types. 
+
+Helps to identify cells with EEZ or FAO categories and used later to determine whether cells with OHI regions but no FAO region are an issue:
 ```{r}
+
 cells_water <- cells_raw %>%
   group_by(CellID) %>%
   mutate(cell_rgns = paste(sort(unique(rgn_typ)), collapse=", ")) %>%
@@ -106,7 +111,6 @@ cells_water <- cells_raw %>%
 
 Check this went ok:
 ```{r}
-
 unique(cells_water$cell_rgns)
 list <- table(cells_water$cell_rgns)
 list
@@ -115,76 +119,180 @@ list
 filter(cells_water, cell_rgns=="eez, land")
 ```
 
-#list the types of cells
+Subset region types in the ocean only cells data frame.
+
+```{r}
+# List the types of cells we want to keep
 eez_fao_cats <- c("eez", "eez-ccamlr", "eez-ccamlr, land-ccamlr", "eez-disputed",
                   "eez-disputed, fao", "eez-disputed, land-disputed", "eez-disputed, land, land-disputed", "eez, eez-ccamlr",
                   "eez, eez-disputed", "eez, eez-disputed, fao", "eez, eez-disputed, land", "eez, eez-disputed, land-disputed",
-                  "eez, eez-disputed, land, land-disputed", "eez, fao", "eez, land", "eez, land, land-noeez", "fao")                                   
+                  "eez, eez-disputed, land, land-disputed", "eez, fao", "eez, land", "eez, land, land-noeez", "fao")      
+
+
 cells_water <- cells_water %>%
   filter(CellID, cell_rgns %in% eez_fao_cats)
+```
 
+### Adjust for Area Not Equal to 1
 
-## cells should have a total area of <=1, what causes some cells to have more...and is this a large problem
-## No, most cells are fine.
-## This seems to happen because of polygon overlap.
-## scenario 1: FAO region 262 overlaps other FAO region polygons by a small amount.  In this case a small proportion of the catch within a cell will
-## be assigned to two regions.  This will be a small error. (No correction)
-## scenario 2: In many cases, the total area is very close to one which may reflect rounding error and is not significant. (Usually no correction)
-## scenario 3: In some cases, the regions are small islands where there doesn't appear to be a hole so both the land and underlying eez are counted. 
+Cells should have a total area of <=1. What causes some cells to have more...and is this a large problem? No, most cells are fine. This seems to happen because of polygon overlap.
 
-## This can also occur along any eez/land boundary...but it looks like it mainly happens for islands. If the 
-## overlap is for land/eez within the same region, this will be corrected. 
+* scenario 1: FAO region 262 overlaps other FAO region polygons by a small amount. In this case a small proportion of the catch within a cell will be assigned to two regions.  This will be a small error. (No correction)
+* scenario 2: In many cases, the total area is very close to 1 which may reflect rounding error and is not significant. (Usually no correction)
+* scenario 3: In some cases, the regions are small islands where there doesn't appear to be a hole so both the land and underlying eez are counted. 
 
+This can also occur along any eez/land boundary...but it looks like it mainly happens for islands. If the overlap is for land/eez within the same region, this will be corrected. 
 
-cells <- read.csv(file.path(dir_M, "git-annex/globalprep/fis/v2015/raw/saup_rasters_to_ohi_rgns.csv")) %>%
-  rename(CellID=saup_cell_id) %>%
+Scenario 3:
+```{r}
+
+cells <- read.csv(file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns.csv")) %>%
+  rename(CellID = wat_cell_id) %>%
   group_by(CellID, rgn_id) %>%   # groups land and eez data (that way the cell catch is fully applied to the region...rather than cutting the portion that overlaps land) 
   dplyr::summarise(area = sum(proportionArea)) %>%
-  mutate(area = ifelse(area > 1, 1, area))%>%  ## this corrects when there is land/eez overlap within the same region resulting in cell area >1 (scenario 3 above)
+  mutate(area = ifelse(area > 1, 1, area))%>%  # this corrects when there is land/eez overlap within the same region resulting in cell area >1 (scenario 3 above)
   ungroup()  
+```
 
-## Remaining errors from scenario 1 and 2 above:  These are very small errors..nothing to be concerned about.
+Scenario 1 and 2:
+
+Remaining errors from scenario 1 and 2 above. Take a look at the cells that have overlapping area (total area greater than 1). These are very small errors..nothing to be concerned about.
+```{r}
 bad_ones <- cells %>%
   group_by(CellID) %>%
   mutate(total_cell_area = sum(area)) %>%
   filter(total_cell_area > 1) %>%
   arrange(CellID) 
+
 data.frame(bad_ones)
+```
 
-
-# get the list of cell ids that are duplicated, and use this list of values to adjust the area to equal 1 ONLY for those cells that are not duplicated
-
-
+Get the list of cell ids that are duplicated, and use this list of values to adjust the area to equal 1 ONLY for those cells that are not duplicated (wait what is this doing?
+```{r}
 ## Id duplicated cells:
 dup <- cells$CellID[duplicated(cells$CellID)]
+```
 
-
-## these are the cells that were cut off prematurely due to edge effects, etc.
-tmp <- filter(cells, !(CellID %in% dup) & area < 1)
+Check cells with area less than 1. These are the cells that were cut off prematurely due to edge effects, etc.
+```{r}
+tmp <- cells %>% 
+  filter(!(CellID %in% dup) & area < 1)
 head(tmp)
+```
 
-#read in the dataset matching each cell to an FAO region (need both OHI and FAO region for analysis)
-fao_cells <- read.csv( file.path(dir_M, "git-annex/globalprep/fis/v2015/raw/saup_rasters_to_fao_rgns.csv")) %>%
-  rename(CellID=saup_cell_id)
+*** 
+
+## Match Cells with FAO Regions
+
+Repeat similar steps for extracting cell values for FAO regions as you did with the OHI shapefile.
+
+Note: Not going to worry about weights in this case, error should be marginal due to large size of FAO regions. In other words, for each cell, will assign it the fao region that overlaps the most with that cell. This will also make combining with the ohi-region data far less confusing. (confused about this comment as we do set weights=TRUE in `extract`. Iwen 8/23)
+```{r}
+
+## read in FAO shapefile
+fao_regions <- readOGR(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/orig/FAO_AREAS"), layer="FAO_AREAS")  
+fao_regions <- fao_regions[fao_regions$F_LEVEL == "MAJOR", ]
+plot(fao_regions)
+
+## plot FAO over watson raster
+plot(watson_rast)
+plot(fao_regions, add=TRUE)
+
+## grab cell values for each fao region
+fao_to_saup_raster <- raster::extract(watson_rast, fao_regions, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
+
+## assign corresponding fao region codes
+names(fao_to_saup_raster) <- paste(fao_regions$OCEAN, fao_regions$F_CODE, sep="_") 
+
+## combine elements into single data frame
+region_df <- plyr::ldply(fao_to_saup_raster, rbind)
+
+region_df <- region_df %>%
+  separate(.id, c('ocean', 'fao_id'), sep = '_') %>%
+  rename(wat_cell_id = value)
+
+## filter out regions partially covering a cell 
+region_df <- region_df %>%
+  group_by(wat_cell_id) %>%
+  mutate(is.max = ifelse(weight == max(weight), "max", NA)) %>%
+  ungroup() %>%
+  filter(!is.na(is.max)) %>%
+  dplyr::select(wat_cell_id, ocean, fao_id) %>%
+  data.frame()
+
+# these are duplicates, probably due to 50% coverage between two regions, just select one fao id randomly: (not sure where `fao_rgns` is so changing it to `region_df`
+# dups <- fao_rgns$wat_cell_id[duplicated(fao_rgns$wat_cell_id)]
+# random_delete <- fao_rgns[fao_rgns$wat_cell_id %in% dups, ] %>%
+#   group_by(wat_cell_id) %>%
+#   sample_n(1)
+dups <- region_df$wat_cell_id[duplicated(region_df$wat_cell_id)]
+
+length(dups)
+test <- region_df %>% filter(wat_cell_id == dups[7]) # change index
+head(test) # check out fao_ids that share cell, drop one of them
+
+## here is what was randomly selected for deletion:
+region_df <- filter(region_df, !(wat_cell_id == 211186 & fao_id == 41))
+region_df <- filter(region_df, !(wat_cell_id == 211906 & fao_id == 41))
+region_df <- filter(region_df, !(wat_cell_id == 212626 & fao_id == 41))
+region_df <- filter(region_df, !(wat_cell_id == 213346 & fao_id == 41))
+region_df <- filter(region_df, !(wat_cell_id == 214066 & fao_id == 87))
+region_df <- filter(region_df, !(wat_cell_id == 214786 & fao_id == 87))
+region_df <- filter(region_df, !(wat_cell_id == 215506 & fao_id == 41))
+
+
+## save all the cell associations
+write.csv(region_df, file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_rasters_to_fao_rgns.csv"), row.names=FALSE)
+
+```
+
+*** 
+
+## Final Wrangling of Cells
+
+Read in the dataset matching each cell to an FAO region (need both OHI and FAO region for analysis)
+
+If the cell covers greater than 1 region (or duplicated), leave it be. If it doesn't cover greater than 1 region, then change cell areas to 1 to capture entire cell's catch (these are less than 1 area due to edge effects)
+
+Note: Currently `cells` (I think cell-ohi) range from 8 to 259,200. `region_df` (I think cell-fao) ranges from 1 to 252,083. After joining, `cells_df` ranges from 8 to 259,200.
+```{r}
+
+region_df <- read.csv(file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_rasters_to_fao_rgns.csv")) %>%
+  rename(CellID = wat_cell_id)
 
 cells_df <- cells %>%
-  mutate(area = ifelse(CellID %in% dup, area, 1))%>%  # if the cell doesn't cover >1 region, then change cell areas to one to capture entire cell's catch (these are <1 area due to edge effects)
-  left_join(fao_cells) 
+  mutate(area = ifelse(CellID %in% dup, area, 1)) %>% 
+  left_join(region_df) 
 
-summary(cells_df)
-## One issue of concern:
-## Some regions aren't assigned and FAO region value (in places where land > 50% of cell cover)...and we need both for the analysis
-#84218/259200
+summary(cells_df) # Some NAs in fao_id
 
-## check to see how many remain after we take out the land cells:
+```
 
+From `summary(cells_df)` we see that there are many NAs in the `fao_id` field. The corresponding `ocean` field is also an NA.
+
+One issue of concern: Some regions aren't assigned an FAO region value (in places where land > 50% of cell cover)...and we need both for the analysis
+```{r}
+
+## see what percentage have no FAO region assigned
+sum(is.na(cells_df$fao_id))/max(cells$CellID) # 83803/259200 or 32% is NA
+
+## check to see how many cell IDs remain after we take out the land cells:
 cells_df_water <- cells_df %>%
   filter(CellID %in% cells_water$CellID)
+
 summary(cells_df_water)
-#187/252083
-# N= 187...no too bad...does not seem worth fretting over
 
+## check percentage of cells that are missing
+## N = 558, and only 0.2% of all cells...not too bad???...does not seem worth fretting over??
+## cells_df_water has same max cell id as region_df
+sum(is.na(cells_df_water$fao_id))/max(cells_df_water$CellID) # 558/252083
 
-## save
+```
 
-write.csv(cells_df_water, file = "globalprep/fis/v2017/cells.csv")
+***
+
+## Save File
+```{r}
+write.csv(cells_df_water, file = "cells.csv")
+```
+
