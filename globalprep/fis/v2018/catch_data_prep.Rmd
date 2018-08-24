@@ -74,6 +74,7 @@ source('../../../src/R/spatial_common.R')
 path_data = file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/int")
 fis_path = file.path(dir_M,"git-annex/globalprep/fis/v2018/int")
 #old_path = file.path(dir_M, "git-annex/globalprep/_raw_data/SAUP/d2017/annual_data")
+#old_watson_path = file.path(dir_M,"git-annex/globalprep/prs_fish/v2017/int")
 
 ```
 
@@ -116,7 +117,9 @@ Look at catch data
 ```{r}
 
 ## read in one of the catch data
-catch <- readRDS(paste0(fis_path, "annual_catch/","Catch_2015.rds"))
+catch <- readRDS(file.path(fis_path, "annual_catch","Catch_2015.rds"))
+
+head(catch)
 dim(catch)
 summary(catch)
 
@@ -124,21 +127,14 @@ summary(catch)
 
 ## Read in Cells Datatable
 
-Since we are using a new data source, we recreate the cells.csv file, which will include cell ids and corresponding OHI and FAO region ids, which is later used to align catch data with appropriate regions. This file is prepared in clean_cells.Rmd.
+Since we are using a new data source, we recreate the cells.csv file in **clean_cells.Rmd**, which will include cell ids and corresponding OHI and FAO region ids, which is later used to align catch data with appropriate regions.
 
 These files are large so using the data.table package is recommended due to R memory limitations. Check that the cell values match up with the cell values in the catch data.
 
 ```{r load_data, eval=F}
 
-## information about half degree cells
 cells <- read_csv('cells.csv') %>%
-  dplyr::select(-X1) 
-
-## checking old cells.csv files
-# old_cells <- read_csv('../v2017/cells.csv') %>% 
-#   dplyr::select(-X1)
-# 
-# dim(cells)[1]-dim(old_cells)[1] # there are 520 more rows maybe due ot extra data
+  dplyr::select(-X1)
 
 ```
 
@@ -199,6 +195,7 @@ Load taxonomic resilience information
 taxon_res = read_csv('../v2017/data/taxon_resilience_lookup.csv') %>%
               #mutate(common = ifelse(common %in% "Silver croaker", paste(common, sciname, sep=" "), common)) %>%
               dplyr::select(CommonName=common, Resilience)
+
 ```
 
 ## Wrangle
@@ -208,7 +205,7 @@ Filter out all stocks that don't meet our conditions:
 (2) Keep all stocks with time series of 20 years or more
 
 
-(IWEN NO TAXON_KEY)
+(IWEN NO TAXON_KEY, how to filter for species only)
 ```{r prep_data_bbmsy, eval=F}
 
 ## set variables to filter by
@@ -217,6 +214,7 @@ min_tons = 1000
 
 ## read in catch data created above
 df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'))
+# old_df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2017/int/stock_catch_by_rgn.csv')) # for comparison
 
 ## create dataset ready to run through catch-only models
     stks <- df %>%
