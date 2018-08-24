@@ -132,7 +132,13 @@ These files are large so using the data.table package is recommended due to R me
 
 ## information about half degree cells
 cells <- read_csv('cells.csv') %>%
-  dplyr::select(-X1)
+  dplyr::select(-X1) 
+
+## checking old cells.csv files
+# old_cells <- read_csv('../v2017/cells.csv') %>% 
+#   dplyr::select(-X1)
+# 
+# dim(cells)[1]-dim(old_cells)[1] # there are 520 more rows maybe due ot extra data
 
 ```
 
@@ -144,6 +150,8 @@ Aggregate catch per OHI region and FAO area. This catch will be used twice.
 
 (2) The catch data at species level is used to calculate stock status (BBmsy) per stock (remember that our definition of a stock is a species caught within a single FAO area).
 
+
+(Iwen aug 23 CHANGES: removed taxon_key, changed catch_sum to Landings and ignored discards right?)
 ```{r, eval=F}
 
 ## list all data files
@@ -153,14 +161,14 @@ data_files <- list.files(file.path(fis_path, "annual_catch"), full.names = T)
 stock_rgn_catch <- function(df) {
 
 output_df <- readRDS(df) %>%
-        dplyr::select(Year, TaxonName, CommonName, Cell, Landings, taxon_key) %>%
-        dplyr::rename(CellID = cell_id) %>% #change cellid name to match what is in cells.csv
+        dplyr::select(Year, TaxonName, CommonName, Cell, Landings) %>%
+        dplyr::rename(CellID = Cell) %>% # match what is in cells.csv
         dplyr::left_join(cells) %>%
-        dplyr::mutate(catch_prop = catch_sum * area) %>%
-        group_by(year, rgn_id, fao_id, taxon_scientific_name, taxon_common_name, taxon_key) %>%
+        dplyr::mutate(catch_prop = Landings * area) %>%
+        group_by(Year, rgn_id, fao_id, TaxonName, CommonName) %>%
         dplyr::summarise(catch = sum(catch_prop)) %>%
         dplyr::ungroup() %>%
-        dplyr::mutate(stock_id = gsub(" ", "_", paste(taxon_scientific_name, fao_id, sep='-'), fixed=TRUE))%>%
+        dplyr::mutate(stock_id = gsub(" ", "_", paste(TaxonName, fao_id, sep='-'), fixed=TRUE))%>%
         dplyr::rename(fao_rgn  = fao_id,
                       tons     = catch)
 
@@ -190,7 +198,7 @@ Load taxonomic resilience information
 ## add the taxon_resilence data to catch for b/bmsy calculations
 taxon_res = read_csv('../v2017/data/taxon_resilience_lookup.csv') %>%
               #mutate(common = ifelse(common %in% "Silver croaker", paste(common, sciname, sep=" "), common)) %>%
-              dplyr::select(taxon_common_name=common, Resilience)
+              dplyr::select(CommonName=common, Resilience)
 ```
 
 ## Wrangle
@@ -199,6 +207,8 @@ Filter out all stocks that don't meet our conditions:
 (1) Keep all stocks that have at least an average annual harvest of 1000 tons
 (2) Keep all stocks with time series of 20 years or more
 
+
+(IWEN NO TAXON_KEY)
 ```{r prep_data_bbmsy, eval=F}
 
 ## set variables to filter by
