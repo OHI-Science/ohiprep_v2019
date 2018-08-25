@@ -1,0 +1,36 @@
+---
+title: "Untitled"
+author: "Iwen Su"
+date: "8/24/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Summary
+
+Watson catch data (2018) doesn't have `TaxonKey` information like it did last year. Pull from last year's datasets.
+
+```{r}
+
+## Read in WAtson 2017 data from the impact acceleration project
+watson_17 <- list.files(file.path(dir_M, "git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data"), full.names = T)
+## select 2014 catch data to grab TaxonKey information
+taxonkey <- readRDS(watson_17[65]) %>% 
+  dplyr::select(Taxonkey, TaxonName, CommonName)
+
+
+
+
+## read in stock catch (tons) by region data
+df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'))
+
+taxon_df <- df %>% 
+  left_join(taxonkey, by = c("TaxonName","CommonName"))
+
+head(taxon_df)
+
+```
+

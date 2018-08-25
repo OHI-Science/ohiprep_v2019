@@ -199,13 +199,13 @@ taxon_res = read_csv('../v2017/data/taxon_resilience_lookup.csv') %>%
 ```
 
 ## Wrangle
+
 Filter out all stocks that don't meet our conditions:
 
-(1) Keep all stocks that have at least an average annual harvest of 1000 tons
-(2) Keep all stocks with time series of 20 years or more
+(1) Add TaxonKey information from 2017 Watson data using `catch_taxon_key.Rmd`
+(2) Keep all stocks that have at least an average annual harvest of 1000 tons
+(3) Keep all stocks with time series of 20 years or more
 
-
-(IWEN NO TAXON_KEY, how to filter for species only)
 ```{r prep_data_bbmsy, eval=F}
 
 ## set variables to filter by

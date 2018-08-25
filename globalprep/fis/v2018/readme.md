@@ -11,7 +11,7 @@ If using these data, please see our [citation policy](http://ohi-science.org/cit
 ### Additional information
 A description of files:
 
-* `clean_cells.Rmd` cleans up the half-degree cell data, removing overlaps between land and oceanic regions, and calculates the total proportion of each cell within each OHI region. The output of this script is `cells.csv`
+* clean_cells.Rmd: cleans up the half-degree cell data, removing overlaps between land and oceanic regions, and calculates the total proportion of each cell within each OHI region. The output of this script is `cells.csv`
 
 * catch_data_prep.Rmd: Preps the spatialized catch data (at half degree cells) for use in goal weighting and stock status calculations. Outputs:
   
@@ -19,6 +19,8 @@ A description of files:
    - `data/stock_catch.csv`
    - `data/mean_catch.csv`
    - `data/FP_fis_catch.csv`
+
+* catch_taxon_key.Rmd: Adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations
 
 * calculate_bbmsy.Rmd: Calculates B/Bmsy estimates for all stocks using catch-MSY. Outputs:
   
