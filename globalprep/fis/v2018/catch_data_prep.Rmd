@@ -26,7 +26,7 @@ An example of our aggregation proces: New Zealand is located entirely in FAO reg
 
 ## Updates from previous assessment
 
-Using Watson 2018 data this year. Catch data now goes from 1950 - 2015. Previously catch data was only available through 2014 from the Sea Around Us (SAUP). No longer using SAUP to create cells.csv - took a raster template of Watson (watson_cell_id_rast.tif) created by Casey for a different project.
+Using Watson 2018 data this year. Catch data now goes from 1950 - 2015. Previously catch data was only available through 2014 from the Sea Around Us (SAUP). New Watson data doesn't have Taxon Key information. Add it in from Watson 2017 data after aggregating catch to work with a relativey smaller dataframe. No longer using SAUP to create cells.csv - took a raster template of Watson (watson_cell_id_rast.tif) created by Casey for a different project.
 
 ***
 
@@ -52,9 +52,10 @@ Using Watson 2018 data this year. Catch data now goes from 1950 - 2015. Previous
 
 Note: the same data was used to prepare fishing pressures (prs_fish). We will be using annual catch .rds files prepared in the mazu prs_fish folder
 ``` {r setup, message = FALSE, warning = FALSE}
-
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
+```
 
+```{r}
 ## Libraries
 library(readr)
 library(dplyr)
@@ -84,7 +85,7 @@ fis_path = file.path(dir_M,"git-annex/globalprep/fis/v2018/int")
 
 ## Combine Industrial and Non-Industrial Catch
 
-The raw Watson data is separated into industrial and non-industrial fishing. Combine both types for each year from 1950-2015.
+* The raw Watson data is separated into industrial and non-industrial fishing. Combine both types for each year from 1950-2015.
 
 ```{r}
 
@@ -94,7 +95,7 @@ data_files <- list.files(file.path(path_data, "annual_catch"), full.names = T)
 doParallel::registerDoParallel(3)
 getDoParWorkers()
 
-foreach(yr = years) %dopar% { #yr = 2015
+foreach(yr = years) %dopar% { # yr = 2015
   
   ## find file path of the respective year of data
   yr <- as.character(yr)
@@ -142,44 +143,115 @@ cells <- read_csv('cells.csv') %>%
 
 Aggregate catch per OHI region and FAO area. This catch will be used twice. 
 
-(1) The catch is used to weight scores per region. For this we need to use all catch records, including those not reported at the species level.
+(1) The catch is used to weight scores per region. For this we need to use catch records, including those not reported at the species level. See note below.
 
 (2) The catch data at species level is used to calculate stock status (BBmsy) per stock (remember that our definition of a stock is a species caught within a single FAO area).
 
 
-(Iwen aug 23 CHANGES: removed taxon_key, changed catch_sum to Landings and ignored discards right?)
+Note: Saved two versions of catch aggregation. One using IUU and Reported only (`Landings`) as the catch sum and one using IUU, Reported, and Discards (`CatchTotal`).
+
+**Total Catch**
 ```{r, eval=F}
 
 ## list all data files
 data_files <- list.files(file.path(fis_path, "annual_catch"), full.names = T)
 
-## function to wrangle data into what we need (total catch per OHI region per stock)
-stock_rgn_catch <- function(df) {
+## First aggregation: function to wrangle data into what we need (total landings per OHI region per stock)
+stock_rgn_landings <- function(df) {
 
-output_df <- readRDS(df) %>%
-        dplyr::select(Year, TaxonName, CommonName, Cell, Landings) %>%
-        dplyr::rename(CellID = Cell) %>% # match what is in cells.csv
-        dplyr::left_join(cells) %>%
-        dplyr::mutate(catch_prop = Landings * area) %>%
-        group_by(Year, rgn_id, fao_id, TaxonName, CommonName) %>%
-        dplyr::summarise(catch = sum(catch_prop)) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate(stock_id = gsub(" ", "_", paste(TaxonName, fao_id, sep='-'), fixed=TRUE))%>%
-        dplyr::rename(fao_rgn  = fao_id,
-                      tons     = catch)
+  output_df <- readRDS(df) %>%
+    dplyr::select(Year, TaxonName, CommonName, Cell, Landings) %>%
+    dplyr::rename(CellID = Cell) %>% # match what is in cells.csv
+    dplyr::left_join(cells) %>%
+    dplyr::mutate(catch_prop = Landings * area) %>%
+    group_by(Year, rgn_id, fao_id, TaxonName, CommonName) %>%
+    dplyr::summarise(catch = sum(catch_prop)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(stock_id = gsub(" ", "_", paste(TaxonName, fao_id, sep='-'), fixed=TRUE))%>%
+    dplyr::rename(fao_rgn  = fao_id,
+                  tons     = catch)
+  
+return(output_df)
+
+}
+
+## use purrr::map to apply the function to all yearly datasets
+landings <- map_df(data_files, stock_rgn_landings)
+
+## this is a large file (150 MB) so it is saved on the server
+write.csv(landings, file =  file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings.csv'), row.names=FALSE)
+
+```
+
+**Landings**
+```{r}
+
+## Second aggregation: function to wrangle data into what we need (total catch per OHI region per stock)
+stock_rgn_total <- function(df) {
+
+  output_df <- readRDS(df) %>%
+    dplyr::mutate(CatchTotal = IUU + Reported + Discards) %>% 
+    dplyr::select(Year, TaxonName, CommonName, Cell, CatchTotal) %>%
+    dplyr::rename(CellID = Cell) %>% # match what is in cells.csv
+    dplyr::left_join(cells) %>%
+    dplyr::mutate(catch_prop = CatchTotal * area) %>%
+    group_by(Year, rgn_id, fao_id, TaxonName, CommonName) %>%
+    dplyr::summarise(catch = sum(catch_prop)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(stock_id = gsub(" ", "_", paste(TaxonName, fao_id, sep='-'), fixed=TRUE))%>%
+    dplyr::rename(fao_rgn  = fao_id,
+                  tons     = catch)
 
 return(output_df)
 
 }
 
+total_catch <- map_df(data_files, stock_rgn_total)
 
-## use purrr::map to apply the function to all yearly datasets
-all_data <- map_df(data_files, stock_rgn_catch)
-
-## this is a large file (150 MB) so it is saved on the server
-write.csv(all_data, file =  file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'), row.names=FALSE)
+write.csv(total_catch, file = file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'), row.names=FALSE)
 
 ```
+
+
+## Add Taxon Key Information
+
+Need taxon key to easily remove higher level (e.g. genus) taxonomic catch data. Unique taxon key was extracted from Watson 2017 catch data in `catch_taxon_key.Rmd`. Add them to the stock catch by region.
+
+Combine taxa with all catch regions data
+```{r}
+
+## read in taxon key and stock catch (tons) by region data
+taxonkey <- read.csv("int/watson_taxon_key.csv")
+stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'))
+
+stock_rgn_taxa <- stock_rgn %>% 
+  left_join(taxonkey, by = c("TaxonName","CommonName"))
+
+write.csv(stock_rgn_taxa, file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv'), row.names=FALSE)
+```
+
+Combine taxa with landings version as well
+```{r}
+stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings.csv'))
+
+stock_rgn_taxa <- stock_rgn %>% 
+  left_join(taxonkey, by = c("TaxonName","CommonName"))
+
+write.csv(stock_rgn_taxa, file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings_taxa.csv'), row.names=FALSE)
+```
+
+Look at which entries don't have a Taxonkey match
+```{r}
+df_na <- stock_rgn_taxa %>% 
+  filter(is.na(Taxonkey))
+noTaxonKey <- data.frame(taxa = unique(df_na$TaxonName))
+
+## create list of catch data without taxon key info that is not at species-level
+noTaxonKey <- filter(noTaxonKey, taxa != "Triglopsis quadricornis" & taxa != "Bolinus brandaris")
+
+```
+
+
 
 ***
 

@@ -21,6 +21,8 @@ A description of files:
    - `data/FP_fis_catch.csv`
 
 * catch_taxon_key.Rmd: Adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations
+ 
+   - `int/watson_taxon_key.csv`: unique taxon key extracted from 2017 Watson data
 
 * calculate_bbmsy.Rmd: Calculates B/Bmsy estimates for all stocks using catch-MSY. Outputs:
   
