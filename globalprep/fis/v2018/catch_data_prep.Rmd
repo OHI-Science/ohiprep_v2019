@@ -67,6 +67,7 @@ library(tidyr)
 library(foreach)
 library(here)
 library(sf)
+library(tidyverse)
 
 setwd(here::here("globalprep/fis/v2018"))
 source('../../../src/R/common.R')
@@ -480,21 +481,40 @@ write.csv(mean_catch_toolbox, "data/mean_catch.csv", row.names=FALSE)
 Compare with last year
 ```{r, eval=FALSE}
 
+library(plotly)
+
 new <- read.csv("data/mean_catch.csv")
 new_filt <- new %>% 
-  filter(stock_id_taxonkey == "Carangidae-31_400314") %>% 
-  rename(new_mean_catch = mean_catch)
+  #filter(stock_id_taxonkey == "Carangidae-31_400314") %>% 
+  mutate(log_mean_catch = log(mean_catch+1)) %>% 
+  rename(new_log_catch = log_mean_catch) %>% 
+  filter(Year == 2014) %>% 
+  dplyr::select(rgn_id, stock_id_taxonkey, new_log_catch) 
 
 old <- read.csv("../v2017/data/mean_catch.csv")
 old_filt <- old %>% 
-  filter(stock_id_taxonkey == "Carangidae-31_400314") %>% 
-  rename(Year = year)
+  #filter(stock_id_taxonkey == "Carangidae-31_400314") %>% 
+  rename(Year = year) %>% 
+  mutate(log_mean_catch = log(mean_catch+1)) %>% 
+  rename(old_log_catch = log_mean_catch) %>% 
+  filter(Year == 2014) %>% 
+  dplyr::select(rgn_id, stock_id_taxonkey, old_log_catch)
+  
 
 check <- old_filt %>% 
-  left_join(new_filt, by = c("rgn_id","stock_id_taxonkey","Year"))
+  left_join(new_filt, by = c("rgn_id","stock_id_taxonkey")) %>% 
+  mutate(new_log_catch = ifelse(is.na(new_log_catch), 0, new_log_catch)) %>% 
+  mutate(old_log_catch = ifelse(is.na(old_log_catch), 0, old_log_catch))
 
-plot(check$mean_catch,check$new_mean_catch)
+plot(check$old_log_catch,check$new_log_catch)
 abline(col="red", 1,1)
+
+## Plot with plotly to see region id when hovering over points
+plot_check <- ggplot(check, aes(old_log_catch, new_log_catch, col = rgn_id)) +
+  geom_point(alpha = 0.4) +
+  geom_abline(col="red") +
+  ggtitle("Catch Comparison for 2014")
+ggplotly(plot_check)
 
 ```
 
