@@ -309,7 +309,8 @@ library(maps)
 
 cell_diff <- data.frame(cell_id = substr(new_old, 1,6), value = 1)
 cell_diff$cell_id <- as.numeric(gsub("_","",cell_diff$cell_id))
-diff_plot <- raster::subs(watson_rast, uniq_cell_diff, by = "cell_id", which = "value", subsWithNA=TRUE)
+unique_cell_diff <- unique(cell_diff)
+diff_plot <- raster::subs(watson_rast, unique_cell_diff, by = "cell_id", which = "value", subsWithNA=TRUE)
 map('legacy_world'); plot(diff_plot, add=T) # not sure crs aligns but just for visualizing
 
 ```
