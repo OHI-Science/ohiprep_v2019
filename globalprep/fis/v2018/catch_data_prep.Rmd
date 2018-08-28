@@ -225,10 +225,9 @@ write.csv(landings, file =  file.path(dir_M,'git-annex/globalprep/fis/v2018/int/
 
 Need taxon key to easily remove higher level (e.g. genus) taxonomic catch data. Unique taxon key was extracted from Watson 2017 catch data in `catch_taxon_key.Rmd`. Add them to the stock catch by region.
 
-Combine taxa with all catch regions data
+Combine taxa with all catch regions data. Read in taxon key and stock catch (tons) by region data.
 ```{r, eval=FALSE}
 
-## read in taxon key and stock catch (tons) by region data
 taxonkey <- read.csv("int/watson_taxon_key.csv")
 stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'))
 
@@ -268,7 +267,6 @@ Take a look at catch data with missing ohi and fao regions in **stock_catch_by_r
 ```{r, eval=FALSE}
 df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv'))
 
-## more NAs in this table where stock is combined with taxa info than in the table from output below
 df_na <- df %>% 
   filter(is.na(rgn_id))
 ```
@@ -344,9 +342,9 @@ There are some missing OHI and FAO regions, don't worry? (Iwen 8/27)
 min_yrs = 20
 min_tons = 1000
 
-## read in catch data created above
+## read in catch data created above (commented out landings only stock data table)
 df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv'))
-# old_df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2017/int/stock_catch_by_rgn.csv')) # for comparison
+# df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings_taxa.csv'))
 
 
 
@@ -373,31 +371,65 @@ no_res <- filter(stks, is.na(Resilience)) %>%
           dplyr::select(TaxonName, CommonName) %>%
           distinct()
     
-nrow(no_res) # 270 species do not have a Resilience. These will get assigned a Medium Resilience by default by the CMSY model.
+nrow(no_res) # 270 species do not have a Resilience. These will get assigned a Medium Resilience by default by the CMSY model. (255 species don't have a Resilience for the Landings only data)
 
 write.csv(stks, file = 'data/stock_catch.csv', row.names = FALSE)
+# write.csv(stks, file = 'data/stock_catch_landings.csv', row.names = FALSE)
 
 ```
+
+## Data Check
 
 Take a look at the stock data datatable
 ```{r, eval=FALSE}
 
 stks = read.csv('data/stock_catch.csv')
+stks_landings = read.csv('data/stock_catch_landings.csv')
 
 DT::datatable(head(stks,n=100))
 
 ```
 
+Plot total catch v landings stocks data per fao region
+```{r}
+
+stks <- stks %>% 
+  filter(Year == 2015) %>% 
+  mutate(log_all_catch = log(tons+1)) %>% 
+  dplyr::select(-Year, -Resilience, -tons) 
+
+stks_landings <- stks_landings %>% 
+  filter(Year == 2015) %>%  
+  mutate(log_landings = log(tons+1)) %>% 
+  dplyr::select(-Year, -Resilience, -tons)
+
+both <- stks %>%
+  left_join(stks_landings, by = c("TaxonName", "CommonName", "fao_rgn", "stock_id", "Taxonkey"))
+
+compare_plot <- ggplot(both, aes(log_all_catch, log_landings, col=fao_rgn)) +
+  geom_point(alpha = 0.4) +
+  geom_abline(col="red") +
+  ggtitle("Log Catch v Landings (Prep for B/Bmsy)")
+
+ggplotly(compare_plot)
+
+```
+
+
+***
 
 # Prep data for mean catch 
 
 ## Wrangle
 
-Mean catch data is used to weight the B/Bmsy values in the fishery subgoal.  
+Mean catch data is used to weight the B/Bmsy values in the fishery subgoal. (Commented out landings only data table to test. Iwen 8/28/18)
 
 ```{r mean catch, eval=F}
 
-catch <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv')) %>%
+file <- file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv')
+# file <- file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings_taxa.csv')
+
+catch <- read_csv(file) %>%
   rename(common = CommonName, fao_id = fao_rgn, species=TaxonName)
 
 summary(catch)
@@ -475,10 +507,13 @@ mean_catch_toolbox <- mean_catch %>%
   data.frame()
 
 write.csv(mean_catch_toolbox, "data/mean_catch.csv", row.names=FALSE)
+# write.csv(mean_catch_toolbox, "data/mean_catch_landings.csv", row.names=FALSE)
 
 ```
 
-Compare with last year
+## Data check 
+
+Compare v2018 with last year v2017
 ```{r, eval=FALSE}
 
 library(plotly)
@@ -486,8 +521,7 @@ library(plotly)
 new <- read.csv("data/mean_catch.csv")
 new_filt <- new %>% 
   #filter(stock_id_taxonkey == "Carangidae-31_400314") %>% 
-  mutate(log_mean_catch = log(mean_catch+1)) %>% 
-  rename(new_log_catch = log_mean_catch) %>% 
+  mutate(new_log_catch = log(mean_catch+1)) %>% 
   filter(Year == 2014) %>% 
   dplyr::select(rgn_id, stock_id_taxonkey, new_log_catch) 
 
@@ -495,25 +529,106 @@ old <- read.csv("../v2017/data/mean_catch.csv")
 old_filt <- old %>% 
   #filter(stock_id_taxonkey == "Carangidae-31_400314") %>% 
   rename(Year = year) %>% 
-  mutate(log_mean_catch = log(mean_catch+1)) %>% 
-  rename(old_log_catch = log_mean_catch) %>% 
+  mutate(old_log_catch = log(mean_catch+1)) %>%
   filter(Year == 2014) %>% 
   dplyr::select(rgn_id, stock_id_taxonkey, old_log_catch)
   
-
 check <- old_filt %>% 
   left_join(new_filt, by = c("rgn_id","stock_id_taxonkey")) %>% 
   mutate(new_log_catch = ifelse(is.na(new_log_catch), 0, new_log_catch)) %>% 
   mutate(old_log_catch = ifelse(is.na(old_log_catch), 0, old_log_catch))
 
+## For quick plot
 plot(check$old_log_catch,check$new_log_catch)
 abline(col="red", 1,1)
 
-## Plot with plotly to see region id when hovering over points
+## Plot with plotly to see region id when hovering over points (takes a while)
 plot_check <- ggplot(check, aes(old_log_catch, new_log_catch, col = rgn_id)) +
   geom_point(alpha = 0.4) +
   geom_abline(col="red") +
-  ggtitle("Catch Comparison for 2014")
+  ggtitle("Catch Comparison for 2014 (v2017, v2018)")
+ggplotly(plot_check)
+
+```
+
+Plot v2016 with v2017 mean catch
+```{r, eval=FALSE}
+old_2016 <- read.csv("../v2016/data/mean_catch.csv")
+old_2016_filt <- old_2016 %>%
+  rename(Year = year) %>% 
+  mutate(old_2016_log_catch = log(mean_catch+1)) %>%
+  filter(Year == 2010) %>% 
+  dplyr::select(rgn_id, stock_id_taxonkey, old_2016_log_catch)
+old_2017_filt <- old %>% 
+  rename(Year = year) %>% 
+  mutate(old_log_catch = log(mean_catch+1)) %>%
+  filter(Year == 2010) %>% 
+  dplyr::select(rgn_id, stock_id_taxonkey, old_log_catch)
+
+check <- old_2017_filt %>% 
+  left_join(old_2016_filt, by = c("rgn_id","stock_id_taxonkey")) %>% 
+  mutate(old_log_catch = ifelse(is.na(old_log_catch), 0, old_log_catch)) %>% 
+  mutate(old_2016_log_catch = ifelse(is.na(old_2016_log_catch), 0, old_2016_log_catch))
+
+plot_check <- ggplot(check, aes(old_2016_log_catch, old_log_catch, col = rgn_id)) +
+  geom_point(alpha = 0.4) +
+  geom_abline(col="red") +
+  ggtitle("Catch Comparison for 2010 (v2016, v2017)") # 2010 is most recent shared year
+ggplotly(plot_check)
+```
+
+Use v2018 mean Landings catch to compare with v2017 mean catch
+```{r}
+new <- read.csv("data/mean_catch_landings.csv")
+new_filt <- new %>% 
+  mutate(new_log_catch = log(mean_catch+1)) %>% 
+  filter(Year == 2014) %>% 
+  dplyr::select(rgn_id, stock_id_taxonkey, new_log_catch) 
+
+old <- read.csv("../v2017/data/mean_catch.csv")
+old_filt <- old %>% 
+  rename(Year = year) %>% 
+  mutate(old_log_catch = log(mean_catch+1)) %>%
+  filter(Year == 2014) %>% 
+  dplyr::select(rgn_id, stock_id_taxonkey, old_log_catch)
+  
+check <- old_filt %>% 
+  left_join(new_filt, by = c("rgn_id","stock_id_taxonkey")) %>% 
+  mutate(new_log_catch = ifelse(is.na(new_log_catch), 0, new_log_catch)) %>% 
+  mutate(old_log_catch = ifelse(is.na(old_log_catch), 0, old_log_catch))
+
+## Plot with plotly to see region id when hovering over points (takes a while)
+plot_check <- ggplot(check, aes(old_log_catch, new_log_catch, col = rgn_id)) +
+  geom_point(alpha = 0.4) +
+  geom_abline(col="red") +
+  ggtitle("Catch Comparison for 2014 (v2017, v2018 Landings)")
+ggplotly(plot_check)
+
+```
+
+
+Compare v2018 Catch (IUU+Reported+Discards) with v2018 Landings only (IUU+Reported)
+```{r, eval=FALSE}
+
+all_catch <- read.csv("data/mean_catch.csv") %>% 
+  filter(Year == 2015) %>% 
+  mutate(log_mean_catch = log(mean_catch+1)) %>% 
+  select(rgn_id, stock_id_taxonkey, Year, log_mean_catch)
+ 
+landings <- read.csv("data/mean_catch_landings.csv") %>% 
+  filter(Year == 2015) %>% 
+  mutate(log_mean_landings = log(mean_catch+1)) %>% 
+  select(rgn_id, stock_id_taxonkey, Year, log_mean_landings)
+
+check <- all_catch %>% 
+  left_join(landings, by = c("rgn_id","stock_id_taxonkey")) %>% 
+  mutate(log_mean_landings = ifelse(is.na(log_mean_landings), 0, log_mean_landings)) %>% 
+  mutate(log_mean_catch = ifelse(is.na(log_mean_catch), 0, log_mean_catch))
+
+plot_check <- ggplot(check, aes(log_mean_catch, log_mean_landings, col = rgn_id)) +
+  geom_point(alpha = 0.4) +
+  geom_abline(col="red") +
+  ggtitle("Landings v Total Catch (v2018, DY 2015)")
 ggplotly(plot_check)
 
 ```
