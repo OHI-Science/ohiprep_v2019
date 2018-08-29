@@ -336,7 +336,7 @@ Filter out all stocks that don't meet our conditions:
 (3) Keep all stocks with time series of 20 years or more
 
 There are some missing OHI and FAO regions, don't worry? (Iwen 8/27) 
-```{r prep_data_bbmsy, eval=F}
+```{r prep_data_bbmsy, eval=FALSE}
 
 ## set variables to filter by
 min_yrs = 20
@@ -391,7 +391,7 @@ DT::datatable(head(stks,n=100))
 ```
 
 Plot total catch v landings stocks data per fao region
-```{r}
+```{r, eval=FALSE}
 
 stks <- stks %>% 
   filter(Year == 2015) %>% 
@@ -481,7 +481,7 @@ catch_zeros <- catch_zeros %>%
 ```
 
 ## Calculate Mean Catch
-Calculate mean catch for ohi regions (using data from 1980 onward). These data are used to weight the RAM b/bmys values 
+Calculate mean catch for ohi regions (using data from 1980 onward). These data are used to weight the RAM b/bmsy values 
 ```{r, eval=FALSE}
 mean_catch <- catch_zeros %>%
   filter(Year >= 1980) %>%
@@ -578,7 +578,7 @@ ggplotly(plot_check)
 ```
 
 Use v2018 mean Landings catch to compare with v2017 mean catch
-```{r}
+```{r, eval=FALSE}
 new <- read.csv("data/mean_catch_landings.csv")
 new_filt <- new %>% 
   mutate(new_log_catch = log(mean_catch+1)) %>% 
