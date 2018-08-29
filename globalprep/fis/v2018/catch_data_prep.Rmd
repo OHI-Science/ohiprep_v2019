@@ -26,7 +26,7 @@ An example of our aggregation proces: New Zealand is located entirely in FAO reg
 
 ## Updates from previous assessment
 
-Using Watson 2018 data this year. Catch data now goes from 1950 - 2015. Previously catch data was only available through 2014 from the Sea Around Us (SAUP). New Watson data doesn't have Taxon Key information. Add it in from Watson 2017 data after aggregating catch to work with a relativey smaller dataframe. No longer using SAUP to create cells.csv - took a raster template of Watson (watson_cell_id_rast.tif) created by Casey for a different project.
+Using Watson 2018 data this year, which now incorporates artisanal fishing in addition to commerical (last year Sea Around Us data only included [commercial](https://rawgit.com/OHI-Science/ohi-global/draft/global_supplement/Supplement.html#561_fisheries_(subgoal_of_food_provision))). Catch data now goes from 1950 - 2015. Previously catch data was only available through 2014 from the Sea Around Us (SAUP). New Watson data doesn't have Taxon Key information. Add it in from Watson 2017 data after aggregating catch to work with a relativey smaller dataframe. No longer using SAUP to create cells.csv - took a raster template of Watson (watson_cell_id_rast.tif) created by Casey for a different project.
 
 ***
 
