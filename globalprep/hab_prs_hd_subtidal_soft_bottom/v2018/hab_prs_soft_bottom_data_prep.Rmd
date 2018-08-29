@@ -304,9 +304,9 @@ ref_point_median <- min(ref_median$ref_median) # 0.8590695
 
 
 ## Rescale for second time:  
-  data_rescaled_2 <- data_rescaled %>%
-    mutate(density_rescaled_median = inv_dens_rescaled_max/ref_point_median) %>%
-    mutate(density_rescaled_median_capped = ifelse(density_rescaled_median > 1, 
+data_rescaled_2 <- data_rescaled %>%
+  mutate(density_rescaled_median = inv_dens_rescaled_max/ref_point_median) %>%
+  mutate(density_rescaled_median_capped = ifelse(density_rescaled_median > 1, 
                                                    1, 
                                                    density_rescaled_median))
 
@@ -443,6 +443,14 @@ compare_pressure <-  read.csv("output/hd_sb_subtidal.csv")%>%
 
 plot(pressure ~old_pressure, data=compare_pressure)
 abline(0,1, col = 'red')
+
+compare_pressure_plot <- ggplot(data = compare_pressure, aes(x = old_pressure, y = pressure, label = rgn_id))+
+  geom_point()+
+  geom_abline(color = "red")
+
+plot(compare_plot)
+ggplotly(compare_pressure_plot)
+
 
 
 ##Trend
