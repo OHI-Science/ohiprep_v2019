@@ -227,7 +227,6 @@ if(file.exists(ocean_mask_prev)){
 s <- raster(sprintf("%s/int/ocean_mask.tif", dir_prs_slr, scen_year))
 plot(s, col = "red")
 
-
 ## reproject to mollweide
 annual_means <- list.files(file.path(dir_prs_slr, "int/msla_annual_mean"), full = TRUE)
 foreach(file = annual_means) %dopar% { # file = annual_means[1]
@@ -240,7 +239,6 @@ foreach(file = annual_means) %dopar% { # file = annual_means[1]
              filename = sprintf("%s/msla_annual_mol/mlsa_annual_mol_%s.tif", 
                                 msla_int, yr), overwrite = TRUE)
 }
-
 
 annual_mol <- list.files(file.path(dir_prs_slr, "int/msla_annual_mol"), full = TRUE)
 foreach(file = annual_mol) %dopar% { # file = annual_mol[2]
@@ -275,16 +273,6 @@ vals <- foreach(i = 1993:2015, .combine = c) %dopar% { # i = 1993
     getValues() %>%
     na.omit()
 }
-
-# for(i in 1993:2015){ # i = 1993
-#   print(i)
-#   m <- coastal_rasts[which(str_sub(coastal_rasts, -8, -5) == i)] %>%
-#     raster() %>%
-#     getValues() %>%
-#     na.omit()
-#   
-#   vals <- c(vals, m)
-# }
 
 ref_point_slr <- quantile(vals, 0.9999)
 
@@ -322,7 +310,6 @@ foreach(file = coastal_rasts) %dopar% { # file = coastal_rasts[10]
     calc(fun = function(x){ifelse(x < 0, 0, x)}) %>% # set all negative values to 0
     calc(fun = function(x){ifelse(x > ref, 1, x/ref)}, # set equal to one if greater than ref, otherwise scale
          filename = sprintf("%s/output/slr_%s.tif", dir_prs_slr, yr), overwrite = TRUE) }
-
 ```
 
 
@@ -346,47 +333,41 @@ rasterVis::histogram(r_new, main = sprintf("Sea Level Pressure %s new data", sce
 
 ## raster/zonal data, zones tifs created & spatial rgn updated in 2017
 slr_loc <- file.path(dir_prs_slr, "output")
+
+rasts <- list.files(slr_loc, full.names = TRUE) %>% str_subset(pattern = ".tif$")
+stack_slr <- stack(rasts) # read in raster files
 zones <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/regions_eez_with_fao_ant.tif"))
-zones_shp <- st_read(file.path(dir_M, "git-annex/globalprep/spatial/v2017"), "regions_2017_update")
 
 rgn_data <- read_sf(file.path(dir_M, "git-annex/globalprep/spatial/v2017"), "regions_2017_update") %>%
   st_set_geometry(NULL) %>%
   dplyr::filter(rgn_type == "eez") %>%
   dplyr::select(rgn_id = rgn_ant_id, rgn_name)
 
-rasts <- list.files(slr_loc, full.names = TRUE) %>% str_subset(pattern = ".tif$")
-stack_slr <- stack(rasts) # read in raster files
-
 ## extract data for each region
-## fyi takes forever, about 6hrs for v2018...
+## fyi takes forever, about 6hrs for v2018 so start just before leaving for the day...
 regions_stats <- zonal(stack_slr, zones, fun = "mean", na.rm = TRUE, progress = "text") %>% data.frame()
+rgn_stats_long <- foreach(i = zones, .packages = c("raster", "dplyr"), .combine = "rbind") %dopar% {
+  zonal(stack_slr, zones, fun = "mean", na.rm = TRUE, progress = "text") %>% data.frame()
+}
 
 # t0 <- Sys.time()
+# zones_shp <- st_read(file.path(dir_M, "git-annex/globalprep/spatial/v2017"), "regions_2017_update") %>% 
+#   filter(rgn_type == "eez" & rgn_id <= 250 & rgn_id != 213)
+# rgn_data <- rgn_data %>% filter(rgn_id <= 250 & rgn_id != 213)
 # 
-# registerDoParallel(10)
-# vec <- vector(mode = "numeric", length = 3)
-# 
-# rgn_stats_long <- foreach(i = 1:nlayers(stack_slr), .packages = c("raster", "dplyr"), .combine = "rbind") %do% {
-#   yr <- as.integer(str_sub(rasts[i], -8, -5))
-#   slr_rast <- stack_slr[[i]]
-# 
+# rgn_stats_long <- foreach(i = 1:nlayers(stack_slr), .packages = c("raster", "dplyr"), .combine = "rbind") %dopar% {
 #   zonal_cmp_fun <- compiler::cmpfun(function(x){
-#     rgn_mean <- cellStats(rasterize(x, crop(slr_rast, as.matrix(extent(x))), mask = TRUE), 
+#     rgn_mean <- cellStats(rasterize(x, crop(stack_slr[[i]], as.matrix(extent(x))), mask = TRUE),
 #                           stat = "mean", na.rm = TRUE)
 #   })
-# 
-#   foreach(j = rgn_data$rgn_id, .packages = c("dplyr"), .combine = "rbind") %dopar% {
-#     rgn <- zones_shp %>% filter(rgn_id == j & rgn_type == "eez")
-#     vec[1] <- yr
-#     vec[2] <- j
-#     vec[3] <- zonal_cmp_fun(rgn)
-#     rgn_stats_long <- vec
+#   foreach(j = rgn_data$rgn_id[1:20], .packages = c("dplyr"), .combine = "rbind") %dopar% {
+#     # rgn <- zones_shp %>% filter(rgn_id == j)
+#     rgn_stats_long <- c(as.integer(str_sub(rasts[i], -8, -5)), j, 
+#                         zonal_cmp_fun(zones_shp %>% filter(rgn_id == j)))
 #   }
 # }
-# 
-# regions_stats_test <- rgn_stats_long %>% data.frame() %>% 
+# regions_stats_test <- rgn_stats_long %>% data.frame() %>%
 #   rename(year = X1, rgn_id = X2, pressure_score = X3) # rownames not used ok
-# 
 # Sys.time() - t0
 
 
