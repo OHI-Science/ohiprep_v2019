@@ -230,10 +230,13 @@ ram_bmsy_gf_check2 <- ram_bmsy_gf %>%
     data.frame(., ram_bmsy_predict_error)
   })
 
-ggplot(data = filter(ram_bmsy_gf_check2, year==2014), aes(y=ram_bmsy_predict_error, x=ram_bmsy)) +
+plot <- ggplot(data = filter(ram_bmsy_gf_check2, year==2015), aes(y=ram_bmsy_predict_error, x=ram_bmsy, col = assessid)) +
   geom_point() +
   theme_bw() +
   geom_abline(slope=1, intercept=0, color="red")
+
+ggplotly(plot) # library(plotly)
+
 summary(lm(ram_bmsy_predict_error ~ ram_bmsy, data=filter(ram_bmsy_gf_check2, year==2015)))
 
 ```
@@ -264,8 +267,8 @@ wat_sp <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_cat
  write.csv(tmp, "int/unmatched_RAM_species.csv", row.names=FALSE)
 
 # Then I hand-looked up each of the missing ones to generate this list
- ram_name_corr <- read.csv("int/RAM_species_to_SAUP.csv", stringsAsFactors = FALSE) %>%
-   filter(!is.na(SAUP_species))  # SAUP to RAM name conversion
+ ram_name_corr <- read.csv("int/RAM_species_to_Watson.csv", stringsAsFactors = FALSE) %>%
+   filter(!is.na(Watson_species))  # SAUP to RAM name conversion
 
   ram_name_corr
 
