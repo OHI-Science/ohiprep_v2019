@@ -21,30 +21,30 @@ pdf_document:
 This script prepares the RAM B/Bmsy data:
 1. Relevant data are collected from the RAM database
 2. Missing years are gapfilled when appropriate
-3. RAM and SAUP species names are harmonized in a few cases
+3. RAM and Watson species names are harmonized in a few cases
 4. RAM stocks are associated with the corresponding OHI and FAO regions
 
 
 ## Updates from previous assessment
-Data describing the spatial boundaries of the RAM stocks were not previously available. We meant to gapfill RAM B/Bmsy values last year, but due to an oversight we did not use gapfilled data.
+This year we have additional stocks without spatial information from Christopher Free. We combined ohi and fao region id information to the additional stocks in `fao_ohi_rgns.Rmd` and saved the file in `int/RAM_fao_ohi_rgns.csv`. Watson species names should be similar if not the same as the SAUP species names used prior this the 2018 assessment (Iwen 8/30). Data describing the spatial boundaries of the RAM stocks were not previously available. We meant to gapfill RAM B/Bmsy values last year, but due to an oversight we did not use gapfilled data.
 
 ***
 
 # Data
 ## B/Bmsy values from stock assessments 
 
-Reference: RAM Legacy Stock Assessment Database v3.8. 2017. Shared with us by folks at UW.  http://ramlegacy.org.
+Reference: RAM Legacy Stock Assessment Database v4.41. 2018 Shared with us by folks at UW.  http://ramlegacy.org.
 
 * Description: B/Bmsy value by stock and year (other data, which we do not use, are also available in the database)
 * Native data resolution: stock (fish stock, species and region specific)
-* Time range: 1950 - 2014
+* Time range: 1950 - 2016
 * Format: R data files (.rds)
 
 
 ## Stock range data 
 Reference: Christopher M. Free. 2017. Mapping fish stock boundaries for the original Ram Myers stock-recruit database. https://marine.rutgers.edu/~cfree/mapping-fish-stock-boundaries-for-the-original-ram-myers-stock-recruit-database/. downloaded 9/25/2017.
 
-* Downloaded: 9/25/2017
+* Downloaded: 8/20/2018
 * Description: Shapefiles for each stock describing their distribution
 * Native data resolution: Spatial shapefiles
 * Format: Shapefiles
@@ -54,9 +54,10 @@ Reference: Christopher M. Free. 2017. Mapping fish stock boundaries for the orig
 ## Setup
 
 ``` {r setup, message = FALSE, warning = FALSE}
-
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
+```
 
+```{r}
 ## highlight out when knitting
 # setwd("globalprep/fis/v2017")
 
@@ -72,7 +73,8 @@ setwd(here::here("globalprep","fis","v2018"))
 source('../../../src/R/common.R')
 
 ## Paths for data
-path_raw_data = file.path(dir_M, "git-annex/globalprep/_raw_data/SAUP/d2017")
+# path_raw_data = file.path(dir_M, "git-annex/globalprep/_raw_data/SAUP/d2017")
+path_raw_data = file.path(dir_M, "git-annex/globalprep/fis/v2018/int/annual_catch")
 
 ```
 
@@ -124,7 +126,7 @@ assessorid, mgmt, management authority) and stock by row
 
 ```{r load_data}
 
-load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2017/RAM v3.80/DB Files With Assessment Data/DBdata.RData"))
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.41 (8-20-18)/DB Files With Assessment Data/DBdata (assessment data only).RData"))
 
 ram_bmsy <- data.frame(timeseries) %>%
   dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
@@ -137,11 +139,14 @@ ram_bmsy <- data.frame(timeseries) %>%
 
 ## Gapfill RAM data when there are missing years
 
-For each stock, missing years are gapfilled using a linear regression model that includes years 2001 to 2014 (2014 is the final year of SAUP data).  To be included, there have to be 5 or more years of B/Bmsy data occuring from 2005 to 2014.
+For each stock: 
+- Missing years are gapfilled using a linear regression model that includes data from 2001 to 2015 (2015 is the final year of Watson data). To be included in the gapfilling, there have to be 5 or more years of B/Bmsy data occuring over the last 11 years of data, from 2005 to 2015.
+- We convert any predicted RAM B/Bmsy value less than the minimum observed B/Bmsy value to that the minimum observed value, as there are some negative predicted values.
 
-There are 225 RAM stocks with at least 5 years of B/Bmsy data from 2005 to 2014.  191 of these stocks have at least 1 year of gapfilled data.  
-
-A few of the predicted B/Bmsy values go below zero.  We convert anything with a RAM B/Bmsy value < 0.015 to 0.015, which is the minimum observed B/Bmsy value in the data.
+Summary: 
+- There are 389 RAM stocks with at least 5 years of B/Bmsy data from 2005 to 2015. 
+- 205 of these stocks have at least 1 year of gapfilled data.  
+- A few of the predicted B/Bmsy values go below zero. We convert anything with a RAM B/Bmsy value < 0.0026 to 0.0026, which is the minimum observed B/Bmsy value in the data.
 
 ```{r gapfill}
 
@@ -152,11 +157,11 @@ ram_gf_check <- ram_bmsy %>%
 ## based on this it seams reasonable to gap-fill missing values
 
 ram_bmsy_gf <- ram_bmsy %>%
-  filter(year >= 2001 & year <= 2014) %>%   # 2014 corresponds to the final year of SAUP catch data
+  filter(year >= 2001 & year <= 2015) %>%   # 2015 corresponds to the final year of Watson catch data
   group_by(assessid) %>%
-  mutate(years_data = length(ram_bmsy[year >= 2004])) %>%
+  mutate(years_data = length(ram_bmsy[year >= 2005])) %>%
   ungroup() %>%
-  filter(years_data >= 4) %>%
+  filter(years_data >= 5) %>%
   spread(year, ram_bmsy) %>%
   gather("year", "ram_bmsy", -assessid, -years_data) %>%
   mutate(year = as.numeric(year)) %>%  
@@ -167,11 +172,11 @@ ram_bmsy_gf <- ram_bmsy %>%
 tmp <- ram_bmsy_gf %>%
   dplyr::select(assessid, gapfilled) %>%
   unique()
-length(tmp$gapfilled)   # 225 stocks with at least 5 years of data in past 11 years
+length(tmp$gapfilled)   # 389 stocks with at least 5 years of data in past 11 years
 table(tmp$gapfilled)    
-sum(table(tmp$gapfilled))  # 191 stocks have at least one year of B/Bmsy values gapfilled
+sum(table(tmp$gapfilled))  # 305 stocks have at least one year of B/Bmsy values gapfilled
 
-# regression model for prediction for each stock
+## regression model for prediction for each stock
 ram_bmsy_gf <- ram_bmsy_gf %>%
   group_by(assessid) %>%
   do({
@@ -181,11 +186,11 @@ ram_bmsy_gf <- ram_bmsy_gf %>%
   }) %>%
   ungroup()
 
-# a few of the predicted B/Bmsy values go below zero.  We convert anything with a RAM BBmsy value < 0.015 to 0.015
-# which is the minimum observed B/Bmsy value in the data
+summary(ram_bmsy_gf)# a few of the predicted B/Bmsy values go below zero.  
 
+## We convert anything with a RAM BBmsy value < 0.0026 to 0.0026, which is the minimum observed B/Bmsy value in the data; add method documentation
 ram_bmsy_gf <- ram_bmsy_gf %>%
-  mutate(ram_bmsy_predict = ifelse(ram_bmsy_predict < 0.015, 0.015, ram_bmsy_predict)) %>%
+  mutate(ram_bmsy_predict = ifelse(ram_bmsy_predict < 0.0026, 0.0026, ram_bmsy_predict)) %>%
   mutate(method = ifelse(is.na(ram_bmsy), paste0("lm, ", gapfilled), NA)) %>%
   mutate(gapfilled = ifelse(is.na(ram_bmsy), "1", "0")) %>%
   mutate(ram_bmsy = ifelse(is.na(ram_bmsy), ram_bmsy_predict, ram_bmsy)) %>%
@@ -195,9 +200,9 @@ write.csv(ram_bmsy_gf, "int/ram_stock_bmsy_gf.csv", row.names=FALSE)
 
 ```
 
-
-
-The following code can be used to estimate the amount of error for each year due to gapfilling.  In the first example, the gapfilling model is estimated using all the data prior to 2014.  The model is then used to estimate the 2014 data and examine how accurate the estimates are.  In this case, we assume all years of data prior to 2014 is available (i.e., only one missing year of data), which often isn't the case becasue stocks are often missing multiple years of data.  The second example examines the error in the 2014 data if the B/Bmsy data only go to 2009 (i.e., 5 missing years of data).
+The following code can be used to estimate the amount of error for each year due to gapfilling. 
+- In the first example, the gapfilling model is estimated using all the data prior to 2015. The model is then used to estimate the 2015 data and examine how accurate the estimates are. In this case, we assume all years of data prior to 2015 is available (i.e., only one missing year of data), which often isn't the case becasue stocks are often missing multiple years of data.
+- The second example examines the error in the 2015 data if the B/Bmsy data only go to 2010 (i.e., 5 missing years of data - 2011 to 2015).
 
 ```{r gf error est}
 
@@ -205,22 +210,22 @@ The following code can be used to estimate the amount of error for each year due
 ram_bmsy_gf_check1 <- ram_bmsy_gf %>%
   group_by(assessid) %>%
   do({
-    mod <- lm(ram_bmsy ~ year, data= filter(., year < 2014))  ### change year to test different accuracy levels based on # years of data used in lm
+    mod <- lm(ram_bmsy ~ year, data= filter(., year < 2015))  ### change year to test different accuracy levels based on # years of data used in lm
     ram_bmsy_predict_error <- predict(mod, newdata=.[c('year')])
     data.frame(., ram_bmsy_predict_error)
   })
 
-ggplot(data = filter(ram_bmsy_gf_check1, year==2014), aes(y=ram_bmsy_predict_error, x=ram_bmsy)) +
+ggplot(data = filter(ram_bmsy_gf_check1, year==2015), aes(y=ram_bmsy_predict_error, x=ram_bmsy)) +
   geom_point() +
   theme_bw() +
   geom_abline(slope=1, intercept=0, color="red")
-summary(lm(ram_bmsy_predict_error ~ ram_bmsy, data=filter(ram_bmsy_gf_check1, year==2014)))
+summary(lm(ram_bmsy_predict_error ~ ram_bmsy, data=filter(ram_bmsy_gf_check1, year==2015)))
 
 # Example 2
 ram_bmsy_gf_check2 <- ram_bmsy_gf %>%
   group_by(assessid) %>%
   do({
-    mod <- lm(ram_bmsy ~ year, data= filter(., year < 2010))  ### change year to test different accuracy levels based on # years of data used in lm
+    mod <- lm(ram_bmsy ~ year, data= filter(., year <= 2010))  ### change year to test different accuracy levels based on # years of data used in lm
     ram_bmsy_predict_error <- predict(mod, newdata=.[c('year')])
     data.frame(., ram_bmsy_predict_error)
   })
@@ -229,15 +234,13 @@ ggplot(data = filter(ram_bmsy_gf_check2, year==2014), aes(y=ram_bmsy_predict_err
   geom_point() +
   theme_bw() +
   geom_abline(slope=1, intercept=0, color="red")
-summary(lm(ram_bmsy_predict_error ~ ram_bmsy, data=filter(ram_bmsy_gf_check2, year==2014)))
-
-
+summary(lm(ram_bmsy_predict_error ~ ram_bmsy, data=filter(ram_bmsy_gf_check2, year==2015)))
 
 ```
 
 ## Standardize species names
 
-In most cases, the RAM and SAUP data use the same species names, but there are a few exceptions.  The following code identifies species in the RAM data that are not in the SAUP data.  In these cases, different species names may be used (although not necessarily because some of the species may be present in RAM, but not SAUP, for other reasons).  For these species, I used fishbase to explore synonyms and create a table to harmonize the RAM species names with the SAUP species names (saved as: int/RAM_species_to_SAUP.csv).
+In most cases, the RAM and Watson data use the same species names, but there are a few exceptions.  The following code identifies species in the RAM data that are not in the Watson data. In these cases, different species names may be used (although not necessarily because some of the species may be present in RAM, but not Watson, for other reasons). For these species, I used fishbase to explore synonyms and create a table to harmonize the RAM species names with the Watson species names (saved as: int/RAM_species_to_Watson.csv).
 
 ```{r name harmonize}
 
@@ -248,16 +251,16 @@ ram_sp <- ram_bmsy_gf %>%
   unique() %>%
   arrange(scientificname)
 
-# SAUP species
-saup_sp <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2017/int/stock_catch_by_rgn.csv')) %>%
-  dplyr::rename(saup_scientificname = taxon_scientific_name) %>%
-  dplyr::select(saup_scientificname) %>%
+# Watson species (read in the datatable that includes TaxonKey)
+wat_sp <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv')) %>% 
+  dplyr::rename(wat_scientificname = TaxonName) %>%
+  dplyr::select(wat_scientificname) %>%
   unique() %>%
-  arrange(saup_scientificname)
+  arrange(wat_scientificname)
 
 
-# compare names
- tmp <- sort(setdiff(ram_sp$scientificname, saup_sp$saup_scientificname))
+# compare names - what's in RAM that's not in Watson (only 6 species differing)
+ tmp <- sort(setdiff(ram_sp$scientificname, wat_sp$wat_scientificname))
  write.csv(tmp, "int/unmatched_RAM_species.csv", row.names=FALSE)
 
 # Then I hand-looked up each of the missing ones to generate this list

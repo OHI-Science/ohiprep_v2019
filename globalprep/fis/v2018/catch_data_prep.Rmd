@@ -137,9 +137,6 @@ These files are large so using the data.table package is recommended due to R me
 cells <- read_csv('cells.csv') %>%
   dplyr::select(-X1)
 
-# cells_old <- read_csv('../v2017/cells.csv') %>%
-#   dplyr:: select(-X1)
-
 ```
 
 # Aggregate catch
@@ -364,7 +361,7 @@ df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_b
               dplyr::filter(avg_ann_catch >= min_tons,        #keep only those stocks that meet our conditions
                               nyrs >= min_yrs) %>%
               dplyr::left_join(taxon_res, by = "CommonName") %>%                  #add resilience information
-              dplyr::select(Year, TaxonName, CommonName, fao_rgn, stock_id, Taxonkey, Resilience, tons)
+              dplyr::select(year = Year, TaxonName, CommonName, fao_rgn, stock_id, Taxonkey, Resilience, tons)
 
 ## check on stocks that don't have a resilience
 no_res <- filter(stks, is.na(Resilience)) %>%
@@ -384,7 +381,7 @@ Take a look at the stock data datatable
 ```{r, eval=FALSE}
 
 stks = read.csv('data/stock_catch.csv')
-stks_landings = read.csv('data/stock_catch_landings.csv')
+#stks_landings = read.csv('data/stock_catch_landings.csv')
 
 DT::datatable(head(stks,n=100))
 
@@ -394,14 +391,14 @@ Plot total catch v landings stocks data per fao region
 ```{r, eval=FALSE}
 
 stks <- stks %>% 
-  filter(Year == 2015) %>% 
+  filter(year == 2015) %>% 
   mutate(log_all_catch = log(tons+1)) %>% 
-  dplyr::select(-Year, -Resilience, -tons) 
+  dplyr::select(-year, -Resilience, -tons) 
 
 stks_landings <- stks_landings %>% 
-  filter(Year == 2015) %>%  
+  filter(year == 2015) %>%  
   mutate(log_landings = log(tons+1)) %>% 
-  dplyr::select(-Year, -Resilience, -tons)
+  dplyr::select(-year, -Resilience, -tons)
 
 both <- stks %>%
   left_join(stks_landings, by = c("TaxonName", "CommonName", "fao_rgn", "stock_id", "Taxonkey"))
@@ -443,8 +440,8 @@ catch <- catch %>%
 
 ## calculate total annual catch for each stock
 catch <- catch %>%
-  dplyr::select(Year, rgn_id, fao_id, stock_id, Taxonkey, tons) %>%
-  group_by(rgn_id, fao_id, Taxonkey, stock_id, Year) %>%
+  dplyr::select(year, rgn_id, fao_id, stock_id, Taxonkey, tons) %>%
+  group_by(rgn_id, fao_id, Taxonkey, stock_id, year) %>%
   summarize(catch = sum(tons)) %>%
   ungroup()
 
@@ -463,16 +460,16 @@ For years with no reported catch, add zero values (after first reported catch)
 
 ## these data have no zero catch values, so add years with no reported catch to data table:
 catch_zeros <- catch %>%
-  spread(Year, catch) %>%
+  spread(year, catch) %>%
   data.frame() %>%
-  gather("Year", "catch", num_range("X", min(catch$Year):max(catch$Year))) %>%
-  mutate(Year = as.numeric(gsub("X", "", Year))) %>%
+  gather("year", "catch", num_range("X", min(catch$year):max(catch$year))) %>%
+  mutate(year = as.numeric(gsub("X", "", year))) %>%
   mutate(catch = ifelse(is.na(catch), 0, catch))
 
 ## this part eliminates the zero catch values prior to the first reported non-zero catch   
 catch_zeros <- catch_zeros %>%
   group_by(fao_id, Taxonkey, stock_id, rgn_id) %>%
-  arrange(Year) %>%
+  arrange(year) %>%
   mutate(cum_catch = cumsum(catch)) %>%
   filter(cum_catch > 0) %>%
   dplyr::select(-cum_catch) %>%
@@ -484,7 +481,7 @@ catch_zeros <- catch_zeros %>%
 Calculate mean catch for ohi regions (using data from 1980 onward). These data are used to weight the RAM b/bmsy values 
 ```{r, eval=FALSE}
 mean_catch <- catch_zeros %>%
-  filter(Year >= 1980) %>%
+  filter(year >= 1980) %>%
   group_by(rgn_id, fao_id, Taxonkey, stock_id) %>%
   mutate(mean_catch = mean(catch, na.rm=TRUE)) %>% # mean catch for each stock (in a specific ohi-fao region)
   filter(mean_catch != 0)  %>%      ## some stocks have no reported catch for time period
@@ -502,8 +499,8 @@ data.frame(filter(mean_catch, stock_id == "Marine_fishes_not_identified-57" & rg
 
 mean_catch_toolbox <- mean_catch %>%
   mutate(stock_id_taxonkey = paste(stock_id, Taxonkey, sep="_")) %>%
-  dplyr::select(rgn_id, stock_id_taxonkey, Year, mean_catch) %>%
-  filter(Year >= 2001) %>%  # filter to include only analysis years
+  dplyr::select(rgn_id, stock_id_taxonkey, year, mean_catch) %>%
+  filter(year >= 2001) %>%  # filter to include only analysis years
   data.frame()
 
 write.csv(mean_catch_toolbox, "data/mean_catch.csv", row.names=FALSE)
@@ -522,15 +519,15 @@ new <- read.csv("data/mean_catch.csv")
 new_filt <- new %>% 
   #filter(stock_id_taxonkey == "Carangidae-31_400314") %>% 
   mutate(new_log_catch = log(mean_catch+1)) %>% 
-  filter(Year == 2014) %>% 
+  filter(year == 2014) %>% 
   dplyr::select(rgn_id, stock_id_taxonkey, new_log_catch) 
 
 old <- read.csv("../v2017/data/mean_catch.csv")
 old_filt <- old %>% 
   #filter(stock_id_taxonkey == "Carangidae-31_400314") %>% 
-  rename(Year = year) %>% 
+  rename(year = year) %>% 
   mutate(old_log_catch = log(mean_catch+1)) %>%
-  filter(Year == 2014) %>% 
+  filter(year == 2014) %>% 
   dplyr::select(rgn_id, stock_id_taxonkey, old_log_catch)
   
 check <- old_filt %>% 
@@ -555,7 +552,6 @@ Plot v2016 with v2017 mean catch
 ```{r, eval=FALSE}
 old_2016 <- read.csv("../v2016/data/mean_catch.csv")
 old_2016_filt <- old_2016 %>%
-  rename(Year = year) %>% 
   mutate(old_2016_log_catch = log(mean_catch+1)) %>%
   filter(Year == 2010) %>% 
   dplyr::select(rgn_id, stock_id_taxonkey, old_2016_log_catch)
@@ -582,14 +578,13 @@ Use v2018 mean Landings catch to compare with v2017 mean catch
 new <- read.csv("data/mean_catch_landings.csv")
 new_filt <- new %>% 
   mutate(new_log_catch = log(mean_catch+1)) %>% 
-  filter(Year == 2014) %>% 
+  filter(year == 2014) %>% 
   dplyr::select(rgn_id, stock_id_taxonkey, new_log_catch) 
 
 old <- read.csv("../v2017/data/mean_catch.csv")
 old_filt <- old %>% 
-  rename(Year = year) %>% 
   mutate(old_log_catch = log(mean_catch+1)) %>%
-  filter(Year == 2014) %>% 
+  filter(year == 2014) %>% 
   dplyr::select(rgn_id, stock_id_taxonkey, old_log_catch)
   
 check <- old_filt %>% 
@@ -611,14 +606,14 @@ Compare v2018 Catch (IUU+Reported+Discards) with v2018 Landings only (IUU+Report
 ```{r, eval=FALSE}
 
 all_catch <- read.csv("data/mean_catch.csv") %>% 
-  filter(Year == 2015) %>% 
+  filter(year == 2015) %>% 
   mutate(log_mean_catch = log(mean_catch+1)) %>% 
-  select(rgn_id, stock_id_taxonkey, Year, log_mean_catch)
+  select(rgn_id, stock_id_taxonkey, year, log_mean_catch)
  
 landings <- read.csv("data/mean_catch_landings.csv") %>% 
-  filter(Year == 2015) %>% 
+  filter(year == 2015) %>% 
   mutate(log_mean_landings = log(mean_catch+1)) %>% 
-  select(rgn_id, stock_id_taxonkey, Year, log_mean_landings)
+  select(rgn_id, stock_id_taxonkey, year, log_mean_landings)
 
 check <- all_catch %>% 
   left_join(landings, by = c("rgn_id","stock_id_taxonkey")) %>% 
@@ -640,10 +635,10 @@ These data determine the tonnes of food provided by fisheries.  Ultimately, the 
 ```{r tonnes fp, eval=F}
 
 total_catch_FP <- mean_catch %>%
-  group_by(rgn_id, Year) %>%
+  group_by(rgn_id, year) %>%
   summarize(fis_catch = sum(catch)) %>%
-  dplyr::select(rgn_id, Year, fis_catch) %>%
-  filter(Year >= 2005) # filter to include only the relevant analysis years
+  dplyr::select(rgn_id, year, fis_catch) %>%
+  filter(year >= 2005) # filter to include only the relevant analysis years
 
 write.csv(total_catch_FP, "data/FP_fis_catch.csv", row.names=FALSE)
 

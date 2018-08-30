@@ -20,7 +20,7 @@ A description of files:
    - `data/mean_catch.csv`
    - `data/FP_fis_catch.csv`
 
-* catch_taxon_key.Rmd: Adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations
+* catch_taxon_key.Rmd: Adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations in catch_data_prep.Rmd
  
    - `int/watson_taxon_key.csv`: unique taxon key extracted from 2017 Watson data
 
@@ -42,6 +42,8 @@ A description of files:
    - `data/fis_bbmsy_gf.csv`
    - `data/fis_bbmsy.csv`
 
+
+Supporting files:
 
 * fao_ohi_rgns.Rmd: Adds FAO and OHI region IDs to newly added stocks with no spatial information. Serves as documentation and only needed if adding new stocks without existing region identification.
 

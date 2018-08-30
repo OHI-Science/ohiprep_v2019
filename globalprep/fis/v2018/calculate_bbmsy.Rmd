@@ -16,7 +16,7 @@ pdf_document:
   toc: true
 ---
 
-To calculate the status of global fish stocks from the Sea Around Us catch data we use catch-MSY (CMSY) developed by [Martell and Froese (2012)](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-2979.2012.00485.x/full). This model requires catch and resilience information for each stock. Stocks are defined by FAO areas and are limited to only those records where catch is reported at the species level.
+To calculate the status of global fish stocks from the Watson 2018 catch data we use catch-MSY (CMSY) developed by [Martell and Froese (2012)](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-2979.2012.00485.x/full). This model requires catch and resilience information for each stock. Stocks are defined by FAO areas and are limited to only those records where catch is reported at the species level.
 
 The [`datalimited`](https://github.com/datalimited/datalimited) R package, developed by Sean Anderson, is used to run CMSY.
 
@@ -36,9 +36,13 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message 
 library(datalimited) #has the 4 catch only models
 library(tidyverse)
 library(doParallel)
-registerDoParallel(cores = 8)
+library(here)
 
-source('~/github/ohiprep/src/R/common.R')
+setwd(here::here("globalprep/fis/v2018"))
+
+registerDoParallel(cores = 5)
+
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
 
 ```
 
@@ -49,8 +53,7 @@ Read in catch data aggregated from half degree cell to OHI region [catch_data_pr
 ```{r catch_data}
 
 catch <- read_csv('data/stock_catch.csv') %>%
-          rename(common = taxon_common_name) %>%
-          select(-X1)
+          rename(common = CommonName)
 
 ```
 
@@ -58,21 +61,28 @@ catch <- read_csv('data/stock_catch.csv') %>%
 
 ```{r cmsy, eval=F}
 
-if (!file.exists(file.path(dir_M,"git-annex/globalprep/fis/v2017/int/cmsy-fits.rds"))) {
+if (!file.exists(file.path(dir_M,"git-annex/globalprep/fis/v2018/int/cmsy-fits.rds"))) {
   
 cmsy_fits <- plyr::dlply(catch, c("stock_id", "common"), function(x) {
   
     #make sure the data is ordered from 1950 to 2010
     x <- arrange(x,year)
+    
     out <- cmsy(ct = x$tons, yr = x$year,  start_r = resilience(x$Resilience[1]), 
       reps = 2e4)
+    
     out$year <- x$year
     out
+    
   }, .parallel = TRUE)
-saveRDS(cmsy_fits, file = file.path(dir_M,"git-annex/globalprep/fis/v2017/int/cmsy-fits.rds"))
+
+saveRDS(cmsy_fits, file = file.path(dir_M,"git-annex/globalprep/fis/v2018/int/cmsy-fits.rds"))
+
 } else {
-  cmsy_fits <- readRDS(file.path(dir_M,"git-annex/globalprep/fis/v2017/int/cmsy-fits.rds"))
-}
+  
+  cmsy_fits <- readRDS(file.path(dir_M,"git-annex/globalprep/fis/v2018/int/cmsy-fits.rds"))
+
+  }
 
 fake_data <- data.frame(bbmsy_q2.5 = NA, bbmsy_q25 = NA, bbmsy_q50 = NA, 
   bbmsy_q75 = NA, bbmsy_q97.5 = NA)
@@ -84,6 +94,7 @@ cmsy_bbmsy <- plyr::ldply(cmsy_fits, function(x) {
     bbmsy_out$year <- x$year
     bbmsy_out}, error = function(e) fake_data)
 })
+
 cmsy_bbmsy$model <- "CMSY"
 
 write.csv(cmsy_bbmsy,file='data/cmsy_bbmsy.csv')
@@ -92,6 +103,7 @@ write.csv(cmsy_bbmsy,file='data/cmsy_bbmsy.csv')
 
 Explore why there are some NAs (I think non convergance)
 
+(Iwen 8/29 - Estimates not converging at a value? review paper referenced)
 ```{r nas, eval=F}
 
 nas <- cmsy_bbmsy%>%
@@ -113,17 +125,15 @@ results <- read_csv('data/cmsy_bbmsy.csv') %>%
             filter(year == 2014)
 hist(results$bbmsy_mean)
 
-
-
 ```
 
-Why are so many around 0.4?
+Why are so many around 0.5 (extracting half of maximum sustainable yield)?
 
 ```{r}
 
-stocks_0.4 <- results %>%
-              filter(bbmsy_mean < 0.5,
-                     bbmsy_mean > 0.3)
+stocks_0.5 <- results %>%
+              filter(bbmsy_mean < 0.6,
+                     bbmsy_mean > 0.4)
 
 ```
 
