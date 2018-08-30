@@ -69,8 +69,6 @@ library(readr)
 # directory paths
 source('https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
 
-source('https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
-
 ```
 
 ## Download and save data
@@ -324,7 +322,7 @@ plot(new$value, new$old_value)
 abline(0,1, col="red")
 identify(new$value, new$old_value, labels = new$rgn_id)
 
-identify(old$old_pressure, old$pressure_score, labels = old$rgn_id)
+#identify(old$old_pressure, old$pressure_score, labels = old$rgn_id)
 
 
 ```
