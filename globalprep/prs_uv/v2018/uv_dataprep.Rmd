@@ -1,5 +1,5 @@
 ---
-title: "OHI 2017 Pressure: Ultraviolet Radiation"
+title: "OHI 2018 - Pressure: Ultraviolet Radiation"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -25,13 +25,13 @@ The Ultraviolet Radiation pressure layer is generated from daily data on Local N
 1. Determine which of these were anomalous, defined as greater than the mean plus 1 standard deviation  
 1. Sum weekly anomalies for each year/cell (for a total of 52 possible anomalies per year/cell)  
 1. Calculate the total number of anomalies in the reference period (in our case, 2004-2009, for a total of 52*5 anomalies per cell)  
-1. Calculate the total number of anomalies in the most recent 5 year period (2011-2015)    
-1. then for each cell, get the difference between current anomalies and reference anomolies    
-1. Rescale the data to be between 0-1 by using the 99.99th quantile as a reference point
+1. Calculate the total number of anomalies in 5-year periods (e.g. 2013-2017)    
+1. then for each cell, get the difference between current anomalies and reference anomalies (total over the reference period 2005-2009)    
+1. Rescale the data to be between 0-1 by using the 99.99th quantile as the reference point
 
 # Updates from previous assessment
 
-One additional year of data.
+One additional year of data, and revised data for years 2014-2015 were incorporated (though these revisions to the source data occured in 2016, the updated data were only first included in this - the 2018 - assessment). Added gapfilling where weeks with one or no days of data are gapfilled with days from previous and subsequent weeks. 
 
 ***
 
@@ -41,7 +41,8 @@ One additional year of data.
 **Native Data Resolution**: 1 degree  
 **Values**: Level-3 OMI Surface UV Irradiance and Erythemal Dose- OMUVBd  
 **Time Range**: Daily data from 2005 - 2017 (10/1/2004 through 7/14/2018, but only full years of data are used)
-**Format**: HDF5
+**Format**: NetCDF HDF5 (.he5.nc)
+**Downloaded**: July 24, 2018
 
 ***
   
@@ -78,15 +79,16 @@ library(httr)
 library(lubridate)
 library(googleVis)
 library(animation)
+library(plotly)
 
 ## update these 3 to reflect current assessment year, or whichever year data is being used!!!
 data_yr <- "d2018"
 raw_data_dir <- file.path(dir_M, "git-annex/globalprep/_raw_data/NASA_OMI_AURA_UV", data_yr)
-int_sp_data <- file.path(dir_M, "git-annex/globalprep/prs_uv/v2018/int")
-out_dir <- file.path(dir_M, sprintf("git-annex/globalprep/prs_uv/v2018/output/"))
+int_sp_data <- file.path(dir_M, "git-annex/globalprep/prs_uv/v2018/int") # intermediate spatial data location
+out_dir <- file.path(dir_M, sprintf("git-annex/globalprep/prs_uv/v2018/output"))
 
 ## years of data we are using for this data layer
-yrs  <- c(2005:2017)
+yrs <- c(2005:2017)
 mths <- str_pad(1:12, 2, "left", pad = "0")
 days_full <- seq(1, 358, 7)
 
@@ -95,7 +97,7 @@ ocean <- raster(file.path(dir_M, "model/GL-NCEAS-Halpern2008/tmp/ocean.tif"))
 ocean_shp <- st_read(file.path(dir_M, "git-annex/globalprep/spatial/d2014/data"), layer = "regions_gcs")
 land <- ocean_shp %>% filter(rgn_typ %in% c("land", "land-disputed", "land-noeez")) %>% st_geometry()
 
-## set mollweide projection CRS
+## define mollweide projection CRS
 mollCRS <- crs("+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
  
 ## define colors in spectral format for plotting rasters -- rainbow color scheme  
@@ -188,14 +190,12 @@ check_ndays <- files_df %>%
 Calculate weekly means and standard deviations across all years:
 
 ```{r calc weekly means and st devs, eval = F}
-
-## for every week in each year in the time series, calculate the weekly mean and standard deviation
+## for every week in each year of the time series, calculate weekly mean and standard deviation
 registerDoParallel(3)
 
-# j = 22; yr = 2016 # for testing
-## note: 2016 wk 22 has only 4 layers (and 4th is all NA) and length(days)=52 because week 23 is all missing
+## note: 2016 wk 22 has only 4 layers (4th layer all NAs) and length(days)=52; missing all week 23
 
-foreach (yr = yrs) %dopar% {
+foreach (yr = yrs) %dopar% { # j = 22; yr = 2016
   
   l <- files[substr(files, 96, 99) == yr]
   
@@ -211,14 +211,12 @@ foreach (yr = yrs) %dopar% {
   
   days <- days_df$doy
   weeks <- days_df$wk_of_yr
-  
-  
-  for (j in weeks[-length(weeks)]) { # print(days[j]:(days[j+1]-1))
+
+  for (j in weeks[-length(weeks)]) { # print(days[j]:(days[j+1]-1)) # checking without foreach+dopar
     
     ## gapfill for weeks with 1 or fewer days using prev + subseq. weeks
     if(days_df$nday_in_wk[j] < 2){
-      wk_files <- l[days[j-1]:(days[j+2]-1)]
-      
+      wk_files <- l[days[j-1]:(days[j+2]-1)] # gapfilling
     } else {
       wk_files <- l[days[j]:(days[j+1]-1)]
     }
@@ -272,8 +270,7 @@ foreach(i = match_weeks) %dopar% {
               filename = sprintf("%s/weekly_climatologies/mean_week_%s", int_sp_data, i),
               overwrite = TRUE)
   
-  sd  <- calc(w, fun = function(x){sd(x,na.rm = TRUE)}, 
-              progress = "text",
+  sd  <- calc(w, fun = function(x){sd(x, na.rm = TRUE)}, 
               filename = sprintf("%s/weekly_climatologies/sd_week_%s", int_sp_data, i),
               overwrite = TRUE)
   
@@ -284,14 +281,12 @@ foreach(i = match_weeks) %dopar% {
 ```
 
 
-
 ## Compare to Climatology
 
 Compare each week in each year to the climatology for that week. The climatology is equal to the mean plus one standard deviation.
 
 ```{r compare week to climatology, eval = F}
-
-## second loop to calculate annual positive anomalies
+## loop to calculate annual positive anomalies
 foreach (i = yrs) %dopar% {
   
   match_weeks <- names_weekly_df %>% filter(yr == i)
@@ -310,34 +305,12 @@ foreach (i = yrs) %dopar% {
 }
 ```
 
-```{r ref_period, eval = F}
-## in 2018 assessment gapfilled, testing here, can be deleted next year
-## visualize anomalies, effect of gapfilling
-
-pal <- colorRampPalette(rev(brewer.pal(9, "RdBu")))(35)
-anomalies <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
-                        pattern = "anomalies", full.names = TRUE)
-anomalies_not_gf <- list.files(file.path(int_sp_data, "annual_anomalies_diff_before_gf"), 
-                        pattern = "anomalies", full.names = TRUE)
-
-saveGIF({expr = for (i in 1:length(anomalies)){
-  r <- overlay(raster(anomalies[[i]]), raster(anomalies_not_gf[[i]]), fun = function(x, y) {x-y})
-  plot(r, 
-       col = pal, 
-       axes = FALSE, box = FALSE, legend = FALSE, 
-       main = sprintf("Number UV Anomalies %s", substr(anomalies[[i]], 99, 102)))
-  plot(land, add = TRUE)}},
-  ani.width = 800,
-  ani.height = 400,
-  movie.name = file.path(int_sp_data, "num_anom_gf_diff.gif"))
-```
-
 
 ## Calculate Differences
 
 Calculate the difference in total number of anomalies over a 5 year period compared to the first 5 years (2005-2009)
 
-```{r ref_period, eval = F}
+```{r calculate differences, eval = F}
 
 l <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
                         pattern = "anomalies", full.names = TRUE)
@@ -348,10 +321,6 @@ ref <- l[1:5] %>% stack() %>%
 
 plot(ref, col = cols, axes = FALSE, main = "Total Number of Anomalies 2005-2009")
 plot(land, add = TRUE)
-```
-
-
-```{r calc_differences, eval = F}
 
 registerDoParallel(4)
 
@@ -385,7 +354,7 @@ read.csv("../../supplementary_information/v2016/reference_points_pressures.csv",
              dplyr::select(ref_point) %>%
              as.numeric(.$ref_point)
 
-## get the reference point (resc_num = rescale number)
+## get the reference point (resc_num = rescale number, excludes baseline 2005_2009 tif)
 vals <- c()
 for(i in 2006:(max(yrs) - 4)){
   max_yr <- i + 4
@@ -420,7 +389,8 @@ foreach(i = 2005:(max(yrs) - 4)) %dopar% {
     projectRaster(crs = mollCRS, over = TRUE, method = "ngb") %>%
     resample(ocean, method = "ngb") %>%
     mask(ocean, 
-         filename = file.path(out_dir, sprintf("uv_%s_%s-2005_2009_mol_1km.tif", i, max_yr)),
+         filename = file.path("/home/shares/ohi/git-annex/globalprep/prs_uv/v2018/testing/output", 
+                              sprintf("uv_%s_%s-2005_2009_mol_1km.tif", i, max_yr)),
          overwrite = TRUE)
 }
 ```
@@ -452,7 +422,6 @@ pressure_stack <- stack(rasts)
 ```
 
 ```{r gif}
-pal <- colorRampPalette(rev(brewer.pal(9, "RdYlBu")))(35)
 
 saveGIF({
   for(i in 1:nlayers(pressure_stack)){
@@ -460,12 +429,11 @@ saveGIF({
                 substr(names(pressure_stack[[i]]), 4, 12))
     plot(pressure_stack[[i]], 
          zlim = c(0, 1), # don't forget to fix the zlimits
-         axes = FALSE, box = FALSE, col = pal,
+         axes = FALSE, box = FALSE, col = cols,
          main = n)}}, 
   ani.width = 750,
   ani.height = 400,
   movie.name = "uv.gif")
-
 ```
 
 ```{r extract_region_results, eval = F}
@@ -514,15 +482,18 @@ write.csv(uv_data, "output/uv.csv", row.names = FALSE)
 uv_data <- read.csv("output/uv.csv")
 
 old <- uv_data %>% 
-  filter(year == 2014) %>% # data years lag assessment yrs by 1
+  filter(year == 2016) %>% # data years lag assessment yrs by 1
   select(-year, new_pressure = pressure_score) %>% 
-  left_join(read.csv("../v2017/output/uv_2015.csv"),
-             by = c("rgn_id"))
+  left_join(read.csv("../v2017/output/uv.csv") %>% filter(year == 2016),
+             by = c("rgn_id")) %>% 
+  rename(old_pressure = pressure_score)
 
-plot_diff <- ggplot(old, aes(new_pressure, pressure_score)) + 
+plot_diff <- ggplot(old, aes(new_pressure, old_pressure, label = rgn_id)) + 
   geom_point() + 
   geom_abline()
 ggplotly(plot_diff)
+
+# ggplot(old %>% mutate(difference = new_pressure - old_pressure), aes(difference)) + geom_histogram(binwidth = 0.002)
 ```
 
 
