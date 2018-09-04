@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2017: Sea Level Rise Pressure Layer'
+title: 'OHI 2018 - Sea Level Rise Pressure Layer'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -30,7 +30,7 @@ This process is completed entirely within this script. The raw data is downloade
 
 # Updates from previous assessment
 
-One additional year of data, 2016, was added. In addition we are using a better mask to eliminate cells farther than 3nm offshore. This change requires a rerun of all year within the dataset.
+One additional year of data, 2017, was added.
 
 ***
 
@@ -39,10 +39,10 @@ One additional year of data, 2016, was added. In addition we are using a better 
 The source data are monthly mean sea level anomalies, in meters. These anomalies are calculated by subtracting the current absolute sea level for each month from the average sea level for that month calculated from 1993 - 2012.
 
 **Reference**: The altimeter products were produced and distributed by Aviso (http://www.aviso.altimetry.fr/), as part of the Ssalto ground processing segment. [AVISO MSLA heights, monthly means](http://www.aviso.altimetry.fr/en/data/products/sea-surface-height-products/global/msla-mean-climatology.html)  
-**Downloaded**: August 1, 2017 (for 2016 data)   
+**Downloaded**: July 26, 2018 (for 2017 data)   
 **Description**: Monthly mean sea level anomaly (meters above mean sea level)   
 **Native data resolution**: 0.25 degree grid cells   
-**Time range**: January 1993 - December 2016  
+**Time range**: January 1993 - December 2017  
 **Format**: NetCDF   
 
 ***
@@ -92,11 +92,12 @@ ocean <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/ocean.tif")
 ```{r login_info}
 ## need AVISO username and password, define in console when prompted, don't save here!!
 ## if either password or username contain the @ symbol, replace with '%40' (percent-encoding for reserved characters)
-userpasswd <- readline("Type AVISO username and password, separated by colon no space:")
+
+userpasswd <- readline("Type AVISO username and password, separated by colon no space:") ##comment out when knitting
 ```
 
 
-```{r download_data}
+```{r download_data, eval=FALSE}
 ## the is a 'download_data.R' script in the Mazu raw data folder but that routine was not working for me...
 
 year <- 2017 # data year to download
@@ -104,17 +105,19 @@ months <- str_pad(1:12, 2, pad = "0")
 
 ## download data from FTP and collect each month/year in raster stack
 url <- "ftp://ftp-access.aviso.altimetry.fr/climatology/global/delayed-time/monthly_mean"
-ub <- sprintf("ftp://%s@%s", userpasswd, substr(url, 7, 80))
+ub <- sprintf("ftp://%s@%s", userpasswd, substr(url, 7, 80)) ##comment out when knitting
 
 ## download is quite fast, takes less that 3 minutes for 12 files
-for (mo in months){ 
+
+for (mo in months){
   ## mo="01" # for testing
-  
+
   ## retrieve the data (compressed, gzipped files)
   u <- sprintf("%s/dt_global_allsat_msla_h_y2017_m%s.nc.gz", ub, mo)
   u_filename <- file.path(dir_anx_aviso, "d2018", substr(u, 117, 155))
   res <- httr::GET(u, write_disk(u_filename))
 }
+
 closeAllConnections()
 
 zipfiles <- list.files(file.path(dir_anx_aviso, paste0("d", scen_year)),
@@ -315,7 +318,7 @@ foreach(file = coastal_rasts) %dopar% { # file = coastal_rasts[10]
 
 # Results
 
-```{r plot_results}
+```{r plot_results, eval=FALSE}
 
 r <- raster(sprintf("%s/output/slr_%s.tif", dir_prs_slr, scen_year - 1))
 plot(ocean, col = "cornsilk2", axes = FALSE, box = FALSE, main = "Sea Level Rise Pressure 2016", legend = FALSE)		

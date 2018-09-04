@@ -1,5 +1,5 @@
 ---
-title: 'OHI: Targeted harvest pressure'
+title: 'OHI 2018 - Targeted harvest pressure'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:

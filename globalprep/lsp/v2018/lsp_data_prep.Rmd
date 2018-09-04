@@ -1,5 +1,5 @@
 ---
-title: 'OHI: Lasting Special Places v2018'
+title: 'OHI 2018 - Lasting Special Places'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output:
   html_document:
@@ -350,7 +350,7 @@ resil_eez <- read_csv(file.path(dir_goal, 'int', 'area_protected_eez.csv')) %>%
 
 There was no gapfilling for these data. Created gapfill files with values of 0.
 
-```{r}
+```{r, eval= FALSE}
 library(dplyr)
 
 res_eez <- read.csv("globalprep/lsp/v2017/output/mpa_eez_updated_resilience.csv")%>%

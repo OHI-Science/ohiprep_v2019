@@ -1,5 +1,5 @@
 ---
-title: "OHI 2017 Pressure: Ultraviolet Radiation"
+title: "OHI 2018 - Pressure: Ultraviolet Radiation"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -42,6 +42,7 @@ One additional year of data.
 **Values**: Level-3 OMI Surface UV Irradiance and Erythemal Dose- OMUVBd  
 **Time Range**: Daily data from 2005 - 2017 (10/1/2004 through 7/14/2018, but only full years of data are used)
 **Format**: HDF5
+**Downloaded**: July 24, 2018
 
 ***
   
