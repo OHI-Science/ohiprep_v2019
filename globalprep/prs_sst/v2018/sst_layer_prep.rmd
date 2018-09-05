@@ -32,7 +32,7 @@ The only difference in this layer is the reference point. For OHI 2015, each SST
 
 # Data Source
 
-Data comes from [CoRTAD version 5](http://www.nodc.noaa.gov/sog/cortad/)
+Data comes from [CoRTAD version 6](http://www.nodc.noaa.gov/sog/cortad/)
 
 See prs_sst/v2015/dataprep.R for preparation of the "annual_pos_anomalies" data.  
 
@@ -41,7 +41,8 @@ See prs_sst/v2015/dataprep.R for preparation of the "annual_pos_anomalies" data.
 Cortadv5_SSTA.nc = SST anomalies (weekly SST minus weekly climatological SST), weekly data for all years, degrees Kelvin
 Cortadv5_weeklySST.nc =  SST, weekly data for all years, degrees Kelvin  
 **Time Range**: 1982 - 2017 (weekly averages across all years)  
-**Format**: NetCDF  
+**Format**: NetCDF
+**Downloaded**: August 21, 2018
 
 ***  
 
