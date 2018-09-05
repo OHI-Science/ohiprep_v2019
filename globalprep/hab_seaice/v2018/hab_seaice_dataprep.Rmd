@@ -29,7 +29,7 @@ No changes to methods from previous assessment. Transitioned almost entirely to 
 # Data Source 
 
 **Reference**:      
-Cavalieri, D.J., Parkinson, C.L., Gloersen, P. and Zwally, H. (2014). Sea ice concentrations from Nimbus-7 SMMR and DMSP SMM/I-SSMIS passive microwave data. 1979-2014. Boulder, Colorado, USA: NASA National Snow and Ice Data Center Distributed Active Archive Center (http://dx.doi.org/10.5067/8GQ8LZQVL0VL).
+Cavalieri, D.J., Parkinson, C.L., Gloersen, P. and Zwally, H. (1996). Sea ice concentrations from Nimbus-7 SMMR and DMSP SMM/I-SSMIS passive microwave data. 1979-2014. Boulder, Colorado, USA: NASA National Snow and Ice Data Center Distributed Active Archive Center (http://dx.doi.org/10.5067/8GQ8LZQVL0VL).
 
 **Downloaded**: May 18, 2018
 
