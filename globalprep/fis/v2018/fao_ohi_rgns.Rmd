@@ -8,6 +8,12 @@ output: html_document
 knitr::opts_chunk$set(eval=FALSE)
 ```
 
+## Summary
+
+Assign FAO and OHI region ids for each stock (`stockid`) listed. Some stocks have multiple assessments, assign them the same region ids and retain that column information (`assessid`).
+
+
+## Setup
 
 ```{r}
 
@@ -26,6 +32,10 @@ source('../../../src/R/common.R')
 ```
 
 ## Identify Newly Added Stocks
+
+Compare old to new stocks to see what additional stocks have been added.
+
+Old Stocks:
 ```{r}
 
 ## old stocks
@@ -36,12 +46,19 @@ ram_bmsy_old <- data.frame(timeseries) %>%
   dplyr::filter(!is.na(tsvalue)) %>%
   dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
   dplyr::filter(tsyear > 1979) %>%
-  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
+  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong) %>% 
+  dplyr::group_by(stockid) %>% 
+  dplyr::mutate(assess_num = length(unique(assessid))) # should all have a value of 1
 
-old_stocklong <- unique(ram_bmsy_old$stocklong)
-old_stockid <- unique(ram_bmsy_old$stockid)
-old_assessid <- unique(ram_bmsy_old$assessid)
+## check unique values - should be 1-to-1-to-1
+old_stockid <- unique(ram_bmsy_old$stockid) # 257 unique entries
+# old_stocklong <- unique(ram_bmsy_old$stocklong) # 257 unique entries
+# old_assessid <- unique(ram_bmsy_old$assessid) # 257 unique entries
 
+```
+
+New Stocks:
+```{r}
 ## new stocks
 load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
 
@@ -50,31 +67,36 @@ ram_bmsy <- data.frame(timeseries) %>%
   dplyr::filter(!is.na(tsvalue)) %>%
   dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
   dplyr::filter(tsyear > 1979) %>%
-  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
+  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong) %>% 
+  dplyr::group_by(stockid) %>% 
+  dplyr::mutate(assess_num = length(unique(assessid))) # checked that the number matched up with stocks I checked in data_check.Rmd
 
-new_stocklong <- unique(ram_bmsy$stocklong)
-new_stockid <- unique(ram_bmsy$stockid)
-new_assessid <- unique(ram_bmsy$assessid)
-
-## find diff
-setdiff(new_stocklong, old_stocklong)
-newStocks <- setdiff(new_stockid, old_stockid); length(newStocks)
-setdiff(new_assessid, old_assessid)
-
-
+## check number of unique entries, confirms that for some stocks there are multiple assessments this year
+new_stockid <- unique(ram_bmsy$stockid) # 353 unique entries
+# new_stocklong <- unique(ram_bmsy$stocklong) # 353 unique entries
+# new_assessid <- unique(ram_bmsy$assessid) # 473 unique entries
 
 ```
 
+Check differences
 
-Subset for just new stocks in 2018 RAM data
+Make sure to check for stock name changes from old to new. Check documentation in mazu (e.g. Stock Change History). A few outdated stock names. Can remove unused `stockid`s in RAM_data_prep.Rmd if needed. 
+```{r}
+
+## find newly added stocks
+newStocks <- setdiff(new_stockid, old_stockid) # there are 101 diff stock names
+
+```
+
+Subset for just new stocks in RAM v4.40 data
 ```{r}
 
 ram_bmsy <- ram_bmsy %>% 
   filter(stockid %in% newStocks)
 
-## some stockid values are repeated in more than one observation due to multiple assessid years
+## some stockid values are repeated in more than one observation due to multiple assessid years (see assess_num column)
 id_new <- ram_bmsy %>% 
-  select(assessid, stockid, stocklong) %>% 
+  select(assessid, stockid, stocklong, assess_num) %>% 
   distinct()
 
 ```
@@ -89,21 +111,29 @@ RAM_fao_ohi_rgns <- read.csv("../v2017/int/RAM_fao_ohi_rgns.csv")
 
 ## create unique values of assessid, stock id, and stock long
 id_old <- ram_bmsy_old %>% 
-  select(assessid, stockid, stocklong) %>% 
+  select(assessid, stockid, stocklong, assess_num) %>% 
   distinct()
 
 ## join tables
-all_old <- RAM_fao_ohi_rgns %>% 
+RAM_rgns_old <- RAM_fao_ohi_rgns %>% 
   full_join(id_old, by="assessid")
 
 ```
 
 ## Combine New and Old Stock Data to Compare
 
+Essentially adds new stocks to the bottom of the old stocks data table.
 ```{r}
 
-RAM_rgns_new <- all_old %>% 
-  full_join(id_new, by = c("assessid","stockid","stocklong"))
+RAM_rgns_new <- RAM_rgns_old %>% 
+  full_join(id_new, by = c("assessid","stockid","stocklong","assess_num")) %>% 
+  group_by(stockid) %>% 
+  mutate(test_0 = length(unique(assessid)) - assess_num) # make sure there are no diffs
+
+## check that the number of assess id hasn't changed after joining
+library(validate)
+check_assessid <- check_that(RAM_rgns_new, test_0 == 0)
+summary(check_assessid) # should be no fails
 
 ```
 
@@ -124,7 +154,7 @@ Note: In `str_detect`, it doesn't always work when you type out "Bering Sea | Gu
 ## Subset for rows with missing FAO and OHI ids
 RAM_filt <- RAM_rgns_new %>% 
   filter(is.na(fao_id)) %>% 
-  select(-RAM_area_m2)
+  select(-RAM_area_m2, -test_0)
 
 RAM <- RAM_filt %>% 
   ## ADDING FAO REGION ID
@@ -297,11 +327,11 @@ DT::datatable(RAM,rownames = F)
 
 ## Tidy Final Datatable
 
-### Gather FAO and OHI ids
+### Gather FAO and OHI ids into long format
 
 ```{r}
 
-RAM_final <- RAM %>% 
+RAM_rgns_new_final <- RAM %>% 
   gather(fao, fao_values, contains("fao_id")) %>% 
   rename(fao_id = fao_values) %>% 
   select(-fao) %>% 
@@ -310,18 +340,19 @@ RAM_final <- RAM %>%
   select(-ohi) %>% 
   na.omit()
 
-
 ```
 
 ### Combine with full dataset
 
+Combine newly added stocks wtih ohi and fao region information to the old stock data table.
 ```{r}
 
-RAM_rgns_new <- all_old %>% 
-  full_join(RAM_final, by = c("rgn_id", "fao_id", "assessid", "stockid", "stocklong")) %>% 
+RAM_fao_ohi_rgn <- RAM_rgns_old %>% 
+  full_join(RAM_rgns_new_final, by = c("rgn_id", "fao_id", "assessid", "stockid", "stocklong", "assess_num")) %>% 
   select(-RAM_area_m2)
 
-write.csv(RAM_rgns_new, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
+write.csv(RAM_fao_ohi_rgn, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
 
 ```
 
+Summary: combined dataset contains old stock-spatial information from RAM v3.80 database and Christopher M. Free's spatial work at Rutgers as well as newly added stocks from RAM v4.40 with manually assigned ohi and fao region ids. Dataset only contains stocks with B/Bmsy data.

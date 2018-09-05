@@ -220,7 +220,7 @@ write.csv(landings, file =  file.path(dir_M,'git-annex/globalprep/fis/v2018/int/
 
 ## Add Taxon Key Information
 
-Need taxon key to easily remove higher level (e.g. genus) taxonomic catch data. Unique taxon key was extracted from Watson 2017 catch data in `catch_taxon_key.Rmd`. Add them to the stock catch by region.
+Need taxon key to easily remove higher level (e.g. genus) taxonomic catch data. Unique taxon key was extracted from Watson 2017 catch data in [`catch_taxon_key.Rmd`](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/fis/v2018/catch_taxon_key.html). Add them to the stock catch by region.
 
 Combine taxa with all catch regions data. Read in taxon key and stock catch (tons) by region data.
 ```{r, eval=FALSE}
@@ -328,7 +328,7 @@ taxon_res = read_csv('../v2017/data/taxon_resilience_lookup.csv') %>%
 
 Filter out all stocks that don't meet our conditions:
 
-(1) Add TaxonKey information from 2017 Watson data using `catch_taxon_key.Rmd`
+(1) Add TaxonKey information from 2017 Watson data using [`catch_taxon_key.Rmd`](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/fis/v2018/catch_taxon_key.html)
 (2) Keep all stocks that have at least an average annual harvest of 1000 tons
 (3) Keep all stocks with time series of 20 years or more
 
