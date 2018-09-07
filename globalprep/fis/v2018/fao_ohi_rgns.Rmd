@@ -35,7 +35,7 @@ source('../../../src/R/common.R')
 
 Compare old to new stocks to see what additional stocks have been added.
 
-Old Stocks:
+Old Stocks: Used `timeseries` table, because in RAM v3.80, this table only contained single assessment for each unique stock
 ```{r}
 
 ## old stocks
@@ -50,33 +50,35 @@ ram_bmsy_old <- data.frame(timeseries) %>%
   dplyr::group_by(stockid) %>% 
   dplyr::mutate(assess_num = length(unique(assessid))) # should all have a value of 1
 
-## check unique values - should be 1-to-1-to-1
+## check unique values
 old_stockid <- unique(ram_bmsy_old$stockid) # 257 unique entries
-# old_stocklong <- unique(ram_bmsy_old$stocklong) # 257 unique entries
-# old_assessid <- unique(ram_bmsy_old$assessid) # 257 unique entries
 
 ```
 
-New Stocks:
+New Stocks: Used `timeseries_values_views` table, because in RAM v4.40, this is the table that contains the most recent assessment for each unique stock. The `timeseries` table has all assessments conducted so there are multiple `assessid` per unique `stockid`.
 ```{r}
 ## new stocks
 load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
 
-ram_bmsy <- data.frame(timeseries) %>%
-  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
+# What we used to use
+ram_bmsy_ts <- data.frame(timeseries) %>%
+  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>% 
   dplyr::filter(!is.na(tsvalue)) %>%
   dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
   dplyr::filter(tsyear > 1979) %>%
-  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong) %>% 
-  dplyr::group_by(stockid) %>% 
-  dplyr::mutate(assess_num = length(unique(assessid))) # checked that the number matched up with stocks I checked in data_check.Rmd
+  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
 
-## check number of unique entries, confirms that for some stocks there are multiple assessments this year
-new_stockid <- unique(ram_bmsy$stockid) # 353 unique entries
-# new_stocklong <- unique(ram_bmsy$stocklong) # 353 unique entries
-# new_assessid <- unique(ram_bmsy$assessid) # 473 unique entries
+# What we're trying to use now
+# ram_bmsy <- timeseries_values_views %>%
+#   dplyr::select(stockid, year, ram_bmsy = BdivBmsypref, assessid)
+#   dplyr::filter(!is.na(BdivBmsypref)) %>%
+#   dplyr::filter(year > 1979)
+
+## check number of unique entries
+new_stockid <- unique(ram_bmsy$stockid) # 431 unique entries
 
 ```
+
 
 Check differences
 
@@ -84,8 +86,13 @@ Make sure to check for stock name changes from old to new. Check documentation i
 ```{r}
 
 ## find newly added stocks
-newStocks <- setdiff(new_stockid, old_stockid) # there are 101 diff stock names
+newStocks <- setdiff(new_stockid, old_stockid) # there are 182 diff stock names
 
+## Compare diff when using `timeseries` table with diff when using `timeseries_values_views` for RAMv4.40 
+# newStocks2 <- setdiff(new_stockid, old_stockid)
+# setdiff(newStocks2, newStocks)
+
+ 
 ```
 
 Subset for just new stocks in RAM v4.40 data

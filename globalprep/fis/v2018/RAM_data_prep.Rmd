@@ -95,7 +95,7 @@ The time series data is a matrix object with the following headers/columns:
 (1) assessid (2) stockid (3) stocklong (4) bioid (5) biovalue (6) bioyear (7) bionotes  
 
 3.  timeseries_values_views  
-This stores the timeseries values with timeseries type along the columns (TB, SSB, TN, R,
+This stores the timeseries values, using the most recent assessment available, with timeseries type along the columns (stockid, stocklong, year, TBbest, TCbest, ERbest, BdivBmsypref, UdivUmsypref, BdivBmgtpref, UdivUmgtpref, TB, SSB, TN, R,
 TC, TL, F, ER, TBdivTBmsy, SSBdivSSBmsy, FdivFmsy, ERdivERmsy, Btouse, Ctouse, Utouse, B/Bmsytouse, U/Umsytouse,
 TB/TBmgt, SSB/SSBmgt, F/Fmgt, ER/ERmgt, B/Bmgttouse, U/Umgttouse) and stocks along the rows
 
@@ -133,18 +133,10 @@ assessorid, mgmt, management authority) and stock by row
 load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
 
 
-ram_bmsy <- data.frame(timeseries) %>%
-  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
-  dplyr::filter(!is.na(tsvalue)) %>%
-  dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
-  dplyr::filter(tsyear > 1979) %>%
-  dplyr::select(assessid, stockid, year=tsyear, ram_bmsy = tsvalue) %>% 
-  dplyr::group_by(stockid) %>% 
-  dplyr::mutate(assess_num = length(unique(assessid))) %>% # check number of assessments per stock
-  dplyr::ungroup() %>% 
-  dplyr::group_by(assessid, stockid) %>% 
-  dplyr::mutate(assess_yr = length(year)) %>% # number of years of data per assessment id
-  dplyr::ungroup()
+ram_bmsy <- timeseries_values_views %>%
+  dplyr::filter(!is.na(BdivBmsypref)) %>%
+  dplyr::filter(year > 1979) %>%
+  dplyr::select(stockid, year, ram_bmsy = BdivBmsypref)
 
 ```
 
@@ -156,44 +148,44 @@ For each stock with multiple assessmnets, use `assess_yr` to select the assessme
 2. Use that list to filter `ram_bmsy`
 ```{r}
 
-assess_keep <- ram_bmsy %>%
-  filter(assess_num > 1) %>% # ignore stocks with only one stock assessment 
-  select(assessid, stockid, assess_yr) %>% 
-  distinct() %>% 
-  group_by(stockid) %>% 
-  mutate(best_assess = ifelse(assess_yr == max(assess_yr), assessid, NA)) %>% 
-  ungroup()
-
-## Manually check that you correctly selected for the assessments with the largest range of data years (e.g. filter for "DSOLEGA" and "ALPLAICBSAI")
-DT::datatable(assess_keep)
-
-library(validate)
-check_NA <- check_that(assess_keep, is.na(best_assess)) 
-summary(check_NA) # 118 of 231 items are NAs, so after na.omit should only have 113 values
-
-assess_keep <- assess_keep %>% 
-  na.omit() # removes any row with NA values
-
-dim(assess_keep) # great, only 113 values
+# assess_keep <- ram_bmsy %>%
+#   filter(assess_num > 1) %>% # ignore stocks with only one stock assessment 
+#   select(assessid, stockid, assess_yr) %>% 
+#   distinct() %>% 
+#   group_by(stockid) %>% 
+#   mutate(best_assess = ifelse(assess_yr == max(assess_yr), assessid, NA)) %>% 
+#   ungroup()
+# 
+# ## Manually check that you correctly selected for the assessments with the largest range of data years (e.g. filter for "DSOLEGA" and "ALPLAICBSAI")
+# DT::datatable(assess_keep)
+# 
+# library(validate)
+# check_NA <- check_that(assess_keep, is.na(best_assess)) 
+# summary(check_NA) # 118 of 231 items are NAs, so after na.omit should only have 113 values
+# 
+# assess_keep <- assess_keep %>% 
+#   na.omit() # removes any row with NA values
+# 
+# dim(assess_keep) # great, only 113 values
 
 ```
 
 Filter for just assessments we want
 ```{r}
 
-ram_bmsy <- ram_bmsy %>% 
-  filter(assessid %in% assess_keep$assessid) 
-
-length(unique(ram_bmsy$assessid)) # check that after filter the number of unique assessid matches what you had above (113); great!
-length(unique(ram_bmsy$stockid)) # check length; 111
-
-## Looks like two stock ids have two assessments with the same number of data years, identify which ones
-multiple_assess <- ram_bmsy %>% 
-  group_by(stockid) %>% 
-  mutate(assess_num = length(unique(assessid))) %>% 
-  filter(assess_num > 1) %>% 
-  select(-year, -ram_bmsy) %>% 
-  distinct()
+# ram_bmsy <- ram_bmsy %>% 
+#   filter(assessid %in% assess_keep$assessid) 
+# 
+# length(unique(ram_bmsy$assessid)) # check that after filter the number of unique assessid matches what you had above (113); great!
+# length(unique(ram_bmsy$stockid)) # check length; 111
+# 
+# ## Looks like two stock ids have two assessments with the same number of data years, identify which ones
+# multiple_assess <- ram_bmsy %>% 
+#   group_by(stockid) %>% 
+#   mutate(assess_num = length(unique(assessid))) %>% 
+#   filter(assess_num > 1) %>% 
+#   select(-year, -ram_bmsy) %>% 
+#   distinct()
 
 ```
 
@@ -218,27 +210,29 @@ ram_gf_check <- ram_bmsy %>%
 
 ram_bmsy_gf <- ram_bmsy %>%
   filter(year >= 2001 & year <= 2015) %>%   # 2015 corresponds to the final year of Watson catch data
-  group_by(assessid) %>%
+  group_by(stockid) %>%
   mutate(years_data = length(ram_bmsy[year >= 2005])) %>%
   ungroup() %>%
   filter(years_data >= 5) %>%
   spread(year, ram_bmsy) %>%
-  gather("year", "ram_bmsy", -assessid, -years_data) %>%
-  mutate(year = as.numeric(year)) %>%  
-  mutate(ram_bmsy = as.numeric(ram_bmsy)) %>%  
+  gather("year", "ram_bmsy", -stockid, -years_data) %>%
+  mutate(year = as.numeric(year)) %>%   
   mutate(gapfilled = NA) %>%
   mutate(gapfilled = ifelse(years_data == 11, gapfilled, paste(11 - years_data, "years gf", sep = " ")))
 
+## see unique values of stocks
 tmp <- ram_bmsy_gf %>%
-  dplyr::select(assessid, gapfilled) %>%
+  dplyr::select(stockid, gapfilled) %>%
   unique()
-length(tmp$gapfilled)   # 389 stocks with at least 5 years of data in past 11 years
+
+## check out gapfilling stats
+length(tmp$gapfilled)   # 385 stocks with at least 5 years of data in past 11 years
 table(tmp$gapfilled)    
-sum(table(tmp$gapfilled))  # 305 stocks have at least one year of B/Bmsy values gapfilled
+sum(table(tmp$gapfilled))  # 234 stocks have at least one year of B/Bmsy values gapfilled
 
 ## regression model for prediction for each stock
 ram_bmsy_gf <- ram_bmsy_gf %>%
-  group_by(assessid) %>%
+  group_by(stockid) %>%
   do({
     mod <- lm(ram_bmsy ~ year, data=.)  
     ram_bmsy_predict <- predict(mod, newdata=.[c('year')])
@@ -254,7 +248,7 @@ ram_bmsy_gf <- ram_bmsy_gf %>%
   mutate(method = ifelse(is.na(ram_bmsy), paste0("lm, ", gapfilled), NA)) %>%
   mutate(gapfilled = ifelse(is.na(ram_bmsy), "1", "0")) %>%
   mutate(ram_bmsy = ifelse(is.na(ram_bmsy), ram_bmsy_predict, ram_bmsy)) %>%
-  dplyr::select(assessid, year, ram_bmsy, gapfilled, method) 
+  dplyr::select(stockid, year, ram_bmsy, gapfilled, method) 
 
 write.csv(ram_bmsy_gf, "int/ram_stock_bmsy_gf.csv", row.names=FALSE)
 
@@ -268,7 +262,7 @@ The following code can be used to estimate the amount of error for each year due
 
 # Example 1
 ram_bmsy_gf_check1 <- ram_bmsy_gf %>%
-  group_by(assessid) %>%
+  group_by(stockid) %>%
   do({
     mod <- lm(ram_bmsy ~ year, data= filter(., year < 2015))  ### change year to test different accuracy levels based on # years of data used in lm
     ram_bmsy_predict_error <- predict(mod, newdata=.[c('year')])
@@ -279,18 +273,19 @@ ggplot(data = filter(ram_bmsy_gf_check1, year==2015), aes(y=ram_bmsy_predict_err
   geom_point() +
   theme_bw() +
   geom_abline(slope=1, intercept=0, color="red")
+
 summary(lm(ram_bmsy_predict_error ~ ram_bmsy, data=filter(ram_bmsy_gf_check1, year==2015)))
 
 # Example 2
 ram_bmsy_gf_check2 <- ram_bmsy_gf %>%
-  group_by(assessid) %>%
+  group_by(stockid) %>%
   do({
     mod <- lm(ram_bmsy ~ year, data= filter(., year <= 2010))  ### change year to test different accuracy levels based on # years of data used in lm
     ram_bmsy_predict_error <- predict(mod, newdata=.[c('year')])
     data.frame(., ram_bmsy_predict_error)
   })
 
-plot <- ggplot(data = filter(ram_bmsy_gf_check2, year==2015), aes(y=ram_bmsy_predict_error, x=ram_bmsy, col = assessid)) +
+plot <- ggplot(data = filter(ram_bmsy_gf_check2, year==2015), aes(y=log(ram_bmsy_predict_error+1), x=log(ram_bmsy+1), col = stockid)) +
   geom_point() +
   theme_bw() +
   geom_abline(slope=1, intercept=0, color="red")
@@ -308,14 +303,14 @@ In most cases, the RAM and Watson data use the same species names, but there are
 
 ```{r name harmonize}
 
-# get list of RAM species
+# get list of RAM species, scientific name
 ram_sp <- ram_bmsy_gf %>%
-  left_join(data.frame(metadata), by = "assessid") %>%
+  left_join(data.frame(metadata), by = "stockid") %>%
   dplyr::select(scientificname) %>%
   unique() %>%
   arrange(scientificname)
 
-# Watson species (read in the datatable that includes TaxonKey)
+# Watson species, sci name (read in the datatable that includes TaxonKey)
 wat_sp <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv')) %>% 
   dplyr::rename(wat_scientificname = TaxonName) %>%
   dplyr::select(wat_scientificname) %>%
@@ -340,6 +335,8 @@ ram_name_corr # matched species, only 6
 
 Identify the FAO/OHI regions where each RAM stock is located. This step is completed in [fao_ohi_rgns.Rmd](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/fis/v2018/fao_ohi_rgns.html).
 
+
+
 ## Combine all the data
 
 ### Check Differences
@@ -351,28 +348,37 @@ Final formatting of the data is performed. If there are many differences between
 ## Read in RAM spatial stocks file
 ram_spatial <- read.csv("int/RAM_fao_ohi_rgns.csv", stringsAsFactors = FALSE)
 
-ram_meta <- data.frame(metadata) %>%
+ram_meta <- metadata %>% 
   dplyr::select(assessid, stockid, scientificname)
 
-length(unique(ram_meta$assessid)) # 1252
-length(unique(ram_meta$stockid)) # 1252
-length(unique(ram_meta$scientificname)) # 340
-
-length(unique(ram_spatial$assessid)) # 372
-length(unique(ram_spatial$stockid)) # 358
-length(unique(ram_spatial$stocklong)) # 358
-
-
-setdiff(ram_spatial$assessid, ram_meta$assessid) # make sure all the spatial data has corresponding metadata (should be 0); 134 diff
-diff <- setdiff(ram_spatial$stockid, ram_meta$stockid) # 9 diff 
-
-
+setdiff(ram_spatial$stockid, ram_meta$stockid) # make sure all the spatial data has corresponding metadata (should be 0); 9 diff
 
 ```
 
 ### Investigate Differences
 
-Complete investigation in data_check.Rmd
+Complete in-depth investigation in data_check.Rmd
+
+* BIGEYEWPO
+* MORWONGSE
+* PCODBSAI
+* BLACKROCKSPCOAST - from OLD  RAM 3.80, outdated stock
+* BLACKROCKNPCOAST - from OLD RAM 3.80, outdated stock
+* OROUGHYCR
+* STMARLINNPAC
+* HOGFISHEGM
+* HOGFISHSEFL
+
+```{r}
+
+## Check that outdated stocks are only in OLD RAM 3.80
+RAM_old <- read.csv("../v2017/int/RAM_fao_ohi_rgns.csv")
+DT::datatable(RAM_old) # serach stocks
+
+## Checked newly added stocks 
+
+
+```
 
 
 ### Combine
