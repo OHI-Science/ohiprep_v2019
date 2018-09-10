@@ -87,11 +87,11 @@ The data is stored as a relational database in an R object. Check that the names
 The following tables are included (for full list, see loadDBdata.r in mazu):  
 
 1. timeseries  
-The time series data is a matrix object with the following headers/columns:  
+The time series data is a data frame containing all assessments conducted per stock with the following headers/columns:  
 (1) assessid (2) stockid (3) stocklong (4) tsid (5) tsyear (6) tsvalue
 
 2. bioparams  
-The time series data is a matrix object with the following headers/columns:  
+The time series data is a data frame with the following headers/columns:  
 (1) assessid (2) stockid (3) stocklong (4) bioid (5) biovalue (6) bioyear (7) bionotes  
 
 3.  timeseries_values_views  
@@ -128,64 +128,43 @@ This stores assorted metadata associated with the stock, with datatypes along th
 (assessid, stockid, stocklong, scientificname, FisheryType, region, areaid, areaname,
 assessorid, mgmt, management authority) and stock by row
 
+10. tsmetrics
+Contains metadata, such as definitions and units, of `tsid` values in `timeseries` table.
+
+
+For this data prep we primarily use and consult `timeseries_values_views`, `tsmetrics`, and `metadata`
 ```{r load_data}
 
 load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
 
-
 ram_bmsy <- timeseries_values_views %>%
-  dplyr::filter(!is.na(BdivBmsypref)) %>%
+  select(stockid, year, TBdivTBmsy, SSBdivSSBmsy) %>% 
+  mutate(ram_bmsy = ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy)) %>% 
   dplyr::filter(year > 1979) %>%
-  dplyr::select(stockid, year, ram_bmsy = BdivBmsypref)
+  filter(!is.na(ram_bmsy)) %>% 
+  dplyr::select(stockid, year, ram_bmsy)
 
 ```
 
-## Adjust for Stocks with Multiple Assessments
+Save stocks using management (B/Bmgt) reference points instead of max sustainable yield (B/Bmsy)
 
-For each stock with multiple assessmnets, use `assess_yr` to select the assessment with the largest number of data years. For those that don't have the largest range of data years, assign it an NA to remove.
-
-1. Create a list of assessments that we want to keep (`assess_keep`)
-2. Use that list to filter `ram_bmsy`
+Note: In the past, we have used the B/Bmsy to use, dimensionless (BdivBmsytouse-dimensionless) values in the `timeseries_values_views` data table. According to `tsmetrics` table, this consists of TB/TBmsy (TBdivTBmsy) otherwise if NA, SSB/SSBmsy (SSBdivSSBmsy). B/Bmsy preferred values (BdivBmsypref) uses B/Bmsy (BdivBmsytouse) preferably, but if NA, then uses B/Bmgt (BdivBmgttouse) values as a substitute. The below table filters for the stocks that use BdivBmgttouse values, not currently incorporated in OHI Global from RAM. Any missing fisheries stocks are currently gapfilled instead. Investigate use of these B/Bmgt values next year. Many of them are around Iceland or European stocks.
 ```{r}
 
-# assess_keep <- ram_bmsy %>%
-#   filter(assess_num > 1) %>% # ignore stocks with only one stock assessment 
-#   select(assessid, stockid, assess_yr) %>% 
-#   distinct() %>% 
-#   group_by(stockid) %>% 
-#   mutate(best_assess = ifelse(assess_yr == max(assess_yr), assessid, NA)) %>% 
-#   ungroup()
-# 
-# ## Manually check that you correctly selected for the assessments with the largest range of data years (e.g. filter for "DSOLEGA" and "ALPLAICBSAI")
-# DT::datatable(assess_keep)
-# 
-# library(validate)
-# check_NA <- check_that(assess_keep, is.na(best_assess)) 
-# summary(check_NA) # 118 of 231 items are NAs, so after na.omit should only have 113 values
-# 
-# assess_keep <- assess_keep %>% 
-#   na.omit() # removes any row with NA values
-# 
-# dim(assess_keep) # great, only 113 values
+## Filter for rows where there is no B/Bmsy to use (TB/Tbmsy or SSB/SSBmsy) values.
+## For B/Bmsypref values, when B/Bmsy is NA, then it takes B/Bmgt values instead
+test <- timeseries_values_views %>% 
+  filter(!is.na(BdivBmsypref) & is.na(SSBdivSSBmsy) & is.na(TBdivTBmsy))
 
-```
+## All these stocks are those that have B/Bmgt values
+unique(test$stockid)
 
-Filter for just assessments we want
-```{r}
+## Save into a data frame
+species_list <- test %>% 
+  select(stockid,stocklong) %>% 
+  unique() #96 unique stocks that don't currently get used in the OHI GLobal. Consider using next year
 
-# ram_bmsy <- ram_bmsy %>% 
-#   filter(assessid %in% assess_keep$assessid) 
-# 
-# length(unique(ram_bmsy$assessid)) # check that after filter the number of unique assessid matches what you had above (113); great!
-# length(unique(ram_bmsy$stockid)) # check length; 111
-# 
-# ## Looks like two stock ids have two assessments with the same number of data years, identify which ones
-# multiple_assess <- ram_bmsy %>% 
-#   group_by(stockid) %>% 
-#   mutate(assess_num = length(unique(assessid))) %>% 
-#   filter(assess_num > 1) %>% 
-#   select(-year, -ram_bmsy) %>% 
-#   distinct()
+write.csv(species_list, "int/RAM_addl_mgt_stocks.csv", row.names = FALSE)
 
 ```
 
@@ -285,7 +264,7 @@ ram_bmsy_gf_check2 <- ram_bmsy_gf %>%
     data.frame(., ram_bmsy_predict_error)
   })
 
-plot <- ggplot(data = filter(ram_bmsy_gf_check2, year==2015), aes(y=log(ram_bmsy_predict_error+1), x=log(ram_bmsy+1), col = stockid)) +
+plot <- ggplot(data = filter(ram_bmsy_gf_check2, year==2015), aes(y=ram_bmsy_predict_error, x=ram_bmsy, col = stockid)) +
   geom_point() +
   theme_bw() +
   geom_abline(slope=1, intercept=0, color="red")
@@ -341,7 +320,7 @@ Identify the FAO/OHI regions where each RAM stock is located. This step is compl
 
 ### Check Differences
 
-Final formatting of the data is performed. If there are many differences between RAM spatial file and RAM metadata, check the fao_ohi_rgns.Rmd prep again.
+Final formatting of the data is performed. If there are many differences between RAM spatial file and RAM metadata, check the fao_ohi_rgns.Rmd prep again. 
 
 ```{r final}
 
@@ -349,7 +328,7 @@ Final formatting of the data is performed. If there are many differences between
 ram_spatial <- read.csv("int/RAM_fao_ohi_rgns.csv", stringsAsFactors = FALSE)
 
 ram_meta <- metadata %>% 
-  dplyr::select(assessid, stockid, scientificname)
+  dplyr::select(stockid, stocklong, scientificname)
 
 setdiff(ram_spatial$stockid, ram_meta$stockid) # make sure all the spatial data has corresponding metadata (should be 0); 9 diff
 
@@ -357,35 +336,19 @@ setdiff(ram_spatial$stockid, ram_meta$stockid) # make sure all the spatial data 
 
 ### Investigate Differences
 
-Complete in-depth investigation in data_check.Rmd
+Note: the diffs in ram_spatial and ram_meta stockids are due to changes in stockid names. See Stock Change History (6-1-18).xlsx file in MAZU RAM raw data folder.
 
-* BIGEYEWPO
-* MORWONGSE
-* PCODBSAI
-* BLACKROCKSPCOAST - from OLD  RAM 3.80, outdated stock
-* BLACKROCKNPCOAST - from OLD RAM 3.80, outdated stock
-* OROUGHYCR
-* STMARLINNPAC
-* HOGFISHEGM
-* HOGFISHSEFL
-
-```{r}
-
-## Check that outdated stocks are only in OLD RAM 3.80
-RAM_old <- read.csv("../v2017/int/RAM_fao_ohi_rgns.csv")
-DT::datatable(RAM_old) # serach stocks
-
-## Checked newly added stocks 
-
-
-```
-
+* BIGEYEWPO - in OLD RAM 3.80, outdated stock, no documentation of change, not in `timeseries_values_views)
+* MORWONGSE - from OLD RAM 3.80, outdated stock, now known as MORWONGESE or MORWONGWSE
+* PCODBSAI - from OLD RAM 3.80, outdated stock, now known as PCODBS or PCODAI
+* BLACKROCKSPCOAST - from OLD  RAM 3.80, outdated stock, now known as BLACKROCKCAL, BLACKROCKORECOAST, or BLACKROCKWASH
+* BLACKROCKNPCOAST - from OLD RAM 3.80, outdated stock, now known as BLACKROCKCAL, BLACKROCKORECOAST, or BLACKROCKWASH
 
 ### Combine
 ```{r}
 # join with metadata
 ram_spatial <- ram_spatial %>%
-  left_join(ram_meta, by = "assessid") %>%
+  left_join(ram_meta, by = c("stockid","stocklong")) %>%
   rename(RAM_species = scientificname)
 
 # correct names in a few cases to match with Watson names
@@ -395,13 +358,13 @@ ram_name_corr <- read.csv("int/RAM_species_to_Watson.csv", stringsAsFactors = FA
 
 ram_spatial <- ram_spatial %>%
   left_join(ram_name_corr, by="RAM_species") %>%
-  dplyr::mutate(species = ifelse(!is.na(SAUP_species), SAUP_species, RAM_species)) %>%
-  dplyr::select(assessid, stockid_ram = stockid, rgn_id, fao_id, species, RAM_area_m2)
+  dplyr::mutate(species = ifelse(!is.na(Watson_species), Watson_species, RAM_species)) %>%
+  dplyr::select(stockid_ram = stockid, stocklong, rgn_id, fao_id, species)
 
-length(unique(ram_spatial$stockid_ram)) # 257 RAM stocks with B/Bmsy data
+length(unique(ram_spatial$stockid_ram)) # 354 RAM stocks with B/Bmsy data
 
 ## filter out the regions that are not in an eez
-ram_spatial <- filter(ram_spatial, rgn_id<250)
+ram_spatial <- filter(ram_spatial, rgn_id < 250)
 length(unique(ram_spatial$stockid_ram))    # 256 RAM stocks with B/Bmsy data and are found in EEZ regions
 
 
