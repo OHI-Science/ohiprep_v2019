@@ -26,7 +26,7 @@ source('../../../src/R/common.R')
 
 ```
 
-# Investigate Differences RAM v4.40 and RAM v3.80
+# Initial Exploration of RAM v4.40 and RAM v3.80 Differences
 
 Note: When loading old and new, make sure to clear environment if there is evera  situation where you are unsure whether the table you are wrangling with is from the new or old data (they have diff table names, so not all get replaced when loading a new version of RAM).
 
@@ -158,9 +158,7 @@ stock_change_match <- stock_change_match %>%
 
 ***
 
-Look through stock metadata with Mel
-
-# Investigate `assessid` and `stockid` in RAM v4.40 Database
+# Investigate Multiple `assessid` in RAM v4.40 Database
 
 ## Identify the number of assessments per stock
 ```{r}
@@ -197,7 +195,7 @@ test3 <- test2 %>%
 
 ***
 
-## Investigate all the `timeseries_` tables
+# Explore `timeseries_` tables
 
 Found out that `metadata` data table contains only the most recent assessments, and `timeseries` contain all assessments ever conducted and collected by RAM. Check the following `timeseries_XXX` tables:
 
@@ -274,186 +272,11 @@ abline(0,1,col="red")
 
 ```
 
-## Investigate Using `timeseries_values_views`
+***
 
-### First Approach
+# Investigate Using `timeseries_values_views`
 
-Talked to Mel about grabbing most recent/best prioritization from `timeseries_values_views`:
-
-1. from `timeseries_values_views`: select TB/TBmsy
-2. In `timeseries`, filter out the BdivBmsytouse.
-3. Then join with the filtered `timeseries_values_views`. The `timeseries_values_views` should be repeated in the cases where more than one assessment was performed on a stock.
-4. Then subtract the B/Bmsy values. If TB/TBmsy is used preferentially for BdivBmsytouse, then every stock will have at least one assessment that is equal to zero.
-5. If this is the case, then I think we can feel comfortable filtering the TB/TBmsy values from the `timeseries_values_views`. 
-6. Then removing the stocks in this list from `timeseries_values_views` 
-7. filtering the remaining stocks for SSB/SSBmsy.  
-8. Then combining the TB/TBmsy and SSB/SSBmsy data into a BdivBmsytouse variable.
-
-
-STEP 1-3
-```{r}
-load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
-
-## filter for TB/TBmsy which supposedly BdivBmsytouse is preferential for over SSB/SSBmsy
-tb_tbmsy <- timeseries_values_views %>% 
-  select(stockid, stocklong, year, TBdivTBmsy)
-
-## filter for B/Bmsy to use (BdivBmsytouse) from the timeseries table we used to use
-bbmsy_touse <- timeseries %>% 
-  filter(tsid == "BdivBmsytouse-dimensionless") %>% 
-  select(-tsid) %>% 
-  rename(year = tsyear, BdivBmsytouse = tsvalue)
-
-# join old timeseries with new timeseries table
-compare <- bbmsy_touse %>% 
-  full_join(tb_tbmsy, by = c("stockid","stocklong","year"))
-
-# Check joined table info - number of unique asssessments and stocks
-dim(compare) # 58,715 rows, 6 col
-summary(compare) # 35,075 NAs in BdivBmsytouse, 47,810 NAs in TBdivTBmsy
-length(unique(compare$assessid)) # 474
-length(unique(compare$stockid)) # 1259
-
-## find diffs between the tables and against metadata table
-setdiff(unique(tb_tbmsy$stockid), unique(bbmsy_touse$stockid)) # 906 diff
-setdiff(unique(bbmsy_touse$stockid), unique(tb_tbmsy$stockid)) # 8 diff
-setdiff(unique(compare$stockid), unique(metadata$stockid)) # 9 diff all due to stock name changes documented in "Stock Change History (6-1-18) except HOGFISHEGM and HOGFISHSEFL
-
-## compare table
-## some stockids from timseries_values_views have no assess id, aka no matching value in timeseries
-
-## check rows where assessid = NA
-check_assess_NA <- compare %>% 
-  filter(is.na(assessid))
-summary(check_assess_NA)
-
-```
-
-So apparently, all the timeseries_values_views stockid with no matching assessid have no values for BdivBmsytouse OR TBdivTBmsy..... So if these stockids don't have assessids, that means these rows come from timeseres_values_view, and since TBdivTBmsy is NA for all these... curious if SSBdivSSBmsy has values.. if also NA wonderful we can ignore THESE. CHECK!!!!
-
-```{r}
-## filter for TB/TBmsy AND SSB/SSBmsy
-tb_ssb <- timeseries_values_views %>% 
-  select(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy)
-
-## join with filtered bbmsytouse table
-ssb_tb_check <- bbmsy_touse %>% 
-  full_join(tb_ssb, by = c("stockid","stocklong","year"))
-
-## get rows where assessid = NA
-
-check_na <- ssb_tb_check %>% 
-  filter(is.na(assessid))
-
-
-```
-
-STEP 4
-```{r}
-## subtract TB/TBmsy from B/Bmsy to use, remove rows where TB/TBmsy is NA
-check <- compare %>% 
-  mutate(zero = BdivBmsytouse - TBdivTBmsy) %>% 
-  filter(!is.na(TBdivTBmsy)) # only check entries where TB/TBmsy isn't NA
-
-length(unique(check$stockid)) # 168
-length(unique(check$assessid)) # 218
-
-## filter for rows where B/Bmsy - TB/TBmsy = 0
-check_zero <- check %>% 
-  filter(zero == 0)
-
-length(unique(check_zero$stockid)) # 168, didn't change from earlier which is a good sign
-length(unique(check_zero$assessid)) # 169, hmmmm not bad. but doesn't match
-
-## check which still have more than one assessment
-check_assess <- check_zero %>% 
-  group_by(stockid) %>% 
-  mutate(num_assess = length(unique(assessid))) %>% 
-  filter(num_assess > 1) %>% 
-  ungroup()
-
-## The only stock left that has more than one assessment id is ALBASATL
-## assessid 1: ICCAT-ALBASATL-1950-2015-PONS
-## assessid 2: ICCAT-ALBASATL-1951-2016-PONS
-## same group, but different timeseries period.
-```
-
-Do that same step above with SSB/SSBmsy to check if the relationship of TB/TBmsy and SSB/SSBmsy to B/Bmsytouse is correct 
-```{r}
-## timeseries table with B/Bmsy to use that is joined wtih timeseries values view containing tb/tbmsy and ssb/ssbmsy
-View(ssb_tb_check)
-
-## now that I now any assess id = NA means ssb/ssbmsy, tb/tbmsy, AND bdivbmsytouse ARE ALL NA REMOVE THOSE ROWS
-compare <- ssb_tb_check %>% 
-  filter(!is.na(assessid)) %>% 
-  mutate(TB_zero = BdivBmsytouse - TBdivTBmsy) 
-
-## Check number of unique stocks
-length(unique(compare$stockid)) # 353
-length(unique(compare$assessid)) #473
-
-## Check relationship between SSB, TB and B/Bmsytouse
-## If TBdivTBmsy exists, then put it into the new column, if not put in SSBdivSSBmsy. 
-check_valid <- compare %>% 
-  mutate(BdivBmsy_me = ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy)) #I don't htink this is helpful actually..
-
-
-## Find number of rows where TB_zero = 0
-zero <- compare %>% 
-  filter(TB_zero == 0)
-
-length(unique(zero$stockid)) # 168 unique stocks, so perhaps the other 353-168=185 are taken from SSBdivSSBmsy..
-length(unique(zero$assessid)) # 169; use two assessments to create a longer time series, no overlapping years, take both assessments or just one check.
-
-## Make sure that SSB/SSBmsy does not equal B/Bmsytouse while B/Bmsytouse = TBdivTBmsy
-SSB_not_Bmsy <- check_that(zero, SSBdivSSBmsy != BdivBmsytouse); summary(SSB_not_Bmsy) # aweseom all pass
-
-
-```
-
-**Conclusions so far:** When B/Bmsy to use = TB/TBmsy, SSB/SSBmsy does not equal to B/Bmsy. GREAT. 
-
-Next, check if B/Bmsy = SSB/SSBmsy in rows where:
-* B/Bmsy has a value
-* B/Bmsy does not equal to TB/TBmsy 
-* TB/TBmsy does not equal to NA 
-
-If those qualify then comfortable going into `timeseries_values_view` and filtering for TB/TBmsy and B/Bmsy categories to create the new BdivBmsytouse-dimensionless column.
-
-```{r}
-## Go back to the original joined table of TB/TBmsy-SSB/SSBmsy from timeseries_values_views AND B/Bmsy from timeseries. Remove environment variables and start over to be safe.
-
-load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData")) # load data
-tb_ssb <- timeseries_values_views %>% ## filter for TB/TBmsy and SSB/SSBmsy
-  select(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy)
-bbmsy_touse <- timeseries %>% ## filter for B/Bmsytouse from the timeseries table we used to use
-  filter(tsid == "BdivBmsytouse-dimensionless") %>% 
-  select(-tsid) %>% 
-  rename(year = tsyear, BdivBmsytouse = tsvalue)
-compare <- bbmsy_touse %>% # join old timeseries with new timeseries table
-  full_join(tb_ssb, by = c("stockid","stocklong","year")) %>% 
-  filter(!is.na(assessid)) # remove rows where assessid = NA
-
-
-## Filter for the three qualifications listed above, qualify, 
-final_check <- compare %>% 
-  mutate(check =
-           ifelse(!is.na(BdivBmsytouse) | BdivBmsytouse != TBdivTBmsy | !is.na(TBdivTBmsy),
-                  "qualify","not-qualify")) %>% 
-  filter(check == "qualify")
-
-length(unique(final_check$stockid)) # 353
-length(unique(final_check$assessid)) # 473
-
-## Check that B/Bmsy = SSB/SSBmsy
-ok <- check_that(final_check, BdivBmsytouse == SSBdivSSBmsy)
-summary(ok) # 11093 passes, 8804 fails, 3760 NA
-
-```
-
-### Second Approach
-
-Try something slightly different. After joining `timseries` to `timeseries_values_views` by `stockid`, create a new column with the relationship we think is occurring between B/Bmsytouse, TB/TBmsy, and SSB/SSBmsy. And then compare with B/Bmsytouse column. There should be at least one assessid per stockid that matches.
+Talked to Mel about grabbing most recent/best prioritization from `timeseries_values_views`. Note: After joining `timeseries` to `timeseries_values_views` by `stockid`, create a new column with the relationship we think is occurring between B/Bmsytouse, TB/TBmsy, and SSB/SSBmsy. And then compare with B/Bmsytouse column. There should be at least one assessid per stockid that matches.
 
 1. from `timeseries_values_views`: select TB/TBmsy and SSB/SSBmsy
 2. In `timeseries`, filter out the BdivBmsytouse.
@@ -550,7 +373,7 @@ check_bbmsy <- check_bbmsy %>%
 
 ```
 
-check results
+Check Results
 
 ```{r}
 
