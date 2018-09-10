@@ -276,6 +276,8 @@ abline(0,1,col="red")
 
 ## Investigate Using `timeseries_values_views`
 
+### First Approach
+
 Talked to Mel about grabbing most recent/best prioritization from `timeseries_values_views`:
 
 1. from `timeseries_values_views`: select TB/TBmsy
@@ -384,13 +386,10 @@ View(ssb_tb_check)
 ## now that I now any assess id = NA means ssb/ssbmsy, tb/tbmsy, AND bdivbmsytouse ARE ALL NA REMOVE THOSE ROWS
 compare <- ssb_tb_check %>% 
   filter(!is.na(assessid)) %>% 
-  mutate(TB_zero = BdivBmsytouse - TBdivTBmsy) %>% 
-  filter(!is.na(BdivBmsytouse) | !is.na(TBdivTBmsy) | !is.na(SSBdivSSBmsy)) # remove rows where all three are NAs
+  mutate(TB_zero = BdivBmsytouse - TBdivTBmsy) 
 
-## To check that filter for all three NAs, check ARFLOUNDGA 1958, which has NAs for all three, and COD2J3KL 1850-1961; looks good
-
-## Check number of unique stocks - should have same number after removing assessments 
-length(unique(compare$stockid)) #353
+## Check number of unique stocks
+length(unique(compare$stockid)) # 353
 length(unique(compare$assessid)) #473
 
 ## Check relationship between SSB, TB and B/Bmsytouse
@@ -414,11 +413,10 @@ SSB_not_Bmsy <- check_that(zero, SSBdivSSBmsy != BdivBmsytouse); summary(SSB_not
 
 **Conclusions so far:** When B/Bmsy to use = TB/TBmsy, SSB/SSBmsy does not equal to B/Bmsy. GREAT. 
 
-Next, check rows where:
+Next, check if B/Bmsy = SSB/SSBmsy in rows where:
 * B/Bmsy has a value
 * B/Bmsy does not equal to TB/TBmsy 
 * TB/TBmsy does not equal to NA 
-* B/Bmsy = SSB/SSBmsy
 
 If those qualify then comfortable going into `timeseries_values_view` and filtering for TB/TBmsy and B/Bmsy categories to create the new BdivBmsytouse-dimensionless column.
 
@@ -433,13 +431,168 @@ bbmsy_touse <- timeseries %>% ## filter for B/Bmsytouse from the timeseries tabl
   select(-tsid) %>% 
   rename(year = tsyear, BdivBmsytouse = tsvalue)
 compare <- bbmsy_touse %>% # join old timeseries with new timeseries table
+  full_join(tb_ssb, by = c("stockid","stocklong","year")) %>% 
+  filter(!is.na(assessid)) # remove rows where assessid = NA
+
+
+## Filter for the three qualifications listed above, qualify, 
+final_check <- compare %>% 
+  mutate(check =
+           ifelse(!is.na(BdivBmsytouse) | BdivBmsytouse != TBdivTBmsy | !is.na(TBdivTBmsy),
+                  "qualify","not-qualify")) %>% 
+  filter(check == "qualify")
+
+length(unique(final_check$stockid)) # 353
+length(unique(final_check$assessid)) # 473
+
+## Check that B/Bmsy = SSB/SSBmsy
+ok <- check_that(final_check, BdivBmsytouse == SSBdivSSBmsy)
+summary(ok) # 11093 passes, 8804 fails, 3760 NA
+
+```
+
+### Second Approach
+
+Try something slightly different. After joining `timseries` to `timeseries_values_views` by `stockid`, create a new column with the relationship we think is occurring between B/Bmsytouse, TB/TBmsy, and SSB/SSBmsy. And then compare with B/Bmsytouse column. There should be at least one assessid per stockid that matches.
+
+1. from `timeseries_values_views`: select TB/TBmsy and SSB/SSBmsy
+2. In `timeseries`, filter out the BdivBmsytouse.
+3. Then join with the filtered `timeseries_values_views`. The `timeseries_values_views` should be repeated in the cases where more than one assessment was performed on a stock.
+4. Create new column selecting TB/TBmsy when available, and if not available select SSB/SSBmsy
+5. Subtract new column from B/Bmsytouse values. If TB/TBmsy is used preferentially for BdivBmsytouse, then every stock will have at least one assessment that is equal to zero.
+5. If this is the case, then I think we can feel comfortable filtering the TB/TBmsy values from the `timeseries_values_views`. 
+6. Then removing the stocks in this list from `timeseries_values_views` 
+7. filtering the remaining stocks for SSB/SSBmsy.  
+8. Then combining the TB/TBmsy and SSB/SSBmsy data into a BdivBmsytouse variable.
+
+
+STEP 1-3
+from `timeseries_values_views`: select TB/TBmsy and SSB/SSBmsy, filter out BdivBmsytouse in `timeseries`, and join.
+```{r}
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
+
+## filter for TB/TBmsy and SSB/SSBmsy
+tb_ssb <- timeseries_values_views %>% 
+  select(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy)
+
+## filter for B/Bmsy to use (BdivBmsytouse) from the timeseries table we used to use
+bbmsy_touse <- timeseries %>% 
+  filter(tsid == "BdivBmsytouse-dimensionless") %>% 
+  select(-tsid) %>% 
+  rename(year = tsyear, BdivBmsytouse = tsvalue)
+
+# join old timeseries with new timeseries table
+compare <- bbmsy_touse %>% 
   full_join(tb_ssb, by = c("stockid","stocklong","year"))
-check_assess_NA <- compare %>% # after remove assessid = NA rows, should have 33,723 NAs in each 3 Bmsy categories
+```
+
+Check joined table info
+```{r}
+
+# number of unique asssessments and stocks
+dim(compare) # 58,715 rows, 7 col
+summary(compare) # 35,075 NAs in BdivBmsytouse, 47,810 NAs in TBdivTBmsy, 38,739 NAs in SSBdivSSBmsy
+length(unique(compare$assessid)) # 474
+length(unique(compare$stockid)) # 1259
+
+## find diffs between the tables and against metadata table
+setdiff(unique(tb_tbmsy$stockid), unique(bbmsy_touse$stockid)) # 906 diff
+setdiff(unique(bbmsy_touse$stockid), unique(tb_tbmsy$stockid)) # 8 diff
+setdiff(unique(compare$stockid), unique(metadata$stockid)) # 9 diff all due to stock name changes documented in "Stock Change History (6-1-18) except HOGFISHEGM and HOGFISHSEFL
+
+## compare table
+## some stockids from timseries_values_views have no assess id, aka no matching value in timeseries
+
+## check rows where assessid = NA
+check_assess_NA <- compare %>% 
   filter(is.na(assessid))
 
+summary(check_assess_NA)
+
+sum(is.na(check_assess_NA$assessid))
+
+## number of missing assessments matches the number of missing BdivBmsytouse, TBdivTBmsy, and SSBdivSSBmsy. remove rows with missing assessments from the joined table
+
+compare <- compare %>% 
+  filter(!is.na(assessid))
+
+sum(is.na(compare$assessid)) # should be 0
+
+```
+
+number of missing assessments matches the number of missing BdivBmsytouse, TBdivTBmsy, and SSBdivSSBmsy. remove rows with missing assessments from the joined table
+```{r}
+
+compare <- compare %>% 
+  filter(!is.na(assessid))
+
+sum(is.na(compare$assessid)) # should be 0
+
+```
+
+STEP 4. 
+Create new column selecting TB/TBmsy when available, and if not available select SSB/SSBmsy
+
+```{r}
+
+check_bbmsy <- compare %>% 
+  mutate(new_bbmsy = ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy))
+
+```
+
+STEP 5. 
+Subtract new column from B/Bmsytouse values. If TB/TBmsy is used preferentially for BdivBmsytouse, then every stock will have at least one assessment that is equal to zero.
+
+```{r}
+
+check_bbmsy <- check_bbmsy %>% 
+  mutate(check = new_bbmsy - BdivBmsytouse)
+
+```
+
+check results
+
+```{r}
+
+## remove rows where there is no BdivBmsytouse value OR a new BBMSY value (which means NA for both TB/TBmsy AND SSB/SSBmsy)
+results <- check_bbmsy %>% 
+  filter(!is.na(new_bbmsy) & !is.na(BdivBmsytouse))
+
+length(unique(results$stockid)) #345
+length(unique(results$assessid)) #465
+
+## filter for rows where new_bbmsy matches BdivBmsytouse
+results <- results %>% 
+  filter(check == 0)
+
+length(unique(results$stockid)) #345 !!!! SAME. GREAT. 
+length(unique(results$assessid)) #387
+
+lastcheck <- results %>% 
+  group_by(year, stockid) %>% 
+  mutate(assessnum = length(unique(assessid))) %>% 
+  ungroup() %>% 
+  filter(assessnum > 1)
+
+unique(lastheck$stockid) ## only 5 stock ids have multiple assessments still, because the diff assess have the same values
 
 
+## plot each of the five stock ids, and set color to assessid to make sure values are overlapping - should be a single dot visible per year!!
+ggplot(lastcheck %>% filter(stockid == "ALBASATL"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
 
+ggplot(lastcheck %>% filter(stockid == "CHAKESA"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
+
+ggplot(lastcheck %>% filter(stockid == "GHALV-VI-XII-XIV"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
+
+ggplot(lastcheck %>% filter(stockid == "ANGLVIIIc-IXa"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
+
+ggplot(lastcheck %>% filter(stockid == "MEGSPPIVa-VIa"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
+  
 
 ```
 
