@@ -359,26 +359,32 @@ ram_name_corr <- read.csv("int/RAM_species_to_Watson.csv", stringsAsFactors = FA
 ram_spatial <- ram_spatial %>%
   left_join(ram_name_corr, by="RAM_species") %>%
   dplyr::mutate(species = ifelse(!is.na(Watson_species), Watson_species, RAM_species)) %>%
-  dplyr::select(stockid_ram = stockid, stocklong, rgn_id, fao_id, species)
+  dplyr::select(stockid, stocklong, rgn_id, fao_id, species)
 
-length(unique(ram_spatial$stockid_ram)) # 354 RAM stocks with B/Bmsy data
+length(unique(ram_spatial$stockid)) # 354 RAM stocks with B/Bmsy data
 
 ## filter out the regions that are not in an eez
 ram_spatial <- filter(ram_spatial, rgn_id < 250)
-length(unique(ram_spatial$stockid_ram))    # 256 RAM stocks with B/Bmsy data and are found in EEZ regions
+length(unique(ram_spatial$stockid)) # 353 RAM stocks with B/Bmsy data and are found in EEZ regions
+```
 
+Check which stocks are NA's even after filtering `rgn_id < 250`
+```{r}
+na_species <- ram_spatial %>% filter(is.na(species))
+unique(na_species$stockid)
+```
 
+```{r}
 ## Combine RAM spatial data with B/Bmsy data
-
 ram_bmsy <- read.csv("int/ram_stock_bmsy_gf.csv")
 
 ram_data <- ram_spatial %>% 
-  left_join(ram_bmsy_gf, by="assessid") %>%
-  dplyr::mutate(stock_id = paste(species, fao_id, sep="-")) %>%
-  dplyr::mutate(stock_id = gsub(" ", "_", stock_id)) %>%
+  left_join(ram_bmsy_gf, by="stockid") %>%
+  dplyr::mutate(stockid_full = paste(species, fao_id, sep="-")) %>%
+  dplyr::mutate(stockid_full = gsub(" ", "_", stockid_full)) %>%
   dplyr::filter(!is.na(year)) %>%   ## these are the ones that didn't have enough ram data to make an accurate guess
   ungroup() %>%
-  dplyr::select(rgn_id, stock_id, assessid, year, RAM_area_m2, ram_bmsy, gapfilled, method) %>%
+  dplyr::select(rgn_id, stockid_full, stockid, stocklong, year, ram_bmsy, gapfilled, method) %>%
   unique()
 
 write.csv(ram_data, "int/ram_bmsy.csv", row.names=FALSE)
