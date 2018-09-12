@@ -40,7 +40,10 @@ FAO metadata found [here](http://ref.data.fao.org/dataset?entryId=aea93578-9b01-
 ***
   
 # Methods
-```{r}
+```{r setup, warning=FALSE, message=FALSE}
+
+knitr::opts_chunk$set(eval=FALSE)
+
 ## load libraries, set directories
 library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
 library(dplyr)
