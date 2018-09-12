@@ -18,7 +18,7 @@ output:
 ```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
-                      echo = FALSE, message = FALSE, warning = FALSE)
+                      echo = FALSE, message = FALSE, warning = FALSE, eval=FALSE)
 
 library(raster)
 library(readr)
