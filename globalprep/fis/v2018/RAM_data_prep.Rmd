@@ -59,7 +59,7 @@ Reference: Christopher M. Free. 2017. Mapping fish stock boundaries for the orig
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
 ```
 
-```{r}
+```{r, eval = FALSE}
 ## highlight out when knitting
 # setwd("globalprep/fis/v2017")
 
@@ -133,7 +133,7 @@ Contains metadata, such as definitions and units, of `tsid` values in `timeserie
 
 
 For this data prep we primarily use and consult `timeseries_values_views`, `tsmetrics`, and `metadata`
-```{r load_data}
+```{r load_data, eval = FALSE}
 
 load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
 
@@ -149,7 +149,7 @@ ram_bmsy <- timeseries_values_views %>%
 Save stocks using management (B/Bmgt) reference points instead of max sustainable yield (B/Bmsy)
 
 Note: In the past, we have used the B/Bmsy to use, dimensionless (BdivBmsytouse-dimensionless) values in the `timeseries_values_views` data table. According to `tsmetrics` table, this consists of TB/TBmsy (TBdivTBmsy) otherwise if NA, SSB/SSBmsy (SSBdivSSBmsy). B/Bmsy preferred values (BdivBmsypref) uses B/Bmsy (BdivBmsytouse) preferably, but if NA, then uses B/Bmgt (BdivBmgttouse) values as a substitute. The below table filters for the stocks that use BdivBmgttouse values, not currently incorporated in OHI Global from RAM. Any missing fisheries stocks are currently gapfilled instead. Investigate use of these B/Bmgt values next year. Many of them are around Iceland or European stocks.
-```{r}
+```{r, eval = FALSE}
 
 ## Filter for rows where there is no B/Bmsy to use (TB/Tbmsy or SSB/SSBmsy) values.
 ## For B/Bmsypref values, when B/Bmsy is NA, then it takes B/Bmgt values instead
@@ -179,7 +179,7 @@ Summary:
 - 205 of these stocks have at least 1 year of gapfilled data.  
 - A few of the predicted B/Bmsy values go below zero. We convert anything with a RAM B/Bmsy value < 0.0026 to 0.0026, which is the minimum observed B/Bmsy value in the data.
 
-```{r gapfill}
+```{r gapfill, eval = FALSE}
 
 ## gapfill ram_bmsy
 ram_gf_check <- ram_bmsy %>%
@@ -237,7 +237,7 @@ The following code can be used to estimate the amount of error for each year due
 - In the first example, the gapfilling model is estimated using all the data prior to 2015. The model is then used to estimate the 2015 data and examine how accurate the estimates are. In this case, we assume all years of data prior to 2015 is available (i.e., only one missing year of data), which often isn't the case becasue stocks are often missing multiple years of data.
 - The second example examines the error in the 2015 data if the B/Bmsy data only go to 2010 (i.e., 5 missing years of data - 2011 to 2015).
 
-```{r gf error est}
+```{r gf error est, eval = FALSE}
 
 # Example 1
 ram_bmsy_gf_check1 <- ram_bmsy_gf %>%
@@ -280,7 +280,7 @@ summary(lm(ram_bmsy_predict_error ~ ram_bmsy, data=filter(ram_bmsy_gf_check2, ye
 
 In most cases, the RAM and Watson data use the same species names, but there are a few exceptions.  The following code identifies species in the RAM data that are not in the Watson data. In these cases, different species names may be used (although not necessarily because some of the species may be present in RAM, but not Watson, for other reasons). For these species, I used fishbase to explore synonyms and create a table to harmonize the RAM species names with the Watson species names (saved as: int/RAM_species_to_Watson.csv).
 
-```{r name harmonize}
+```{r name harmonize, eval = FALSE}
 
 # get list of RAM species, scientific name
 ram_sp <- ram_bmsy_gf %>%
@@ -322,7 +322,7 @@ Identify the FAO/OHI regions where each RAM stock is located. This step is compl
 
 Final formatting of the data is performed. If there are many differences between RAM spatial file and RAM metadata, check the fao_ohi_rgns.Rmd prep again. 
 
-```{r final}
+```{r final, eval = FALSE}
 
 ## Read in RAM spatial stocks file
 ram_spatial <- read.csv("int/RAM_fao_ohi_rgns.csv", stringsAsFactors = FALSE)
@@ -345,7 +345,7 @@ Note: the diffs in ram_spatial and ram_meta stockids are due to changes in stock
 * BLACKROCKNPCOAST - from OLD RAM 3.80, outdated stock, now known as BLACKROCKCAL, BLACKROCKORECOAST, or BLACKROCKWASH
 
 ### Combine
-```{r}
+```{r, eval = FALSE}
 # join with metadata
 ram_spatial <- ram_spatial %>%
   left_join(ram_meta, by = c("stockid","stocklong")) %>%
@@ -369,12 +369,12 @@ length(unique(ram_spatial$stockid)) # 353 RAM stocks with B/Bmsy data and are fo
 ```
 
 Check which stocks are NA's even after filtering `rgn_id < 250`
-```{r}
+```{r, eval = FALSE}
 na_species <- ram_spatial %>% filter(is.na(species))
 unique(na_species$stockid)
 ```
 
-```{r}
+```{r, eval = FALSE}
 ## Combine RAM spatial data with B/Bmsy data
 ram_bmsy <- read.csv("int/ram_stock_bmsy_gf.csv")
 

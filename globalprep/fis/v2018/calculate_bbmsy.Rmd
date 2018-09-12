@@ -22,6 +22,10 @@ The [`datalimited`](https://github.com/datalimited/datalimited) R package, devel
 
 # Setup 
 
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
 To install the `datalimited` package:
 
 ```{r install_datalimited, eval=F}

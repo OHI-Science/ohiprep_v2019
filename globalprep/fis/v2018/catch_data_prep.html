@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Aug 29 15:14:45 2018 by isu" />
+<meta name="author" content="Compiled on Wed Sep 12 11:26:22 2018 by isu" />
 
 
 <title>OHI 2018 - Food Provision: Preparing catch data for BBmsy calculations and mean catch (weights in FIS model) and FP weights</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2018 - Food Provision: Preparing catch data for BBmsy calculations and mean catch (weights in FIS model) and FP weights</h1>
-<h4 class="author"><em><em>Compiled on Wed Aug 29 15:14:45 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Wed Sep 12 11:26:22 2018 by isu</em></em></h4>
 
 </div>
 
@@ -359,10 +359,7 @@ catch &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class=
 <p>Since we are using a new data source, we recreate the cells.csv file in <strong>clean_cells.Rmd</strong>, which will include cell ids and corresponding OHI and FAO region ids, which is later used to align catch data with appropriate regions.</p>
 <p>These files are large so using the data.table package is recommended due to R memory limitations. Check that the cell values match up with the cell values in the catch data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cells &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">'cells.csv'</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>X1)
-
-<span class="co"># cells_old &lt;- read_csv('../v2017/cells.csv') %&gt;%</span>
-<span class="co">#   dplyr:: select(-X1)</span></code></pre></div>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>X1)</code></pre></div>
 </div>
 </div>
 <div id="aggregate-catch" class="section level1">
@@ -430,7 +427,7 @@ landings &lt;-<span class="st"> </span><span class="kw">map_df</span>(data_files
 <span class="kw">write.csv</span>(landings, <span class="dt">file =</span>  <span class="kw">file.path</span>(dir_M,<span class="st">'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings.csv'</span>), <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
 <div id="add-taxon-key-information" class="section level2">
 <h2>Add Taxon Key Information</h2>
-<p>Need taxon key to easily remove higher level (e.g. genus) taxonomic catch data. Unique taxon key was extracted from Watson 2017 catch data in <code>catch_taxon_key.Rmd</code>. Add them to the stock catch by region.</p>
+<p>Need taxon key to easily remove higher level (e.g. genus) taxonomic catch data. Unique taxon key was extracted from Watson 2017 catch data in <a href="https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/fis/v2018/catch_taxon_key.html"><code>catch_taxon_key.Rmd</code></a>. Add them to the stock catch by region.</p>
 <p>Combine taxa with all catch regions data. Read in taxon key and stock catch (tons) by region data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">taxonkey &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/watson_taxon_key.csv&quot;</span>)
 stock_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_M,<span class="st">'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'</span>))
@@ -505,7 +502,7 @@ taxon_res =<span class="st"> </span><span class="kw">read_csv</span>(<span class
 <h2>Wrangle</h2>
 <p>Filter out all stocks that don’t meet our conditions:</p>
 <ol style="list-style-type: decimal">
-<li>Add TaxonKey information from 2017 Watson data using <code>catch_taxon_key.Rmd</code></li>
+<li>Add TaxonKey information from 2017 Watson data using <a href="https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/fis/v2018/catch_taxon_key.html"><code>catch_taxon_key.Rmd</code></a></li>
 <li>Keep all stocks that have at least an average annual harvest of 1000 tons</li>
 <li>Keep all stocks with time series of 20 years or more</li>
 </ol>
@@ -536,7 +533,7 @@ df &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="k
 <span class="st">              </span>dplyr<span class="op">::</span><span class="kw">filter</span>(avg_ann_catch <span class="op">&gt;=</span><span class="st"> </span>min_tons,        <span class="co">#keep only those stocks that meet our conditions</span>
                               nyrs <span class="op">&gt;=</span><span class="st"> </span>min_yrs) <span class="op">%&gt;%</span>
 <span class="st">              </span>dplyr<span class="op">::</span><span class="kw">left_join</span>(taxon_res, <span class="dt">by =</span> <span class="st">&quot;CommonName&quot;</span>) <span class="op">%&gt;%</span><span class="st">                  </span><span class="co">#add resilience information</span>
-<span class="st">              </span>dplyr<span class="op">::</span><span class="kw">select</span>(Year, TaxonName, CommonName, fao_rgn, stock_id, Taxonkey, Resilience, tons)
+<span class="st">              </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="dt">year =</span> Year, TaxonName, CommonName, fao_rgn, stock_id, Taxonkey, Resilience, tons)
 
 ## check on stocks that don't have a resilience
 no_res &lt;-<span class="st"> </span><span class="kw">filter</span>(stks, <span class="kw">is.na</span>(Resilience)) <span class="op">%&gt;%</span>
@@ -552,19 +549,19 @@ no_res &lt;-<span class="st"> </span><span class="kw">filter</span>(stks, <span 
 <h2>Data Check</h2>
 <p>Take a look at the stock data datatable</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stks =<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'data/stock_catch.csv'</span>)
-stks_landings =<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'data/stock_catch_landings.csv'</span>)
+<span class="co">#stks_landings = read.csv('data/stock_catch_landings.csv')</span>
 
 DT<span class="op">::</span><span class="kw">datatable</span>(<span class="kw">head</span>(stks,<span class="dt">n=</span><span class="dv">100</span>))</code></pre></div>
 <p>Plot total catch v landings stocks data per fao region</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">stks &lt;-<span class="st"> </span>stks <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">log_all_catch =</span> <span class="kw">log</span>(tons<span class="op">+</span><span class="dv">1</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>Year, <span class="op">-</span>Resilience, <span class="op">-</span>tons) 
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>year, <span class="op">-</span>Resilience, <span class="op">-</span>tons) 
 
 stks_landings &lt;-<span class="st"> </span>stks_landings <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>) <span class="op">%&gt;%</span><span class="st">  </span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>) <span class="op">%&gt;%</span><span class="st">  </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">log_landings =</span> <span class="kw">log</span>(tons<span class="op">+</span><span class="dv">1</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>Year, <span class="op">-</span>Resilience, <span class="op">-</span>tons)
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>year, <span class="op">-</span>Resilience, <span class="op">-</span>tons)
 
 both &lt;-<span class="st"> </span>stks <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">left_join</span>(stks_landings, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;TaxonName&quot;</span>, <span class="st">&quot;CommonName&quot;</span>, <span class="st">&quot;fao_rgn&quot;</span>, <span class="st">&quot;stock_id&quot;</span>, <span class="st">&quot;Taxonkey&quot;</span>))
@@ -600,8 +597,8 @@ catch &lt;-<span class="st"> </span>catch <span class="op">%&gt;%</span>
 
 ## calculate total annual catch for each stock
 catch &lt;-<span class="st"> </span>catch <span class="op">%&gt;%</span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(Year, rgn_id, fao_id, stock_id, Taxonkey, tons) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">group_by</span>(rgn_id, fao_id, Taxonkey, stock_id, Year) <span class="op">%&gt;%</span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(year, rgn_id, fao_id, stock_id, Taxonkey, tons) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(rgn_id, fao_id, Taxonkey, stock_id, year) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">summarize</span>(<span class="dt">catch =</span> <span class="kw">sum</span>(tons)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ungroup</span>()</code></pre></div>
 <p>Take a look at a few stocks. Elasmobranchii is missing after I made the adjustments to cells and taxa matching - problem? (Iwen 8/27)</p>
@@ -614,16 +611,16 @@ catch &lt;-<span class="st"> </span>catch <span class="op">%&gt;%</span>
 <p>For years with no reported catch, add zero values (after first reported catch)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## these data have no zero catch values, so add years with no reported catch to data table:
 catch_zeros &lt;-<span class="st"> </span>catch <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">spread</span>(Year, catch) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">spread</span>(year, catch) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">data.frame</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">gather</span>(<span class="st">&quot;Year&quot;</span>, <span class="st">&quot;catch&quot;</span>, <span class="kw">num_range</span>(<span class="st">&quot;X&quot;</span>, <span class="kw">min</span>(catch<span class="op">$</span>Year)<span class="op">:</span><span class="kw">max</span>(catch<span class="op">$</span>Year))) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Year =</span> <span class="kw">as.numeric</span>(<span class="kw">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;&quot;</span>, Year))) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">gather</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;catch&quot;</span>, <span class="kw">num_range</span>(<span class="st">&quot;X&quot;</span>, <span class="kw">min</span>(catch<span class="op">$</span>year)<span class="op">:</span><span class="kw">max</span>(catch<span class="op">$</span>year))) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">as.numeric</span>(<span class="kw">gsub</span>(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;&quot;</span>, year))) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">catch =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(catch), <span class="dv">0</span>, catch))
 
 ## this part eliminates the zero catch values prior to the first reported non-zero catch   
 catch_zeros &lt;-<span class="st"> </span>catch_zeros <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(fao_id, Taxonkey, stock_id, rgn_id) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(Year) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(year) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cum_catch =</span> <span class="kw">cumsum</span>(catch)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(cum_catch <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>cum_catch) <span class="op">%&gt;%</span>
@@ -633,7 +630,7 @@ catch_zeros &lt;-<span class="st"> </span>catch_zeros <span class="op">%&gt;%</s
 <h2>Calculate Mean Catch</h2>
 <p>Calculate mean catch for ohi regions (using data from 1980 onward). These data are used to weight the RAM b/bmsy values</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mean_catch &lt;-<span class="st"> </span>catch_zeros <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">&gt;=</span><span class="st"> </span><span class="dv">1980</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">&gt;=</span><span class="st"> </span><span class="dv">1980</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(rgn_id, fao_id, Taxonkey, stock_id) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">mean_catch =</span> <span class="kw">mean</span>(catch, <span class="dt">na.rm=</span><span class="ot">TRUE</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># mean catch for each stock (in a specific ohi-fao region)</span>
 <span class="st">  </span><span class="kw">filter</span>(mean_catch <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>)  <span class="op">%&gt;%</span><span class="st">      </span>## some stocks have no reported catch for time period
@@ -646,8 +643,8 @@ catch_zeros &lt;-<span class="st"> </span>catch_zeros <span class="op">%&gt;%</s
 <h2>Toolbox formatting and save</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mean_catch_toolbox &lt;-<span class="st"> </span>mean_catch <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stock_id_taxonkey =</span> <span class="kw">paste</span>(stock_id, Taxonkey, <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, Year, mean_catch) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">&gt;=</span><span class="st"> </span><span class="dv">2001</span>) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># filter to include only analysis years</span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, year, mean_catch) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">&gt;=</span><span class="st"> </span><span class="dv">2001</span>) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># filter to include only analysis years</span>
 <span class="st">  </span><span class="kw">data.frame</span>()
 
 <span class="kw">write.csv</span>(mean_catch_toolbox, <span class="st">&quot;data/mean_catch.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)
@@ -662,15 +659,15 @@ new &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="
 new_filt &lt;-<span class="st"> </span>new <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="co">#filter(stock_id_taxonkey == &quot;Carangidae-31_400314&quot;) %&gt;% </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">new_log_catch =</span> <span class="kw">log</span>(mean_catch<span class="op">+</span><span class="dv">1</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">==</span><span class="st"> </span><span class="dv">2014</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2014</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, new_log_catch) 
 
 old &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../v2017/data/mean_catch.csv&quot;</span>)
 old_filt &lt;-<span class="st"> </span>old <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="co">#filter(stock_id_taxonkey == &quot;Carangidae-31_400314&quot;) %&gt;% </span>
-<span class="st">  </span><span class="kw">rename</span>(<span class="dt">Year =</span> year) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rename</span>(<span class="dt">year =</span> year) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">old_log_catch =</span> <span class="kw">log</span>(mean_catch<span class="op">+</span><span class="dv">1</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">==</span><span class="st"> </span><span class="dv">2014</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2014</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, old_log_catch)
   
 check &lt;-<span class="st"> </span>old_filt <span class="op">%&gt;%</span><span class="st"> </span>
@@ -691,7 +688,6 @@ plot_check &lt;-<span class="st"> </span><span class="kw">ggplot</span>(check, <
 <p>Plot v2016 with v2017 mean catch</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">old_<span class="dv">2016</span> &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../v2016/data/mean_catch.csv&quot;</span>)
 old_2016_filt &lt;-<span class="st"> </span>old_<span class="dv">2016</span> <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">rename</span>(<span class="dt">Year =</span> year) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">old_2016_log_catch =</span> <span class="kw">log</span>(mean_catch<span class="op">+</span><span class="dv">1</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(Year <span class="op">==</span><span class="st"> </span><span class="dv">2010</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, old_2016_log_catch)
@@ -715,14 +711,13 @@ plot_check &lt;-<span class="st"> </span><span class="kw">ggplot</span>(check, <
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">new &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;data/mean_catch_landings.csv&quot;</span>)
 new_filt &lt;-<span class="st"> </span>new <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">new_log_catch =</span> <span class="kw">log</span>(mean_catch<span class="op">+</span><span class="dv">1</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">==</span><span class="st"> </span><span class="dv">2014</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2014</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, new_log_catch) 
 
 old &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../v2017/data/mean_catch.csv&quot;</span>)
 old_filt &lt;-<span class="st"> </span>old <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">rename</span>(<span class="dt">Year =</span> year) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">old_log_catch =</span> <span class="kw">log</span>(mean_catch<span class="op">+</span><span class="dv">1</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">==</span><span class="st"> </span><span class="dv">2014</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2014</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, old_log_catch)
   
 check &lt;-<span class="st"> </span>old_filt <span class="op">%&gt;%</span><span class="st"> </span>
@@ -738,14 +733,14 @@ plot_check &lt;-<span class="st"> </span><span class="kw">ggplot</span>(check, <
 <span class="kw">ggplotly</span>(plot_check)</code></pre></div>
 <p>Compare v2018 Catch (IUU+Reported+Discards) with v2018 Landings only (IUU+Reported)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">all_catch &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;data/mean_catch.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">log_mean_catch =</span> <span class="kw">log</span>(mean_catch<span class="op">+</span><span class="dv">1</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, Year, log_mean_catch)
+<span class="st">  </span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, year, log_mean_catch)
  
 landings &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;data/mean_catch_landings.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">log_mean_landings =</span> <span class="kw">log</span>(mean_catch<span class="op">+</span><span class="dv">1</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, Year, log_mean_landings)
+<span class="st">  </span><span class="kw">select</span>(rgn_id, stock_id_taxonkey, year, log_mean_landings)
 
 check &lt;-<span class="st"> </span>all_catch <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">left_join</span>(landings, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;rgn_id&quot;</span>,<span class="st">&quot;stock_id_taxonkey&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -763,10 +758,10 @@ plot_check &lt;-<span class="st"> </span><span class="kw">ggplot</span>(check, <
 <h1>Prep data for food provision weights</h1>
 <p>These data determine the tonnes of food provided by fisheries. Ultimately, the proportion of food from fisheries relative to mariculture will be calculated to weight the contributions of fishery and mariculture scores to final food provision scores.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">total_catch_FP &lt;-<span class="st"> </span>mean_catch <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">group_by</span>(rgn_id, Year) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(rgn_id, year) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">summarize</span>(<span class="dt">fis_catch =</span> <span class="kw">sum</span>(catch)) <span class="op">%&gt;%</span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, Year, fis_catch) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(Year <span class="op">&gt;=</span><span class="st"> </span><span class="dv">2005</span>) <span class="co"># filter to include only the relevant analysis years</span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, year, fis_catch) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(year <span class="op">&gt;=</span><span class="st"> </span><span class="dv">2005</span>) <span class="co"># filter to include only the relevant analysis years</span>
 
 <span class="kw">write.csv</span>(total_catch_FP, <span class="st">&quot;data/FP_fis_catch.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
 <hr />

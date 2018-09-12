@@ -14,6 +14,11 @@ The output is saved as cells.csv
 
 # Setup 
 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
 ```{r}
 library(reshape2)
 library(tidyverse)
