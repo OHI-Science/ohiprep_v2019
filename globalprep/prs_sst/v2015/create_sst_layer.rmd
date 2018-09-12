@@ -82,12 +82,12 @@ cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color sc
   yrs_1985_1989 <- stack(l[4:8])%>%sum(.) # This is the time period we are using for historical comparison
   
   
-for(i in 2005:2008){ #i=2005
+for(i in 2005:2008){ #i=2008
   
   print(i)
   
   yrs <- c(i,i+1,i+2,i+3,i+4)
-  s   <- stack(l[substr(l,35,38)%in%yrs])%>%sum(.)
+  s   <- stack(l[stri_sub(l,-8, -5)%in%yrs])%>%sum(.)
   
   diff = s - yrs_1985_1989 #calculate difference between recent 5 year mean and historical (1985-1989)
   
