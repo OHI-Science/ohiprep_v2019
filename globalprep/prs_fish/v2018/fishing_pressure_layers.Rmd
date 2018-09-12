@@ -16,6 +16,11 @@ pdf_document:
   toc: true
 ---
 
+
+```{r include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
 # Summary
 
 The commercial fishing pressure layers are created from spatialized catch by gear data provided by Watson (2018), and net primary production data from the Vertically Generalized Production Model [(VGPM)](http://www.science.oregonstate.edu/ocean.productivity/) as described in [Behrenfeld and Falkowski (1997)](http://www.science.oregonstate.edu/ocean.productivity/references/L&O%201997a.pdf).

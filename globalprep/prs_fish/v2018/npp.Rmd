@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../ohiprep_v2018/src/templates/ohi_hdr.html'
+      in_header: '../../../src/templates/ohi_hdr.html'
 pdf_document:
   toc: true
 ---
@@ -41,7 +41,7 @@ This script calculates log-transformed, mean annual net primary production value
   
 # Setup
 
-```{r setup, message = FALSE,warning = FALSE}
+```{r setup, message = FALSE,warning = FALSE, eval=FALSE}
 
 library(fields)
 library(raster)
@@ -101,7 +101,7 @@ Take a look at a single raster
 
 NPP values are log-transformed in `vgpm.raster()`.
 
-```{r int}
+```{r int, eval = F}
 
 npp <- raster(file.path(dir_M, 'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/rasterized_rawdata/npp_September 2015.tif'))
 plot(npp)
@@ -179,7 +179,7 @@ foreach (i = 2003:2015) %dopar%{ #i=2012
 
 Take a look at the annual 2015 mollweide raster
 
-```{r output}
+```{r output, eval = F}
 
 annual_npp <- raster(file.path(dir_M, 'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/annual_npp/annual_mean_npp_moll_2015.tif')) 
  
@@ -224,7 +224,7 @@ npp_rast_mol <- resample(npp_rast, ocean, method="ngb", filename = file.path(dir
 npp_rast_mol_mask <- mask(npp_rast_mol, ocean, filename = file.path(dir_M, 'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/explore_gf.tif'), overwrite=TRUE) 
 ```
 
-```{r gf}
+```{r gf, eval = F}
 
 ## Explore gapfill raster
 gf <- raster(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/explore_gf.tif'))
@@ -284,7 +284,7 @@ Check out one of the gapfilled rasters.
 Note: Land has been assigned high values, but eventually will be removed when dividing catch by NPP. This is because the catch rasters have 'NA' values over the continents.
 
 
-```{r npp_gf}
+```{r npp_gf, eval = F}
 
 checkgf <- raster(file.path(dir_M, "git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/annual_npp/annual_mean_npp_moll_2015_gf.tif"))
 
