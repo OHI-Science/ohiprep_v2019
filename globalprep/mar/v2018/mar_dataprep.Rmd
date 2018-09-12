@@ -61,8 +61,10 @@ Original MSI rescaled from 1-10 to 0-1 for mariculture taxa groups.
   
 # Methods
 
-```{r}
+```{r setup, message=FALSE, warning=FALSE}
 
+knitr::opts_chunk$set(eval=FALSE)
+  
 ## load libraries, set directories
 library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
 library(dplyr)
