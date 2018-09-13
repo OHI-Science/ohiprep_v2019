@@ -25,7 +25,7 @@ knitr::opts_chunk$set(eval = FALSE)
 
 The commercial fishing pressure layers are created from spatialized catch by gear data provided by Watson (2018), and net primary production data from the Vertically Generalized Production Model [(VGPM)](http://www.science.oregonstate.edu/ocean.productivity/) as described in [Behrenfeld and Falkowski (1997)](http://www.science.oregonstate.edu/ocean.productivity/references/L&O%201997a.pdf).
 
-This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining CatchInd_XXXX_XXXX and CatchNInd_XXXX_XXXX rds files with Index.csv and Cells.csv as well as a single file with all years.
+This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining Industrial (CatchInd_XXXX_XXXX) and Non-Industrial (CatchNInd_XXXX_XXXX) rds files with Index.csv and Cells.csv as well as a single file with all years.
 
 We create raster files of total annual global catch from the Watson data and correct for system productivity by dividing catch by NPP: [quick review](https://www.researchgate.net/publication/312614653_Reconciling_fisheries_catch_and_ocean_productivity).
 
@@ -40,7 +40,7 @@ We create raster files of total annual global catch from the Watson data and cor
 
 **Reference**: Watson, R. A. and Tidd, A. 2018. Mapping nearly a century and a half of global marine fishing: 1869–2015. Marine Policy, 93, pp. 171-177. [(Paper URL)](https://doi.org/10.1016/j.marpol.2018.04.023)
 
-**Downloaded**: July 17, 2018 from [IMAS portal](http://data.imas.utas.edu.au/portal/search?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0) - clikc on download tab, step 3
+**Downloaded**: July 17, 2018 from [IMAS portal](http://data.imas.utas.edu.au/portal/search?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0) - click on download tab, step 3
 
 **Description**:  Global fisheries landings data per cell separated by Industrial versus Non-Industrial catch, IUU, and discards.
 

@@ -13,7 +13,7 @@ output:
     toc: true
 ---
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2016/np_dataprep.html]
+[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/np/v2018/np_dataprep.html]
 
 # Summary
 This analysis converts FAO commodities data into data layers used to calculate OHI 2018 global natural products scores.  

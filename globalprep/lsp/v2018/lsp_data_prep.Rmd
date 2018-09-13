@@ -15,35 +15,6 @@ output:
     toc: yes
 ---
 
-```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
-
-knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
-                      echo = FALSE, message = FALSE, warning = FALSE, eval=FALSE)
-
-library(raster)
-library(readr)
-library(tidyverse)
-# library(tmap)
-
-
-source('~/github/ohiprep_v2018/src/R/common.R')
-
-goal     <- 'lsp'
-scenario <- 'v2018'
-dir_anx       <- file.path(dir_M, 'git-annex/globalprep') 
-dir_goal      <- file.path('~/github/ohiprep_v2018/globalprep', goal, scenario)
-dir_goal_anx  <- file.path(dir_anx, goal, scenario)
-
-## set up provenance tracking for this script:
-# library(provRmd)
-# prov_setup()
-
-#setwd("~/github/ohiprep_v2018/globalprep/lsp/v2018")
-
-
-```
-
-
 # Summary
 
 From Halpern et al. 2012 supplemental info: 
@@ -86,7 +57,37 @@ No longer use ArcPy for rasterization of WDPA-MPA database. ArcPy works great fo
 **File location**: `Mazu:git-annex/globalprep/_raw_data/wdpa_mpa/d2018/WDPA_June2018-shapefile/`
 
 ***
-  
+
+# Setup
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = FALSE, message = FALSE, warning = FALSE, eval=FALSE)
+
+library(raster)
+library(readr)
+library(tidyverse)
+# library(tmap)
+
+
+source('~/github/ohiprep_v2018/src/R/common.R')
+
+goal     <- 'lsp'
+scenario <- 'v2018'
+dir_anx       <- file.path(dir_M, 'git-annex/globalprep') 
+dir_goal      <- file.path('~/github/ohiprep_v2018/globalprep', goal, scenario)
+dir_goal_anx  <- file.path(dir_anx, goal, scenario)
+
+## set up provenance tracking for this script:
+# library(provRmd)
+# prov_setup()
+
+#setwd("~/github/ohiprep_v2018/globalprep/lsp/v2018")
+
+
+```
+
 # Methods
 
 ## Filter and re-project WDPA polygons

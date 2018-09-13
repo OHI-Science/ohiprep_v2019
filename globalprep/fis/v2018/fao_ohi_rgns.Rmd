@@ -22,7 +22,7 @@ knitr::opts_chunk$set(eval=FALSE)
 
 ## Summary
 
-Assign FAO and OHI region ids for each stock (`stockid`) listed. Some stocks have multiple assessments, assign them the same region ids and retain that column information (`assessid`). 
+Assign FAO and OHI region ids for each additional stock (`stockid`) listed. Some stocks have multiple assessments, assign them the same region ids and retain that column information (`assessid`). 
 
 
 ## Setup

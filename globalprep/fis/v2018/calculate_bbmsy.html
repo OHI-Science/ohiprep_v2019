@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Sep 12 17:47:14 2018 by isu" />
+<meta name="author" content="Compiled on Thu Sep 13 10:25:01 2018 by isu" />
 
 
 <title>OHI 2018: Food Provision, Calculating fisheries stock status</title>
@@ -264,13 +264,16 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2018: Food Provision, Calculating fisheries stock status</h1>
-<h4 class="author"><em><em>Compiled on Wed Sep 12 17:47:14 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Sep 13 10:25:01 2018 by isu</em></em></h4>
 
 </div>
 
 
+<div id="summary" class="section level1">
+<h1>Summary</h1>
 <p>To calculate the status of global fish stocks from the Watson 2018 catch data we use catch-MSY (CMSY) developed by <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1467-2979.2012.00485.x/full">Martell and Froese (2012)</a>. This model requires catch and resilience information for each stock. Stocks are defined by FAO areas and are limited to only those records where catch is reported at the species level.</p>
 <p>The <a href="https://github.com/datalimited/datalimited"><code>datalimited</code></a> R package, developed by Sean Anderson, is used to run CMSY.</p>
+</div>
 <div id="setup" class="section level1">
 <h1>Setup</h1>
 <p>To install the <code>datalimited</code> package:</p>
@@ -291,7 +294,7 @@ div.tocify {
 </div>
 <div id="load-catch-data" class="section level1">
 <h1>Load catch data</h1>
-<p>Read in catch data aggregated from half degree cell to OHI region <a href="https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/fis/v2017/catch_data_prep.html">catch_data_prep.Rmd</a>.</p>
+<p>Read in catch data aggregated from half degree cell to OHI region <a href="https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/catch_data_prep.html">catch_data_prep.Rmd</a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">catch &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">'data/stock_catch.csv'</span>) <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">rename</span>(<span class="dt">common =</span> CommonName)</code></pre></div>
 </div>
