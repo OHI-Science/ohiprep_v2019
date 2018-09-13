@@ -47,7 +47,7 @@ Data is available directly to R throught the WDI package.
 
 ## Setup
 
-``` {r setup, message = FALSE, warning = FALSE}
+``` {r setup, message = FALSE, warning = FALSE, eval=F}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/', message = FALSE, warning = FALSE)
 
@@ -119,7 +119,7 @@ write.csv(gdppcppp_raw, 'raw/raw_gdppcppp.csv', row.names=FALSE) # once you've m
 
 When a country has some values (but not a complete series), a within country regression model is used to predict the missing values.
 
-```{r}
+```{r, eval=F}
 
 # Reorganize to create cells for countries that have missing values for some years
 d <- read.csv('raw/raw_gdppcppp.csv') %>%
@@ -173,7 +173,7 @@ d_gf <- d_gf %>%
 ## Calculate rescaled values
 This is performed by taking the natural log of each value and then dividing by the 95th quantile of values across all years (from 2005 to 2017). 
 
-```{r}
+```{r, eval=F}
 
 # Values at the 95th Quantile or greater are given a rescaled score of '1' (the highest value)
 d_rescale <- d_gf %>%
@@ -200,7 +200,7 @@ d_rescale <- d_gf %>%
 
 ## Convert country names to ohi regions
 
-```{r}
+```{r, eval=F}
 
 # Function to add OHI region ID based on country name
 d_stand_rgn <- name_2_rgn(df_in = d_rescale, 
@@ -243,7 +243,7 @@ write_csv(gdppcppp_data, "intermediate/gdppcppp_ohi.csv")
 ## Gapfilling: part 2
 In this case, we gapfill regions with no data using UN geopolitical means.
 
-```{r}
+```{r, eval=F}
 
 # Create dataframe pairing each UN geopolitical region id with a year from 2005 to current
 
@@ -288,7 +288,7 @@ summary(d_stand_gf) #No NA!!
 
 ## Save the data
 
-```{r}
+```{r, eval=F}
 
 # Save dataframe with adjusted, gapfilled, and rescaled score information
 final <- d_stand_gf %>%
@@ -309,7 +309,7 @@ write.csv(final_gf, "output/wb_gdppcppp_rescaled_gf.csv", row.names=FALSE)
 
 ## Compare data to previous year
 
-```{r}
+```{r, eval=F}
 old_gdppppc <- read.csv("../v2017/output/wb_gdppcppp_rescaled.csv") %>% 
   dplyr::rename(old_value=value) %>% 
   dplyr::filter(year == 2016)
