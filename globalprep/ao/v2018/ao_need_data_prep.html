@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Thu Sep 13 13:18:47 2018 by cvargas" />
+<meta name="author" content="Compiled on Thu Sep 13 14:29:25 2018 by cvargas" />
 
 
 <title>OHI 2018 - Artisanal Opportunities: Preparing need data</title>
@@ -264,22 +264,21 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2018 - Artisanal Opportunities: Preparing need data</h1>
-<h4 class="author"><em><em>Compiled on Thu Sep 13 13:18:47 2018 by cvargas</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Sep 13 14:29:25 2018 by cvargas</em></em></h4>
 
 </div>
 
 
 <div id="summary" class="section level1">
-<h1>Summary</h1>
+<h1><span class="header-section-number">1</span> Summary</h1>
 <p>This script generates the “need” layer for the artisanal opportunities goal. The “access” layer, which is not updated due to a lack of a data source, is located here: globalprep/res_mora_ao/v2013/data/r_mora_s4_2013a.csv.</p>
 <div id="updates-from-previous-assessment" class="section level2">
-<h2>Updates from previous assessment</h2>
+<h2><span class="header-section-number">1.1</span> Updates from previous assessment</h2>
 <p>One more year of data</p>
 <hr />
 </div>
-</div>
-<div id="data-source" class="section level1">
-<h1>Data Source</h1>
+<div id="data-source" class="section level2">
+<h2><span class="header-section-number">1.2</span> Data Source</h2>
 <p><strong>Downloaded</strong>: 7/23/2018</p>
 <p><strong>Description</strong>:<br />
 GDP adjusted per capita by PPP (ppppcgdp) <a href="http://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD" class="uri">http://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD</a> Reported at country scale.</p>
@@ -288,10 +287,11 @@ GDP adjusted per capita by PPP (ppppcgdp) <a href="http://data.worldbank.org/ind
 <p><strong>Time range</strong>: 1990-2017</p>
 <hr />
 </div>
+</div>
 <div id="methods" class="section level1">
-<h1>Methods</h1>
+<h1><span class="header-section-number">2</span> Methods</h1>
 <div id="setup" class="section level2">
-<h2>Setup</h2>
+<h2><span class="header-section-number">2.1</span> Setup</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">fig.width =</span> <span class="dv">6</span>, <span class="dt">fig.height =</span> <span class="dv">4</span>, <span class="dt">fig.path =</span> <span class="st">'figs/'</span>, <span class="dt">message =</span> <span class="ot">FALSE</span>, <span class="dt">warning =</span> <span class="ot">FALSE</span>)
 
 <span class="co"># setting up provenance</span>
@@ -313,7 +313,7 @@ GDP adjusted per capita by PPP (ppppcgdp) <a href="http://data.worldbank.org/ind
 <span class="kw">source</span>(<span class="st">'https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R'</span>)</code></pre></div>
 </div>
 <div id="download-and-save-data" class="section level2">
-<h2>Download and save data</h2>
+<h2><span class="header-section-number">2.2</span> Download and save data</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check website to see what years are available</span>
 yr_start =<span class="st"> </span><span class="dv">1990</span>
 yr_end   =<span class="st"> </span><span class="dv">2017</span>
@@ -352,7 +352,7 @@ gdppcppp_raw &lt;-<span class="st">  </span><span class="kw">WDI</span>(<span cl
 <span class="kw">write.csv</span>(gdppcppp_raw, <span class="st">'raw/raw_gdppcppp.csv'</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>) <span class="co"># once you've made sure the 'raw' folder exists, you can save your file</span></code></pre></div>
 </div>
 <div id="gapfilling-1-linear-regression-within-a-countrys-data" class="section level2">
-<h2>Gapfilling 1: Linear Regression within a country’s data</h2>
+<h2><span class="header-section-number">2.3</span> Gapfilling 1: Linear Regression within a country’s data</h2>
 <p>When a country has some values (but not a complete series), a within country regression model is used to predict the missing values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Reorganize to create cells for countries that have missing values for some years</span>
 d &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'raw/raw_gdppcppp.csv'</span>) <span class="op">%&gt;%</span>
@@ -402,7 +402,7 @@ d_gf &lt;-<span class="st"> </span>d_gf <span class="op">%&gt;%</span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">method =</span> <span class="kw">ifelse</span>(value_num <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="st">&quot;gapfilled using one year of data&quot;</span>, method)) <span class="co"># this overwrites/corrects method &quot;lm based...&quot; for rows actually gapfilled with &quot;one-year of data&quot;&quot; method</span></code></pre></div>
 </div>
 <div id="calculate-rescaled-values" class="section level2">
-<h2>Calculate rescaled values</h2>
+<h2><span class="header-section-number">2.4</span> Calculate rescaled values</h2>
 <p>This is performed by taking the natural log of each value and then dividing by the 95th quantile of values across all years (from 2005 to 2017).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Values at the 95th Quantile or greater are given a rescaled score of '1' (the highest value)</span>
 d_rescale &lt;-<span class="st"> </span>d_gf <span class="op">%&gt;%</span>
@@ -425,7 +425,7 @@ d_rescale &lt;-<span class="st"> </span>d_gf <span class="op">%&gt;%</span>
 <span class="co"># print(Motion, file = file.path('ao_need_95q.html'))</span></code></pre></div>
 </div>
 <div id="convert-country-names-to-ohi-regions" class="section level2">
-<h2>Convert country names to ohi regions</h2>
+<h2><span class="header-section-number">2.5</span> Convert country names to ohi regions</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Function to add OHI region ID based on country name</span>
 d_stand_rgn &lt;-<span class="st"> </span><span class="kw">name_2_rgn</span>(<span class="dt">df_in =</span> d_rescale, 
                        <span class="dt">fld_name=</span><span class="st">'country'</span>, 
@@ -463,7 +463,7 @@ gdppcppp_data &lt;-<span class="st"> </span>d_stand_rgn <span class="op">%&gt;%<
 <span class="kw">write_csv</span>(gdppcppp_data, <span class="st">&quot;intermediate/gdppcppp_ohi.csv&quot;</span>)</code></pre></div>
 </div>
 <div id="gapfilling-part-2" class="section level2">
-<h2>Gapfilling: part 2</h2>
+<h2><span class="header-section-number">2.6</span> Gapfilling: part 2</h2>
 <p>In this case, we gapfill regions with no data using UN geopolitical means.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create dataframe pairing each UN geopolitical region id with a year from 2005 to current</span>
 
@@ -504,7 +504,7 @@ d_stand_gf &lt;-<span class="st"> </span>d_stand_gf <span class="op">%&gt;%</spa
 <span class="kw">summary</span>(d_stand_gf) <span class="co">#No NA!!</span></code></pre></div>
 </div>
 <div id="save-the-data" class="section level2">
-<h2>Save the data</h2>
+<h2><span class="header-section-number">2.7</span> Save the data</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Save dataframe with adjusted, gapfilled, and rescaled score information</span>
 final &lt;-<span class="st"> </span>d_stand_gf <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(rgn_id, year, <span class="dt">value=</span>score)
@@ -519,7 +519,7 @@ final_gf &lt;-<span class="st"> </span>d_stand_gf <span class="op">%&gt;%</span>
 <span class="kw">write.csv</span>(final_gf, <span class="st">&quot;output/wb_gdppcppp_rescaled_gf.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
 </div>
 <div id="compare-data-to-previous-year" class="section level2">
-<h2>Compare data to previous year</h2>
+<h2><span class="header-section-number">2.8</span> Compare data to previous year</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">old_gdppppc &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../v2017/output/wb_gdppcppp_rescaled.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">rename</span>(<span class="dt">old_value=</span>value) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2016</span>)

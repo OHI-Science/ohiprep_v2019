@@ -7,7 +7,7 @@ output:
     toc: true
     toc_depth: 1
     toc_float: yes
-    number_sections: false
+    number_sections: true
     theme: cerulean
     highlight: haddock
     includes: 
@@ -26,7 +26,7 @@ This script generates the "need" layer for the artisanal opportunities goal.  Th
 One more year of data
 
 ***
-# Data Source 
+## Data Source 
 
 **Downloaded**: 7/23/2018
 

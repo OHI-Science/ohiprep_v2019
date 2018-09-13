@@ -1,5 +1,5 @@
 ---
-title: "Data Prep for Global Competitiveness Index (GCI) Resilience"
+title: "OHI 2018 - Data Prep for Global Competitiveness Index (GCI) Resilience"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -7,7 +7,7 @@ output:
     toc: true
     toc_depth: 1
     toc_float: yes
-    number_sections: false
+    number_sections: true
     theme: cerulean
     highlight: haddock
     includes: 
@@ -45,11 +45,11 @@ A weighted index based on 12 socioeconomic factors relevant to economic competit
 
 # Setup
 
-### Load Libraries
+## Load Libraries
 
 Load all relevant libraries, source common.R, and define frequently used pathnames. Manually change scenario and data years in file pathnames code chunk to reflect the most recent data and current assessment year.
 
-```{r setup, message=FALSE, warning=FALSE, verbose=FALSE}
+```{r setup, message=FALSE, warning=FALSE, verbose=FALSE, eval=FALSE}
 ## set options for all chunks in code
 knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.width = 6, fig.height = 4, fig.path = 'figs/')
 
@@ -61,7 +61,7 @@ data_yr_gci <- "d2018" # change to reflect year of most recently downloaded data
 # setwd(paste0("globalprep/res_gci/", scenario_yr))
 ```
 
-```{r file paths}
+```{r file paths, eval=FALSE}
 ## source common.R
 source("../../../src/R/common.R")
 
@@ -69,7 +69,7 @@ source("../../../src/R/common.R")
 path_raw_data <- file.path(dir_M, "git-annex/globalprep/_raw_data")
 ```
 
-```{r load packages, install if needed}
+```{r load packages, install if needed, eval=FALSE}
 if(!requireNamespace("ohicore", quietly = TRUE))
   devtools::install_github("ohi-science/ohicore")
 if(!requireNamespace("dplyr", quietly = TRUE))
@@ -79,9 +79,9 @@ pkgs <- c("ohicore", "dplyr", "tidyr", "stringr", "readr")
 lapply(pkgs, require, character.only = TRUE)
 ```
 
-### Import Raw Data
+## Import Raw Data
 
-```{r import raw data}
+```{r import raw data, eval=FALSE}
 dir_wef  <- list.files(file.path(path_raw_data, sprintf("WEF-Economics/%s", data_yr_gci)), 
                        pattern = "GCI_Dataset\\S{10}.csv$", 
                        full.names = TRUE)
@@ -92,9 +92,9 @@ dir_wef # check reading the correct year of downloaded data
 
 # Methods and Calculations
 
-### Wrangle + Tidy
+## Wrangle + Tidy
 
-```{r wrangle and tidy}
+```{r wrangle and tidy, eval=FALSE}
 wef <- wef_raw[ , names(wef_raw) != ""] # eliminate columns without names
 
 wef <- wef %>%
@@ -108,7 +108,7 @@ wef <- wef %>%
   filter(year >= 2010)
 ```
 
-# Gapfilling
+## Gapfilling
 
 Gapfilling for this resilience layer consists of three main steps:
 
@@ -118,7 +118,7 @@ Gapfilling for this resilience layer consists of three main steps:
 
 ### Gapfill Part I - Using Single Value or LM
 
-```{r gapfill, pt I}
+```{r gapfill, pt I, eval=FALSE}
 wef_gf <- wef %>%
   group_by(country) %>%
   mutate(N = sum(!is.na(score))) %>%
@@ -142,7 +142,7 @@ filter(wef_gf, N==4) # check the data: filter by a few different N and countries
 
 ### Document Gapfilling Part I
 
-```{r document gapfilling, pt I}
+```{r document gapfilling, pt I, eval=FALSE}
 N_max <- max(wef_gf$N) # assumes at least one region with all years of data
 
 wef_gf <- wef_gf %>%
@@ -159,7 +159,7 @@ length(unique(wef_gf$country)) # 159 countries (2018 assessment)
 
 ### To OHI Regions
 
-```{r to ohi regions}
+```{r to ohi regions, eval=FALSE}
 wef <- wef_gf %>%
   mutate(country = as.character(country)) %>%
   mutate(country = ifelse(country == "Congo, Democratic Rep.", "Democratic Republic of the Congo", country)) %>%
@@ -190,7 +190,7 @@ setdiff(seq(1, 250), unique(wef_rgn$rgn_id)) # missing regions...
 
 ### Gapfill Part II - Using UN Georegions
 
-```{r gapfill pt II, using un georegions}
+```{r gapfill pt II, using un georegions, eval=FALSE}
 years <- data.frame(year = min(wef_rgn$year) : max(wef_rgn$year))
 
 wef_rgn_gf_un <- georegions %>% # georegions sourced from common.R
@@ -222,10 +222,10 @@ head(wef_rgn_gf_un) # checks
 summary(wef_rgn_gf_un)
 ```
 
-# Organize and Save
+## Organize and Save
 
 ### Organize the Data
-```{r organize data}
+```{r organize data, eval=FALSE}
 ## incorporate gapfilling part II (with un georegions) including documentation
 ## running this line by line is helpful and view between each line; esp after last mutate(method = ...)
 wef_gf2 <- wef_rgn_gf_un %>%
@@ -244,7 +244,7 @@ length(unique(wef_gf2$rgn_id)) # checks; should be 220 regions
 
 These regions will receive an NA for their score (when established population is < 100 people). 
 
-```{r uninhabited regions}
+```{r uninhabited regions, eval=FALSE}
 uninhab <- read.csv("../../../src/LookupTables/rgn_uninhabited_islands.csv") %>%
   filter(is.na(est_population) | est_population < 100)
 
@@ -259,7 +259,7 @@ uninhab$rgn_id # check this set and above set of rgn_ids equal
 
 ### Gapfill North Korea
 
-```{r gapfill north korea}
+```{r gapfill north korea, eval=FALSE}
 ## appears to have been calculated at one time with real data; fill with the old value of 2.8
 ## gapfilled using un regions r2 above, but replace score (special case)
 nk_gf <- wef %>% 
@@ -273,9 +273,9 @@ nk <- data.frame(rgn_id = 21, year = min(wef$year):max(wef$year), gapfill = 1,
 wef <- rbind(wef, nk)
 ```
 
-### Save Data
+## Save Data
 
-```{r save the data}
+```{r save the data, eval=FALSE}
 res_data <- wef %>%
   select(rgn_id, year, resilience_score = score) %>%
   mutate(resilience_score = resilience_score/7) # score ranges from 0-7, normalize to range of 0-1
@@ -286,11 +286,11 @@ gf_data <- wef %>%
 write.csv(gf_data, "output/gci_gf.csv", row.names = FALSE)
 ```
 
-# Additional Data Checks and/or Meta-Analysis
+## Additional Data Checks and/or Meta-Analysis
 
 ### Compare with Previous Years
 
-```{r compare with previous year}
+```{r compare with previous year, eval=FALSE}
 previous_yr <- as.numeric(substr(scenario_yr, 2, 5)) - 1
 old <- read.csv(sprintf("../v%s/output/gci_res.csv", previous_yr)) 
 old <- old %>%
