@@ -286,4 +286,36 @@ data <- read.csv("output/hab_ice_health_eez.csv") %>%
   dplyr::arrange(habitat, health)
 ```
 
+# Gapfill
+
+There was no gapfilling for these data. Created gapfill files with values of 0.
+Note: all layers need a gf file, eventhough if there was no gapfilling. In this case the gapfill value is 0 for every region.
+
+
+```{r}
+hab_ice_health_gf <- read.csv("output/hab_ice_health_eez.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_ice_health_gf, "output/hab_ice_health_eez_gf.csv", row.names=FALSE)
+
+
+hab_ice_extent_gf <- read.csv("output/hab_ice_extent_eez.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_ice_health_gf, "output/hab_ice_extent_eez_gf.csv", row.names=FALSE)
+
+
+hab_ice_trend_gf <- read.csv("output/hab_ice_trend_eez.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_ice_health_gf, "output/hab_ice_trend_eez_gf.csv", row.names=FALSE)
+
+
+```
+
+
+
 ***
