@@ -24,7 +24,7 @@ This script prepares the final B/Bmsy data:
 
 
 ## Updates from previous assessment
-Same as previous years.
+Have not completed this prep script yet for 2018.ß
 
 ***
 
@@ -34,7 +34,7 @@ B/Bmsy values from the RAM Legacy Stock Assessment data are generated in RAM_dat
 
 B/Bmsy values from the CMSY method are generated in calculate_bbmsy.Rmd
 
-Mean catch data created in "catch_data_prep.Rmd"
+Mean catch data created in catch_data_prep.Rmd
 
 ***
 

@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Sep 12 17:46:42 2018 by isu" />
+<meta name="author" content="Compiled on Thu Sep 13 10:23:41 2018 by isu" />
 
 
 <title>OHI 2018: Food Provision, Preparing RAM B/Bmsy data</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2018: Food Provision, Preparing RAM B/Bmsy data</h1>
-<h4 class="author"><em><em>Compiled on Wed Sep 12 17:46:42 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Thu Sep 13 10:23:41 2018 by isu</em></em></h4>
 
 </div>
 
@@ -274,8 +274,8 @@ div.tocify {
 <p>This script prepares the RAM B/Bmsy data: 1. Relevant data are collected from the RAM database 2. Missing years are gapfilled when appropriate 3. RAM and Watson species names are harmonized in a few cases 4. RAM stocks are associated with the corresponding OHI and FAO regions</p>
 <div id="updates-from-previous-assessment" class="section level2">
 <h2>Updates from previous assessment</h2>
-<p>This year we have additional stocks without spatial information from Christopher Free. We combined ohi and fao region id information to the additional stocks in <code>fao_ohi_rgns.Rmd</code> and saved the file in <code>int/RAM_fao_ohi_rgns.csv</code>. Watson species names should be similar if not the same as the SAUP species names used prior this the 2018 assessment (Iwen 8/30). Data describing the spatial boundaries of the RAM stocks were not previously available. We meant to gapfill RAM B/Bmsy values last year, but due to an oversight we did not use gapfilled data.</p>
-<p>The updated RAM database has multiple assessments for the same stock. Looking into using <code>stockid</code> when preparing the data instead of <code>assessid</code>.</p>
+<p>After Jamie consulted with Daniel Hively, the research scientist currently working on the RAM Legacy Database, we decided it was best to use the <code>timeseries_values_views</code> table instead of the <code>timeseries</code> table. The former contains data using the most recent year of assessments for each stock. The original <code>timeseries</code> table now contains multiple assessments for the same stock. Since this table didn’t have an <code>assessid</code> we shifted to using <code>stockid</code> to join the relational databases. Furthermore, to extract the previous <code>BdivBmsytouse-dimensionless</code> values from <code>timeseries</code>, we now combined <code>TBdivTBmsy</code> and <code>SSBdivSSBmsy</code> values based on the definition of the <code>BdivBmsytouse-dimensionless</code> in the <code>tsmetrics</code> table: <strong>“General biomass time series relative to msy reference point (TB/TBmsy, or SSB/SSBmsy otherwise)”</strong>.</p>
+<p>This year we have additional stocks without spatial information from Christopher Free (2017). We manually assigned ohi and fao region id information to the additional stocks in <code>fao_ohi_rgns.Rmd</code> using best available information on stock distribution and saved the file in <code>int/RAM_fao_ohi_rgns.csv</code>. Watson species names should be similar if not the same as the SAUP species names used prior this the 2018 assessment.</p>
 <hr />
 </div>
 </div>
@@ -283,7 +283,7 @@ div.tocify {
 <h1>Data</h1>
 <div id="bbmsy-values-from-stock-assessments" class="section level2">
 <h2>B/Bmsy values from stock assessments</h2>
-<p>Reference: RAM Legacy Stock Assessment Database v4.41. 2018 Shared with us by folks at UW. <a href="http://ramlegacy.org" class="uri">http://ramlegacy.org</a>.</p>
+<p>Reference: <a href="http://ramlegacy.org">RAM Legacy Stock Assessment Database</a> v4.40 (6-4-2018) Shared with us by folks at UW.</p>
 <ul>
 <li>Description: B/Bmsy value by stock and year (other data, which we do not use, are also available in the database)</li>
 <li>Native data resolution: stock (fish stock, species and region specific)</li>

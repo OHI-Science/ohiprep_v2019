@@ -26,16 +26,18 @@ This script prepares the RAM B/Bmsy data:
 
 
 ## Updates from previous assessment
-This year we have additional stocks without spatial information from Christopher Free. We combined ohi and fao region id information to the additional stocks in `fao_ohi_rgns.Rmd` and saved the file in `int/RAM_fao_ohi_rgns.csv`. Watson species names should be similar if not the same as the SAUP species names used prior this the 2018 assessment (Iwen 8/30). Data describing the spatial boundaries of the RAM stocks were not previously available. We meant to gapfill RAM B/Bmsy values last year, but due to an oversight we did not use gapfilled data.
 
-The updated RAM database has multiple assessments for the same stock. Looking into using `stockid` when preparing the data instead of `assessid`. 
+After Jamie consulted with Daniel Hively, the research scientist currently working on the RAM Legacy Database, we decided it was best to use the `timeseries_values_views` table instead of the `timeseries` table. The former contains data using the most recent year of assessments for each stock. The original `timeseries` table now contains multiple assessments for the same stock. Since this table didn't have an `assessid` we shifted to using `stockid` to join the relational databases. Furthermore, to extract the previous `BdivBmsytouse-dimensionless` values from `timeseries`, we now combined `TBdivTBmsy` and `SSBdivSSBmsy` values based on the definition of the `BdivBmsytouse-dimensionless` in the `tsmetrics` table: **"General biomass time series relative to msy reference point (TB/TBmsy, or SSB/SSBmsy otherwise)"**.
+
+This year we have additional stocks without spatial information from Christopher Free (2017). We manually assigned ohi and fao region id information to the additional stocks in `fao_ohi_rgns.Rmd` using best available information on stock distribution and saved the file in `int/RAM_fao_ohi_rgns.csv`. Watson species names should be similar if not the same as the SAUP species names used prior this the 2018 assessment. 
+
 
 ***
 
 # Data
 ## B/Bmsy values from stock assessments 
 
-Reference: RAM Legacy Stock Assessment Database v4.41. 2018 Shared with us by folks at UW.  http://ramlegacy.org.
+Reference: [RAM Legacy Stock Assessment Database](http://ramlegacy.org) v4.40 (6-4-2018) Shared with us by folks at UW.
 
 * Description: B/Bmsy value by stock and year (other data, which we do not use, are also available in the database)
 * Native data resolution: stock (fish stock, species and region specific)
