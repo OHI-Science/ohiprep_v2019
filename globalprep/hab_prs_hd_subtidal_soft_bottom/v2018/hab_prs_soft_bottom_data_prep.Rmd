@@ -473,6 +473,37 @@ abline(0,1, col = 'red')
 ```
 
 
+# Gapfill
+
+There was no gapfilling for these data. Created gapfill files with values of 0.
+Note: Every data layer has to have a corresponding gapfill file. If there is no gapfilling the gafill column is fill in with 0 as done below.
+
+```{r}
+
+hab_health_sb_gf <- read.csv("output/habitat_health_softbottom.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_health_sb_gf, "output/habitat_health_softbottom_gf.csv", row.names=FALSE)
+
+
+hab_trend_sb_gf <- read.csv("output/habitat_trend_softbottom.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_trend_sb_gf, "output/habitat_trend_softbottom_gf.csv", row.names=FALSE)
+
+
+hd_sb_subtidal_gf <- read.csv("output/hd_sb_subtidal.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hd_sb_subtidal_gf, "output/hd_sb_subtidal_gf.csv", row.names=FALSE)
+
+
+
+```
+
 
 
 
