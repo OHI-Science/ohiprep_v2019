@@ -1,5 +1,5 @@
 ---
-title: "OHI 2018 - Food Provision: Preparing catch data for BBmsy calculations and mean catch (weights in FIS model) and FP weights"
+title: "OHI 2018: Food Provision, Preparing catch data for BBmsy calculations and mean catch (weights in FIS model) and FP weights"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:

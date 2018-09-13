@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2016 - LSP: Rasterize WDPA polygons '
+title: 'OHI 2018: LSP, Rasterize WDPA polygons'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:

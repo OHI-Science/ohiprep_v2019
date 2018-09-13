@@ -1,5 +1,5 @@
 ---
-title: "OHI 2017 - Food Provision: SAUP Species Resilience Lookup Table"
+title: "OHI 2018: FP, SAUP Species Resilience Lookup Table"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -16,6 +16,9 @@ pdf_document:
 This script uses FishBase to find the Resilience for each of the species in the SAUP database. The Resilience information is needed for running catch-MSY to estimate B/Bmsy.
 
 ```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(eval=FALSE)
+
 library(dplyr)
 library(rfishbase)
 library(parallel)

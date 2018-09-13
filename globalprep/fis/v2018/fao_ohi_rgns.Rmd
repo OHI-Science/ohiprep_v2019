@@ -1,7 +1,19 @@
 ---
-title: "Identify FAO and OHI regions for RAM stocks"
-author: "Iwen Su"
-output: html_document
+title: "OHI 2018: Food Provision, Identify FAO and OHI regions for RAM stocks"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
 ---
 
 ```{r}
