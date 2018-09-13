@@ -78,5 +78,5 @@ resil_final <- resil_full %>%
   mutate(method = "territories assigned score of admin country") %>%
   select(rgn_id, year, resilience_score, gapfilled, method)
 
-write.csv(select(resil_final, rgn_id, year, resilience_score), "output/cites.csv", row.names=FALSE)
+write.csv(select(resil_final, rgn_id, year, resilience_score), "output/cites1.csv", row.names=FALSE)
 write.csv(select(resil_final, rgn_id, year, gapfilled, method), "output/cites_gf.csv", row.names=FALSE)
