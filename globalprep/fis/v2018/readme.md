@@ -1,12 +1,15 @@
-## Ocean Health Index 2017: Fisheries Sub-goal
+## Ocean Health Index: Fisheries Sub-goal
 
-See full details for how the SAUP catch data was prepped [here](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/fis/v2017/catch_data_prep.html).
+See full details for how the Watson catch data was prepped [here](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/fis/v2017/catch_data_prep.html).
 
 See full details for how BBmsy was calculated [here](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/fis/v2017/calculate_bbmsy.html).
 
 If using these data, please see our [citation policy](http://ohi-science.org/citation-policy/).
 
+### Layers Created
 
+* B/Bmsy estimates (fis_b_bmsy)
+* Fishery catch data (fis_meancatch)
 
 ### Additional information
 A description of files:
