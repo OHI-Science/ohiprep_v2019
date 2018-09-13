@@ -1,5 +1,5 @@
 ---
-title: 'OHI: Tourism and Recreation '
+title: 'OHI 2018 - Tourism and Recreation '
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -459,6 +459,15 @@ warn_rgn_all_rgns <- warn_rgn_spread %>%
   arrange(year, rgn_id)
 
 write.csv(warn_rgn_all_rgns, 'output/tr_travelwarnings.csv', row.names=FALSE)
+
+## Create gapfill file. No gapfill in this case so gapfill = 0
+
+travelwarning_gf <- read.csv("output/tr_travelwarnings.csv") %>% 
+  mutate(multiplier = 0) %>% 
+  rename(gapfilled = multiplier)
+
+write.csv(travelwarning_gf, 'output/tr_travlewarnings_gf.csv', row.names = FALSE)
+
 ```
 
 

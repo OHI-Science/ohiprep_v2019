@@ -410,6 +410,18 @@ abline(0, 1, col = "red")
 
 ```
 
+# Gapfill csv
+
+There was no gapfilling for these data. Created gapfill files with values of 0.
+
+```{r}
+slr_gf <- read.csv("output/slr.csv")%>%
+  mutate(pressure_score = 0) %>% 
+  rename(gapfilled = pressure_score)
+
+write.csv(res_eez, "output/slr_gf.csv", row.names=FALSE)
+```
+
 
 ### Citation information  
 
