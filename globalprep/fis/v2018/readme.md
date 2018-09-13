@@ -1,8 +1,8 @@
-## Ocean Health Index: Fisheries Sub-goal
+## Ocean Health Index: Fisheries Sub-goal (FIS)
 
-See full details for how the Watson catch data was prepped [here](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/fis/v2017/catch_data_prep.html).
+See full details for how the Watson catch data was prepped [here](https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/catch_data_prep.html).
 
-See full details for how BBmsy was calculated [here](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/fis/v2017/calculate_bbmsy.html).
+See full details for how BBmsy was calculated [here](https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/calculate_bbmsy.html).
 
 If using these data, please see our [citation policy](http://ohi-science.org/citation-policy/).
 

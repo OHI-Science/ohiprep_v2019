@@ -1,7 +1,7 @@
-## Ocean Health Index: Natural products
+## Ocean Health Index: Natural products (NP)
 
 
-See full data prep details [here](https://rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2016/np_dataprep.html).
+See full data prep details [here](https://rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/np/v2018/np_dataprep.html).
 
 If using these data, please see our [citation policy](http://ohi-science.org/citation-policy/).
 

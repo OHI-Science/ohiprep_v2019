@@ -1,4 +1,4 @@
-## Ocean Health Index: Commercial Fishing Stressors
+## Ocean Health Index: Commercial Fishing Pressures (PRS FISH)
 
 See full data prep details [here](https://rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/prs_fish/v2018/fishing_pressure_layers.html).
 
