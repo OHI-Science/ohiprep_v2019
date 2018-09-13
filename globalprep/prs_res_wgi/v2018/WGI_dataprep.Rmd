@@ -1,5 +1,5 @@
 ---
-title: 'OHI: World Governance Indicator'
+title: 'OHI 2018 - World Governance Indicator'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -43,7 +43,7 @@ The Worldwide Governance Indicators (WGI) project reports aggregate and individu
 
 ***
 
-```{r}
+```{r, eval=FALSE}
 
 library(ohicore) # devtools::install_github('ohi-science/ohicore@dev')
 library(tools)
@@ -64,7 +64,7 @@ yr_end   = 2016
 
 # Obtain the WGI data
 Download each of the 6 WGI indicators:
-```{r}
+```{r, eval=FALSE}
 
 ## access data ----
 
@@ -107,7 +107,7 @@ key_corrp = WDI(
 
 Combine the indicators into a single table, with a column for each indicator, and rows for each country-year pair.
 
-```{r}
+```{r, eval=FALSE}
 d = key_voice %>% 
   select(country, year, VA.EST) %>%
   left_join(key_polst %>% select(-iso2c), by=(c('country', 'year'))) %>%
@@ -122,7 +122,7 @@ d = key_voice %>%
 
 Uncomment the code chunk lines when updating WGI data, this will most likely occur when calculating for new assessment year:
 
-```{r}
+```{r, eval=FALSE}
 
 # date <- Sys.Date()
 # write.csv(d, sprintf('raw/worldbank_wgi_from_wdi_api_%s.csv', date), row.names=FALSE)
@@ -135,11 +135,11 @@ The first gapfilling occurs when we use the average of previous years data withi
 
 
 **Read in WGI data - change appended date in file name to reflect the most recent version of the saved WGI data:**
-```{r}
+```{r, eval=FALSE}
 d <- read.csv('raw/worldbank_wgi_from_wdi_api_2018-04-13.csv') # change appended date 
 ```
 
-```{r}
+```{r, eval=FALSE}
 
 d <- gather(d, "indicator", "value", VA.EST:CC.EST)
 
@@ -163,7 +163,7 @@ Once gapfilling is complete, the WGI scores are calculated as an average of the 
 
 (NOTE: for the 2018 assessment all regions had at least 3 of the 6 indicators).
 
-```{r purge datapoor region}
+```{r purge datapoor region, eval=FALSE}
 
 countries_no_data <- d_gap_fill %>%
   filter(NA_count_post_gf1 > 3)
@@ -185,7 +185,7 @@ This involves:
 * taking the average of the 6 indicators (assuming there are at least 4 of the 6 indicators)
 * rescaling the data from 0 to 1 
 
-```{r}
+```{r, eval=FALSE}
 
 d_calcs  <-  d_gap_fill %>%
   group_by(country, year) %>%
@@ -197,14 +197,14 @@ d_calcs  <-  d_gap_fill %>%
 ```
 
 ## Check that the values in `scores_wgi_scale` fall within the wgi range specified below:
-```{r}
+```{r, eval=FALSE}
 
 # summary(d_calcs)
 wgi_range = c(-2.5, 2.5) # historic values have been between -2.5 and 2.5
 
 ```
 
-```{r}
+```{r, eval=FALSE}
 
 d_calcs <- d_calcs %>%
   mutate(score =  (score_wgi_scale - wgi_range[1]) / (wgi_range[2] - wgi_range[1])) %>%
@@ -219,7 +219,7 @@ d_calcs <- d_calcs %>%
 
 ## Explore & check intermediate d_calcs data table
 
-```{r}
+```{r, eval=FALSE}
 
 d_calcs[d_calcs$gap_fill>0, ]     
 d_calcs[d_calcs$country == "New Caledonia", ]  # no data, was deleted earlier
@@ -229,7 +229,7 @@ d_calcs[d_calcs$country == "Niue", ] # should have gap-fill values between 0-6
 
 ## Save intermediate file 
 
-```{r}
+```{r, eval=FALSE}
 
 ## save intermediate file of wgi scores pre-gapfilling (for OHI+ use)
 write.csv(d_calcs %>%
@@ -242,7 +242,7 @@ write.csv(d_calcs %>%
 
 # Convert country names to ohi regions
 
-```{r}
+```{r, eval=FALSE}
 
 ## We report these regions at a greater spatial resolution:
 
@@ -295,7 +295,7 @@ summary(d_calcs_rgn)
 
 Assigning territorial region value to be the mean of parent country value and territorial regions with data (using same `sov_id`).
 
-```{r}
+```{r, eval=FALSE}
 
 ## data that describes territories of countries
 territory = rgn_master %>% 
@@ -325,7 +325,7 @@ d_sovs = d_calcs_rgn %>%
 
 Define new data object from d_sovs which includes gapfill method and gapfilled scores:
 
-```{r}
+```{r, eval=FALSE}
 
 d_gf2 <- d_sovs %>%
   mutate(gapfill_territory = ifelse(is.na(score) & !is.na(score_gf_territory), "territory", "NA")) %>%
@@ -336,7 +336,7 @@ d_gf2 <- d_sovs %>%
 
 Add region names and clean the region data, and make sure we have all the regions:
 
-```{r}
+```{r, eval=FALSE}
 # get region names
 regions <- rgn_master %>%
   filter(rgn_typ == "eez") %>%
@@ -354,14 +354,14 @@ d_gf2 <- regions %>%
 
 ## Look at data table for the territories (gapfilled)
 
-```{r}
+```{r, eval=FALSE}
 head(d_sovs)
 summary(d_sovs)
 ```
 
 ## Look at table with scores and gapfilling methods
 
-```{r}
+```{r, eval=FALSE}
 
 ## check for NA values within "score" variable
 ## if so, need to gapfill using UN geopolitical regions
@@ -375,7 +375,7 @@ Comparing this year's values against last year's.  These should be the same unle
 
 Plot most recent shared year between last year and this years data, and look for a relationship close to a 1:1 relationship. If data are significantly off the line, look at the original (raw) data to investigate.
 
-```{r}
+```{r, eval=FALSE}
 
 new2015 <- d_gf2 %>%
 
@@ -398,7 +398,7 @@ abline(0,1, col="red")
 
 Look at top/bottom 10 regions to make sure these seem reasonable:
 
-```{r}
+```{r, eval=FALSE}
 
 ## Top/Bottom 10 scorers:
 
@@ -417,7 +417,7 @@ hist(tmp$score)
 
 Look at a summary to confirm scores are between 0 and 1, there are 220 regions, and there are no NAs (for this particular dataset):
 
-```{r}
+```{r, eval=FALSE}
 summary(d_gf2)
 length(unique(d_gf2$rgn_id))
 c(min(d_gf2$score), max(d_gf2$score))
@@ -426,7 +426,7 @@ c(min(d_gf2$score), max(d_gf2$score))
 # Save the data
 Save gapfilling and data for this assessment year.
 
-```{r}
+```{r, eval=FALSE}
 
 tmp_data_res <- d_gf2 %>%
   select(rgn_id, year, resilience_score = score)

@@ -1,5 +1,5 @@
 ---
-title: 'OHI: Targeted harvest pressure'
+title: 'OHI 2018 - Targeted harvest pressure'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -40,7 +40,7 @@ FAO Global Capture Production Quantity 1950_2016
 
 ***
 
-```{r}
+```{r, eval=FALSE}
 
 # load libraries, set directories
 library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
@@ -65,7 +65,7 @@ source('../../../src/R/common.R') # directory locations
 # Read in the raw data
 This includes the FAO capture production data and a list of the "target" species.
 
-```{r}
+```{r, eval=FALSE}
 
 ## FAO capture production data
 fis_fao_csv <-  read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_capture/d2018/Global_capture_production_Quantity_1950-2016.csv'))
@@ -82,7 +82,7 @@ sp2grp <-  read.csv('raw/species2group.csv') %>%
 
 # Clean the FAO data
 
-```{r}
+```{r, eval=FALSE}
 
 m <- fis_fao_csv %>%
   dplyr::rename(country = Country..Country.,
@@ -106,7 +106,7 @@ m <- m %>%
 # Identify the target species
 This analysis only includes target species.  The warning messages need to be checked and, if necessary, changes should be made to the raw/species2group.csv  
 
-```{r}
+```{r, eval=FALSE}
 
 # check for discrepancies in species list
 ## seals are no longer included (so these errors can be ignored):
@@ -142,7 +142,7 @@ unique(m2$area) # confirm these are all marine
 
 # Summarize data
 
-```{r}
+```{r, eval=FALSE}
 
 # spread wide to expand years
 m_w = m2 %>%
@@ -177,7 +177,7 @@ m_sum = m_l %>%
 
 # Assign country names to OHI regions
 
-```{r}
+```{r, eval=FALSE}
 
 
 m_sum <- m_sum %>%
@@ -204,7 +204,7 @@ m_sum_rgn <- m_sum_rgn %>%
 # Scale the data and save files
 Data is rescaled by dividing by the 95th quantile of values across all regions from 2011 to 2014.
 
-```{r}
+```{r, eval=FALSE}
 
 target_harvest <- m_sum_rgn %>%
   dplyr::mutate(quant_95 = quantile(value[year %in% 2011:2016], 0.95, na.rm = TRUE)) %>%
@@ -248,7 +248,7 @@ The data from last year and this year should be the same unless there were chang
 
 In this case, all of the regions looked very similar.
 
-```{r}
+```{r, eval=FALSE}
 new <- read.csv("output/fao_targeted.csv") %>% 
   filter(year==2015)
 
