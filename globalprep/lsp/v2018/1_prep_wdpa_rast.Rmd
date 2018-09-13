@@ -42,11 +42,13 @@ dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
 * Setup WDPA shapefile for lasting special places by filtering out non-"Designated" protected areas, and filtering out "non-MPA programmatic management plans" (US protected areas that distort scores).
 * Rasterize the result using `fasterize::fasterize()` (not `gdal_rast2()` as in previous assessments) and save to disk using `writeRasterBlocks()` defined in this script.
 
+View lsp_data_prep.Rmd for full description of Lasting Special Places data preparation.
+
 # Updates from previous assessment
 
 Using `fasterize::fasterize()` to rasterize the WDPA polygons, rather than ArcGIS.  This allows the entire process to be completed in R. 
 
-Using `fasterize()` argument `fun=min` to assign oldest year to an area where there are overlapping polygons. Prior assessment re-ordered the status year with the oldest year at the end, so that `gdalUtils::gdal_rasterize()` in `gdal_rast2()` would work correctly.
+Using `fasterize()` argument `fun=min` to assign oldest year to an area where there are overlapping polygons. Prior assessment re-ordered the status year with the oldest year at the end, so that `gdalUtils::gdal_rasterize()` in `gdal_rast2()` would work correctly. Both achieve the same results.
 
 ***
 

@@ -1,11 +1,11 @@
 ## Ocean Health Index: Mariculture and pressure data
 
 The following data layers were generated (here)[https://rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2017/mar_dataprep.html]:
-* mariculture harvest (tonnes)
-* mariculture sustainability score
+* mariculture harvest (mar_harvest_tonnes)
+* mariculture sustainability score (mar_sustainability_score)
 
 And, the following pressure:
-* Genetic escapes
+* Genetic escapes (sp_genetic)
 
 If using these data, please see our [citation policy](http://ohi-science.org/citation-policy/).
 

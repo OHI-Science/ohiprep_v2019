@@ -23,7 +23,7 @@ This analysis converts FAO mariculture data into data used to calculate the OHI 
 * New year of FAO mariculture yield data for 2016. 
 * Included edible seaweed species for the 2018 assessment (see species_list.csv). Tested three different scenarios of including/excluding seaweed (best judgement, exclude all seaweeds, exclude only seaweeds nei)
 * Added a row for Edible seaweeds taxa in Truj_label_sust.csv using the average of all seaweed species provided by Trujillo. 
-* Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
+* Check for changes in genetic escapee data or general methods. We may be updating our approach to reference points in future assessments. All the reference point calculations occur in the ohi-global toolbox.
 
 
 ***

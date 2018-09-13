@@ -15,15 +15,16 @@ output:
 
 [REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2016/np_dataprep.html]
 
-#Summary
+# Summary
 This analysis converts FAO commodities data into data layers used to calculate OHI 2018 global natural products scores.  
 
-#Updates from previous assessment
+# Updates from previous assessment
 New year of FAO data (1976-2015), but no changes to general methods.
 
 ***
 
-#Data Source 
+# Data Source
+
 **Reference**:      
     http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
      Release date: November 2017 
