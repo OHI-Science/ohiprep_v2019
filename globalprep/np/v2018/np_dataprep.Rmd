@@ -52,9 +52,7 @@ library(stringr)
 library(tidyr)
 library(zoo)  
 library(ggplot2)
-
-## comment out when knitting
-#setwd("globalprep/np/v2018")
+setwd(here::here("globalprep","np","v2018"))
 
 
 ## Load FAO-specific user-defined functions
