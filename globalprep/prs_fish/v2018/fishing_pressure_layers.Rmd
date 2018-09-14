@@ -1034,4 +1034,45 @@ abline(0,1, col="red")
 ```
 
 
+## Gapfill
+There was no gapfill for any of these data layers. However we create a gf file for every data layer indicating there was no gapfill with 0.
+
+```{r}
+
+art_hb_gf <- read.csv("output/art_hb.csv")%>%
+  mutate(pressure_score = 0) %>% 
+  rename(gapfilled = pressure_score)
+
+write.csv(art_hb_gf, "output/art_hb_gf.csv", row.names=FALSE)
+
+
+
+art_lb_gf <- read.csv("output/art_lb.csv")%>%
+  mutate(pressure_score = 0) %>% 
+  rename(gapfilled = pressure_score)
+
+write.csv(art_lb_gf, "output/art_lb_gf.csv", row.names=FALSE)
+
+comm_hb_gf <- read.csv("output/comm_hb.csv")%>%
+  mutate(pressure_score = 0) %>% 
+  rename(gapfilled = pressure_score)
+
+write.csv(comm_hb_gf, "output/comm_hb_gf.csv", row.names=FALSE)
+
+
+comm_lb_gf <- read.csv("output/comm_lb.csv")%>%
+  mutate(pressure_score = 0) %>% 
+  rename(gapfilled = pressure_score)
+
+write.csv(comm_lb_gf, "output/comm_lb_gf.csv", row.names=FALSE)
+
+
+```
+
+
+
+
+
+
+
 

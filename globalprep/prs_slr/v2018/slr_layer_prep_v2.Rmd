@@ -421,7 +421,7 @@ slr_gf <- read.csv("output/slr.csv")%>%
   mutate(pressure_score = 0) %>% 
   rename(gapfilled = pressure_score)
 
-write.csv(res_eez, "output/slr_gf.csv", row.names=FALSE)
+write.csv(slr_gf, "output/slr_gf.csv", row.names=FALSE)
 ```
 
 
