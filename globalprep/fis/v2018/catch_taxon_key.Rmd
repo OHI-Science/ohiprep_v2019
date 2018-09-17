@@ -1,17 +1,28 @@
 ---
-title: "Untitled"
+title: "OHI 2018: Food Provision, Watson Catch Data Taxon Key"
 author: "Iwen Su"
-date: "8/24/2018"
-output: html_document
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 ```
 
 # Summary
 
-Watson catch data (2018) doesn't have `TaxonKey` information like it did last year. Pull from last year's datasets.
+Watson catch data (2018) doesn't have `TaxonKey` information like it did last year. Previous years of data we are able to match the stocks to FAO and OHI regions using the spatial boundaries provided by Christopher Free (2017). Pull from last year's datasets.
 
 # Setup
 

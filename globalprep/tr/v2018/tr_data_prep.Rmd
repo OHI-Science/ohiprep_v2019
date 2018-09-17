@@ -1,5 +1,5 @@
 ---
-title: 'OHI: Tourism and Recreation '
+title: 'OHI 2018 - Tourism and Recreation '
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -83,7 +83,7 @@ These data are from the World Travel & Tourism Council (http://www.wttc.org/).  
 
 These data are cleaned and formatted using the R/process_WTTC.R script. Missing values are gapfilled using the UN georegion information.
 
-```{r wttc prop tourism}
+```{r wttc prop tourism, eval=FALSE}
 
 ## describe where the raw data are located:
 dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2018/raw')
@@ -199,7 +199,7 @@ Step 1: Copy and paste the data for each country: from https://travel.state.gov/
 
 Step 2: Wrangle and clean the new data
 
-```{r}
+```{r, eval=FALSE}
 ##Reading and wrangling 2018 data
 
 warn_raw <- read.csv('raw/tr_travelwarning_2018_raw.csv', na.strings = " ") %>% 
@@ -271,7 +271,7 @@ In 2018 we adjusted the data for provious years and saved the complete warning l
 
 
 We should be able to skip this section in the 2019 OHI assessment.
-```{r}
+```{r, eval=FALSE}
 
 apply_level = data.frame(warning = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"), level = c(1, 2, 3, 4, 4)) 
 
@@ -328,7 +328,7 @@ Level 2 | 0.75  | Exercise Increased Caution:  Be aware of heightened risks to s
 Level 3 | 0.25  | Reconsider Travel: Avoid travel due to serious risks to safety and security.
 Level 4 | 0 (full penalty) | Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
 
-```{r}
+```{r, eval=FALSE}
 scores <-  data.frame(level = c(1, 2, 3, 4), multiplier = c(1, 0.75, 0.25, 0)) 
 
 warn_multiplier <-  warn_complete %>%  
@@ -355,7 +355,7 @@ write.csv(warn_multiplier, "intermediate/warning.csv", row.names=FALSE)
 
 Step 5: Convert names to OHI regions and clean. 
 
-```{r travel warnings}
+```{r travel warnings, eval=FALSE}
 warn <- read.csv("intermediate/warning.csv")
 
 #Add rgn_id
@@ -383,7 +383,7 @@ Step 6: Identify inhabited regions with no U.S. travel warning data and see if t
 Next year, consider gapfilling missing territorial regions with administrative country data.
 
 NOTE: Canada's warning have the same levels as the U.S
-```{r}
+```{r, eval=FALSE}
 georegion_labels <- georegion_labels
 
 ##uninhabited regions (no need to worry about these)
@@ -412,7 +412,7 @@ Final step is to **compare with previous year's data**.
 Many European regions now have a travel warning due to increased terrorism (e.g., United Kingdom, Italy, Spain, Germany), although this doesn't show up in the following figure because previously, these regions had no travel warning (and were thus, NA).
 
 The change in not penalizing subregional warnings tended to reduce the penalty (i.e. increase the multiplier value).
-```{r}
+```{r, eval=FALSE}
 # The following indicates changes over time as well as changes to the State Department's approach to quantifying risk
 tmp <- warn_rgn %>%
   spread(year, multiplier) %>%
@@ -436,7 +436,7 @@ abline(0,1, col="red")
 
 ### Save the travel warning data in the output folder
 
-```{r}
+```{r, eval=FALSE}
 georegions <- georegion_labels %>%
   select(rgn_id)
   
@@ -459,6 +459,15 @@ warn_rgn_all_rgns <- warn_rgn_spread %>%
   arrange(year, rgn_id)
 
 write.csv(warn_rgn_all_rgns, 'output/tr_travelwarnings.csv', row.names=FALSE)
+
+## Create gapfill file. No gapfill in this case so gapfill = 0
+
+travelwarning_gf <- read.csv("output/tr_travelwarnings.csv") %>% 
+  mutate(multiplier = 0) %>% 
+  rename(gapfilled = multiplier)
+
+write.csv(travelwarning_gf, 'output/tr_travlewarnings_gf.csv', row.names = FALSE)
+
 ```
 
 
@@ -523,13 +532,13 @@ write_csv(ttci_rgn, 'intermediate/wef_ttci.csv')
 
 ```
 
-#### Preparing the gdppcppp data:
+## Preparing the gdppcppp data:
 These data are used to gapfill missing values in tourism sustainability.  Most of the data are from the World Bank, but CIA data fill some gaps (CIA data is available for only the most recent year).
 
 The Artisanal Opportunities goal uses gdppcppp data, so we will get the data that was processed for that goal. (NOTE: Update the Artisanal Opportunities goal prior to preparing these data)
 
 
-```{r worldbank}
+```{r worldbank, eval=FALSE}
 wb <- read.csv("../../ao/v2018/intermediate/gdppcppp_ohi.csv") %>%
   dplyr::select(rgn_id, year, value)
 
@@ -596,7 +605,7 @@ The following code combines the two gdp datasets and gapfills missing regions us
 
 If there is no World Bank gdppcppp data (pcgdp), the CIA data is used (pcgdp_cia).  The pcgdp2 variable includes both the World Bank and CIA data (with CIA data only used if there is not World Bank data).  The remaining data are estimated using UN geopolitical regions.  Ideally, the mean gdppcppp value is calculated at the r2 scale (gdp_pred_r2) using regions within each class with gdppcppp data.  If there were not enough regions with data at the r2 scale, the average at the r1 scale was used (gdp_pred_r1). The gdp_all variable combines all estimates using the following heirarchy:  World Bank -> CIA -> estimated using mean from r2 UN geopolitical regions -> estimated using mean from r1 UN geopolitical regions.    
 
-```{r gapfill gdp}
+```{r gapfill gdp, eval=FALSE}
 
 ### world bank gdp data
 gdppcppp <- wb %>%
@@ -700,7 +709,7 @@ write.csv(tr_sust_gf, "output/tr_sustainability_gf.csv", row.names=FALSE)
 ```
   
 
-## Gapfilling
+### Gapfilling
 Linear models using gdppcppp and UN geopolitical regions as predictor variables. However if there is no gdppc data we estimate the gdppc using the UN georegions and then used in the linear model to gapfill the sustainability score.
 
 ```{r, eval=FALSE}
@@ -776,7 +785,7 @@ write_csv(tr_sust, "output/tr_sustainability.csv")
 
 ## Compare with previous year of data 
 
-```{r}
+```{r, eval=FALSE}
 
 compare <- read.csv("../v2017/output/tr_sustainability.csv") %>% # change year
   select(rgn_id, old_S_score = S_score) %>%

@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2017: Sea Level Rise Pressure Layer'
+title: 'OHI 2018 - Sea Level Rise Pressure Layer'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -7,7 +7,7 @@ output:
     toc: true
     toc_depth: 3
     toc_float: yes
-    number_sections: false
+    number_sections: true
     theme: cerulean
     highlight: haddock
     includes: 
@@ -30,7 +30,7 @@ This process is completed entirely within this script. The raw data is downloade
 
 # Updates from previous assessment
 
-One additional year of data, 2016, was added. In addition we are using a better mask to eliminate cells farther than 3nm offshore. This change requires a rerun of all year within the dataset.
+One additional year of data, 2017, was added. 
 
 ***
 
@@ -39,11 +39,13 @@ One additional year of data, 2016, was added. In addition we are using a better 
 The source data are monthly mean sea level anomalies, in meters. These anomalies are calculated by subtracting the current absolute sea level for each month from the average sea level for that month calculated from 1993 - 2012.
 
 **Reference**: The altimeter products were produced and distributed by Aviso (http://www.aviso.altimetry.fr/), as part of the Ssalto ground processing segment. [AVISO MSLA heights, monthly means](http://www.aviso.altimetry.fr/en/data/products/sea-surface-height-products/global/msla-mean-climatology.html)  
-**Downloaded**: August 1, 2017 (for 2016 data)   
+**Downloaded**: July 26, 2018 (for 2017 data)   
 **Description**: Monthly mean sea level anomaly (meters above mean sea level)   
 **Native data resolution**: 0.25 degree grid cells   
-**Time range**: January 1993 - December 2016  
+**Time range**: January 1993 - December 2017  
 **Format**: NetCDF   
+**Citation information**  The altimeter products were produced and distributed by Aviso (http://www.aviso.altimetry.fr/), as part of the Ssalto ground processing segment. [AVISO MSLA heights, monthly means](http://www.aviso.altimetry.fr/en/data/products/sea-surface-height-products/global/msla-mean-climatology.html)
+
 
 ***
 
@@ -51,7 +53,7 @@ The source data are monthly mean sea level anomalies, in meters. These anomalies
 
 ## Setup
 
-```{r setup, message = FALSE, warning = FALSE}
+```{r setup, message = FALSE, warning = FALSE, eval=FALSE}
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
 
 # setwd("~/github/ohiprep_v2018/globalprep/prs_slr/v2018") # change year to reflect current assessment year
@@ -89,14 +91,14 @@ ocean <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/ocean.tif")
 
 ## Download the New Data
 
-```{r login_info}
+```{r login_info, eval=FALSE}
 ## need AVISO username and password, define in console when prompted, don't save here!!
 ## if either password or username contain the @ symbol, replace with '%40' (percent-encoding for reserved characters)
 userpasswd <- readline("Type AVISO username and password, separated by colon no space:")
 ```
 
 
-```{r download_data}
+```{r download_data, eval=FALSE}
 ## the is a 'download_data.R' script in the Mazu raw data folder but that routine was not working for me...
 
 year <- 2017 # data year to download
@@ -132,7 +134,7 @@ for(zipfile in zipfiles){
 
 All NetCDF files for each month are rasterized.
 
-```{r clip}
+```{r clip, eval=FALSE}
 ## d2016/msla_monthly_mean has data for 1993-2015
 ## then include list.files for d2017 through the data folder for current scenario year
 nc_files <- c(list.files(file.path(dir_anx_aviso, "d2018"),
@@ -145,7 +147,7 @@ nc_files <- c(list.files(file.path(dir_anx_aviso, "d2018"),
 
 The raw monthly data looks like this:
 
-```{r test_plot_raw}
+```{r test_plot_raw, eval=FALSE}
 plot(raster(nc_files[1]), col = cols, axes = F, 
      main = paste("Year", substr(nc_files[1], 90, 93), "Month", substr(nc_files[1], 96, 97)))
 ```
@@ -315,7 +317,7 @@ foreach(file = coastal_rasts) %dopar% { # file = coastal_rasts[10]
 
 # Results
 
-```{r plot_results}
+```{r plot_results, eval=FALSE}
 
 r <- raster(sprintf("%s/output/slr_%s.tif", dir_prs_slr, scen_year - 1))
 plot(ocean, col = "cornsilk2", axes = FALSE, box = FALSE, main = "Sea Level Rise Pressure 2016", legend = FALSE)		
@@ -397,7 +399,7 @@ print(Motion, file = "slr.html")
 
 
 
-```{r compare}
+```{r compare, eval=FALSE}
 
 new_data <- read.csv("output/slr.csv") %>%
   dplyr::select(rgn_id, year, new_pressure_score = pressure_score)
@@ -410,7 +412,16 @@ abline(0, 1, col = "red")
 
 ```
 
+# Gapfill csv
 
-### Citation information  
+There was no gapfilling for these data. Created gapfill files with values of 0.
 
-The altimeter products were produced and distributed by Aviso (http://www.aviso.altimetry.fr/), as part of the Ssalto ground processing segment. [AVISO MSLA heights, monthly means](http://www.aviso.altimetry.fr/en/data/products/sea-surface-height-products/global/msla-mean-climatology.html)
+```{r, eval=FALSE}
+slr_gf <- read.csv("output/slr.csv")%>%
+  mutate(pressure_score = 0) %>% 
+  rename(gapfilled = pressure_score)
+
+write.csv(slr_gf, "output/slr_gf.csv", row.names=FALSE)
+```
+
+

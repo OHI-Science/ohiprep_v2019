@@ -1,10 +1,13 @@
 ---
-title: "Additional Data Checks"
+title: "OHI 2018: LSP, Additional Data Checks"
 author: "Iwen Su"
 output: html_document
 ---
 
-```{r, echo=FALSE}
+```{r setup, warning=FALSE, message=FALSE, echo=FALSE}
+
+knitr::opts_chunk$set(eval=FALSE)
+
 library(raster)
 library(readr)
 library(tidyverse)

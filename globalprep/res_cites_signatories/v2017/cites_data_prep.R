@@ -1,5 +1,6 @@
 # Data prep CITES
 
+##NOTE: Data prep in v2018 folder is updates to reflect gapfilling.
 # downloaded on: Oct 19 2017
 # from: https://www.cites.org/eng/disc/parties/chronolo.php
 
@@ -72,3 +73,9 @@ resil_final <- resil_full %>%
   select(rgn_id, year, resilience_score)
 
 write.csv(resil_final, "output/cites.csv", row.names=FALSE)
+
+##NOTE: Data prep in v2018 folder is updates to reflect gapfilling
+
+
+
+

@@ -1,5 +1,5 @@
 ---
-title: 'OHI: Lasting Special Places v2018'
+title: 'OHI 2018: Lasting Special Places'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output:
   html_document:
@@ -14,32 +14,6 @@ output:
   word_document:
     toc: yes
 ---
-
-```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
-
-knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
-                      echo = FALSE, message = FALSE, warning = FALSE)
-
-library(raster)
-library(readr)
-library(tidyverse)
-# library(tmap)
-
-
-source('~/github/ohiprep_v2018/src/R/common.R')
-
-goal     <- 'lsp'
-scenario <- 'v2018'
-dir_anx       <- file.path(dir_M, 'git-annex/globalprep') 
-dir_goal      <- file.path('~/github/ohiprep_v2018/globalprep', goal, scenario)
-dir_goal_anx  <- file.path(dir_anx, goal, scenario)
-
-## set up provenance tracking for this script:
-# library(provRmd)
-# prov_setup()
-
-```
-
 
 # Summary
 
@@ -65,11 +39,7 @@ where:
 
 # Updates from previous assessment
 
-New World Database on Protected Areas spatial data from UNEP-WCMC became available in May 2016.  In addition, an error in the previous assessments (specifically the .csv used to determine total areas for the 3 nm offshore and 1 km inland regions) caused total region areas to be underestimated, artificially inflating scores in past assessments, in some cases quite significantly.  This error has been fixed in the v2016 assessment, but in so doing, many of the reported scores are noticeably lower than before.
-
-## Goals for future improvements
-
-* Move away from using ArcPy for rasterization of WDPA-MPA database.  ArcPy works great for our purposes, but is neither open-source nor cross-platform.
+No longer use ArcPy for rasterization of WDPA-MPA database. ArcPy works great for our purposes, but is neither open-source nor cross-platform. Using `fasterize` in R to rasterize the shapefiles.
 
 ***
 
@@ -87,7 +57,37 @@ New World Database on Protected Areas spatial data from UNEP-WCMC became availab
 **File location**: `Mazu:git-annex/globalprep/_raw_data/wdpa_mpa/d2018/WDPA_June2018-shapefile/`
 
 ***
-  
+
+# Setup
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = FALSE, message = FALSE, warning = FALSE, eval=FALSE)
+
+library(raster)
+library(readr)
+library(tidyverse)
+# library(tmap)
+
+
+source('~/github/ohiprep_v2018/src/R/common.R')
+
+goal     <- 'lsp'
+scenario <- 'v2018'
+dir_anx       <- file.path(dir_M, 'git-annex/globalprep') 
+dir_goal      <- file.path('~/github/ohiprep_v2018/globalprep', goal, scenario)
+dir_goal_anx  <- file.path(dir_anx, goal, scenario)
+
+## set up provenance tracking for this script:
+# library(provRmd)
+# prov_setup()
+
+#setwd("~/github/ohiprep_v2018/globalprep/lsp/v2018")
+
+
+```
+
 # Methods
 
 ## Filter and re-project WDPA polygons
@@ -353,25 +353,29 @@ There was no gapfilling for these data. Created gapfill files with values of 0.
 ```{r}
 library(dplyr)
 
-res_eez <- read.csv("globalprep/lsp/v2017/output/mpa_eez_updated_resilience.csv")%>%
-  mutate(resilience.score = 0) 
+res_eez <- read.csv("output/mpa_eez_resilience.csv")%>%
+  mutate(resilience.score = 0) %>% 
+  rename(gapfilled = resilience.score)
 
-write.csv(res_eez, "globalprep/lsp/v2017/output/mpa_eez_updated_resilience_gf.csv", row.names=FALSE)
+write.csv(res_eez, "output/mpa_eez_resilience_gf.csv", row.names=FALSE)
 
-res_3nm <- read.csv("globalprep/lsp/v2017/output/mpa_3nm_updated.csv")%>%
-  mutate(resilience.score = 0) 
+res_3nm <- read.csv("output/mpa_3nm_resilience.csv")%>%
+  mutate(resilience.score = 0) %>% 
+  rename(gapfilled = resilience.score)
 
-write.csv(res_3nm, "globalprep/lsp/v2017/output/mpa_3nm_updated_gf.csv", row.names=FALSE)
+write.csv(res_3nm, "output/mpa_3nm_resilience_gf.csv", row.names=FALSE)
 
-inland <- read.csv("globalprep/lsp/v2017/output/lsp_prot_area_inland1km.csv") %>%
-  mutate(a_prot_1km = 0)
+inland <- read.csv("output/lsp_prot_area_inland1km.csv") %>%
+  mutate(a_prot_1km = 0) %>% 
+  rename(gapfilled = a_prot_1km)
 
-write.csv(inland, "globalprep/lsp/v2017/output/lsp_prot_area_inland1km_gf.csv", row.names=FALSE)
+write.csv(inland, "output/lsp_prot_area_inland1km_gf.csv", row.names=FALSE)
 
-offshore <- read.csv("globalprep/lsp/v2017/output/lsp_prot_area_offshore3nm.csv") %>%
-  mutate(a_prot_3nm = 0)
+offshore <- read.csv("output/lsp_prot_area_offshore3nm.csv") %>%
+  mutate(a_prot_3nm = 0)%>% 
+  rename(gapfilled = a_prot_3nm)
 
-write.csv(offshore, "globalprep/lsp/v2017/output/lsp_prot_area_offshore3nm_gf.csv", row.names=FALSE)
+write.csv(offshore, "output/lsp_prot_area_offshore3nm_gf.csv", row.names=FALSE)
 ```
 
 ***

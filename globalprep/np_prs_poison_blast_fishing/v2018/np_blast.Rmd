@@ -20,7 +20,7 @@ editor_options:
 
 #Summary
 
-The area of blast fishing data layer is created from sapatialized bycatch by gear data provided by Watson (2017).
+The area of blast fishing data layer is created from spatialized bycatch by gear data provided by Watson (2017).
 !!!!!!! Describe standarization method!!!!!!!!!!
 
 Not needed!!!!!???

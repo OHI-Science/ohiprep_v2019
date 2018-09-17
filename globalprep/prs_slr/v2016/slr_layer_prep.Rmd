@@ -48,7 +48,7 @@ Since these data have already been calculated using a reference point, we only n
 **Reference**: The altimeter products were produced and distributed by Aviso (http://www.aviso.altimetry.fr/), as part of the Ssalto ground processing segment. [AVISO MSLA heights, monthly means](http://www.aviso.altimetry.fr/en/data/products/sea-surface-height-products/global/msla-mean-climatology.html)
 
 **Downloaded**: March 18, 2016   
-**Description**: Monthly mean sea level anomaly (meters above mean sea level)  
+**Description**: Yearly and monthly mean sea level anomaly (meters above mean sea level)  
 **Native data resolution**: 0.25 degree grid cells  
 **Time range**: January 1993 - December 2015  
 **Format**: NetCDF  

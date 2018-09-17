@@ -29,7 +29,7 @@ No changes to methods from previous assessment. Transitioned almost entirely to 
 # Data Source 
 
 **Reference**:      
-Cavalieri, D.J., Parkinson, C.L., Gloersen, P. and Zwally, H. (2014). Sea ice concentrations from Nimbus-7 SMMR and DMSP SMM/I-SSMIS passive microwave data. 1979-2014. Boulder, Colorado, USA: NASA National Snow and Ice Data Center Distributed Active Archive Center (http://dx.doi.org/10.5067/8GQ8LZQVL0VL).
+Cavalieri, D.J., Parkinson, C.L., Gloersen, P. and Zwally, H. (1996). Sea ice concentrations from Nimbus-7 SMMR and DMSP SMM/I-SSMIS passive microwave data. 1979-2014. Boulder, Colorado, USA: NASA National Snow and Ice Data Center Distributed Active Archive Center (http://dx.doi.org/10.5067/8GQ8LZQVL0VL).
 
 **Downloaded**: May 18, 2018
 
@@ -93,12 +93,14 @@ E-mail: nsidc@nsidc.org
 **Time range**: 1970-2017
 
 ***
-  
-# Setup
+
+# Methods
+
+## Setup
 
 Load all relevant libraries, establish/define parameters and commonly used pathnames. Manually change scenario and data years in file pathnames code chunk to reflect the most recent data (d) and current assessment year (v) in setup code chunk.
 
-```{r setup}
+```{r setup, eval=FALSE}
 
 ## install R packages where necessary
 pkg <- c("raster", "fasterize", "sf", "sp", "rgdal", "fields") # "fields" for colors in Status_Trend.R
@@ -124,7 +126,7 @@ source("../../../src/R/common.R") # directory locations
 source("../../../src/R/spatial_common.R")
 ```
 
-### Location of Maps
+## Location of Maps
 
 These maps of the OHI regions were made by the PreparingSpatialFiles.R script. If there are changes to the OHI regions, the `PreparingSpatialFiles.R` script will need to be run. Additionally, it is critical to walk through the `ObtainingData.R` script if any of the spatial files have been modified (this saves the files as spatial points).
 
@@ -134,14 +136,14 @@ The original polygon files are used from: git-annex/globalprep/_raw_data/NSIDC_S
 maps <- file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2018") # change year to current assessment
 ```
 
-### Establish Parameters
+## Establish Parameters
 
 Establish: CRS, website to collect data, data selection parameters. Filename format for final monthly data is `nt_YYYYMM_SSS_vVV_R.bin`. Parameters will be used to scrape the data from the web in ObtainingData script.
 
 * epsg projection 3411 - nsidc sea ice polar stereographic north (http://spatialreference.org/ref/epsg/3411/)
 * epsg projection 3412 - nsidc sea ice polar stereographic south (http://spatialreference.org/ref/epsg/3412/)
 
-```{r establish parameters}
+```{r establish parameters, eval=FALSE}
 pixel = 25000 # pixel dimension in meters for both x and y
 prj.n = "+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs"
 prj.s = "+proj=stere +lat_0=-90 +lat_ts=-70 +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs"
@@ -158,9 +160,8 @@ n.pym = length(poles)*length(years)*length(months)
 i.pym = 0
 ```
 
-# Methods
 
-### Function 1
+## Function 1
 
 Collects the data for each month/year from the website and add to raster stack that is saved in tmp folder as: `n_rasters_points.rdata` or `s_rasters_points.rdata`. And, if it doesn't already exist, it converts the region shapefile into a raster points file. See `ObtainingData.R` script for more details.
 
@@ -168,7 +169,7 @@ Collects the data for each month/year from the website and add to raster stack t
 source("ObtainingData.R")
 ```
 
-### Function 2
+## Function 2
 Using the data from the .rdata files created from Function 1 with the `ObtainingData.R` script, this function calculates status and trend for shoreline ice and ice edge habitat. Data is saved in intermediate (`int`) folder: 
 
 * Habitat: `n_IceEdgeHabitat.csv`, `s_IceEdgeHabitat.csv`
@@ -179,7 +180,7 @@ ref.years <- 1979:2000
 source("Status_Trend.R") # calculates status and trend for shoreline ice and ice edge habitat
 ```
 
-### Final calculations and organization
+## Final calculations and organization
 
 Read in ice edge habitat and ice shore protection csv-format datasets, remove anamolous eez regions with minimal ice cover, remove disputed regions. Bind these datasets and convert to units of km^2. Save seaice health, extent, trend, and extent data.
 
@@ -243,12 +244,12 @@ extent <- data %>%
 write.csv(extent, "output/hab_ice_extent_eez.csv", row.names = FALSE) # save seaice extent data
 ```
 
-# Data Checks
+## Data Checks
 
 1. Compare to last year's data. There should be a strong correlation between these data.  
 1. Pair with region names for sanity check.
 
-```{r data checks}
+```{r data checks, eval=FALSE}
 
 ## health
 health <- read.csv("output/hab_ice_health_eez.csv")
@@ -285,5 +286,37 @@ data <- read.csv("output/hab_ice_health_eez.csv") %>%
   dplyr::left_join(regions, by = "rgn_id") %>%
   dplyr::arrange(habitat, health)
 ```
+
+## Gapfill
+
+There was no gapfilling for these data. Created gapfill files with values of 0.
+Note: all layers need a gf file, eventhough if there was no gapfilling. In this case the gapfill value is 0 for every region.
+
+
+```{r, eval=FALSE}
+hab_ice_health_gf <- read.csv("output/hab_ice_health_eez.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_ice_health_gf, "output/hab_ice_health_eez_gf.csv", row.names=FALSE)
+
+
+hab_ice_extent_gf <- read.csv("output/hab_ice_extent_eez.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_ice_health_gf, "output/hab_ice_extent_eez_gf.csv", row.names=FALSE)
+
+
+hab_ice_trend_gf <- read.csv("output/hab_ice_trend_eez.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_ice_health_gf, "output/hab_ice_trend_eez_gf.csv", row.names=FALSE)
+
+
+```
+
+
 
 ***

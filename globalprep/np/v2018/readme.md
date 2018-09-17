@@ -1,14 +1,23 @@
-## Ocean Health Index: Natural products
+## Ocean Health Index: Natural products (NP)
 
-See full data prep details [here](https://rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2016/np_dataprep.html) for the following layers used to calculate the natural products goal:
-* Relative harvest value
-* Natural product harvest
-* Relative harvest tonnes
 
+See full data prep details [here](https://rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/np/v2018/np_dataprep.html).
 
 If using these data, please see our [citation policy](http://ohi-science.org/citation-policy/).
 
 [alternatively, if you want a specific citation for this resource, you can add that here....]
+
+
+### Layers Created
+
+* Relative harvest value (np_harvest_product_weight)
+* Natural product harvest (np_harvest_tonnes)
+* Relative harvest tonnes (np_harvest_tonnes_relative)
+
+
+### Files
+* np_dataprep.Rmd - script for preparing the Natural Products data
+* Gap_fill_product.R - summarizing the gap-fill commodity data to get an estimate of the proportion of data that was gap-filled for each; was not used in 2018 Global Assessment
 
 
 ### Additional information

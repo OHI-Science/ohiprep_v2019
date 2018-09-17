@@ -1,7 +1,19 @@
 ---
-title: "Fix Cell Issues"
-date: "8/23/2018"
-output: html_document
+title: "OHI 2018: Food Provision, Fix Cell Issues"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
 ---
 
 # Summary
@@ -13,6 +25,11 @@ Also takes code from [saup_rasters_to_ohi_rgns.R](https://github.com/OHI-Science
 The output is saved as cells.csv
 
 # Setup 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
 
 ```{r}
 library(reshape2)

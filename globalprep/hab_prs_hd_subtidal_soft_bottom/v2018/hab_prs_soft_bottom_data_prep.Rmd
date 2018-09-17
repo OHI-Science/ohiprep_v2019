@@ -70,7 +70,7 @@ This script provides pressure scores, health indicators and trend values for sof
 
 ## Setup
 
-```{r}
+```{r, eval=FALSE}
 
 library(tidyverse)
 library(parallel)
@@ -111,7 +111,7 @@ First get the template raster with a resolution of 0.5 degree cells. The `getcel
 
 The values of these cells are the Cell ID numbers. In the fisheries catch dataset, these Cell ID numbers match up with the "Seq" numbers.
 
-```{r}
+```{r, eval=FALSE}
 
 saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
 
@@ -126,7 +126,7 @@ plot(saup_rast,col=cols,main = "SAUP Cell IDs")
 Then create one raster per year for industrial and non industrial catches using gear that harm soft bottom. 
 
 
-```{r}
+```{r, eval=FALSE}
 years <-  c(2003:2015)
 
 ##Data frame with each gear in the dataset with the corresponding multiplier according to how much they harm the ocean bottom
@@ -184,7 +184,7 @@ plot(test) ##Looks like all information is there!
 
 ## Extract values for each OHI region
 
-```{r}
+```{r, eval=FALSE}
 
 ## Read tif as rasters for all catches using gear that harm soft bottom
 
@@ -241,7 +241,7 @@ write.csv(sb_catch_rgn, sprintf("int/sb_catch_rgn_%s.csv", catch_year), row.name
 
 ## Standarized catches per soft-bottom area
 
-```{r}
+```{r, eval=FALSE}
 area <-  read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/globalprep/hab_prs_hd_subtidal_soft_bottom/v2016/output/habitat_extent_softbottom.csv")
 
 
@@ -322,7 +322,7 @@ data_rescaled_2 <- data_rescaled %>%
 
 ## Comparing to old data
 
-```{r}
+```{r, eval=FALSE}
 
   ## check against old data
 old <- read.csv("../v2017/output/habitat_health_softbottom.csv") %>%
@@ -355,7 +355,7 @@ ggplotly(compare_plot)
 
 ## Calculate and save trend
 
-```{r}
+```{r, eval=FALSE}
 ### Get relevant data
 
 save_dir <- "output"
@@ -413,7 +413,7 @@ write.csv(trend, file.path(save_dir, "habitat_trend_softbottom.csv"), row.names=
 
 Compare trend, pressure, pressure output to last year's values
 
-```{r}
+```{r, eval=FALSE}
 
  ## Health data
 old_health <- read.csv("../v2017/output/habitat_health_softbottom.csv") %>%
@@ -472,6 +472,37 @@ abline(0,1, col = 'red')
 
 ```
 
+
+# Gapfill
+
+There was no gapfilling for these data. Created gapfill files with values of 0.
+Note: Every data layer has to have a corresponding gapfill file. If there is no gapfilling the gafill column is fill in with 0 as done below.
+
+```{r, eval=FALSE}
+
+hab_health_sb_gf <- read.csv("output/habitat_health_softbottom.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_health_sb_gf, "output/habitat_health_softbottom_gf.csv", row.names=FALSE)
+
+
+hab_trend_sb_gf <- read.csv("output/habitat_trend_softbottom.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_trend_sb_gf, "output/habitat_trend_softbottom_gf.csv", row.names=FALSE)
+
+
+hd_sb_subtidal_gf <- read.csv("output/hd_sb_subtidal.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hd_sb_subtidal_gf, "output/hd_sb_subtidal_gf.csv", row.names=FALSE)
+
+
+
+```
 
 
 

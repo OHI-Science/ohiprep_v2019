@@ -41,7 +41,8 @@ See `prs_sst/v2015/dataprep.R` for preparation of the "annual_pos_anomalies" dat
 Cortadv5_SSTA.nc = SST anomalies (weekly SST minus weekly climatological SST), weekly data for all years, degrees Kelvin
 Cortadv5_weeklySST.nc =  SST, weekly data for all years, degrees Kelvin  
 **Time Range**: 1982 - 2017 (weekly averages across all years)  
-**Format**: NetCDF  
+**Format**: NetCDF
+**Downloaded**: August 21, 2018
 
 ***  
 

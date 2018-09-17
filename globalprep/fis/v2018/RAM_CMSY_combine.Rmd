@@ -1,5 +1,5 @@
 ---
-title: "OHI 2017 - Food Provision: Combining RAM and CMSY B/Bmsy data"
+title: "OHI 2018: Food Provision, Combining RAM and CMSY B/Bmsy data"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -24,7 +24,7 @@ This script prepares the final B/Bmsy data:
 
 
 ## Updates from previous assessment
-Same as previous years.
+Have not completed this prep script yet for 2018.ß
 
 ***
 
@@ -34,7 +34,7 @@ B/Bmsy values from the RAM Legacy Stock Assessment data are generated in RAM_dat
 
 B/Bmsy values from the CMSY method are generated in calculate_bbmsy.Rmd
 
-Mean catch data created in "catch_data_prep.Rmd"
+Mean catch data created in catch_data_prep.Rmd
 
 ***
 
@@ -42,7 +42,7 @@ Mean catch data created in "catch_data_prep.Rmd"
 
 ``` {r setup, message = FALSE, warning = FALSE}
 
-knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE, eval=FALSE)
 
 ## highlight out when knitting
 # setwd("globalprep/fis/v2017")

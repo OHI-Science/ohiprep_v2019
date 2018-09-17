@@ -1,5 +1,5 @@
 ---
-title: 'OHI: Mariculture '
+title: 'OHI 2018: Mariculture '
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -13,7 +13,7 @@ output:
     toc: true
 ---
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2017/mar_dataprep.html]?bro
+[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/mar/v2018/mar_dataprep.html]?bro
 
 # Summary
 This analysis converts FAO mariculture data into data used to calculate the OHI global mariculture status score.  This also calculates the genetic escapee from mariculture pressure data.
@@ -23,7 +23,7 @@ This analysis converts FAO mariculture data into data used to calculate the OHI 
 * New year of FAO mariculture yield data for 2016. 
 * Included edible seaweed species for the 2018 assessment (see species_list.csv). Tested three different scenarios of including/excluding seaweed (best judgement, exclude all seaweeds, exclude only seaweeds nei)
 * Added a row for Edible seaweeds taxa in Truj_label_sust.csv using the average of all seaweed species provided by Trujillo. 
-* Check for changes in genetic escapee data or general methods. We will be updating our approach to reference points. All the reference point calculations occur in the ohi-global toolbox.
+* Check for changes in genetic escapee data or general methods. We may be updating our approach to reference points in future assessments. All the reference point calculations occur in the ohi-global toolbox.
 
 
 ***
@@ -61,8 +61,10 @@ Original MSI rescaled from 1-10 to 0-1 for mariculture taxa groups.
   
 # Methods
 
-```{r}
+```{r setup, message=FALSE, warning=FALSE}
 
+knitr::opts_chunk$set(eval=FALSE)
+  
 ## load libraries, set directories
 library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
 library(dplyr)
@@ -350,9 +352,9 @@ Saves the appropriate Mariculture-FP file depending on whether we are excluding 
 if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
  write.csv(maric, 'output/MAR_FP_data.csv', row.names=FALSE)
  } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
-   write.csv(maric, 'output/MAR_FP_data_no_seaweed.csv', row.names=FALSE)
+   write.csv(maric, 'test/MAR_FP_data_no_seaweed.csv', row.names=FALSE)
    } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
-     write.csv(maric, 'output/MAR_FP_data_no_nei.csv', row.names=FALSE)
+     write.csv(maric, 'test/MAR_FP_data_no_nei.csv', row.names=FALSE)
      }
 
 ```
@@ -530,9 +532,9 @@ anyDuplicated(mar_harvest_tonnes) # check for duplications
 if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
  write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
  } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
-   write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_seaweed.csv', row.names=F)
+   write.csv(mar_harvest_tonnes, 'test/mar_harvest_tonnes_no_seaweed.csv', row.names=F)
    } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
-     write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes_no_nei.csv', row.names=F)
+     write.csv(mar_harvest_tonnes, 'test/mar_harvest_tonnes_no_nei.csv', row.names=F)
      }
 
 ## save gapfill data for mariculture harvest
@@ -544,9 +546,9 @@ mar_harvest_tonnes_gf = mar_sus_final %>%
 if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
  write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
  } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
-   write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_seaweed.csv', row.names=F)
+   write.csv(mar_harvest_tonnes_gf, 'test/mar_harvest_tonnes_gf_no_seaweed.csv', row.names=F)
    } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
-     write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf_no_nei.csv', row.names=F)
+     write.csv(mar_harvest_tonnes_gf, 'test/mar_harvest_tonnes_gf_no_nei.csv', row.names=F)
      }
 
 
@@ -563,9 +565,9 @@ anyDuplicated(mar_sustainability_score)
 if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
  write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F)
  } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
-   write.csv(mar_sustainability_score, 'output/mar_sustainability_no_seaweed.csv', row.names=F)
+   write.csv(mar_sustainability_score, 'test/mar_sustainability_no_seaweed.csv', row.names=F)
    } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
-     write.csv(mar_sustainability_score, 'output/mar_sustainability_no_nei.csv', row.names=F)
+     write.csv(mar_sustainability_score, 'test/mar_sustainability_no_nei.csv', row.names=F)
      }
 
 
@@ -579,9 +581,9 @@ mar_sustainability_score_gf = mar_sus_final %>%
 if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
  write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf.csv', row.names=F)
  } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
-   write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_seaweed.csv', row.names=F)
+   write.csv(mar_sustainability_score_gf, 'test/mar_sustainability_gf_no_seaweed.csv', row.names=F)
    } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
-     write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf_no_nei.csv', row.names=F)
+     write.csv(mar_sustainability_score_gf, 'test/mar_sustainability_gf_no_nei.csv', row.names=F)
      }
 
 ```
@@ -742,9 +744,9 @@ genEscapes_gf <- tonnes_esc %>%
 if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
  write.csv(genEscapes_gf, 'output/GenEsc_gf.csv', row.names=FALSE)
  } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
-   write.csv(genEscapes_gf, 'output/GenEsc_gf_no_seaweed.csv', row.names=FALSE)
+   write.csv(genEscapes_gf, 'test/GenEsc_gf_no_seaweed.csv', row.names=FALSE)
    } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
-     write.csv(genEscapes_gf, 'output/GenEsc_gf_no_nei.csv', row.names=FALSE)
+     write.csv(genEscapes_gf, 'test/GenEsc_gf_no_nei.csv', row.names=FALSE)
      }
 
 ```
@@ -763,9 +765,9 @@ data <- genEscapes %>%
 if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
  write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
  } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
-   write.csv(data, 'output/GenEsc_no_seaweed.csv', row.names=FALSE) 
+   write.csv(data, 'test/GenEsc_no_seaweed.csv', row.names=FALSE) 
    } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
-    write.csv(data, 'output/GenEsc_no_nei.csv', row.names=FALSE)  
+    write.csv(data, 'test/GenEsc_no_nei.csv', row.names=FALSE)  
      }
 
 ```
@@ -794,7 +796,7 @@ plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
 mar_old <- read.csv("../v2017/output/MAR_FP_data.csv") %>% 
   filter(rgn_id == 73, year == 2015) %>% 
   select(rgn_id, species, fao, old_value = value)
-mar_new <- read.csv("output/MAR_FP_data_no_seaweed.csv") %>% 
+mar_new <- read.csv("test/MAR_FP_data_no_seaweed.csv") %>% 
   filter(rgn_id == 73, year == 2015) %>% 
   select(rgn_id, species, fao, value)
 
@@ -808,7 +810,7 @@ old <- read.csv("../v2017/output/GenEsc.csv") %>%
   filter(rgn_id == 207) %>% 
   select(rgn_id, year, prs_score_old=pressure_score)
 
-new <- read.csv("../v2018/output/GenEsc_no_seaweed.csv") %>%
+new <- read.csv("../v2018/test/GenEsc_no_seaweed.csv") %>%
   filter(rgn_id == 207) %>% 
   select(rgn_id, year, pressure_score)
 
@@ -822,7 +824,7 @@ plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
 mar_old <- read.csv("../v2017/output/MAR_FP_data.csv") %>% 
   filter(rgn_id == 207, year == 2015) %>% 
   select(rgn_id, species, fao, environment, old_value = value)
-mar_new <- read.csv("output/MAR_FP_data_no_seaweed.csv") %>% 
+mar_new <- read.csv("test/MAR_FP_data_no_seaweed.csv") %>% 
   filter(rgn_id == 207, year == 2015) %>% 
   select(rgn_id, species, fao, environment, value)
 
@@ -836,7 +838,7 @@ old <- read.csv("../v2017/output/GenEsc.csv") %>%
   filter(rgn_id == 143) %>% 
   select(rgn_id, year, prs_score_old=pressure_score)
 
-new <- read.csv("../v2018/output/GenEsc_no_seaweed.csv") %>%
+new <- read.csv("../v2018/test/GenEsc_no_seaweed.csv") %>%
   filter(rgn_id == 143) %>% 
   select(rgn_id, year, pressure_score)
 
@@ -850,7 +852,7 @@ plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
 mar_old <- read.csv("../v2017/output/MAR_FP_data.csv") %>% 
   filter(rgn_id == 143, year %in% c(2011:2016)) %>% 
   select(rgn_id, species, fao, environment, year, old_value = value)
-mar_new <- read.csv("output/MAR_FP_data_no_seaweed.csv") %>% 
+mar_new <- read.csv("test/MAR_FP_data_no_seaweed.csv") %>% 
   filter(rgn_id == 143, year %in% c(2011:2016)) %>% 
   select(rgn_id, species, fao, environment, year, value)
 
@@ -951,12 +953,12 @@ exclude <- read.csv("../v2018/output/GenEsc.csv") %>%
   select(rgn_id, prs_score_BPJ=pressure_score)
 
 ## Exclude all seaweeds (no seaweed)
-exclude_no_sw <- read.csv("../v2018/output/GenEsc_no_seaweed.csv") %>%
+exclude_no_sw <- read.csv("../v2018/test/GenEsc_no_seaweed.csv") %>%
   filter(year == 2015) %>% # compare the most recent shared year between old and new
   select(rgn_id, prs_score_no_sw=pressure_score)
 
 ## Exclude only nei seaweeds (no nei)
-exclude_no_nei <- read.csv("../v2018/output/GenEsc_no_nei.csv") %>%
+exclude_no_nei <- read.csv("../v2018/test/GenEsc_no_nei.csv") %>%
   filter(year == 2015) %>% # compare the most recent shared year between old and new
   select(rgn_id, prs_score_no_nei=pressure_score)
 
