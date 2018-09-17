@@ -395,7 +395,7 @@ Checked PERCHQCI stocklong ids on [Fish Source](https://www.fishsource.org/stock
 
 Fix here so that stocklong in ram_spatial reflect that in RAM 4.4. For `species` column, check `metadata` data table to see what the matching `scientificname` value is for PERCHQCI and OROUGHYNWCR.
 
-```{r}
+```{r, eval=FALSE}
 
 ram_spatial <- ram_spatial %>% 
   mutate(stocklong = ifelse(stockid == "PERCHQCI", "Pacific Ocean perch Haida Gwaii", stocklong)) %>% 
@@ -405,6 +405,7 @@ ram_spatial <- ram_spatial %>%
 
 na_species <- ram_spatial %>% filter(is.na(species))
 unique(na_species$stockid) # should only be left with the 5 species
+
 ```
 
 
