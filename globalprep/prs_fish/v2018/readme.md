@@ -2,6 +2,8 @@
 
 See full data prep details [here](https://rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/prs_fish/v2018/fishing_pressure_layers.html).
 
+See description for net primary prodaction dataprep [here](https://rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/prs_fish/v2018/npp.html)
+
 If using these data, please see our [citation policy](http://ohi-science.org/citation-policy/).
 
 ### Layers Created 

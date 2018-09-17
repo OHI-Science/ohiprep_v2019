@@ -50,7 +50,7 @@ One additional year of data, and revised data for years 2014-2015 were incorpora
 
 ## Setup
 
-```{r setup, message = F, warning = F}
+```{r setup, message = F, warning = F, eval=F}
 
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
@@ -399,7 +399,7 @@ foreach(i = 2005:(max(yrs) - 4)) %dopar% {
 
 # Results
  
-```{r view_output}
+```{r view_output, eval=F}
 
 mol1km_masked <- list.files(out_dir, pattern = "uv_.*_mol_1km.tif", full.names = TRUE)
 out <- raster(mol1km_masked[length(mol1km_masked)])
@@ -409,7 +409,7 @@ plot(out, box = FALSE, col = cols, axes = FALSE, main = "UV Pressure Layer \n OH
 
 ## Extract Data for Each Region
 
-```{r extract_region_data}
+```{r extract_region_data, eval=F}
 
 ## load raster/zonal data
 zones <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/regions_eez_with_fao_ant.tif"))
@@ -421,7 +421,7 @@ rasts <- list.files(out_dir, full = TRUE, pattern = "uv_.*_mol_1km.tif")
 pressure_stack <- stack(rasts)
 ```
 
-```{r gif}
+```{r gif, eval=F}
 
 saveGIF({
   for(i in 1:nlayers(pressure_stack)){
@@ -458,7 +458,7 @@ uv_data <- data %>%
 ```
 
 
-```{r save_results}
+```{r save_results, eval=F}
 
 ## visualize data using googleVis plot
 plotData <- uv_data %>%
@@ -477,7 +477,7 @@ write.csv(uv_data, "output/uv.csv", row.names = FALSE)
 ```
 
 
-```{r compare_previous_year}
+```{r compare_previous_year, eval=F}
 
 uv_data <- read.csv("output/uv.csv")
 
