@@ -121,16 +121,18 @@ sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 3225 re
 ## save the duplicate stock values to take a look at an example
 tmp <- data[duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_")), ]
 
-## Example of a region with multiple RAM stocks of the same species
+## Examples of a region with multiple RAM stocks of the same species
 filter(data, rgn_id == 9, year == 2001, stock_id == "Thunnus_alalunga-71") # stocks ALBANPAC and ALBASPAC are the same species 
+filter(data, rgn_id == 9, year == 2001, stock_id == "Tetrapturus_audax-71")
 ```
 
-Regions with multiple stocks of the same species will have B/Bmsy values averaged, weighted by the area of the RAM stock within the region
+Regions with multiple stocks of the same species will have B/Bmsy values averaged, weighted by the area of the RAM stock within the region (Iwen 9/17 - can't weight by area since we don't have it for most recent stock additions).
 ```{r}
 
 data <- data %>%
   group_by(rgn_id, taxon_key, stock_id, year, mean_catch) %>%   
-  summarize(ram_bmsy = weighted.mean(ram_bmsy, RAM_area_m2, na.rm=TRUE),
+  summarize(ram_bmsy = mean(ram_bmsy, na.rm=TRUE),
+            #weighted.mean(ram_bmsy, RAM_area_m2, na.rm=TRUE),
             gapfilled = ifelse(all(is.na(gapfilled)), NA, max(gapfilled, na.rm=TRUE)),
             method = paste(method, collapse = ", ")) %>%
   ungroup()
@@ -150,7 +152,7 @@ data <- data %>%
 B/Bmsy values for each catch record are generated (for the species where this is possible) and saved. A corresponding gapfilling dataset is also saved.
 ```{r save}
 
- data <- data %>%
+ data_gf <- data %>%
    mutate(bmsy_data_source = ifelse(!is.na(ram_bmsy), "RAM", NA)) %>%
    mutate(bmsy_data_source = ifelse(is.na(bmsy_data_source) & !is.na(cmsy_bbmsy), "CMSY", bmsy_data_source)) %>%
    mutate(bbmsy = ifelse(is.na(ram_bmsy), cmsy_bbmsy, ram_bmsy)) %>%
@@ -158,9 +160,9 @@ B/Bmsy values for each catch record are generated (for the species where this is
    filter(year >= 2001)
 
 
-write.csv(data, "data/fis_bbmsy_gf.csv", row.names=FALSE) 
+write.csv(data_gf, "data/fis_bbmsy_gf.csv", row.names=FALSE) 
  
-bbmsy <- data %>%
+bbmsy <- data_gf %>%
   select(rgn_id, stock_id, year, bbmsy) %>%
   filter(!is.na(bbmsy))
 
