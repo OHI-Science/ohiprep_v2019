@@ -24,7 +24,7 @@ This script prepares the final B/Bmsy data:
 
 
 ## Updates from previous assessment
-Have not completed this prep script yet for 2018.ß
+Have not completed this prep script yet for 2018.
 
 ***
 
@@ -43,9 +43,6 @@ Mean catch data created in catch_data_prep.Rmd
 ``` {r setup, message = FALSE, warning = FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE, eval=FALSE)
-
-## highlight out when knitting
-# setwd("globalprep/fis/v2017")
 
 library(dplyr)
 library(tidyr)

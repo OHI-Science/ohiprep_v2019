@@ -347,6 +347,7 @@ Note: the diffs in ram_spatial and ram_meta stockids are due to changes in stock
 * BLACKROCKNPCOAST - from OLD RAM 3.80, outdated stock, now known as BLACKROCKCAL, BLACKROCKORECOAST, or BLACKROCKWASH
 
 ### Combine
+
 ```{r, eval = FALSE}
 # join with metadata
 ram_spatial <- ram_spatial %>%
@@ -376,14 +377,16 @@ na_species <- ram_spatial %>% filter(is.na(species))
 unique(na_species$stockid)
 ```
 
+Re-name `stockid` column to `stockid_ram` and create new column `stockid` that matches with the `stockid` column in the CMSY data table prepared in calculate_bbmsy.Rmd.
 ```{r, eval = FALSE}
 ## Combine RAM spatial data with B/Bmsy data
 ram_bmsy <- read.csv("int/ram_stock_bmsy_gf.csv")
 
 ram_data <- ram_spatial %>% 
   left_join(ram_bmsy_gf, by="stockid") %>%
-  dplyr::mutate(stockid_full = paste(species, fao_id, sep="-")) %>%
-  dplyr::mutate(stockid_full = gsub(" ", "_", stockid_full)) %>%
+  rename(stockid_ram = stockid) %>% 
+  dplyr::mutate(stockid = paste(species, fao_id, sep="-")) %>%
+  dplyr::mutate(stockid = gsub(" ", "_", stockid)) %>%
   dplyr::filter(!is.na(year)) %>%   ## these are the ones that didn't have enough ram data to make an accurate guess
   ungroup() %>%
   dplyr::select(rgn_id, stockid_full, stockid, stocklong, year, ram_bmsy, gapfilled, method) %>%

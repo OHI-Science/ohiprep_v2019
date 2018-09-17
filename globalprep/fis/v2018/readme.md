@@ -16,30 +16,25 @@ A description of files:
 
 * clean_cells.Rmd: cleans up the half-degree cell data, removing overlaps between land and oceanic regions, and calculates the total proportion of each cell within each OHI region. The output of this script is `cells.csv`
 
-* catch_data_prep.Rmd: Preps the spatialized catch data (at half degree cells) for use in goal weighting and stock status calculations. Auxiliary prep file, **catch_taxon_key.Rmd** (below). Outputs:
+* catch_data_prep.Rmd: Preps the spatialized catch data (at half degree cells) for use in goal weighting and stock status calculations. Auxiliary prep file, **catch_taxon_key.Rmd**: adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations in main prep file (creates `int/watson_taxon_key.csv`). Outputs:
   
    - `git-annex/globalprep/fis/v2017/int/stock_catch_by_rgn.csv`
    - `data/stock_catch.csv`
    - `data/mean_catch.csv`
    - `data/FP_fis_catch.csv`
+   
 
-* catch_taxon_key.Rmd: Adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations in main prep file (above).
- 
-   - `int/watson_taxon_key.csv`: unique taxon key extracted from 2017 Watson data
-
-* calculate_bbmsy.Rmd: Calculates B/Bmsy estimates for all stocks using catch-MSY. Outputs:
+* calculate_bbmsy.Rmd: Calculates B/Bmsy estimates for all stocks using catch-MSY (CMSY) developed by Martell and Froese (2012). Outputs:
   
   - `data/cmsy_bbmsy.csv`
+   
     
-* RAM_data_prep.Rmd: Prepares the RAM B/Bmsy data by gapfilling RAM data and identifying which FAO/OHI regions each RAM stock is present. Auxiliary prep file, **fao_ohi_rgns.Rmd** (below). Outputs:
+* RAM_data_prep.Rmd: Prepares the RAM B/Bmsy data by gapfilling RAM data and identifying which FAO/OHI regions each RAM stock is present. Auxiliary prep file, **fao_ohi_rgns.Rmd**: adds FAO and OHI region IDs to newly added stocks with no spatial information (creates `int/RAM_fao_ohi_rgns.csv`). Outputs:
 
   - `int/ram_stock_bmsy_gf.csv`
   - `int/RAM_fao_ohi_rgns.csv`
   - `int/ram_bmsy.csv`
 
-* fao_ohi_rgns.Rmd: Adds FAO and OHI region IDs to newly added stocks with no spatial information. Serves as documentation and only needed if adding new stocks without existing region identification. 
-
-  - `int/RAM_fao_ohi_rgns.csv`
 
 * RAM_CMSY_combine.Rmd: Combines the B/Bmsy values from the RAM and CMSY data, with preference given to RAM data.
  
