@@ -43,14 +43,15 @@ Mean catch data created in catch_data_prep.Rmd
 ``` {r setup, message = FALSE, warning = FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE, eval=FALSE)
+```
 
+```{r}
 library(dplyr)
 library(tidyr)
 library(zoo)
 library(stringr)
 
 source('../../../src/R/common.R')
-
 ```
 
 ## Prepare B/Bmsy values from CMSY model
@@ -122,25 +123,28 @@ sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 3225 re
 tmp <- data[duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_")), ]
 
 ## Examples of a region with multiple RAM stocks of the same species
-filter(data, rgn_id == 9, year == 2001, stock_id == "Thunnus_alalunga-71") # stocks ALBANPAC and ALBASPAC are the same species 
-filter(data, rgn_id == 9, year == 2001, stock_id == "Tetrapturus_audax-71")
+filter(data, rgn_id == 9, year == 2001, stock_id == "Thunnus_alalunga-71") # stocks ALBANPAC and ALBASPAC are the same species; neab catch 969 tonnes
+filter(data, rgn_id == 9, year == 2001, stock_id == "Tetrapturus_audax-71") # stocks STMARLINWCNPAC and STMARLINSWPO are the same species; mean catch 104 tonnes
 ```
 
 Regions with multiple stocks of the same species will have B/Bmsy values averaged, weighted by the area of the RAM stock within the region 
-
-(Iwen 9/17 - can't weight by area since we don't have it for most recent stock additions).
 ```{r}
 
+## Group by location, year, and species before taking a weighted mean of the catch
 data <- data %>%
   group_by(rgn_id, taxon_key, stock_id, year, mean_catch) %>%   
-  summarize(ram_bmsy = mean(ram_bmsy, na.rm=TRUE),
-            #weighted.mean(ram_bmsy, RAM_area_m2, na.rm=TRUE),
+  summarize(ram_bmsy = ifelse(all(!is.na(RAM_area_m2)), weighted.mean(ram_bmsy, RAM_area_m2, na.rm=TRUE), mean(ram_bmsy, na.rm = TRUE)),
             gapfilled = ifelse(all(is.na(gapfilled)), NA, max(gapfilled, na.rm=TRUE)),
             method = paste(method, collapse = ", ")) %>%
   ungroup()
 
-# check that averaging went ok
+## check that averaging went ok - compare with values earlier (969 and 104)
 filter(data, rgn_id == 9, year == 2001, stock_id == "Thunnus_alalunga-71")
+filter(data, rgn_id == 9, year == 2001, stock_id == "Tetrapturus_audax-71")
+
+## check example of duplicate stock catch with ram_bmsy but no RAM_area_m2 value, ram_bmsy should not be NA (should be 2.2 tonnes, checked)
+filter(data, rgn_id == 20, year == 2001, stock_id ==  "Todarodes_pacificus-61")
+
 
 # add in the B/Bmsy values from the CMSY approach
 data <- data %>%
@@ -148,6 +152,7 @@ data <- data %>%
 
 ```
 
+A lot of the NAs for both RAM-bmsy and CMSY are due to unmatched Watson-RAM stocks
 
 ### Formatting and saving final data
 

@@ -139,7 +139,7 @@ id_old <- ram_bmsy_old %>%
 ## join tables
 RAM_rgns_old <- RAM_fao_ohi_rgns %>% 
   full_join(id_old, by="assessid") %>% 
-  select(-assessid, -RAM_area_m2) # no longer using this id
+  select(-assessid) # no longer using this id
 
 ```
 
@@ -345,6 +345,7 @@ DT::datatable(RAM,rownames = F)
 
 ### Gather FAO and OHI ids into long format
 
+Each row must have both an FAO id and a rgn id
 ```{r}
 
 RAM_rgns_new_final <- RAM %>% 
@@ -354,7 +355,7 @@ RAM_rgns_new_final <- RAM %>%
   gather(ohi, ohi_values, contains("rgn_id")) %>% 
   rename(rgn_id = ohi_values) %>% 
   select(-ohi) %>% 
-  na.omit()
+  filter(!is.na(fao_id), !is.na(rgn_id))
 
 ## check that there are still 97 unique stock ids
 length(unique(RAM_rgns_new_final$stockid))
@@ -367,7 +368,7 @@ Combine newly added stocks with ohi and fao region information to the old stock 
 ```{r}
 
 RAM_fao_ohi_rgn <- RAM_rgns_old %>% 
-  full_join(RAM_rgns_new_final, by = c("rgn_id", "fao_id", "stockid", "stocklong")) 
+  full_join(RAM_rgns_new_final, by = c("rgn_id", "fao_id", "stockid", "stocklong", "RAM_area_m2")) 
 
 write.csv(RAM_fao_ohi_rgn, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
 

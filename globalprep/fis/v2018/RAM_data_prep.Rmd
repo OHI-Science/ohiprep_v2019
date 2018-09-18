@@ -248,7 +248,8 @@ ram_bmsy_gf_check1 <- ram_bmsy_gf %>%
     mod <- lm(ram_bmsy ~ year, data= filter(., year < 2015))  ### change year to test different accuracy levels based on # years of data used in lm
     ram_bmsy_predict_error <- predict(mod, newdata=.[c('year')])
     data.frame(., ram_bmsy_predict_error)
-  })
+  }) %>% 
+  ungroup()
 
 ggplot(data = filter(ram_bmsy_gf_check1, year==2015), aes(y=ram_bmsy_predict_error, x=ram_bmsy)) +
   geom_point() +
@@ -264,7 +265,8 @@ ram_bmsy_gf_check2 <- ram_bmsy_gf %>%
     mod <- lm(ram_bmsy ~ year, data= filter(., year <= 2010))  ### change year to test different accuracy levels based on # years of data used in lm
     ram_bmsy_predict_error <- predict(mod, newdata=.[c('year')])
     data.frame(., ram_bmsy_predict_error)
-  })
+  }) %>% 
+  ungroup()
 
 plot <- ggplot(data = filter(ram_bmsy_gf_check2, year==2015), aes(y=ram_bmsy_predict_error, x=ram_bmsy, col = stockid)) +
   geom_point() +
@@ -332,7 +334,7 @@ ram_spatial <- read.csv("int/RAM_fao_ohi_rgns.csv", stringsAsFactors = FALSE)
 ram_meta <- metadata %>% 
   dplyr::select(stockid, stocklong, scientificname)
 
-setdiff(ram_spatial$stockid, ram_meta$stockid) # make sure all the spatial data has corresponding metadata (should be 0); 9 diff
+setdiff(ram_spatial$stockid, ram_meta$stockid) # make sure all the spatial data has corresponding metadata (should be 0); 5 diff
 
 ```
 
@@ -358,11 +360,10 @@ ram_spatial <- ram_spatial %>%
 ram_name_corr <- read.csv("int/RAM_species_to_Watson.csv", stringsAsFactors = FALSE) %>%
   filter(!is.na(Watson_species))  # Watson to RAM name conversion
 
-
 ram_spatial <- ram_spatial %>%
   left_join(ram_name_corr, by="RAM_species") %>%
   dplyr::mutate(species = ifelse(!is.na(Watson_species), Watson_species, RAM_species)) %>%
-  dplyr::select(stockid, stocklong, rgn_id, fao_id, species)
+  dplyr::select(rgn_id, fao_id, stockid, stocklong, species, RAM_area_m2)
 
 length(unique(ram_spatial$stockid)) # 354 RAM stocks with B/Bmsy data
 
@@ -420,8 +421,7 @@ ram_data <- ram_spatial %>%
   dplyr::mutate(stockid = paste(species, fao_id, sep="-")) %>%
   dplyr::mutate(stockid = gsub(" ", "_", stockid)) %>%
   dplyr::filter(!is.na(year)) %>%   ## these are the ones that didn't have enough ram data to make an accurate guess
-  ungroup() %>%
-  dplyr::select(rgn_id, stockid, stockid_ram, stocklong, year, ram_bmsy, gapfilled, method) %>%
+  dplyr::select(rgn_id, stockid, stockid_ram, stocklong, year, RAM_area_m2, ram_bmsy, gapfilled, method) %>%
   unique()
 
 write.csv(ram_data, "int/ram_bmsy.csv", row.names=FALSE)

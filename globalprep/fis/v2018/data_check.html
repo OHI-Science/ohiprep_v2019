@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Sep 12 17:47:24 2018 by isu" />
+<meta name="author" content="Compiled on Tue Sep 18 10:11:24 2018 by isu" />
 
 
 <title>OHI 2018: Food Provision, Investigate Differences</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2018: Food Provision, Investigate Differences</h1>
-<h4 class="author"><em><em>Compiled on Wed Sep 12 17:47:24 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Tue Sep 18 10:11:24 2018 by isu</em></em></h4>
 
 </div>
 
@@ -611,6 +611,55 @@ lastcheck &lt;-<span class="st"> </span>results <span class="op">%&gt;%</span><s
 
 <span class="kw">ggplot</span>(lastcheck <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(stockid <span class="op">==</span><span class="st"> &quot;MEGSPPIVa-VIa&quot;</span>), <span class="kw">aes</span>(<span class="dt">x=</span>year , <span class="dt">y=</span>BdivBmsytouse, <span class="dt">col =</span> assessid)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_point</span>()</code></pre></div>
+<hr />
+<div id="number-of-stocks-with-missing-ram-area" class="section level2">
+<h2>Number of Stocks With Missing RAM Area</h2>
+<p>get old ram spatial table, join stockid info</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">old_ram_spatial &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;~/github/ohiprep_v2018/globalprep/fis/v2017/int/RAM_fao_ohi_rgns.csv&quot;</span>)
+
+<span class="kw">load</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/_raw_data/RAM/d2017/RAM v3.80/DB Files With Assessment Data/DBdata.RData&quot;</span>))
+
+old_timeseries &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(timeseries) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(stockid, assessid) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">distinct</span>()
+
+old_ram_spatial &lt;-<span class="st"> </span>old_ram_spatial <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">left_join</span>(old_timeseries, <span class="dt">by=</span> <span class="kw">c</span>(<span class="st">&quot;assessid&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>assessid) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rename</span>(<span class="dt">stockid_ram =</span>stockid)</code></pre></div>
+<p>combined watson and ram bbmsy data</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ram &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/ram_bmsy.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># final output from RAM_data_prep</span>
+<span class="st">  </span><span class="kw">rename</span>(<span class="dt">stock_id =</span> stockid) <span class="co"># to match other two data tabls</span>
+
+mean_catch &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;data/mean_catch.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># final output from Watson catch</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stock_id_taxonkey =</span> <span class="kw">as.character</span>(stock_id_taxonkey)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">taxon_key =</span> <span class="kw">str_extract</span>(stock_id_taxonkey, <span class="st">&quot;(</span><span class="ch">\\</span><span class="st">d)+$&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># extract ending consecutive digits</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stock_id =</span> <span class="kw">str_extract</span>(stock_id_taxonkey, <span class="st">&quot;^(</span><span class="ch">\\</span><span class="st">w+).(</span><span class="ch">\\</span><span class="st">d){1,2}&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">rename</span>(<span class="dt">year =</span> Year)
+data &lt;-<span class="st"> </span>mean_catch <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(ram, <span class="dt">by=</span><span class="kw">c</span>(<span class="st">'rgn_id'</span>, <span class="st">'stock_id'</span>, <span class="st">&quot;year&quot;</span>))</code></pre></div>
+<p>Combine RAM-Watson data table with old ram_spatial that contains area info</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">c_data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">fao_id =</span> <span class="kw">as.integer</span>(<span class="kw">str_extract</span>(stock_id, <span class="st">&quot;(</span><span class="ch">\\</span><span class="st">d+)&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">left_join</span>(old_ram_spatial, <span class="dt">by =</span><span class="kw">c</span>(<span class="st">&quot;rgn_id&quot;</span>, <span class="st">&quot;fao_id&quot;</span>, <span class="st">&quot;stockid_ram&quot;</span>))</code></pre></div>
+<p>Look at values with non-missing RAM bmsy data and see how many unique stock info have missing area</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(c_data)
+
+## Filter for only catch with ram bbmsy data
+has_ram &lt;-<span class="st"> </span>c_data <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(ram_bmsy)) 
+
+<span class="co"># has_ram &lt;- c_data %&gt;% </span>
+<span class="co">#   filter(!is.na(ram_bmsy)) %&gt;% </span>
+<span class="co">#   select(rgn_id, stock_id, stockid_ram, RAM_area_m2) %&gt;% </span>
+<span class="co">#   distinct()</span>
+
+## Filter for missing RAM Area within RAM bbmsy data
+nas &lt;-<span class="st"> </span>has_ram <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(RAM_area_m2))
+
+<span class="kw">dim</span>(nas)[<span class="dv">1</span>]<span class="op">/</span><span class="kw">dim</span>(has_ram)[<span class="dv">1</span>] <span class="co"># proportion of missing RAM area</span></code></pre></div>
+</div>
 </div>
 
 
