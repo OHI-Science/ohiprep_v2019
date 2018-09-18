@@ -474,15 +474,23 @@ c_data <- data %>%
 
 Look at values with non-missing RAM bmsy data and see how many unique stock info have missing area
 ```{r}
-has_ram <- c_data %>% 
-  filter(!is.na(ram_bmsy)) %>% 
-  select(rgn_id, stock_id, stockid_ram, RAM_area_m2) %>% 
-  distinct()
 
+summary(c_data)
+
+## Filter for only catch with ram bbmsy data
+has_ram <- c_data %>% 
+  filter(!is.na(ram_bmsy)) 
+
+# has_ram <- c_data %>% 
+#   filter(!is.na(ram_bmsy)) %>% 
+#   select(rgn_id, stock_id, stockid_ram, RAM_area_m2) %>% 
+#   distinct()
+
+## Filter for missing RAM Area within RAM bbmsy data
 nas <- has_ram %>% 
   filter(is.na(RAM_area_m2))
 
-length(unique(nas$stock_id)) #58
-length(unique(nas$stockid_ram)) #70
-length(unique(nas$rgn_id)) #41
+dim(nas)[1]/dim(has_ram)[1] # proportion of missing RAM area
+
+
 ```

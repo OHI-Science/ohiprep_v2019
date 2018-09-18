@@ -126,7 +126,9 @@ filter(data, rgn_id == 9, year == 2001, stock_id == "Thunnus_alalunga-71") # sto
 filter(data, rgn_id == 9, year == 2001, stock_id == "Tetrapturus_audax-71")
 ```
 
-Regions with multiple stocks of the same species will have B/Bmsy values averaged, weighted by the area of the RAM stock within the region (Iwen 9/17 - can't weight by area since we don't have it for most recent stock additions).
+Regions with multiple stocks of the same species will have B/Bmsy values averaged, weighted by the area of the RAM stock within the region 
+
+(Iwen 9/17 - can't weight by area since we don't have it for most recent stock additions).
 ```{r}
 
 data <- data %>%
