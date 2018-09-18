@@ -73,6 +73,8 @@ library(ncdf4)
 library(httr)
 library(lubridate)
 library(animation)
+library(ggplot2)
+library(plotly)
 
 # spatial files, directories, etc
 source("~/github/ohiprep_v2018/src/R/spatial_common.R")
@@ -289,7 +291,10 @@ points(cbind(df_samp$v2016, df_samp$v2018),
 ## load zonal data, load and check relevant rasters
 rast_loc <- file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data/sp_mol_raster_1km")
 rgn_data <- read.csv(file.path(rast_loc, "regionData.csv")) 
-# zones <- raster(file.path(rast_loc, "sp_mol_raster_1km.tif")) # as of v2018 use 'zones' (regions_eez_with_fao_ant.tif) sourced from spatial.common
+
+# rgns <- zones %>% getValues %>% unique
+# length(rgns[rgns < 300 & is.na(rgns) == FALSE])
+# zones <- raster(file.path(rast_loc, "sp_mol_raster_1km.tif")) # v2018 used zones=regions_eez_with_fao_ant.tif sourced from spatial.common instead
 ```
 
 ```{r apply ice mask}
@@ -318,7 +323,7 @@ sst_res_mask <- list.files(dir_output, "sst.*_rescaled_icemask.tif", full.names 
 saveGIF({
   for(i in 1:length(sst_res_mask)){
     n = sprintf("SST Pressure %s", 
-                substr(sst_res_mask[i], 70, 78))
+                substr(sst_res_mask[i], 64, 72))
     plot(raster(sst_res_mask[i]), 
          zlim = c(0, 1), # fix zlimits
          axes = FALSE, box = FALSE, col = cols,
@@ -330,20 +335,26 @@ saveGIF({
 ```
 
 ```{r zonal extraction}
-## extract data by region
+## sst pressure, stack rasters
 sst_stack <- stack(list.files(dir_output, 
                               pattern = "sst_.*_rescaled_icemask.tif", 
                               full.names = TRUE))
 
+## some exploring
+plot(sst_stack[[nlayers(sst_stack)]], col = cols)
+click(sst_stack[[nlayers(sst_stack)]])
+
+## extract data by region
 regions_stats <- zonal(sst_stack, zones, fun = "mean", na.rm = TRUE,
                        progress = "text") %>% data.frame
 
-setdiff(regions_stats$zone, rgn_data$sp_id) # check
-setdiff(rgn_data$sp_id, regions_stats$zone) # check
+setdiff(regions_stats$zone, rgn_data$sp_id) # check; antarctica high seas (268, 271, 278), 265 NA high seas region, conflict areas 255...  
+setdiff(rgn_data$sp_id, regions_stats$zone)
 
-data <- merge(rgn_data, regions_stats, all.y=TRUE, by.x="sp_id", by.y="zone") %>% 
+## wrangle and save
+data <- merge(rgn_data, regions_stats, all.y = TRUE, by.x = "sp_id", by.y = "zone") %>% 
   write.csv(file.path(dir_output, "rgn_sst_prs.csv"), row.names = FALSE)
-data <- read.csv(file.path(dir_output, "rgn_sst_prs.csv"))
+data <- read.csv(file.path(dir_output, "rgn_sst_prs.csv"), stringsAsFactors = FALSE)
 ```
 
 
@@ -353,11 +364,12 @@ data <- read.csv(file.path(dir_output, "rgn_sst_prs.csv"))
 ## save data for the toolbox
 for(years in c(2012:max(yrs))){
   
-  scenario = sprintf("sst_%s.*", years)
+  scenario = sprintf("sst_%s.%s_1985.1989_rescaled_icemask", years-4, years)
 
-  eez = filter(data, sp_type == "eez")
-  eez = eez[, c("rgn_id", scenario)]
-  names(eez)[names(eez) == scenario] = "pressure_score"
+  eez = data %>% 
+    filter(sp_type == "eez") %>% 
+    select(rgn_id, contains(scenario)) %>% 
+    rename(pressure_score = contains(scenario))
   write.csv(eez, sprintf("output/sst_eez_%s.csv", years), row.names = FALSE)
 
   # fao = filter(data, sp_type == "fao")
@@ -367,14 +379,61 @@ for(years in c(2012:max(yrs))){
 }
 ```
 
-
-```{r gapfilling record}
-## note sst has no gapfilling...
-sst <- read.csv("output/sst_eez_2018.csv")
-sst <- mutate(sst, pressure_score = 0)
-write.csv(sst, "output/sst_eez_2018_gf.csv", row.names = FALSE)
+```{r gapfilling record for most recent year of data}
+## sst has no gapfilling...
+sst <- read.csv("output/sst_eez_2017.csv")
+sst <- mutate(sst, pressure_score_gf = 0)
+write.csv(sst, "output/sst_eez_2017_gf.csv", row.names = FALSE)
 ```
 
+
+***
+
+# Results
+
+```{r plot results}
+## plot results to check, for most recent year
+res <- list.files(dir_output, pattern = "sst.*icemask.tif", full.names = TRUE)
+
+plot(raster(res[length(res)]), 
+     col = cols, axes = FALSE, 
+     main = "Sea Surface Temperature Pressure Layer \n OHI 2016")
+```
+
+```{r compare results}
+## compare with last year's data
+old_sst <- read.csv("../v2016/output/sst_updated.csv")
+compare <- old_sst %>%
+  filter(year == 2016) %>% 
+  dplyr::select(rgn_id, old_pressure_score = pressure_score) %>%
+  left_join(data, by = "rgn_id") %>%
+  filter(!(is.na(rgn_name))) %>%
+  filter(sp_type == "eez") %>%
+  dplyr::select(rgn_id, rgn_name, old_pressure_score, 
+                matches("sst_.*2012_1985.1989.*"), 
+                matches("sst_.*2013_1985.1989.*"),
+                matches("sst_.*2014_1985.1989.*"), 
+                matches("sst_.*2015_1985.1989.*"),
+                matches("sst_.*2016_1985.1989.*")) %>% 
+  rename(sst_2012 = matches("sst_.*2012_1985.1989.*"),
+         sst_2013 = matches("sst_.*2013_1985.1989.*"),
+         sst_2014 = matches("sst_.*2014_1985.1989.*"),
+         sst_2015 = matches("sst_.*2015_1985.1989.*"),
+         sst_2016 = matches("sst_.*2016_1985.1989.*"))
+
+p <- ggplot(compare, aes(x = old_pressure_score, y = sst_2016, label = rgn_name)) +
+  geom_point(shape = 19) + 
+  theme_bw() + 
+  geom_abline(intercept = 0, slope = 1) + 
+  labs(title = "SST comparison")
+ggplotly(p)
+
+ggplot(compare, aes(x = sst_2015)) +
+  geom_histogram(fill = "gray", color = "black") + 
+  theme_bw() + 
+  labs(title = "SST 2015")
+quantile(compare$sst_2015)
+```
 
 ***
 
