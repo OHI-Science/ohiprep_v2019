@@ -430,3 +430,67 @@ ggplot(lastcheck %>% filter(stockid == "MEGSPPIVa-VIa"), aes(x=year , y=BdivBmsy
 
 ```
 
+***
+
+## Number of Stocks With Missing RAM Area
+
+get old ram spatial table, join stockid info
+```{r}
+old_ram_spatial <- read_csv("~/github/ohiprep_v2018/globalprep/fis/v2017/int/RAM_fao_ohi_rgns.csv")
+
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2017/RAM v3.80/DB Files With Assessment Data/DBdata.RData"))
+
+old_timeseries <- as.data.frame(timeseries) %>% 
+  select(stockid, assessid) %>% 
+  distinct()
+
+old_ram_spatial <- old_ram_spatial %>% 
+  left_join(old_timeseries, by= c("assessid")) %>% 
+  select(-assessid) %>% 
+  rename(stockid_ram =stockid)
+
+```
+
+combined watson and ram bbmsy data
+```{r}
+ram <- read.csv("int/ram_bmsy.csv") %>% # final output from RAM_data_prep
+  rename(stock_id = stockid) # to match other two data tabls
+
+mean_catch <- read.csv("data/mean_catch.csv") %>% # final output from Watson catch
+  mutate(stock_id_taxonkey = as.character(stock_id_taxonkey)) %>%
+  mutate(taxon_key = str_extract(stock_id_taxonkey, "(\\d)+$")) %>% # extract ending consecutive digits
+  mutate(stock_id = str_extract(stock_id_taxonkey, "^(\\w+).(\\d){1,2}")) %>% 
+  rename(year = Year)
+data <- mean_catch %>%
+  left_join(ram, by=c('rgn_id', 'stock_id', "year"))
+```
+
+Combine RAM-Watson data table with old ram_spatial that contains area info
+```{r}
+c_data <- data %>%
+  mutate(fao_id = as.integer(str_extract(stock_id, "(\\d+)"))) %>% 
+  left_join(old_ram_spatial, by =c("rgn_id", "fao_id", "stockid_ram"))
+```
+
+Look at values with non-missing RAM bmsy data and see how many unique stock info have missing area
+```{r}
+
+summary(c_data)
+
+## Filter for only catch with ram bbmsy data
+has_ram <- c_data %>% 
+  filter(!is.na(ram_bmsy)) 
+
+# has_ram <- c_data %>% 
+#   filter(!is.na(ram_bmsy)) %>% 
+#   select(rgn_id, stock_id, stockid_ram, RAM_area_m2) %>% 
+#   distinct()
+
+## Filter for missing RAM Area within RAM bbmsy data
+nas <- has_ram %>% 
+  filter(is.na(RAM_area_m2))
+
+dim(nas)[1]/dim(has_ram)[1] # proportion of missing RAM area
+
+
+```

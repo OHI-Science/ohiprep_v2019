@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Thu Sep 13 10:23:41 2018 by isu" />
+<meta name="author" content="Compiled on Mon Sep 17 11:05:24 2018 by isu" />
 
 
 <title>OHI 2018: Food Provision, Preparing RAM B/Bmsy data</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2018: Food Provision, Preparing RAM B/Bmsy data</h1>
-<h4 class="author"><em><em>Compiled on Thu Sep 13 10:23:41 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Mon Sep 17 11:05:24 2018 by isu</em></em></h4>
 
 </div>
 
@@ -536,7 +536,7 @@ ram_meta &lt;-<span class="st"> </span>metadata <span class="op">%&gt;%</span><s
 <h3>Combine</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># join with metadata</span>
 ram_spatial &lt;-<span class="st"> </span>ram_spatial <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">left_join</span>(ram_meta, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;stockid&quot;</span>,<span class="st">&quot;stocklong&quot;</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">left_join</span>(ram_meta, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;stockid&quot;</span>, <span class="st">&quot;stocklong&quot;</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">rename</span>(<span class="dt">RAM_species =</span> scientificname)
 
 <span class="co"># correct names in a few cases to match with Watson names</span>
@@ -554,19 +554,67 @@ ram_spatial &lt;-<span class="st"> </span>ram_spatial <span class="op">%&gt;%</s
 ## filter out the regions that are not in an eez
 ram_spatial &lt;-<span class="st"> </span><span class="kw">filter</span>(ram_spatial, rgn_id <span class="op">&lt;</span><span class="st"> </span><span class="dv">250</span>)
 <span class="kw">length</span>(<span class="kw">unique</span>(ram_spatial<span class="op">$</span>stockid)) <span class="co"># 353 RAM stocks with B/Bmsy data and are found in EEZ regions</span></code></pre></div>
+</div>
+<div id="check-missing-speciesscientific-name-matches" class="section level3">
+<h3>Check Missing Species/Scientific Name Matches</h3>
 <p>Check which stocks are NA’s even after filtering <code>rgn_id &lt; 250</code></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">na_species &lt;-<span class="st"> </span>ram_spatial <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">is.na</span>(species))
 <span class="kw">unique</span>(na_species<span class="op">$</span>stockid)</code></pre></div>
+<p>Note: stocks with NAs for the scientific name include BIGEYEWPO, MORWONGSE, PCODBSAI, BLACKROCKSPCOAST, BLACKROCKNPCOAST, PERCHQCI, OROUGHYNWCR. Ignore first five because they are due to changes in stock naming. The latter two are additional species not in diff between metadata and ram spatial. Checked <code>ram_meta</code> and <code>ram_spatial</code> prior to joining at line 353.</p>
+<table>
+<thead>
+<tr class="header">
+<th>stockid</th>
+<th>data table</th>
+<th>stocklong</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PERCHQCI</td>
+<td><code>ram_meta</code></td>
+<td>Pacific Ocean perch Haida Gwaii</td>
+</tr>
+<tr class="even">
+<td>PERCHQIC</td>
+<td><code>ram_spatial</code></td>
+<td>Pacific Ocean perch Queen Charlotte Islands</td>
+</tr>
+<tr class="odd">
+<td>OROUGHYNWCR</td>
+<td><code>ram_meta</code></td>
+<td>Orange roughy Northwest Chatham Rise</td>
+</tr>
+<tr class="even">
+<td>OROUGHYNWCR</td>
+<td><code>ram_spatial</code></td>
+<td>Orange Roughy Northwest Chatham Rise</td>
+</tr>
+</tbody>
+</table>
+<p>Checked stocklong for those stockids in RAM 3.8 versus RAM 4.4. Differences are due joining tables in fao_ohi_rgns.Rmd, preference was for RAM 3.8 stocklong id for those shared stockids.</p>
+<p>Checked PERCHQCI stocklong ids on <a href="https://www.fishsource.org/stock_page/1944">Fish Source</a>. Two different stock units in British Columbia, but same species.</p>
+<p>Fix here so that stocklong in ram_spatial reflect that in RAM 4.4. For <code>species</code> column, check <code>metadata</code> data table to see what the matching <code>scientificname</code> value is for PERCHQCI and OROUGHYNWCR.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ram_spatial &lt;-<span class="st"> </span>ram_spatial <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stocklong =</span> <span class="kw">ifelse</span>(stockid <span class="op">==</span><span class="st"> &quot;PERCHQCI&quot;</span>, <span class="st">&quot;Pacific Ocean perch Haida Gwaii&quot;</span>, stocklong)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stocklong =</span> <span class="kw">ifelse</span>(stockid <span class="op">==</span><span class="st"> &quot;OROUGHYNWCR&quot;</span>, <span class="st">&quot;Orange roughy Northwest Chatham Rise&quot;</span>, stocklong)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">species =</span> <span class="kw">ifelse</span>(stockid <span class="op">==</span><span class="st"> &quot;PERCHQCI&quot;</span>, <span class="st">&quot;Sebastes alutus&quot;</span>, species)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">species =</span> <span class="kw">ifelse</span>(stockid <span class="op">==</span><span class="st"> &quot;OROUGHYNWCR&quot;</span>, <span class="st">&quot;Hoplostethus atlanticus&quot;</span>, species)) 
+
+na_species &lt;-<span class="st"> </span>ram_spatial <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">is.na</span>(species))
+<span class="kw">unique</span>(na_species<span class="op">$</span>stockid) <span class="co"># should only be left with the 5 species</span></code></pre></div>
+<p>Re-name <code>stockid</code> column to <code>stockid_ram</code> and create new column <code>stockid</code> that matches with the <code>stockid</code> column in the CMSY data table prepared in <a href="https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/calculate_bbmsy.html">calculate_bbmsy.Rmd</a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Combine RAM spatial data with B/Bmsy data
-ram_bmsy &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/ram_stock_bmsy_gf.csv&quot;</span>)
+ram_bmsy_gf &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/ram_stock_bmsy_gf.csv&quot;</span>)
 
 ram_data &lt;-<span class="st"> </span>ram_spatial <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">left_join</span>(ram_bmsy_gf, <span class="dt">by=</span><span class="st">&quot;stockid&quot;</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">stockid_full =</span> <span class="kw">paste</span>(species, fao_id, <span class="dt">sep=</span><span class="st">&quot;-&quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">stockid_full =</span> <span class="kw">gsub</span>(<span class="st">&quot; &quot;</span>, <span class="st">&quot;_&quot;</span>, stockid_full)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">rename</span>(<span class="dt">stockid_ram =</span> stockid) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">stockid =</span> <span class="kw">paste</span>(species, fao_id, <span class="dt">sep=</span><span class="st">&quot;-&quot;</span>)) <span class="op">%&gt;%</span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">stockid =</span> <span class="kw">gsub</span>(<span class="st">&quot; &quot;</span>, <span class="st">&quot;_&quot;</span>, stockid)) <span class="op">%&gt;%</span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(year)) <span class="op">%&gt;%</span><span class="st">   </span>## these are the ones that didn't have enough ram data to make an accurate guess
 <span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, stockid_full, stockid, stocklong, year, ram_bmsy, gapfilled, method) <span class="op">%&gt;%</span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, stockid, stockid_ram, stocklong, year, ram_bmsy, gapfilled, method) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">unique</span>()
 
 <span class="kw">write.csv</span>(ram_data, <span class="st">&quot;int/ram_bmsy.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>

@@ -103,7 +103,7 @@ cmsy_bbmsy <- plyr::ldply(cmsy_fits, function(x) {
 
 cmsy_bbmsy$model <- "CMSY"
 
-write.csv(cmsy_bbmsy,file='data/cmsy_bbmsy.csv')
+write.csv(cmsy_bbmsy,file='data/cmsy_bbmsy.csv', row.names=FALSE)
 
 ```
 

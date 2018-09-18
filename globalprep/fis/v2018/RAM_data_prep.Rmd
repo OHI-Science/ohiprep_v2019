@@ -347,10 +347,11 @@ Note: the diffs in ram_spatial and ram_meta stockids are due to changes in stock
 * BLACKROCKNPCOAST - from OLD RAM 3.80, outdated stock, now known as BLACKROCKCAL, BLACKROCKORECOAST, or BLACKROCKWASH
 
 ### Combine
+
 ```{r, eval = FALSE}
 # join with metadata
 ram_spatial <- ram_spatial %>%
-  left_join(ram_meta, by = c("stockid","stocklong")) %>%
+  left_join(ram_meta, by = c("stockid", "stocklong")) %>%
   rename(RAM_species = scientificname)
 
 # correct names in a few cases to match with Watson names
@@ -370,23 +371,57 @@ ram_spatial <- filter(ram_spatial, rgn_id < 250)
 length(unique(ram_spatial$stockid)) # 353 RAM stocks with B/Bmsy data and are found in EEZ regions
 ```
 
+### Check Missing Species/Scientific Name Matches
+
 Check which stocks are NA's even after filtering `rgn_id < 250`
+
 ```{r, eval = FALSE}
 na_species <- ram_spatial %>% filter(is.na(species))
 unique(na_species$stockid)
 ```
 
+Note: stocks with NAs for the scientific name include BIGEYEWPO, MORWONGSE, PCODBSAI, BLACKROCKSPCOAST, BLACKROCKNPCOAST, PERCHQCI, OROUGHYNWCR. Ignore first five because they are due to changes in stock naming. The latter two are additional species not in diff between metadata and ram spatial. Checked `ram_meta` and `ram_spatial` prior to joining at line 353.
+
+stockid | data table | stocklong
+------- | ---------- | ---------
+PERCHQCI | `ram_meta` | Pacific Ocean perch Haida Gwaii
+PERCHQIC | `ram_spatial` | Pacific Ocean perch Queen Charlotte Islands
+OROUGHYNWCR | `ram_meta` | Orange roughy Northwest Chatham Rise
+OROUGHYNWCR | `ram_spatial` | Orange Roughy Northwest Chatham Rise
+
+Checked stocklong for those stockids in RAM 3.8 versus RAM 4.4. Differences are due joining tables in fao_ohi_rgns.Rmd, preference was for RAM 3.8 stocklong id for those shared stockids. 
+
+Checked PERCHQCI stocklong ids on [Fish Source](https://www.fishsource.org/stock_page/1944). Two different stock units in British Columbia, but same species.
+
+Fix here so that stocklong in ram_spatial reflect that in RAM 4.4. For `species` column, check `metadata` data table to see what the matching `scientificname` value is for PERCHQCI and OROUGHYNWCR.
+
+```{r, eval=FALSE}
+
+ram_spatial <- ram_spatial %>% 
+  mutate(stocklong = ifelse(stockid == "PERCHQCI", "Pacific Ocean perch Haida Gwaii", stocklong)) %>% 
+  mutate(stocklong = ifelse(stockid == "OROUGHYNWCR", "Orange roughy Northwest Chatham Rise", stocklong)) %>% 
+  mutate(species = ifelse(stockid == "PERCHQCI", "Sebastes alutus", species)) %>% 
+  mutate(species = ifelse(stockid == "OROUGHYNWCR", "Hoplostethus atlanticus", species)) 
+
+na_species <- ram_spatial %>% filter(is.na(species))
+unique(na_species$stockid) # should only be left with the 5 species
+
+```
+
+
+Re-name `stockid` column to `stockid_ram` and create new column `stockid` that matches with the `stockid` column in the CMSY data table prepared in [calculate_bbmsy.Rmd](https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/calculate_bbmsy.html).
 ```{r, eval = FALSE}
 ## Combine RAM spatial data with B/Bmsy data
-ram_bmsy <- read.csv("int/ram_stock_bmsy_gf.csv")
+ram_bmsy_gf <- read.csv("int/ram_stock_bmsy_gf.csv")
 
 ram_data <- ram_spatial %>% 
   left_join(ram_bmsy_gf, by="stockid") %>%
-  dplyr::mutate(stockid_full = paste(species, fao_id, sep="-")) %>%
-  dplyr::mutate(stockid_full = gsub(" ", "_", stockid_full)) %>%
+  rename(stockid_ram = stockid) %>% 
+  dplyr::mutate(stockid = paste(species, fao_id, sep="-")) %>%
+  dplyr::mutate(stockid = gsub(" ", "_", stockid)) %>%
   dplyr::filter(!is.na(year)) %>%   ## these are the ones that didn't have enough ram data to make an accurate guess
   ungroup() %>%
-  dplyr::select(rgn_id, stockid_full, stockid, stocklong, year, ram_bmsy, gapfilled, method) %>%
+  dplyr::select(rgn_id, stockid, stockid_ram, stocklong, year, ram_bmsy, gapfilled, method) %>%
   unique()
 
 write.csv(ram_data, "int/ram_bmsy.csv", row.names=FALSE)
