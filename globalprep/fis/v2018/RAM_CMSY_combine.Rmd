@@ -84,8 +84,7 @@ cmsy <- read.csv('int/cmsy_b_bmsy_mean5yrs.csv') %>%
 ram <- read.csv("int/ram_bmsy.csv") %>% # final output from RAM_data_prep
   rename(stock_id = stockid) # to match other two data tabls
 
-mean_catch <- read.csv("data/mean_catch.csv") %>% # final output from Watson catch
-  mutate(stock_id_taxonkey = as.character(stock_id_taxonkey)) %>%
+mean_catch <- read.csv("data/mean_catch.csv", stringsAsFactors = FALSE) %>% # final output from Watson catch
   mutate(taxon_key = str_extract(stock_id_taxonkey, "(\\d)+$")) %>% # extract ending consecutive digits
   mutate(stock_id = str_extract(stock_id_taxonkey, "^(\\w+).(\\d){1,2}")) 
 
