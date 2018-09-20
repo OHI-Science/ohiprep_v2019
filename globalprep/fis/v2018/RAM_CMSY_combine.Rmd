@@ -87,8 +87,8 @@ ram <- read.csv("int/ram_bmsy.csv") %>% # final output from RAM_data_prep
 mean_catch <- read.csv("data/mean_catch.csv") %>% # final output from Watson catch
   mutate(stock_id_taxonkey = as.character(stock_id_taxonkey)) %>%
   mutate(taxon_key = str_extract(stock_id_taxonkey, "(\\d)+$")) %>% # extract ending consecutive digits
-  mutate(stock_id = str_extract(stock_id_taxonkey, "^(\\w+).(\\d){1,2}")) %>% 
-  rename(year = Year)
+  mutate(stock_id = str_extract(stock_id_taxonkey, "^(\\w+).(\\d){1,2}")) 
+
 ```
 
 Check number of Watson stocks that have CMSY or RAM B/Bmsy values:
@@ -117,7 +117,7 @@ sum(!is.na(data$ram_bmsy))/nrow(data) # about 5% of catch records have RAM data
 Save & view duplicate stocks:
 ```{r}
 
-sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 3225 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid)
+sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 3948 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid)
 
 ## save the duplicate stock values to take a look at an example
 tmp <- data[duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_")), ]

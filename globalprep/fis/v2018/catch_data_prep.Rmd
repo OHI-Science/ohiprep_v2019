@@ -187,73 +187,93 @@ write.csv(total_catch, file = file.path(dir_M,'git-annex/globalprep/fis/v2018/in
 ```
 
 
-**Landings** - Second aggregation
+**Landings** - Second aggregation. Just to check if there are large differences. Stick to total catch for final output
 ```{r, eval=F}
 
 ## function to wrangle data into what we need (total landings per OHI region per stock)
-stock_rgn_landings <- function(file) {
-
-output_df <- readRDS(file) %>%
-        dplyr::select(Year, TaxonName, CommonName, Cell, Landings) %>%
-        dplyr::rename(CellID = cell_id) %>% # change cellid name to match what is in cells.csv
-        dplyr::left_join(cells, by = "CellID") %>%
-        dplyr::mutate(catch_prop = Landings * area) %>% # NAs produced here due to lack of assigned area, ok
-        dplyr::group_by(Year, rgn_id, fao_id, TaxonName, CommonName) %>%
-        dplyr::summarise(catch = sum(catch_prop, na.rm=TRUE)) %>% # do we want to keep NAs?
-        dplyr::ungroup() %>%
-        dplyr::mutate(stock_id = gsub(" ", "_", paste(taxon_scientific_name, fao_id, sep='-'), fixed=TRUE)) %>%
-        dplyr::rename(fao_rgn  = fao_id,
-               tons     = catch)
-
-return(output_df)
-
-}
-
-## use purrr::map to apply the function to all yearly datasets
-landings <- map_df(data_files, stock_rgn_landings)
-
-## this is a large file (150 MB) so it is saved on the server
-write.csv(landings, file =  file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings.csv'), row.names=FALSE)
+# stock_rgn_landings <- function(file) {
+# 
+# output_df <- readRDS(file) %>%
+#         dplyr::select(Year, TaxonName, CommonName, Cell, Landings) %>%
+#         dplyr::rename(CellID = cell_id) %>% # change cellid name to match what is in cells.csv
+#         dplyr::left_join(cells, by = "CellID") %>%
+#         dplyr::mutate(catch_prop = Landings * area) %>% # NAs produced here due to lack of assigned area, ok
+#         dplyr::group_by(Year, rgn_id, fao_id, TaxonName, CommonName) %>%
+#         dplyr::summarise(catch = sum(catch_prop, na.rm=TRUE)) %>% # do we want to keep NAs?
+#         dplyr::ungroup() %>%
+#         dplyr::mutate(stock_id = gsub(" ", "_", paste(taxon_scientific_name, fao_id, sep='-'), fixed=TRUE)) %>%
+#         dplyr::rename(fao_rgn  = fao_id,
+#                tons     = catch)
+# 
+# return(output_df)
+# 
+# }
+# 
+# ## use purrr::map to apply the function to all yearly datasets
+# landings <- map_df(data_files, stock_rgn_landings)
+# 
+# ## this is a large file (150 MB) so it is saved on the server
+# write.csv(landings, file =  file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings.csv'), row.names=FALSE)
 
 ```
 
 
 ## Add Taxon Key Information
 
-Need taxon key to easily remove higher level (e.g. genus) taxonomic catch data. Unique taxon key was extracted from Watson 2017 catch data in [`catch_taxon_key.Rmd`](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/fis/v2018/catch_taxon_key.html). Add them to the stock catch by region.
+Add taxa to the stock catch by region.
 
-Combine taxa with all catch regions data. Read in taxon key and stock catch (tons) by region data.
+Need taxon key to easily remove higher level (e.g. genus) taxonomic catch data. Unique taxon key was extracted from Watson 2017 catch data in [`catch_taxon_key.Rmd`](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/fis/v2018/catch_taxon_key.html). 
+
+Must have taxon key match for every stock. If some are not matched, do it manually be searching the SAUP website (See next code chunk).
 ```{r, eval=FALSE}
 
-taxonkey <- read.csv("int/watson_taxon_key.csv")
+taxonkey <- read.csv("int/watson_taxon_key.csv", stringsAsFactors = FALSE)
 stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'))
 
 stock_rgn_taxa <- stock_rgn %>% 
-  left_join(taxonkey, by = c("TaxonName","CommonName")) # some stocks won't have matches and will get an NA in the column TaxonKey, will assess manually later
+  left_join(taxonkey, by = c("TaxonName","CommonName")) %>%  # if stocks are missing TaxonKeys, must add in manually below
+  rename(year = Year)
+
+```
+
+Combine taxa with landings version as well just to check total catch v landingss. In final output use total catch (stock_catch_by_rgn_taxa.csv)
+```{r, eval=FALSE}
+# stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings.csv'))
+# 
+# stock_rgn_taxa <- stock_rgn %>% 
+#   left_join(taxonkey, by = c("TaxonName","CommonName"))
+# 
+# write.csv(stock_rgn_taxa, file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings_taxa.csv'), row.names=FALSE)
+```
+
+### Manually Add in TaxonKey
+
+Look at which entries that don't have a Taxon key match. Search taxon in [Sea Around Us](http://www.seaaroundus.org/data/#/topic/biodiversity) website. Click on "View graph for catches of _Taxon Name_" link in the results. It'll take you to a new page. The Taxon key is the six digit code in the url.
+
+Notes: Couldn't find _T. quadricornis_ in SAUP search, but _Myoxocephalus quadricornis_ is a synonym and prior name for this species, so used the TaxonKey for that. Assigned taxon keys to _Bolinus brandaris_, _Ammodytes_, and _Triglopsis quadricornis_, species level taxa should behave a Taxonkey of 600000 or higher.
+```{r, eval=FALSE}
+
+df_na <- stock_rgn_taxa %>% 
+  filter(is.na(Taxonkey))
+
+noTaxonKey <- data.frame(taxa = unique(df_na$TaxonName))
+
+## Manually assign Taxonkey to the non matches: Bolinus brandaris, Ammodytes, and Triglopsis quadricornis, species level taxa should behave a Taxonkey of 600000 or higher
+stock_rgn_taxa <- stock_rgn_taxa %>% 
+  dplyr::mutate(Taxonkey = 
+                  ifelse(TaxonName == "Bolinus brandaris", 690689,
+                  ifelse(TaxonName == "Ammodytes", 500124,
+                  ifelse(TaxonName == "Triglopsis quadricornis", 604122,Taxonkey))))
 
 write.csv(stock_rgn_taxa, file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv'), row.names=FALSE)
 
 ```
 
-Combine taxa with landings version as well
-```{r, eval=FALSE}
-stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings.csv'))
 
-stock_rgn_taxa <- stock_rgn %>% 
-  left_join(taxonkey, by = c("TaxonName","CommonName"))
-
-write.csv(stock_rgn_taxa, file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings_taxa.csv'), row.names=FALSE)
-```
-
-Look at which entries that don't have a Taxon key match
-```{r, eval=FALSE}
-df_na <- stock_rgn_taxa %>% 
-  filter(is.na(Taxonkey))
-noTaxonKey <- data.frame(taxa = unique(df_na$TaxonName))
-
-## create list of catch data without taxon key info that is not at species-level
-noTaxonKey <- filter(noTaxonKey, taxa != "Triglopsis quadricornis" & taxa != "Bolinus brandaris")
-highTaxa <- paste(noTaxonKey[[1]], collapse="|") # used for easy filtering in B/Bmsy prep
+```{r}
+# ## create list of catch data without taxon key info that is not at species-level for 
+# noTaxonKey <- filter(noTaxonKey, taxa != "Triglopsis quadricornis" & taxa != "Bolinus brandaris")
+# highTaxa <- paste(noTaxonKey[[1]], collapse="|") # used for easy filtering in B/Bmsy prep
 
 ```
 
@@ -343,15 +363,12 @@ min_tons = 1000
 df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv'))
 # df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_landings_taxa.csv'))
 
-
-
 ## create dataset ready to run through catch-only models
-    stks <- df %>%
+stks <- df %>%
               filter(Taxonkey >= 600000,               #remove all records of catch reported at higher taxonomic levels than species
                      tons     > 0) %>%                  #remove records of 0 catch
-              filter(!TaxonName %in% highTaxa) %>%    # remove leftover records of catch reported at higher taxonomomic levels 
               dplyr::select(-rgn_id) %>%                       #remove rgn_id since we aggregate stocks to the FAO level   
-              dplyr::group_by(stock_id, Year, fao_rgn, TaxonName, CommonName, Taxonkey) %>%
+              dplyr::group_by(stock_id, year, fao_rgn, TaxonName, CommonName, Taxonkey) %>%
               dplyr::summarise(tons = sum(tons)) %>%           #calculate total tons per stock and year
               ungroup() %>%
               dplyr::group_by(stock_id) %>%
@@ -361,7 +378,7 @@ df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_b
               dplyr::filter(avg_ann_catch >= min_tons,        #keep only those stocks that meet our conditions
                               nyrs >= min_yrs) %>%
               dplyr::left_join(taxon_res, by = "CommonName") %>%                  #add resilience information
-              dplyr::select(year = Year, TaxonName, CommonName, fao_rgn, stock_id, Taxonkey, Resilience, tons)
+              dplyr::select(year, TaxonName, CommonName, fao_rgn, stock_id, Taxonkey, Resilience, tons)
 
 ## check on stocks that don't have a resilience
 no_res <- filter(stks, is.na(Resilience)) %>%

@@ -74,6 +74,11 @@ all_taxon <- dplyr::bind_rows(taxonList) %>%
 
 anyDuplicated(all_taxon) # check for duplicates - should be 0
 
+## Correct weirdness in any trailing, leading, or excess white space
+all_taxon <- all_taxon %>% 
+  mutate(CommonName = str_squish(CommonName),
+         TaxonName = str_squish(TaxonName))
+
 ## Save for future reference
 write.csv(all_taxon, "int/watson_taxon_key.csv", row.names = F)
 
