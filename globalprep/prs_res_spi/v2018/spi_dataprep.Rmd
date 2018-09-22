@@ -165,7 +165,8 @@ impute_scores_summary <- impute_scores_all %>%
   gather("subcategory", "score", -(1:3)) %>%
   group_by(Country, year, subcategory) %>%
   dplyr::summarize(score_predict = mean(score),
-            sd_score_predict = sd(score))
+            sd_score_predict = sd(score)) %>% 
+  ungroup()
 
 bhn_tmp_long <- bhn_tmp %>%
   select(Country, year, bhn_score, NA_tot, NutritionandBasicMedicalCare, 
@@ -182,6 +183,7 @@ bhn_data <- bhn_tmp_long %>%
   dplyr::summarize( #bhn_score_old = mean(bhn_score), # used this to test to make sure all is well, use `check_that( )` below
             score = mean(score),
             NA_tot = mean(NA_tot)) %>%
+  ungroup() %>% 
   mutate(category = "bhn")
 
 # bhn <- check_that(bhn_data, abs(bhn_score_old-score) < 1)
@@ -252,7 +254,8 @@ impute_scores_summary <- impute_scores_all %>%
   gather("subcategory", "score", -(1:3)) %>%
   group_by(Country, year, subcategory) %>%
   dplyr::summarize(score_predict = mean(score),
-            sd_score_predict = sd(score))
+            sd_score_predict = sd(score)) %>% 
+  ungroup()
 
 
 op_tmp_long <- op_tmp %>%
@@ -271,7 +274,8 @@ op_data <- op_tmp_long %>%
   dplyr::summarize( #op_score_old = mean(op_score), # used this to test to make sure all is well, try `check_validate( )` below
             score = mean(score),
             NA_tot = mean(NA_tot)) %>%
-  mutate(category = "op")
+  ungroup() %>% 
+  mutate(category = "op") 
 
 # op <- check_that(op_data, abs(op_score_old - score) < 1)
 # summary(op) # all non-NA comparisons have a < 1 difference
@@ -340,7 +344,8 @@ impute_scores_summary <- impute_scores_all %>%
   gather("subcategory", "score", -(1:3)) %>%
   group_by(Country, year, subcategory) %>%
   dplyr::summarize(score_predict = mean(score),
-            sd_score_predict = sd(score))
+            sd_score_predict = sd(score)) %>% 
+  ungroup()
 
 
 fw_tmp_long <- fw_tmp %>%
@@ -358,7 +363,8 @@ fw_data <- fw_tmp_long %>%
   dplyr::summarize( #fw_score_old = mean(fw_score), # used this to test to make sure all is well, try `check_that( )` below
             score = mean(score),
             NA_tot = mean(NA_tot)) %>%
-  mutate(category = "fw")
+  ungroup() %>% 
+  mutate(category = "fw") 
 
 # fw <- check_that(fw_data, abs(fw_score_old - score) < 1)
 # summary(fw) # all non-NA comparisons have a < 1 difference
@@ -382,6 +388,7 @@ spi_calc <- rbind(bhn_data, op_data, fw_data) %>%
             score = mean(score),
             method = paste(unique(gapfill), collapse=", "),
             gapfill = sum(NA_tot)) %>%
+  ungroup() %>% 
   mutate(method = ifelse(gapfill == 0, NA, method),
          gapfill = ifelse(gapfill >= 1, 1, 0)) %>% # change values to jsut yes or no
   data.frame()
@@ -409,13 +416,17 @@ write.csv(spi_calc, "int/Country_spi.csv", row.names=FALSE)
 ```{r}
 
 spi_calc <- read.csv("int/Country_spi.csv", stringsAsFactors = FALSE)
+
 spi_calc <- spi_calc %>%
-  mutate(Country = ifelse(Country=="C<f4>te d'Ivoire", "Cote d'Ivoire", Country),
-         Country = ifelse(Country=="R<e9>union", "Reunion", Country),
-         Country = ifelse(Country=="Cura<e7>ao", "Curacao", Country),
-         Country = ifelse(Country=="Korea, Democratic Republic of", "North Korea", Country),
-         Country = ifelse(Country=="St. Helena", "Saint Helena", Country),
-         Country = ifelse(Country=="St. Martin", "Northern Saint-Martin", Country))
+  mutate(Country = case_when(
+    Country=="C<f4>te d'Ivoire" ~ "Cote d'Ivoire",
+    Country=="R<e9>union" ~ "Reunion",
+    Country=="Cura<e7>ao" ~ "Curacao",
+    Country=="Korea, Democratic Republic of" ~ "North Korea",
+    Country=="St. Helena" ~ "Saint Helena",
+    Country=="St. Martin" ~ "Northern Saint-Martin",
+    TRUE ~ Country # Everything else, leave it be
+    ))
 
 # Channel Islands are Jersey and Guernsey, but these are already in the data
 
@@ -445,29 +456,30 @@ spi_rgn <- spi_rgn %>%
   dplyr::summarize(score = weighted.mean(score, pop, na.rm=TRUE),
             method = paste(unique(method), collapse=" "),
             gapfill = weighted.mean(gapfill, pop, na.rm=TRUE))%>%
-  dplyr::mutate(year = as.numeric(as.character(year)))
+  ungroup() %>% 
+  dplyr::mutate(year = as.numeric(year))
 
 ```
 
 # Compare to WGI
 
-WGI is a couple years behind the SPI, so we will use 2015 WGI for the 2016 and 2017 SPI.  There is a strong correlation betwen the WGI and SPI indicators.
+WGI is a couple years behind the SPI, so we will use 2016 WGI for the 2017 and 2018 SPI. There is a strong correlation betwen the WGI and SPI indicators.
 ```{r}
 
-wgi <- read.csv('../../prs_res_wgi/v2017/output/wgi_res.csv') %>%
-  select(rgn_id, year, wgi_score =resilience_score)
+wgi <- read.csv('../../prs_res_wgi/v2018/output/wgi_res.csv') %>%
+  select(rgn_id, year, wgi_score = resilience_score)
 
 length(unique(wgi$rgn_id))
 
-wgi_2016 <- wgi %>%
-  filter(year == 2015) %>%
-  mutate(year = 2016)
-
 wgi_2017 <- wgi %>%
-  filter(year == 2015) %>%
+  filter(year == 2016) %>%
   mutate(year = 2017)
 
-wgi <- rbind(wgi, wgi_2016, wgi_2017)
+wgi_2018 <- wgi %>%
+  filter(year == 2016) %>%
+  mutate(year = 2018)
+
+wgi <- rbind(wgi, wgi_2017, wgi_2018)
 
 wgi_spi <- wgi %>%
   left_join(spi_rgn, by=c("rgn_id", "year"))
@@ -487,10 +499,10 @@ In this case, UN geopolitical regions and WGI scores are used to estimate region
 
 years <- data.frame(year = min(spi_rgn$year):max(spi_rgn$year))
 
-rgns_gf_un <-  georegions %>%
+rgns_gf_un <- georegions %>%
   merge(years) %>%
-  left_join(spi_rgn) %>%
-  left_join(wgi) %>%
+  left_join(spi_rgn, by = c("rgn_id","year")) %>%
+  left_join(wgi, by = c("rgn_id", "year")) %>%
   mutate(r2 = as.factor(r2)) %>%
   mutate(r1 = as.factor(r1))
 
@@ -499,17 +511,23 @@ rgns_gf_un <-  georegions %>%
 mod1 <- lm(score ~ r2, data = rgns_gf_un, na.action="na.exclude")
 mod2 <- lm(score ~ r2 + wgi_score, data = rgns_gf_un, na.action="na.exclude")
 
-mod3 <- lm(score ~ r1, data = rgns_gf_un)
+mod3 <- lm(score ~ r1, data = rgns_gf_un, na.action="na.exclude")
 mod4 <- lm(score ~ r1 + wgi_score, data = rgns_gf_un, na.action="na.exclude")
 
-mod5 <- lm(score ~ wgi_score, data = rgns_gf_un)
+mod5 <- lm(score ~ wgi_score, data = rgns_gf_un, na.action="na.exclude")
 
 mod6 <- lm(score ~ r1 + poly(wgi_score, 2), data = rgns_gf_un, na.action = "na.exclude")
 mod7 <- lm(score ~ r1 + poly(wgi_score, 3), data = rgns_gf_un, na.action = "na.exclude")
 
+plot(predict(mod1), rgns_gf_un$score)
+abline(0,1)
+plot(predict(mod3), rgns_gf_un$score)
+abline(0,1)
 plot(predict(mod2), rgns_gf_un$score)
 abline(0,1)
 plot(predict(mod4), rgns_gf_un$score)
+abline(0,1)
+plot(predict(mod5), rgns_gf_un$score)
 abline(0,1)
 
 
