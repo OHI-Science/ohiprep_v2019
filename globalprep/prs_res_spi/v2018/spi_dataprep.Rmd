@@ -493,7 +493,7 @@ summary(mod)
 ```
 
 # Second round of gapfilling 
-In this case, UN geopolitical regions and WGI scores are used to estimate regions with no data.  Based on this analysis, a model that includes third degree polynomial of WGI data and r1 UN geopolitical regions is the best model to predict missing SPI values. 
+In this case, UN geopolitical regions and WGI scores are used to estimate regions with no data.  Based on this analysis, a model that includes WGI data and r2 UN geopolitical regions is the best model to predict missing SPI values. 
 
 ```{r}
 
@@ -510,28 +510,21 @@ rgns_gf_un <- georegions %>%
 ## Compare models to select a gapfilling method
 mod1 <- lm(score ~ r2, data = rgns_gf_un, na.action="na.exclude")
 mod2 <- lm(score ~ r2 + wgi_score, data = rgns_gf_un, na.action="na.exclude")
-
 mod3 <- lm(score ~ r1, data = rgns_gf_un, na.action="na.exclude")
 mod4 <- lm(score ~ r1 + wgi_score, data = rgns_gf_un, na.action="na.exclude")
-
 mod5 <- lm(score ~ wgi_score, data = rgns_gf_un, na.action="na.exclude")
-
 mod6 <- lm(score ~ r1 + poly(wgi_score, 2), data = rgns_gf_un, na.action = "na.exclude")
 mod7 <- lm(score ~ r1 + poly(wgi_score, 3), data = rgns_gf_un, na.action = "na.exclude")
 
-plot(predict(mod1), rgns_gf_un$score)
-abline(0,1)
-plot(predict(mod3), rgns_gf_un$score)
-abline(0,1)
+
+## the lowest AIC score is likely the best model
+AIC(mod1, mod2, mod3, mod4, mod5, mod6, mod7)
+
+## plot the models with the two lowest AIC scores
 plot(predict(mod2), rgns_gf_un$score)
 abline(0,1)
-plot(predict(mod4), rgns_gf_un$score)
+plot(predict(mod7), rgns_gf_un$score)
 abline(0,1)
-plot(predict(mod5), rgns_gf_un$score)
-abline(0,1)
-
-
-AIC(mod1, mod2, mod3, mod4, mod5, mod6, mod7)
 
 ## Estimate missing data and gapfill
 ## need to add this because some R2 regions have no data
@@ -542,16 +535,18 @@ r1_regions <- unique(rgns_gf_un$r1[!is.na(rgns_gf_un$score)])
 rgns_gf_un$r1 <- ifelse(rgns_gf_un$r1 %in% r1_regions, rgns_gf_un$r1, NA)
 
 
-mod_gf_r2 <- lm(score ~ r2 + wgi_score, data = rgns_gf_un, na.action = na.exclude)
+## Predict scores using r2 and wgi scores
+mod_gf_r2 <- lm(score ~ r2 + wgi_score, data = rgns_gf_un, na.action = "na.exclude")
 rgns_gf_un$score_pred_r2 <- predict(mod_gf_r2, newdata = rgns_gf_un[, c("r2", "wgi_score")])
-
+## Predict scores using r1 and wgi scores
 mod_gf_r1 <- lm(score ~ r1 + wgi_score, data = rgns_gf_un, na.action = na.exclude)
 rgns_gf_un$score_pred_r1 <- predict(mod_gf_r1, newdata = rgns_gf_un[, c("r1", "wgi_score")])
-
+## Predict scores just using wgi scores
 mod_gf_wgi <- lm(score ~ wgi_score, data = rgns_gf_un, na.action = na.exclude)
 rgns_gf_un$score_pred_wgi <- predict(mod_gf_wgi, newdata = data.frame(wgi_score = rgns_gf_un$wgi_score))
 
-
+## Record gapfill methods
+## Combine scores with predicted model scores
 rgns_gf <- rgns_gf_un %>%
   mutate(method = ifelse(is.na(score), "UN georgn & WGI", method)) %>%
   mutate(gapfill = ifelse(is.na(score), "1", gapfill)) %>%
@@ -572,7 +567,8 @@ length(unique(rgns_gf$rgn_id)) # should be 220 regions
 These regions will receive an NA for their score (when established population is < 100 people). 
 
 ```{r}
-uninhab <- read.csv('../../../src/LookupTables/rgn_uninhabited_islands.csv') %>%
+
+uninhab <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep/master/src/LookupTables/rgn_uninhabited_islands.csv') %>%
   filter(is.na(est_population) | est_population < 100)
 
 rgns_gf_uninhab <- rgns_gf %>%
