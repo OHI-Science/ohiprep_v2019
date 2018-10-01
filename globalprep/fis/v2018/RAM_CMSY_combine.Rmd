@@ -60,7 +60,7 @@ For the CMSY generated B/Bmsy values we use the five year running mean of the va
 
 ```{r CMSY mean}
 
-cmsy <- read.csv('data/cmsy_bbmsy.csv') %>%
+cmsy <- read.csv('output/cmsy_bbmsy.csv') %>%
   filter(!is.na(bbmsy_mean)) %>%
     dplyr::select(stock_id, year, bbmsy_q2.5,bbmsy_q97.5,bbmsy_sd, bbmsy_mean, model) %>%
     arrange(stock_id, year) %>%
@@ -84,7 +84,7 @@ cmsy <- read.csv('int/cmsy_b_bmsy_mean5yrs.csv') %>%
 ram <- read.csv("int/ram_bmsy.csv") %>% # final output from RAM_data_prep
   rename(stock_id = stockid) # to match other two data tabls
 
-mean_catch <- read.csv("data/mean_catch.csv", stringsAsFactors = FALSE) %>% # final output from Watson catch
+mean_catch <- read.csv("output/mean_catch.csv", stringsAsFactors = FALSE) %>% # final output from Watson catch
   mutate(taxon_key = str_extract(stock_id_taxonkey, "(\\d)+$")) %>% # extract ending consecutive digits
   mutate(stock_id = str_extract(stock_id_taxonkey, "^(\\w+).(\\d){1,2}")) 
 
@@ -166,13 +166,13 @@ B/Bmsy values for each catch record are generated (for the species where this is
    filter(year >= 2001)
 
 
-write.csv(data_gf, "data/fis_bbmsy_gf.csv", row.names=FALSE) 
+write.csv(data_gf, "output/fis_bbmsy_gf.csv", row.names=FALSE) 
  
 bbmsy <- data_gf %>%
   select(rgn_id, stock_id, year, bbmsy) %>%
   filter(!is.na(bbmsy))
 
-write.csv(bbmsy, "data/fis_bbmsy.csv", row.names=FALSE) 
+write.csv(bbmsy, "output/fis_bbmsy.csv", row.names=FALSE) 
 
 ```
 

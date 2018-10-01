@@ -58,7 +58,7 @@ Read in catch data aggregated from half degree cell to OHI region [catch_data_pr
 
 ```{r catch_data}
 
-catch <- read_csv('data/stock_catch.csv') %>%
+catch <- read_csv('output/stock_catch.csv') %>%
           rename(common = CommonName)
 
 ```
@@ -103,7 +103,7 @@ cmsy_bbmsy <- plyr::ldply(cmsy_fits, function(x) {
 
 cmsy_bbmsy$model <- "CMSY"
 
-write.csv(cmsy_bbmsy,file='data/cmsy_bbmsy.csv', row.names=FALSE)
+write.csv(cmsy_bbmsy,file='output/cmsy_bbmsy.csv', row.names=FALSE)
 
 ```
 
@@ -127,7 +127,7 @@ Looking at mean bbmsy for 2014
 
 ```{r}
 
-results <- read_csv('data/cmsy_bbmsy.csv') %>%
+results <- read_csv('output/cmsy_bbmsy.csv') %>%
             filter(year == 2014)
 hist(results$bbmsy_mean)
 

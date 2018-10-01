@@ -24,14 +24,14 @@ A description of files:
 * catch_data_prep.Rmd: Preps the spatialized catch data (at half degree cells) for use in goal weighting and stock status calculations. Auxiliary prep file, **catch_taxon_key.Rmd**: adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations in main prep file (creates `int/watson_taxon_key.csv`). Outputs:
   
    - `git-annex/globalprep/fis/v2017/int/stock_catch_by_rgn.csv`
-   - `data/stock_catch.csv`
-   - `data/mean_catch.csv`
-   - `data/FP_fis_catch.csv`
+   - `output/stock_catch.csv`
+   - `output/mean_catch.csv`
+   - `output/FP_fis_catch.csv`
    
 
 * calculate_bbmsy.Rmd: Calculates B/Bmsy estimates for all stocks using catch-MSY (CMSY) developed by Martell and Froese (2012). Outputs:
   
-  - `data/cmsy_bbmsy.csv`
+  - `output/cmsy_bbmsy.csv`
    
     
 * RAM_data_prep.Rmd: Prepares the RAM B/Bmsy data by gapfilling RAM data and identifying which FAO/OHI regions each RAM stock is present. Auxiliary prep file, **fao_ohi_rgns.Rmd**: adds FAO and OHI region IDs to newly added stocks with no spatial information (creates `int/RAM_fao_ohi_rgns.csv`). Outputs:
@@ -44,7 +44,7 @@ A description of files:
 * RAM_CMSY_combine.Rmd: Combines the B/Bmsy values from the RAM and CMSY data, with preference given to RAM data.
  
    - `int/cmsy_b_bmsy_mean5yrs.csv`
-   - `data/fis_bbmsy_gf.csv`
-   - `data/fis_bbmsy.csv`
+   - `output/fis_bbmsy_gf.csv`
+   - `output/fis_bbmsy.csv`
 
 
