@@ -159,7 +159,7 @@ Note: Saved two versions of catch aggregation. One using IUU and Reported only (
 data_files <- list.files(file.path(fis_path, "annual_catch"), full.names = T)
 
 ## function to wrangle data into what we need (total catch per OHI region per stock)
-stock_rgn_total <- function(file) {
+stock_rgn_total <- function(file) { # file = data_files[64]
 
   catch <- readRDS(file)
   

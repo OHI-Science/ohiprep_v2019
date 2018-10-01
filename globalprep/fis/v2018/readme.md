@@ -23,7 +23,7 @@ A description of files:
 
 * catch_data_prep.Rmd: Preps the spatialized catch data (at half degree cells) for use in goal weighting and stock status calculations. Auxiliary prep file, **catch_taxon_key.Rmd**: adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations in main prep file (creates `int/watson_taxon_key.csv`). Outputs:
   
-   - `git-annex/globalprep/fis/v2017/int/stock_catch_by_rgn.csv`
+   - `git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv`
    - `output/stock_catch.csv`
    - `output/mean_catch.csv`
    - `output/FP_fis_catch.csv`
