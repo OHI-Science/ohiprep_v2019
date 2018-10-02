@@ -241,7 +241,7 @@ rescale <- read.csv(file.path(sup_info, "reference_points_pressures.csv"))
 # write.csv(rescale, file.path(sup_info, "reference_points_pressures.csv"), row.names = FALSE)
 ```
 
-The minimum value is `r min_v`, maximum value is `r max_v` and the reference point is `r resc_num`.
+The minimum value is `min_v`, maximum value is `max_v` and the reference point is `resc_num`.
 
 
 ## Rescaling
@@ -392,7 +392,7 @@ write.csv(sst, "output/sst_eez_2017_gf.csv", row.names = FALSE)
 
 # Save altogether
 
-```{r}
+```{r, eval=FALSE}
 
 sst_final <- data.frame()
 
@@ -460,6 +460,34 @@ ggplot(compare, aes(x = sst_2015)) +
   theme_bw() + 
   labs(title = "SST 2015")
 quantile(compare$sst_2015)
+```
+
+## Compare final outputs of v2016 and v2018
+
+After combining sst data into the output table `sst_updated.csv`, compare to last year. Last year, the most recent year of data is 2012. This year it's 2017. In last year's output table, data year 2012 served as a proxy for 2016. Compare scenario years that used data year 2012, the most recent shared year between v2018 and v2016.
+
+```{r, eval=FALSE}
+
+old_sst <- read.csv("../v2016/output/sst_updated.csv") %>% 
+  filter(year == 2016) %>% 
+  select(rgn_id, old_prs_score = pressure_score)
+
+sst <- read.csv("output/sst_updated.csv") %>%
+  filter(year == 2012) %>% 
+  select(rgn_id, prs_score = pressure_score)
+
+combine <- sst %>% 
+  left_join(old_sst, by = "rgn_id")
+
+plot(combine$old_prs_score, combine$prs_score)
+
+p <- ggplot(combine, aes(x = old_prs_score, y = prs_score, label = rgn_id)) +
+  geom_point(shape = 19) + 
+  theme_bw() + 
+  geom_abline(intercept = 0, slope = 1) + 
+  labs(title = "SST comparison v2018 and v2016 \n (data year 2012)")
+ggplotly(p)
+
 ```
 
 ***
