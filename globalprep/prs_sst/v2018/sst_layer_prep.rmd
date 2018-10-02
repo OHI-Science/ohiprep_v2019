@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2016: Sea Surface Temperature Pressure Layer'
+title: 'OHI 2018: Sea Surface Temperature Pressure Layer'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -26,7 +26,7 @@ This script creates the Sea Surface Temperature (SST) layer for the 2018 global 
 
 # Updates from previous assessment
 
-The only difference in this layer is the reference point. For OHI 2015, each SST pressure layer was rescaled using the 99.99th quantile of the data from *within* each year. This has been changed to the 99.99th quantile across **all years**. It is a small difference, from 130 to 128 (number of anomalous weeks within a 5 year period).
+Previously, data source only extended from 1982 to 2012. In the 2016 assessment, the data year 2012 was used as a proxy for 2016, data year 2011 was used as a proxy for 2015, and so on. For the 2018 assessment, data year will match the exact year, so data year 2017 represents year 2017, the most recent year of data, and so on. 
 
 ***
 
@@ -241,7 +241,7 @@ rescale <- read.csv(file.path(sup_info, "reference_points_pressures.csv"))
 # write.csv(rescale, file.path(sup_info, "reference_points_pressures.csv"), row.names = FALSE)
 ```
 
-The minimum value is `min_v`, maximum value is `max_v` and the reference point is `resc_num`.
+The minimum value is `r min_v`, maximum value is `r max_v` and the reference point is `r resc_num`.
 
 
 ## Rescaling
@@ -373,6 +373,7 @@ for(years in c(2012:max(yrs))){
     filter(sp_type == "eez") %>% 
     select(rgn_id, contains(scenario)) %>% 
     rename(pressure_score = contains(scenario))
+  
   write.csv(eez, sprintf("output/sst_eez_%s.csv", years), row.names = FALSE)
 
   # fao = filter(data, sp_type == "fao")
@@ -393,7 +394,7 @@ write.csv(sst, "output/sst_eez_2017_gf.csv", row.names = FALSE)
 
 ```{r}
 
-data <- data.frame()
+sst_final <- data.frame()
 
 for (year in 2012:2017){ # year = 2012
   
@@ -403,12 +404,12 @@ for (year in 2012:2017){ # year = 2012
     mutate(year = year) %>%
     select(rgn_id, year, pressure_score)
   
-  data <- rbind(data, prs)
+  sst_final <- rbind(sst_final, prs)
   
 }
 
 
-write.csv(data, "globalprep/prs_sst/v2018/output/sst_updated.csv", row.names=FALSE)
+write.csv(sst_final, "output/sst_updated.csv", row.names=FALSE)
 
 ```
 
