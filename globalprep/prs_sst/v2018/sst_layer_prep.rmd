@@ -75,6 +75,9 @@ library(lubridate)
 library(animation)
 library(ggplot2)
 library(plotly)
+library(here)
+
+setwd(here::here("globalprep","prs_sst","v2018"))
 
 # spatial files, directories, etc
 source("~/github/ohiprep_v2018/src/R/spatial_common.R")
