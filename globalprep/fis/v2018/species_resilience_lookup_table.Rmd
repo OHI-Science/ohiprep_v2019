@@ -13,7 +13,7 @@ pdf_document:
   toc: true
 ---
 
-This script uses FishBase to find the Resilience for each of the species in the SAUP database. The Resilience information is needed for running catch-MSY to estimate B/Bmsy.
+This script uses FishBase to find the Resilience for each of the species in the Watson database. The Resilience information is needed for running catch-MSY to estimate B/Bmsy.
 
 ```{r setup, include=FALSE}
 
@@ -27,34 +27,31 @@ source('~/github/ohiprep/src/R/common.R')
 ```
 
 
-# Read in SAUP catch data and match common names to scientific names
+# Read in Watson catch data and match common names to scientific names
 
 ```{r catch_dat}
 
-taxon <- read_csv('data/stock_catch.csv')%>%
-          dplyr::select(sciname = taxon_scientific_name,
-                 species = taxon_common_name,
-                 taxon_key)%>%
-            filter(taxon_key > 599999) %>%
+taxon <- read.csv('output/stock_catch.csv') %>%
+          dplyr::select(sciname = TaxonName,
+                 species = CommonName,
+                 Taxonkey) %>%
+            filter(Taxonkey > 599999) %>%
             distinct()
 
-#validate scientific names with fishbase
+# validate scientific names with fishbase
 
 sp <- taxon$sciname
 
 fb <- validate_names(sp)
 
-resil <- mclapply(fb, stocks, fields = "Resilience", mc.cores=10)
+resil <- mclapply(fb, stocks, fields = "Resilience", mc.cores=5)
 
-res <- do.call(rbind.data.frame, resil)%>%
+res <- do.call(rbind.data.frame, resil) %>%
         distinct()
 
-taxon_res <- taxon%>%
-            left_join(res,by='sciname')%>%
-            select(sciname,
-                   common = species,
-                   Resilience,
-                   SpecCode)
+taxon_res <- taxon %>%
+            left_join(res, by='sciname') %>%
+            dplyr::select(sciname, common = species, Resilience,SpecCode)
 ```
 
 There are some duplicated species since fishbase provides resilience per stock...we'll want to remove the duplicates 
@@ -62,7 +59,7 @@ There are some duplicated species since fishbase provides resilience per stock..
 ```{r duplicates}
 dup <- taxon_res$sciname[duplicated(taxon_res$sciname)]
 
-d <- taxon_res%>%
+d <- taxon_res %>%
       filter(sciname %in% dup)%>% #select those species that are duplicated
       filter(!is.na(Resilience)) #remove rows where one of those species has an NA for Resilience (this is most species)
 
@@ -97,7 +94,7 @@ sp_w_nas <- taxon_res2 %>%
             filter(is.na(Resilience)) %>%
             .$sciname
 
-resil <- mclapply(sp_w_nas, stocks, fields = "Resilience", mc.cores=10, server = "https://fishbase.ropensci.org/sealifebase")
+resil <- mclapply(sp_w_nas, stocks, fields = "Resilience", mc.cores=5, server = "https://fishbase.ropensci.org/sealifebase")
 
 res <- do.call(rbind.data.frame, resil)%>%
         distinct()

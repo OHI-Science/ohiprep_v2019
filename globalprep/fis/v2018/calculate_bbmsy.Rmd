@@ -109,10 +109,9 @@ write.csv(cmsy_bbmsy,file='output/cmsy_bbmsy.csv', row.names=FALSE)
 
 Explore why there are some NAs (I think non convergance)
 
-(Iwen 8/29 - Estimates not converging at a value? review paper referenced)
 ```{r nas, eval=F}
 
-nas <- cmsy_bbmsy%>%
+nas <- cmsy_bbmsy %>%
   group_by(stock_id)%>%
   summarize(m = mean(bbmsy_mean))%>%
   filter(is.na(m))

@@ -16,6 +16,10 @@ pdf_document:
   toc: true
 ---
 
+# Summary
+
+Data check during data prep.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```

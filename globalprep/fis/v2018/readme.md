@@ -21,9 +21,10 @@ A description of files:
 
 * clean_cells.Rmd: cleans up the half-degree cell data, removing overlaps between land and oceanic regions, and calculates the total proportion of each cell within each OHI region. The output of this script is `cells.csv`
 
-* catch_data_prep.Rmd: Preps the spatialized catch data (at half degree cells) for use in goal weighting and stock status calculations. Auxiliary prep file, **catch_taxon_key.Rmd**: adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations in main prep file (creates `int/watson_taxon_key.csv`). Outputs:
+* catch_data_prep.Rmd: Preps the spatialized catch data (at half degree cells) for use in goal weighting and stock status calculations. Auxiliary prep file, **catch_taxon_key.Rmd**: adds taxon key information from 2017 Watson data into 2018 Watson data so we can prepare catch for B/Bmsy calculations in main prep file (creates `int/watson_taxon_key.csv`). Missing taxon keys are added and saved in `int/watson_taxon_key_v2018.csv`. Outputs:
   
    - `git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv`
+   - `int/watson_taxon_key_v2018.csv`
    - `output/stock_catch.csv`
    - `output/mean_catch.csv`
    - `output/FP_fis_catch.csv`

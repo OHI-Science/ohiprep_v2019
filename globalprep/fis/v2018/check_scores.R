@@ -1,4 +1,4 @@
-### Checking fisheries stuff
+### Checking fisheries stuff after adding to ohi-global
 
 library(dplyr)
 library(tidyr)
@@ -6,6 +6,7 @@ library(tidyr)
 source('../../../src/R/common.R')
 
 ## Paths for intermediate and output data
+#catch_raw <- read.csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'))
 catch_raw <- read.csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv'))
 catch_raw_old <- read.csv(file.path(dir_M,'git-annex/globalprep/fis/v2017/int/stock_catch_by_rgn.csv'))
 
@@ -124,6 +125,9 @@ compare <- tmp %>%
 plot(compare$tons, compare$tons_old)
 abline(0,1,col="red")
 
+# results: catch in tons are significantly greater this year
+
+
 ## Turks and Caicos check (rgn id: 111)
 tmp <- filter(catch_mean, rgn_id==111 & year == 2015) %>%
   arrange(mean_catch)
@@ -157,6 +161,7 @@ compare <- tmp %>%
 plot(compare$tons, compare$tons_old)
 abline(0,1,col="red")
 
+## results: catch in tons looks like it's greater last year..
 
 
 ## Jan Mayen check (rgn id: 144)
@@ -182,6 +187,10 @@ tmp_old <- catch_raw_old %>%
   dplyr::select(-taxon_key)
 compare <- tmp %>% 
   left_join(tmp_old, by = c("year", "rgn_id", "fao_rgn", "TaxonName", "CommonName", "stock_id"))
+plot(compare$tons, compare$tons_old)
+abline(0,1,col="red")
+
+# Results: greater catch this year
 
 
 ## Pitcairn check (rgn id: 146)
@@ -209,6 +218,8 @@ compare <- tmp %>%
   left_join(tmp_old, by = c("year", "rgn_id", "fao_rgn", "TaxonName", "CommonName", "stock_id"))
 plot(compare$tons, compare$tons_old)
 abline(0,1,col="red")
+
+# results: unclear.. greater catch this year for several comparisons
 
 # check original source for v2018
 file <- data_file[66]
@@ -243,6 +254,8 @@ compare <- tmp %>%
 plot(compare$tons, compare$tons_old)
 abline(0,1,col="red")
 
+# results: looks like last yera greater tons?
+
 
 ## Samoa check (rgn id: 152)
 # check scores from bbmsy
@@ -270,6 +283,7 @@ compare <- tmp %>%
 plot(compare$tons, compare$tons_old)
 abline(0,1,col="red")
 
+# results: greater tons last year
 
 
 ## Cambodia check (rgn id: 24)
@@ -298,6 +312,8 @@ compare <- tmp %>%
 plot(compare$tons, compare$tons_old)
 abline(0,1,col="red")
 
+# results: greater tons last year
+
 
 ## Solomon Island check (rgn id: 7)
 # check scores from bbmsy
@@ -324,6 +340,8 @@ compare <- tmp %>%
   left_join(tmp_old, by = c("year", "rgn_id", "fao_rgn", "TaxonName", "CommonName", "stock_id"))
 plot(compare$tons, compare$tons_old)
 abline(0,1,col="red")
+
+# results: greater tons last year
 
 
 #################################################
