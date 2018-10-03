@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2016: Sea Surface Temperature Pressure Layer'
+title: 'OHI 2018: Sea Surface Temperature Pressure Layer'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -26,7 +26,7 @@ This script creates the Sea Surface Temperature (SST) layer for the 2018 global 
 
 # Updates from previous assessment
 
-The only difference in this layer is the reference point. For OHI 2015, each SST pressure layer was rescaled using the 99.99th quantile of the data from *within* each year. This has been changed to the 99.99th quantile across **all years**. It is a small difference, from 130 to 128 (number of anomalous weeks within a 5 year period).
+Previously, data source only extended from 1982 to 2012. In the 2016 assessment, the data year 2012 was used as a proxy for 2016, data year 2011 was used as a proxy for 2015, and so on. For the 2018 assessment, data year will match the exact year, so data year 2017 represents year 2017, the most recent year of data, and so on. 
 
 ***
 
@@ -55,7 +55,7 @@ Cortadv5_weeklySST.nc =  SST, weekly data for all years, degrees Kelvin
 
 ## Setup
 
-```{r setup, message=F,warning=F}
+```{r setup, message=F,warning=F, eval = FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/', message = FALSE, warning = FALSE)
 
@@ -75,6 +75,9 @@ library(lubridate)
 library(animation)
 library(ggplot2)
 library(plotly)
+library(here)
+
+setwd(here::here("globalprep","prs_sst","v2018"))
 
 # spatial files, directories, etc
 source("~/github/ohiprep_v2018/src/R/spatial_common.R")
@@ -238,7 +241,7 @@ rescale <- read.csv(file.path(sup_info, "reference_points_pressures.csv"))
 # write.csv(rescale, file.path(sup_info, "reference_points_pressures.csv"), row.names = FALSE)
 ```
 
-The minimum value is `r min_v`, maximum value is `r max_v` and the reference point is `r resc_num`.
+The minimum value is `min_v`, maximum value is `max_v` and the reference point is `resc_num`.
 
 
 ## Rescaling
@@ -271,7 +274,7 @@ foreach(i = 1:length(diffs)) %dopar% {
 }
 ```
 
-```{r compare rescaled diffs between assessments}
+```{r compare rescaled diffs between assessments, eval = FALSE}
 ## compare 2008-2012 extremes between v2018 and v2016 assessement 
 sst_v2018_test <- raster(file.path(dir_output, "sst_2008-2012_1985-1989.tif"))
 sst_v2016_test <- raster(sprintf("%s/git-annex/globalprep/prs_sst/v2016/output/%s", 
@@ -287,7 +290,7 @@ points(cbind(df_samp$v2016, df_samp$v2018),
 
 ## Zonal extraction of SST data
 
-```{r load data for zonal extraction}
+```{r load data for zonal extraction, eval = FALSE}
 ## load zonal data, load and check relevant rasters
 rast_loc <- file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data/sp_mol_raster_1km")
 rgn_data <- read.csv(file.path(rast_loc, "regionData.csv")) 
@@ -297,7 +300,7 @@ rgn_data <- read.csv(file.path(rast_loc, "regionData.csv"))
 # zones <- raster(file.path(rast_loc, "sp_mol_raster_1km.tif")) # v2018 used zones=regions_eez_with_fao_ant.tif sourced from spatial.common instead
 ```
 
-```{r apply ice mask}
+```{r apply ice mask, eval = FALSE}
 ## sst rasters
 sst_rasters <- list.files(dir_output, pattern = "sst_.*1985-1989.tif", full.names = TRUE)
 plot(raster(sst_rasters[[length(sst_rasters)]])) # length(sst_rasters) # plot to check
@@ -315,7 +318,7 @@ foreach(rast = sst_rasters) %dopar% {
 }
 ```
 
-```{r gif of rescaled ice masked sst}
+```{r gif of rescaled ice masked sst, eval = FALSE}
 ## rescaled and masked sst data
 sst_res_mask <- list.files(dir_output, "sst.*_rescaled_icemask.tif", full.names = TRUE)
 
@@ -334,7 +337,7 @@ saveGIF({
 
 ```
 
-```{r zonal extraction}
+```{r zonal extraction, eval = FALSE}
 ## sst pressure, stack rasters
 sst_stack <- stack(list.files(dir_output, 
                               pattern = "sst_.*_rescaled_icemask.tif", 
@@ -360,7 +363,7 @@ data <- read.csv(file.path(dir_output, "rgn_sst_prs.csv"), stringsAsFactors = FA
 
 ## Write final pressure layer and gapfilling record
 
-```{r sst pressure layer}
+```{r sst pressure layer, eval = FALSE}
 ## save data for the toolbox
 for(years in c(2012:max(yrs))){
   
@@ -370,6 +373,7 @@ for(years in c(2012:max(yrs))){
     filter(sp_type == "eez") %>% 
     select(rgn_id, contains(scenario)) %>% 
     rename(pressure_score = contains(scenario))
+  
   write.csv(eez, sprintf("output/sst_eez_%s.csv", years), row.names = FALSE)
 
   # fao = filter(data, sp_type == "fao")
@@ -379,11 +383,34 @@ for(years in c(2012:max(yrs))){
 }
 ```
 
-```{r gapfilling record for most recent year of data}
+```{r gapfilling record for most recent year of data, eval = FALSE}
 ## sst has no gapfilling...
 sst <- read.csv("output/sst_eez_2017.csv")
 sst <- mutate(sst, pressure_score_gf = 0)
 write.csv(sst, "output/sst_eez_2017_gf.csv", row.names = FALSE)
+```
+
+# Save altogether
+
+```{r, eval=FALSE}
+
+sst_final <- data.frame()
+
+for (year in 2012:2017){ # year = 2012
+  
+  prs <- read.csv(sprintf("globalprep/prs_sst/v2018/output/sst_eez_%s.csv", year))
+  
+  prs <- prs %>%
+    mutate(year = year) %>%
+    select(rgn_id, year, pressure_score)
+  
+  sst_final <- rbind(sst_final, prs)
+  
+}
+
+
+write.csv(sst_final, "output/sst_updated.csv", row.names=FALSE)
+
 ```
 
 
@@ -391,7 +418,7 @@ write.csv(sst, "output/sst_eez_2017_gf.csv", row.names = FALSE)
 
 # Results
 
-```{r plot results}
+```{r plot results, eval = FALSE}
 ## plot results to check, for most recent year
 res <- list.files(dir_output, pattern = "sst.*icemask.tif", full.names = TRUE)
 
@@ -400,7 +427,7 @@ plot(raster(res[length(res)]),
      main = "Sea Surface Temperature Pressure Layer \n OHI 2016")
 ```
 
-```{r compare results}
+```{r compare results, eval = FALSE}
 ## compare with last year's data
 old_sst <- read.csv("../v2016/output/sst_updated.csv")
 compare <- old_sst %>%
@@ -433,6 +460,34 @@ ggplot(compare, aes(x = sst_2015)) +
   theme_bw() + 
   labs(title = "SST 2015")
 quantile(compare$sst_2015)
+```
+
+## Compare final outputs of v2016 and v2018
+
+After combining sst data into the output table `sst_updated.csv`, compare to last year. Last year, the most recent year of data is 2012. This year it's 2017. In last year's output table, data year 2012 served as a proxy for 2016. Compare scenario years that used data year 2012, the most recent shared year between v2018 and v2016.
+
+```{r, eval=FALSE}
+
+old_sst <- read.csv("../v2016/output/sst_updated.csv") %>% 
+  filter(year == 2016) %>% 
+  select(rgn_id, old_prs_score = pressure_score)
+
+sst <- read.csv("output/sst_updated.csv") %>%
+  filter(year == 2012) %>% 
+  select(rgn_id, prs_score = pressure_score)
+
+combine <- sst %>% 
+  left_join(old_sst, by = "rgn_id")
+
+plot(combine$old_prs_score, combine$prs_score)
+
+p <- ggplot(combine, aes(x = old_prs_score, y = prs_score, label = rgn_id)) +
+  geom_point(shape = 19) + 
+  theme_bw() + 
+  geom_abline(intercept = 0, slope = 1) + 
+  labs(title = "SST comparison v2018 and v2016 \n (data year 2012)")
+ggplotly(p)
+
 ```
 
 ***

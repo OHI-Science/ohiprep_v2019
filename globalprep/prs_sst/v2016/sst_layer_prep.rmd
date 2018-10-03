@@ -17,20 +17,20 @@ output:
 ---
 
 
-#Summary
+# Summary
 
 This script creates the Sea Surface Temperature (SST) layer for the 2016 global Ocean Health Index assessment.
 
 
 ***  
 
-#Updates from previous assessment
+# Updates from previous assessment
 
 The only difference in this layer is the reference point. For OHI 2015, each SST pressure layer was rescaled using the 99.99th quantile of the data from *within* each year. This has been changed to the 99.99th quantile across **all years**. It is a small difference, from 130 to 128 (number of anomalous weeks within a 5 year period).
 
 ***
 
-#Data Source
+# Data Source
 
 Data comes from [CoRTAD version 5](http://www.nodc.noaa.gov/sog/cortad/)
 
@@ -45,7 +45,7 @@ Cortadv5_weeklySST.nc =  SST, weekly data for all years, degrees Kelvin
 
 ***  
 
-#Methods
+# Methods
 1. Extreme events per year based calculated as number of times SST anomoly exceeds SST Standard Deviation based on weekly values (annual_pos_anomalies data, see v2015/dataprep.R for analysis).
 2. Sum extreme events for five year periods to control for yearly variation.
 3. Change in extreme events: Subtract number of extreme events for each five year period from control period (1985-1989).
@@ -119,7 +119,7 @@ foreach(i = 1986:2008)%dopar%{ #i=2005
 ```
 
 
-##Reference Point
+## Reference Point
 
 The layers are rescaled using a single reference point, the 99.99th quantile across all difference rasters.
 
@@ -184,7 +184,7 @@ foreach(i = 1:length(diffs)) %dopar%{
 
 ***
 
-#Results
+# Results
 
 ```{r results}
 res <- list.files(file.path(dir_M, 'git-annex/globalprep/prs_sst/v2016/output'), full.names = TRUE)
