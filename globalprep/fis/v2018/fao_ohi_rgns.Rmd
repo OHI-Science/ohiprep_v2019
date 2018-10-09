@@ -14,6 +14,8 @@ output:
       in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
 pdf_document:
   toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r}
@@ -70,17 +72,6 @@ New Stocks: Used `timeseries_values_views` table, because in RAM v4.40, this is 
 ## new stocks
 load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
 
-# What we used to use
-ram_bmsy_ts <- data.frame(timeseries) %>%
-  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
-  dplyr::filter(!is.na(tsvalue)) %>%
-  dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
-  dplyr::filter(tsyear > 1979) %>%
-  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
-
-new_stockid_ts <- unique(ram_bmsy_ts$stockid) #353 unique entries
-
-# What we're trying to use now
 ram_bmsy <- timeseries_values_views %>%
   select(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy) %>% 
   mutate(ram_bmsy = ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy)) %>% 
@@ -94,30 +85,36 @@ new_stockid <- unique(ram_bmsy$stockid) # 345 unique entries
 ```
 
 
-Check differences
+### Investigate Differences
 
-Make sure to check for stock name changes from old to new. Check documentation in mazu (e.g. Stock Change History). A few outdated stock names. Can remove unused `stockid`s in RAM_data_prep.Rmd if needed. The following 4 stocks were matched using unique `timeseries` stocks that are not needed in unique `timeseries_values_views` stocks: "OROUGHYCR", "STMARLINNPAC", "HOGFISHEGM", "HOGFISHSEFL".
+
+Note: the species present in the old data but not the new are due to changes in stockid names. See Stock Change History (6-1-18).xlsx file in MAZU RAM raw data folder.
+
+* BIGEYEWPO, BOCACCSPCOAST, PCOD5AB, SBELLYROCKPCOAST, WPOLLWBS - in OLD RAM 3.80, discontinued
+
+These were split into multiple stocks
+* MORWONGSE - from OLD RAM 3.80, outdated stock, now known as MORWONGESE or MORWONGWSE
+* PCODBSAI - from OLD RAM 3.80, outdated stock, now known as PCODBS or PCODAI
+* BLACKROCKSPCOAST - from OLD  RAM 3.80, outdated stock, now known as BLACKROCKCAL, BLACKROCKORECOAST, or BLACKROCKWASH
+* BLACKROCKNPCOAST - from OLD RAM 3.80, outdated stock, now known as BLACKROCKCAL, BLACKROCKORECOAST, or BLACKROCKWASH
+
+
 ```{r}
 
 ## find newly added stocks, when using timeseries_values_views
-newStocks <- setdiff(new_stockid, old_stockid) # there are 97 diff stock names
-
-## find newly added stocks when using timeseries
-newStocks2 <- setdiff(new_stockid_ts, old_stockid) # there are 101 differences
-
-## Compare diff when using `timeseries` table with diff when using `timeseries_values_views` for RAMv4.40 
-setdiff(newStocks, newStocks2) # nothing in new that's not in old..
-setdiff(newStocks2, newStocks) # 4 in old not in new
+newStocks <- setdiff(new_stockid, old_stockid) # there are 97 new stocks
+unusedStocks <- setdiff(old_stockid, new_stockid) # these are no longer included in the RAM data, will be deleted
 
 ```
+
 
 Subset for just new stocks in RAM v4.40 data
 ```{r}
 
-ram_bmsy <- ram_bmsy %>% 
+ram_bmsy_new <- ram_bmsy %>% 
   filter(stockid %in% newStocks)
 
-id_new <- ram_bmsy %>% 
+id_new <- ram_bmsy_new %>% 
   select(stockid, stocklong) %>% 
   distinct()
 
@@ -129,6 +126,7 @@ id_new <- ram_bmsy %>%
 Combine the data table Mel created `RAM_fao_ohi_rgns` that contains fao id, ohi id, and assessid from RAM with the old RAM data to match each row with the appropriate stockid and stocklong information
 ```{r}
 ## Grab last year's fao-ohi-assessid data table
+## (we need to get the stock id from the old RAM data)
 RAM_fao_ohi_rgns <- read.csv("../v2017/int/RAM_fao_ohi_rgns.csv") 
 
 ## create unique values of assessid, stock id, and stock long
@@ -141,12 +139,22 @@ RAM_rgns_old <- RAM_fao_ohi_rgns %>%
   full_join(id_old, by="assessid") %>% 
   select(-assessid) # no longer using this id
 
+## filter out the stocks that are no longer in the RAM data
+## (but were in the previous version)
+filter(RAM_rgns_old, stockid %in% unusedStocks) # quick check
+
+RAM_rgns_old <- RAM_rgns_old %>%
+  filter(!(stockid %in% unusedStocks))
 ```
 
 ## Combine New and Old Stock Data to Compare
 
 Essentially adds new stocks to the bottom of the old stocks data table.
 ```{r}
+
+## Make sure these new species aren't in the old data
+setdiff(id_new$stockid, RAM_rgns_old$stockid)
+
 
 RAM_rgns_new <- RAM_rgns_old %>% 
   full_join(id_new, by = c("stockid","stocklong"))
@@ -355,8 +363,13 @@ RAM_rgns_new_final <- RAM %>%
   gather(ohi, ohi_values, contains("rgn_id")) %>% 
   rename(rgn_id = ohi_values) %>% 
   select(-ohi) %>% 
-  filter(!is.na(fao_id), !is.na(rgn_id))
+  filter(!is.na(fao_id), !is.na(rgn_id)) %>%
+  arrange(stockid, fao_id, rgn_id)
 
+# make areas equal weight (don't have better information)
+RAM_rgns_new_final$RAM_area_m2 <- 1
+
+write.csv(RAM_rgns_new_final, "int/RAM_new_stocks.csv", row.names=FALSE)
 ## check that there are still 97 unique stock ids
 length(unique(RAM_rgns_new_final$stockid))
 
@@ -375,3 +388,8 @@ write.csv(RAM_fao_ohi_rgn, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
 ```
 
 Summary: combined dataset contains old stock-spatial information from RAM v3.80 database and Christopher M. Free's spatial work at Rutgers as well as newly added stocks from RAM v4.40 with manually assigned ohi and fao region ids. Dataset only contains stocks with B/Bmsy data.
+
+### Final check
+```{r}
+
+ram_all <- read.csv("int/RAM_fao_ohi_rgns.csv")
