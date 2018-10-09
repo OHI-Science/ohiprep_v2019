@@ -161,7 +161,7 @@ Aggregate catch per OHI region and FAO area. This catch will be used twice.
 (2) The catch data at species level is used to calculate stock status (BBmsy) per stock (remember that our definition of a stock is a species caught within a single FAO area).
 
 
-Note: Saved two versions of catch aggregation. One using IUU and Reported only (`Landings`) as the catch sum and one using IUU, Reported, and Discards (`CatchTotal`). 
+Note: Saved two versions of catch aggregation. One using IUU and Reported only (`Landings`) as the catch sum and one using IUU, Reported, and Discards (`CatchTotal`). For final output just use the latter.
 
 **Total Catch** - First aggregation
 ```{r, eval=FALSE}
@@ -187,11 +187,11 @@ stock_rgn_total <- function(file) { # file = data_files[64]
   
 output_df <- catch %>% 
     dplyr::mutate(CatchTotal = IUU + Reported + Discards) %>% 
-    dplyr::select(Year, TaxonName, CommonName, Cell, CatchTotal) %>%
+    dplyr::select(year = Year, TaxonName, CommonName, Cell, CatchTotal) %>%
     dplyr::rename(CellID = Cell) %>% # match what is in cells.csv
     dplyr::left_join(cells, by = "CellID") %>%
-    dplyr::mutate(catch_prop = CatchTotal * area) %>% # NAs produced here due to not having a Cell ID that corresponds to a cell id in cells data
-    dplyr::group_by(Year, rgn_id, fao_id, TaxonName, CommonName) %>%
+    dplyr::mutate(catch_prop = CatchTotal * area) %>% # no NAs - every cell ID matches
+    dplyr::group_by(year, rgn_id, fao_id, TaxonName, CommonName) %>%
     dplyr::summarise(catch = sum(catch_prop)) %>% 
     dplyr::ungroup() %>%
     dplyr::mutate(stock_id = gsub(" ", "_", paste(TaxonName, fao_id, sep='-'), fixed=TRUE))%>%
@@ -216,11 +216,11 @@ write.csv(total_catch, file = file.path(dir_M,'git-annex/globalprep/fis/v2018/in
 # stock_rgn_landings <- function(file) {
 # 
 # output_df <- readRDS(file) %>%
-#         dplyr::select(Year, TaxonName, CommonName, Cell, Landings) %>%
+#         dplyr::select(year = Year, TaxonName, CommonName, Cell, Landings) %>%
 #         dplyr::rename(CellID = cell_id) %>% # change cellid name to match what is in cells.csv
 #         dplyr::left_join(cells, by = "CellID") %>%
 #         dplyr::mutate(catch_prop = Landings * area) %>% # NAs produced here due to lack of assigned area, ok
-#         dplyr::group_by(Year, rgn_id, fao_id, TaxonName, CommonName) %>%
+#         dplyr::group_by(year, rgn_id, fao_id, TaxonName, CommonName) %>%
 #         dplyr::summarise(catch = sum(catch_prop, na.rm=TRUE)) %>% # do we want to keep NAs?
 #         dplyr::ungroup() %>%
 #         dplyr::mutate(stock_id = gsub(" ", "_", paste(taxon_scientific_name, fao_id, sep='-'), fixed=TRUE)) %>%
@@ -255,7 +255,7 @@ Notes: Couldn't find _T. quadricornis_ in SAUP search, but _Myoxocephalus quadri
 taxonkey <- read.csv("int/watson_taxon_key.csv", stringsAsFactors = FALSE)
 stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'))
 
-## check diffs
+## check diffs - only three species in the stock catch table not in taxon key table. find the taxon keys manually
 setdiff(paste(taxonkey$TaxonName, taxonkey$CommonName), 
         paste(stock_rgn$TaxonName, stock_rgn$CommonName))
 no_taxonkey <- setdiff(paste(stock_rgn$TaxonName,stock_rgn$CommonName), 
@@ -282,6 +282,7 @@ Add taxa to the stock catch by region.
 
 ```{r, eval=FALSE}
 
+## read in modified taxon key table
 taxonkey <- read.csv("int/watson_taxon_key_v2018.csv", stringsAsFactors = FALSE)
 stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'))
 
@@ -289,12 +290,11 @@ stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_
 setdiff(paste(taxonkey$TaxonName, taxonkey$CommonName), 
         paste(stock_rgn$TaxonName, stock_rgn$CommonName)) # these are fine
 setdiff(paste(stock_rgn$TaxonName, stock_rgn$CommonName), 
-  paste(taxonkey$TaxonName, taxonkey$CommonName)) # any here need to be corrected
+  paste(taxonkey$TaxonName, taxonkey$CommonName)) # any diffs here will need to be corrected
 
 
 stock_rgn_taxa <- stock_rgn %>% 
-  left_join(taxonkey, by = c("TaxonName","CommonName")) %>%
-  rename(year = Year)
+  left_join(taxonkey, by = c("TaxonName","CommonName"))
 
 summary(stock_rgn_taxa) # there should be no NAs for Taxonkey
 
@@ -319,15 +319,18 @@ Combine taxa with landings version as well just to check total catch v landings.
 
 Take a look at catch data with missing ohi and fao regions in **stock_catch_by_rgn_taxa**. These have taxon key matches, but no ohi or fao regions assigned to them. 
 ```{r, eval=FALSE}
+
 df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv'))
 
-# No NAs
+# No NAs for OHI regions, good
 df_na <- df %>% 
   filter(is.na(rgn_id))
+dim(df_na)[1]
 
 # 147,269 catch data without fao regions assigned
 df_na <- df %>% 
   filter(is.na(fao_rgn))
+dim(df_na)[1]
 
 ```
 
@@ -339,15 +342,18 @@ stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_
 ## no NAs
 stock_na <- stock_rgn %>%
   filter(is.na(rgn_id))
+dim(stock_na)[1]
 
 stock_na <- stock_rgn %>%
   filter(is.na(fao_rgn))
-View(stock_na)
+dim(stock_na)[1]
+
 ```
 
 Look at summary info for original catch file and output after joining to cells.csv
 ```{r, eval=FALSE}
 catch <- readRDS(file.path(fis_path, "annual_catch","Catch_2014.rds"))
+
 summary(catch) # no NAs
 
 output_df <- catch %>% 
@@ -355,7 +361,8 @@ output_df <- catch %>%
     dplyr::select(Year, TaxonName, CommonName, Cell, CatchTotal) %>%
     dplyr::rename(CellID = Cell) %>% # match what is in cells.csv
     dplyr::left_join(cells)
-summary(output_df) # 31,367 NAs (reduced to 29,703 NAs 10/3)
+
+summary(output_df) # FAO ID 29,703 NAs
 
 ## after fix cells.csv, no NAs in ohi rgns, just in fao_id
 output_na <- output_df %>% 
@@ -434,7 +441,7 @@ no_res <- filter(stks, is.na(Resilience)) %>%
           dplyr::select(TaxonName, CommonName) %>%
           distinct()
     
-nrow(no_res) # 270 species do not have a Resilience. These will get assigned a Medium Resilience by default by the CMSY model. (255 species don't have a Resilience for the Landings only data)
+nrow(no_res) # 271 species do not have a Resilience. These will get assigned a Medium Resilience by default by the CMSY model. (255 species don't have a Resilience for the Landings only data)
 
 write.csv(stks, file = 'output/stock_catch.csv', row.names = FALSE)
 # write.csv(stks, file = 'output/stock_catch_landings.csv', row.names = FALSE)
@@ -519,9 +526,9 @@ catch <- catch %>%
 
 ```
 
-Take a look at a few stocks. Elasmobranchii is missing after I made the adjustments to cells and taxa matching - problem? (Iwen 8/27)
+Take a look at a few stocks.
 ```{r, eval=FALSE}
-data.frame(dplyr::filter(catch, stock_id == "Elasmobranchii-57" & rgn_id==1))
+
 data.frame(dplyr::filter(catch, stock_id == "Carcharhinidae-57" & rgn_id==1))
 data.frame(dplyr::filter(catch, stock_id == "Marine_fishes_not_identified-57" & rgn_id==1))
 
