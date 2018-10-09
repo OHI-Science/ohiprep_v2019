@@ -148,7 +148,7 @@ ram_bmsy <- timeseries_values_views %>%
 
 ```
 
-Save stocks using management (B/Bmgt) reference points instead of max sustainable yield (B/Bmsy)
+Save stocks that use management (B/Bmgt) reference points instead of max sustainable yield (B/Bmsy)
 
 Note: In the past, we have used the B/Bmsy to use, dimensionless (BdivBmsytouse-dimensionless) values in the `timeseries_values_views` data table. According to `tsmetrics` table, this consists of TB/TBmsy (TBdivTBmsy) otherwise if NA, SSB/SSBmsy (SSBdivSSBmsy). B/Bmsy preferred values (BdivBmsypref) uses B/Bmsy (BdivBmsytouse) preferably, but if NA, then uses B/Bmgt (BdivBmgttouse) values as a substitute. The below table filters for the stocks that use BdivBmgttouse values, not currently incorporated in OHI Global from RAM. Any missing fisheries stocks are currently gapfilled instead. Investigate use of these B/Bmgt values next year. Many of them are around Iceland or European stocks.
 ```{r, eval = FALSE}

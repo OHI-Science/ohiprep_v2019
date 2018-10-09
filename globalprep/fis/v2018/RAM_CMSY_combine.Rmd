@@ -95,7 +95,7 @@ Check number of Watson stocks that have CMSY or RAM B/Bmsy values:
 ## Watson v RAM BBMSY
 setdiff(ram$stock_id, mean_catch$stock_id)
 setdiff(mean_catch$stock_id, ram$stock_id)
-intersect(ram$stock_id, mean_catch$stock_id) #286 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids)
+intersect(ram$stock_id, mean_catch$stock_id) #288 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids)
 
 ## Watson v CMSY
 setdiff(cmsy$stock_id, mean_catch$stock_id)
@@ -107,7 +107,7 @@ Combine Watson to RAM-B/Bmsy:
 ```{r}
 
 data <- mean_catch %>%
-  left_join(ram, by=c('rgn_id', 'stock_id', "year")) # 30105 catch records (catch from specific fao and ohi regions)
+  left_join(ram, by=c('rgn_id', 'stock_id', "year")) # 564,198 catch records (catch from specific fao and ohi regions)
 
 sum(!is.na(data$ram_bmsy))/nrow(data) # about 5% of catch records have RAM data
 
@@ -116,7 +116,7 @@ sum(!is.na(data$ram_bmsy))/nrow(data) # about 5% of catch records have RAM data
 Save & view duplicate stocks:
 ```{r}
 
-sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 3948 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid)
+sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 3978 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid)
 
 ## save the duplicate stock values to take a look at an example
 tmp <- data[duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_")), ]
@@ -124,6 +124,7 @@ tmp <- data[duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_")), ]
 ## Examples of a region with multiple RAM stocks of the same species
 filter(data, rgn_id == 9, year == 2001, stock_id == "Thunnus_alalunga-71") # stocks ALBANPAC and ALBASPAC are the same species; neab catch 969 tonnes
 filter(data, rgn_id == 9, year == 2001, stock_id == "Tetrapturus_audax-71") # stocks STMARLINWCNPAC and STMARLINSWPO are the same species; mean catch 104 tonnes
+
 ```
 
 Regions with multiple stocks of the same species will have B/Bmsy values averaged, weighted by the area of the RAM stock within the region 
@@ -137,7 +138,7 @@ data <- data %>%
             method = paste(method, collapse = ", ")) %>%
   ungroup()
 
-## check that averaging went ok - compare with values earlier (969 and 104)
+## check that averaging went ok - compare with mean catch values earlier (969 and 104)
 filter(data, rgn_id == 9, year == 2001, stock_id == "Thunnus_alalunga-71")
 filter(data, rgn_id == 9, year == 2001, stock_id == "Tetrapturus_audax-71")
 
