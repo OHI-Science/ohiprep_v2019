@@ -20,6 +20,9 @@ output:
 ## load libraries
 library(dplyr)
 library(tidyr)
+library(here)
+
+setwd(here::here("globalprep","fp","v2018"))
 
 ## Load FAO-specific user-defined functions
 source('../../../src/R/common.R')
@@ -39,7 +42,7 @@ mar <- read.csv('../../mar/v2018/output/MAR_FP_data.csv')
 Fisheries data.
 ```{r}
 
-fis <- read.csv("../../fis/v2017/data/FP_fis_catch.csv") %>%
+fis <- read.csv("../../fis/v2018/output/FP_fis_catch.csv") %>%
   select(rgn_id, year, fis_t = fis_catch)
 
 ```
@@ -64,7 +67,7 @@ filter(mar, rgn_id ==95) # ok, this makes sense
 
 Weirdness with a few regions:
 
-* Appears that some regions have 0 catch in 2014 catch data, despite having catch in previous years. 
+* Appears that Bouvet Island (rgn id 105) has 0 catch for all years of catch data (last available year of data from ~1988 so newer years are gapfilled). 
 * Going to gapfill these cases with previous years data
 
 ```{r}
@@ -75,10 +78,11 @@ fis %>%
   data.frame()
 
 fis <- fis %>%
-  mutate(fis_t = ifelse(fis_t==0, NA, fis_t)) %>%  # 8 NA values is correct
+  mutate(fis_t = ifelse(fis_t==0, NA, fis_t)) %>%  # 11 NA values is correct
   group_by(rgn_id) %>%
   arrange(year) %>%
-  fill(fis_t)
+  fill(fis_t) %>% 
+  ungroup()
 
 # Check
 fis %>% 
