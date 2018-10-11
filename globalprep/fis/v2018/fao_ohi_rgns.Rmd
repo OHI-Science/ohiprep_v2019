@@ -1,5 +1,5 @@
 ---
-title: "OHI 2018: Food Provision, Identify FAO and OHI regions for RAM stocks"
+title: "OHI 2018: Food Provision/Fisheries, Identify FAO and OHI regions for RAM stocks"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -24,7 +24,7 @@ knitr::opts_chunk$set(eval=FALSE)
 
 ## Summary
 
-Assign FAO and OHI region ids for each additional stock (`stockid`) listed. Some stocks have multiple assessments, assign them the same region ids and retain that column information (`assessid`). 
+Generates a dataset describing the OHI and FAO major fishing regions that correspond to each stock's range.  This combines last year's dataset of stock-spatial information from RAM v3.80 database and Christopher M. Free's spatial work at Rutgers as well as newly added stocks from RAM v4.40 with manually assigned ohi and fao region ids. Dataset only contains stocks with B/Bmsy data.
 
 
 ## Setup
@@ -47,7 +47,7 @@ source('../../../src/R/common.R')
 
 ## Identify Newly Added Stocks
 
-Compare old to new stocks to see what additional stocks have been added.
+Compare stocks found in previous version of RAM data to new data to see what additional stocks have been added.
 
 Old Stocks: Used `timeseries` table, because in RAM v3.80, this table only contained single assessment for each unique stock
 ```{r}
@@ -86,9 +86,10 @@ new_stockid <- unique(ram_bmsy$stockid) # 345 unique entries
 
 
 ### Investigate Differences
+There were 97 stocks included in the new data but not the old data.
 
-
-Note: the species present in the old data but not the new are due to changes in stockid names. See Stock Change History (6-1-18).xlsx file in MAZU RAM raw data folder.
+There were 9 stocks present in the old data but not the new. See Stock Change History (6-1-18).xlsx file in MAZU RAM raw data folder.
+These include:
 
 * BIGEYEWPO, BOCACCSPCOAST, PCOD5AB, SBELLYROCKPCOAST, WPOLLWBS - in OLD RAM 3.80, discontinued
 
@@ -108,7 +109,7 @@ unusedStocks <- setdiff(old_stockid, new_stockid) # these are no longer included
 ```
 
 
-Subset for just new stocks in RAM v4.40 data
+Subset for just the additional stocks in RAM v4.40 data
 ```{r}
 
 ram_bmsy_new <- ram_bmsy %>% 
@@ -123,7 +124,7 @@ id_new <- ram_bmsy_new %>%
 
 ## Add Stock Info to Old RAM_fao_ohi_rgns
 
-Combine the data table Mel created `RAM_fao_ohi_rgns` that contains fao id, ohi id, and assessid from RAM with the old RAM data to match each row with the appropriate stockid and stocklong information
+Each stock needs the corresponding ohi and fao regions associated with its range.  For the most part, we can use the data from last year, and add the data for the new regions.  However, the old data uses "assessid", but we now need to replace this with the stock id and stock long because assessid is no longer used in the new version of the data.  The stock long and stock id  is obtained from the old RAM B/Bmsy data and merged with the RAM_fao_ohi_rgn data (done below).
 ```{r}
 ## Grab last year's fao-ohi-assessid data table
 ## (we need to get the stock id from the old RAM data)
@@ -139,17 +140,22 @@ RAM_rgns_old <- RAM_fao_ohi_rgns %>%
   full_join(id_old, by="assessid") %>% 
   select(-assessid) # no longer using this id
 
-## filter out the stocks that are no longer in the RAM data
-## (but were in the previous version)
+```
+
+
+## remove stocks that are no longer in the RAM data
+(but were in the previous version)
+
+```{r}
 filter(RAM_rgns_old, stockid %in% unusedStocks) # quick check
 
 RAM_rgns_old <- RAM_rgns_old %>%
   filter(!(stockid %in% unusedStocks))
 ```
 
-## Combine New and Old Stock Data to Compare
+## Combine New and Old Stock Data
 
-Essentially adds new stocks to the bottom of the old stocks data table.
+Essentially adds new stocks to the bottom of the old stocks data table.  The regions of the new stocks are blank at this point. 
 ```{r}
 
 ## Make sure these new species aren't in the old data
@@ -365,9 +371,6 @@ RAM_temp <- RAM %>%
   filter(!is.na(fao_id), !is.na(rgn_id)) %>%
   arrange(stockid, fao_id, rgn_id)
 
-# make areas equal weight (don't have better information)
-RAM_rgns_new_final$RAM_area_m2 <- 1
-
 ```
 
 ### Fix Incorrect FAO-OHI Matches
@@ -393,6 +396,7 @@ RAM_rgns_new_final <- fao_ohi_id %>%
   filter(!is.na(stockid)) %>% # keep matches only
   select(-RAM_area_m2) 
 
+
 ```
 
 Compare with unfiltered RAM regions table to check on fao-ohi pairs that were dropped
@@ -407,18 +411,15 @@ nrow(RAM_temp) #282
 RAM_temp$idtemp <- 1:nrow(RAM_temp)
 RAM_rgns_new_final$idtemp2 <- 1:nrow(RAM_rgns_new_final)
 
-## view the ohi-fao papirs that would be removed
+## view the ohi-fao pairs that would be removed
 combine <- RAM_temp %>% 
   full_join(RAM_rgns_new_final, by = c("rgn_id", "fao_id", "stockid", "stocklong")) %>% 
   filter(is.na(idtemp2))
 
 ```
 
-Tidy up RAM data table
+Tidy up RAM data table.  After the final check (located below), I hand added some new regions for some of the stocks. 
 ```{r}
-
-RAM_final <- RAM_rgns_new_final %>% 
-  select(-idtemp2)
 
 write.csv(RAM_rgns_new_final, "int/RAM_new_stocks.csv", row.names=FALSE)
 ## check that there are still 97 unique stock ids
@@ -429,18 +430,41 @@ length(unique(RAM_final$stockid))
 ### Combine with full dataset
 
 Combine newly added stocks with ohi and fao region information to the old stock data table. Make sure there are no NAs!
-```{r}
+```{r, eval=FALSE}
+
+RAM_final <- read.csv("int/RAM_new_stocks_hand_additions.csv") %>% 
+  select(-idtemp2)
 
 RAM_fao_ohi_rgn <- RAM_rgns_old %>% 
-  full_join(RAM_final, by = c("rgn_id", "fao_id", "stockid", "stocklong")) 
+  full_join(RAM_final, by = c("rgn_id", "fao_id", "stockid", "stocklong")) %>%
+  mutate(RAM_area_m2 = ifelse(is.na(RAM_area_m2), 1, RAM_area_m2))
+# make areas equal weight (don't have better information)
+
 
 write.csv(RAM_fao_ohi_rgn, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)
 
 ```
 
-Summary: combined dataset contains old stock-spatial information from RAM v3.80 database and Christopher M. Free's spatial work at Rutgers as well as newly added stocks from RAM v4.40 with manually assigned ohi and fao region ids. Dataset only contains stocks with B/Bmsy data.
-
 ### Final check
-```{r}
+The goal here is to make sure we are capturing all the ohi/fao regions that the stock is caught in. I'm just going focus on the newly added stocks. After examining this table, I added in some more regions relevant to particular stocks, and saved the changes as "RAM_new_stocks_hand_additions.csv" (and then reran through the code with the new file.).
+```{r, eval=FALSE}
 
-ram_all <- read.csv("int/RAM_fao_ohi_rgns.csv")
+ram <- read.csv("int/RAM_new_stocks.csv")
+
+ram_sp <- ram %>%
+  left_join(data.frame(metadata), by = "stockid") %>%
+  dplyr::select(rgn_id, fao_id, stockid, stocklong=stocklong.x, scientificname, commonname)
+
+# Watson species, sci name (read in the datatable that includes TaxonKey)
+wat_sp <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv')) %>% 
+  dplyr:: select(rgn_id, fao_id=fao_rgn, scientificname=TaxonName, stocklong) %>%
+  unique() 
+
+wat_sp_w_RAM <- filter(wat_sp, scientificname %in% ram_sp$scientificname)
+
+combined <- left_join(wat_sp_w_RAM, ram_sp, by=c("rgn_id", "fao_id", "scientificname")) %>%
+  arrange(scientificname, stockid, fao_id, rgn_id,)
+
+write.csv(combined, "int/watson_RAM_rgn_compare.csv", row.names=FALSE)
+
+```
