@@ -95,7 +95,7 @@ Check number of Watson stocks that have CMSY or RAM B/Bmsy values:
 ## Watson v RAM BBMSY
 setdiff(ram$stock_id, mean_catch$stock_id)
 setdiff(mean_catch$stock_id, ram$stock_id)
-intersect(ram$stock_id, mean_catch$stock_id) #288 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids)
+intersect(ram$stock_id, mean_catch$stock_id) #291 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids)
 
 ## Watson v CMSY
 setdiff(cmsy$stock_id, mean_catch$stock_id)
@@ -107,16 +107,17 @@ Combine Watson to RAM-B/Bmsy:
 ```{r}
 
 data <- mean_catch %>%
-  left_join(ram, by=c('rgn_id', 'stock_id', "year")) # 564,198 catch records (catch from specific fao and ohi regions)
+  left_join(ram, by=c('rgn_id', 'stock_id', "year")) # 561,834 catch records (catch from specific fao and ohi regions) when joined with ram increases to 564,318 because there are multiple stocks for some species 
 
-sum(!is.na(data$ram_bmsy))/nrow(data) # about 5% of catch records have RAM data
+sum(!is.na(data$ram_bmsy))/nrow(data) # about 5.5% of catch records have RAM data
+sum(data$mean_catch[!is.na(data$ram_bmsy)])/sum(data$mean_catch) # about 29% of tons of catch have RAM data
 
 ```
 
 Save & view duplicate stocks:
 ```{r}
 
-sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 3978 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid)
+sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 4098 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid)
 
 ## save the duplicate stock values to take a look at an example
 tmp <- data[duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_")), ]

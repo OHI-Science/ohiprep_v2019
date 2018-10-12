@@ -393,8 +393,8 @@ fao_ohi_id <- fao_ohi %>%
 ## Filter for correct fao-ohi pairs in the RAM regions table 
 RAM_rgns_new_final <- fao_ohi_id %>% 
   left_join(RAM_temp, by = c("rgn_id", "fao_id")) %>% 
-  filter(!is.na(stockid)) %>% # keep matches only
-  select(-RAM_area_m2) 
+  filter(!is.na(stockid))  # keep matches only
+ 
 
 
 ```
@@ -423,7 +423,7 @@ Tidy up RAM data table.  After the final check (located below), I hand added som
 
 write.csv(RAM_rgns_new_final, "int/RAM_new_stocks.csv", row.names=FALSE)
 ## check that there are still 97 unique stock ids
-length(unique(RAM_final$stockid))
+length(unique(RAM_rgns_new_final$stockid))
 
 ```
 
@@ -432,13 +432,12 @@ length(unique(RAM_final$stockid))
 Combine newly added stocks with ohi and fao region information to the old stock data table. Make sure there are no NAs!
 ```{r, eval=FALSE}
 
-RAM_final <- read.csv("int/RAM_new_stocks_hand_additions.csv") %>% 
+RAM_final <- bind_rows(read.csv("int/RAM_new_stocks.csv"),
+                       read.csv("int/RAM_new_stocks_hand_additions.csv")) %>% 
   select(-idtemp2)
 
 RAM_fao_ohi_rgn <- RAM_rgns_old %>% 
-  full_join(RAM_final, by = c("rgn_id", "fao_id", "stockid", "stocklong")) %>%
-  mutate(RAM_area_m2 = ifelse(is.na(RAM_area_m2), 1, RAM_area_m2))
-# make areas equal weight (don't have better information)
+  full_join(RAM_final, by = c("rgn_id", "fao_id", "stockid", "stocklong")) 
 
 
 write.csv(RAM_fao_ohi_rgn, "int/RAM_fao_ohi_rgns.csv", row.names=FALSE)

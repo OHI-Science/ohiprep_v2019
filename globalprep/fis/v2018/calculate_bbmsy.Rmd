@@ -64,11 +64,11 @@ catch <- read_csv('output/stock_catch.csv') %>%
 ```
 
 # Catch-MSY
-
+If the CMSY values have already been calculated for each stock, this step can be skipped: 
 ```{r cmsy, eval=F}
 
-if (!file.exists(file.path(dir_M,"git-annex/globalprep/fis/v2018/int/cmsy-fits.rds"))) {
-  
+# calculate cmsy values and create a .rds file that is saved on Mazu
+
 cmsy_fits <- plyr::dlply(catch, c("stock_id", "common"), function(x) {
   
     #make sure the data is ordered from 1950 to 2010
@@ -82,13 +82,16 @@ cmsy_fits <- plyr::dlply(catch, c("stock_id", "common"), function(x) {
     
   }, .parallel = TRUE)
 
+
 saveRDS(cmsy_fits, file = file.path(dir_M,"git-annex/globalprep/fis/v2018/int/cmsy-fits.rds"))
 
-} else {
-  
-  cmsy_fits <- readRDS(file.path(dir_M,"git-annex/globalprep/fis/v2018/int/cmsy-fits.rds"))
 
-  }
+
+```
+
+Take output and format: 
+```{r}
+cmsy_fits <- readRDS(file.path(dir_M,"git-annex/globalprep/fis/v2018/int/cmsy-fits.rds"))
 
 fake_data <- data.frame(bbmsy_q2.5 = NA, bbmsy_q25 = NA, bbmsy_q50 = NA, 
   bbmsy_q75 = NA, bbmsy_q97.5 = NA)
