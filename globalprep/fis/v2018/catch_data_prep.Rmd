@@ -149,6 +149,7 @@ These files are large so using the data.table package is recommended due to R me
 ```{r load_data, eval=F}
 
 cells <- read.csv('cells.csv')
+head(cells)
 
 ```
 
@@ -325,12 +326,12 @@ df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_b
 # No NAs for OHI regions, good
 df_na <- df %>% 
   filter(is.na(rgn_id))
-dim(df_na)[1]
+nrow(df_na)
 
 # 147,269 catch data without fao regions assigned
 df_na <- df %>% 
   filter(is.na(fao_rgn))
-dim(df_na)[1]
+nrow(df_na)
 
 ```
 
@@ -342,11 +343,11 @@ stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_
 ## no NAs
 stock_na <- stock_rgn %>%
   filter(is.na(rgn_id))
-dim(stock_na)[1]
+nrow(stock_na)
 
 stock_na <- stock_rgn %>%
   filter(is.na(fao_rgn))
-dim(stock_na)[1]
+nrow(stock_na)
 
 ```
 
@@ -481,7 +482,8 @@ compare_plot <- ggplot(both, aes(log_all_catch, log_landings, col=fao_rgn)) +
   geom_abline(col="red") +
   ggtitle("Log Catch v Landings (Prep for B/Bmsy)")
 
-ggplotly(compare_plot)
+compare_plot
+#ggplotly(compare_plot) # might crash RStudio
 
 ```
 
@@ -631,7 +633,10 @@ plot_check <- ggplot(check, aes(old_log_catch, new_log_catch, col = rgn_id)) +
   geom_point(alpha = 0.4) +
   geom_abline(col="red") +
   ggtitle("Catch Comparison for 2014 (v2017, v2018)")
-ggplotly(plot_check)
+
+plot_check
+
+#ggplotly(plot_check) #might crash RStudio
 
 ```
 
@@ -657,7 +662,10 @@ plot_check <- ggplot(check, aes(old_2016_log_catch, old_log_catch, col = rgn_id)
   geom_point(alpha = 0.4) +
   geom_abline(col="red") +
   ggtitle("Catch Comparison for 2010 (v2016, v2017)") # 2010 is most recent shared year
-ggplotly(plot_check)
+plot_check
+
+#ggplotly(plot_check) # might Crash RStudio
+
 ```
 
 Use v2018 mean Landings catch to compare with v2017 mean catch
@@ -684,7 +692,8 @@ plot_check <- ggplot(check, aes(old_log_catch, new_log_catch, col = rgn_id)) +
   geom_point(alpha = 0.4) +
   geom_abline(col="red") +
   ggtitle("Catch Comparison for 2014 (v2017, v2018 Landings)")
-ggplotly(plot_check)
+plot_check
+#ggplotly(plot_check) #might crash RStudio
 
 ```
 
@@ -711,7 +720,9 @@ plot_check <- ggplot(check, aes(log_mean_catch, log_mean_landings, col = rgn_id)
   geom_point(alpha = 0.4) +
   geom_abline(col="red") +
   ggtitle("Landings v Total Catch (v2018, DY 2015)")
-ggplotly(plot_check)
+plot_check
+
+#ggplotly(plot_check)
 
 ```
 

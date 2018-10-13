@@ -250,7 +250,7 @@ write.csv(ram_bmsy_gf_final, "int/ram_stock_bmsy_gf.csv", row.names=FALSE)
 ```
 
 Get a general idea of how well the model predicts missing data based on observed and model predicted values.  This model appears to do fairly well. 
-```{r gf error est}
+```{r gf error est, eval=FALSE}
 
 plot(ram_bmsy_gf$ram_bmsy, ram_bmsy_gf$ram_bmsy_predict)
 abline(0,1, col="red")

@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Sep 18 19:18:04 2018 by isu" />
+<meta name="author" content="Compiled on Fri Oct 12 15:25:18 2018 by isu" />
 
 
 <title>OHI 2018: Food Provision, Combining RAM and CMSY B/Bmsy data</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2018: Food Provision, Combining RAM and CMSY B/Bmsy data</h1>
-<h4 class="author"><em><em>Compiled on Tue Sep 18 19:18:04 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Fri Oct 12 15:25:18 2018 by isu</em></em></h4>
 
 </div>
 
@@ -297,7 +297,7 @@ div.tocify {
 <div id="prepare-bbmsy-values-from-cmsy-model" class="section level2">
 <h2>Prepare B/Bmsy values from CMSY model</h2>
 <p>For the CMSY generated B/Bmsy values we use the five year running mean of the values to smooth the data and to account for model uncertainty.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cmsy &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'data/cmsy_bbmsy.csv'</span>) <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cmsy &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'output/cmsy_bbmsy.csv'</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(bbmsy_mean)) <span class="op">%&gt;%</span>
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">select</span>(stock_id, year, bbmsy_q2.<span class="dv">5</span>,bbmsy_q97.<span class="dv">5</span>,bbmsy_sd, bbmsy_mean, model) <span class="op">%&gt;%</span>
 <span class="st">    </span><span class="kw">arrange</span>(stock_id, year) <span class="op">%&gt;%</span>
@@ -316,16 +316,14 @@ div.tocify {
 ram &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/ram_bmsy.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># final output from RAM_data_prep</span>
 <span class="st">  </span><span class="kw">rename</span>(<span class="dt">stock_id =</span> stockid) <span class="co"># to match other two data tabls</span>
 
-mean_catch &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;data/mean_catch.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># final output from Watson catch</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stock_id_taxonkey =</span> <span class="kw">as.character</span>(stock_id_taxonkey)) <span class="op">%&gt;%</span>
+mean_catch &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;output/mean_catch.csv&quot;</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># final output from Watson catch</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">taxon_key =</span> <span class="kw">str_extract</span>(stock_id_taxonkey, <span class="st">&quot;(</span><span class="ch">\\</span><span class="st">d)+$&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># extract ending consecutive digits</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stock_id =</span> <span class="kw">str_extract</span>(stock_id_taxonkey, <span class="st">&quot;^(</span><span class="ch">\\</span><span class="st">w+).(</span><span class="ch">\\</span><span class="st">d){1,2}&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">rename</span>(<span class="dt">year =</span> Year)</code></pre></div>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">stock_id =</span> <span class="kw">str_extract</span>(stock_id_taxonkey, <span class="st">&quot;^(</span><span class="ch">\\</span><span class="st">w+).(</span><span class="ch">\\</span><span class="st">d){1,2}&quot;</span>)) </code></pre></div>
 <p>Check number of Watson stocks that have CMSY or RAM B/Bmsy values:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Watson v RAM BBMSY
 <span class="kw">setdiff</span>(ram<span class="op">$</span>stock_id, mean_catch<span class="op">$</span>stock_id)
 <span class="kw">setdiff</span>(mean_catch<span class="op">$</span>stock_id, ram<span class="op">$</span>stock_id)
-<span class="kw">intersect</span>(ram<span class="op">$</span>stock_id, mean_catch<span class="op">$</span>stock_id) <span class="co">#286 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids)</span>
+<span class="kw">intersect</span>(ram<span class="op">$</span>stock_id, mean_catch<span class="op">$</span>stock_id) <span class="co">#291 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids)</span>
 
 ## Watson v CMSY
 <span class="kw">setdiff</span>(cmsy<span class="op">$</span>stock_id, mean_catch<span class="op">$</span>stock_id)
@@ -333,11 +331,12 @@ mean_catch &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span 
 <span class="kw">intersect</span>(mean_catch<span class="op">$</span>stock_id, cmsy<span class="op">$</span>stock_id) <span class="co">#806 stocks with CMSY-B/Bmsy data</span></code></pre></div>
 <p>Combine Watson to RAM-B/Bmsy:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data &lt;-<span class="st"> </span>mean_catch <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">left_join</span>(ram, <span class="dt">by=</span><span class="kw">c</span>(<span class="st">'rgn_id'</span>, <span class="st">'stock_id'</span>, <span class="st">&quot;year&quot;</span>)) <span class="co"># 30105 catch records (catch from specific fao and ohi regions)</span>
+<span class="st">  </span><span class="kw">left_join</span>(ram, <span class="dt">by=</span><span class="kw">c</span>(<span class="st">'rgn_id'</span>, <span class="st">'stock_id'</span>, <span class="st">&quot;year&quot;</span>)) <span class="co"># 561,834 catch records (catch from specific fao and ohi regions) when joined with ram increases to 564,318 because there are multiple stocks for some species </span>
 
-<span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(data<span class="op">$</span>ram_bmsy))<span class="op">/</span><span class="kw">nrow</span>(data) <span class="co"># about 5% of catch records have RAM data</span></code></pre></div>
+<span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(data<span class="op">$</span>ram_bmsy))<span class="op">/</span><span class="kw">nrow</span>(data) <span class="co"># about 5.5% of catch records have RAM data</span>
+<span class="kw">sum</span>(data<span class="op">$</span>mean_catch[<span class="op">!</span><span class="kw">is.na</span>(data<span class="op">$</span>ram_bmsy)])<span class="op">/</span><span class="kw">sum</span>(data<span class="op">$</span>mean_catch) <span class="co"># about 29% of tons of catch have RAM data</span></code></pre></div>
 <p>Save &amp; view duplicate stocks:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="kw">duplicated</span>(<span class="kw">paste</span>(data<span class="op">$</span>rgn_id, data<span class="op">$</span>stock_id, data<span class="op">$</span>year, <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>))) <span class="co"># 3225 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid)</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="kw">duplicated</span>(<span class="kw">paste</span>(data<span class="op">$</span>rgn_id, data<span class="op">$</span>stock_id, data<span class="op">$</span>year, <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>))) <span class="co"># 4098 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid)</span>
 
 ## save the duplicate stock values to take a look at an example
 tmp &lt;-<span class="st"> </span>data[<span class="kw">duplicated</span>(<span class="kw">paste</span>(data<span class="op">$</span>rgn_id, data<span class="op">$</span>stock_id, data<span class="op">$</span>year, <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>)), ]
@@ -354,7 +353,7 @@ data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
             <span class="dt">method =</span> <span class="kw">paste</span>(method, <span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ungroup</span>()
 
-## check that averaging went ok - compare with values earlier (969 and 104)
+## check that averaging went ok - compare with mean catch values earlier (969 and 104)
 <span class="kw">filter</span>(data, rgn_id <span class="op">==</span><span class="st"> </span><span class="dv">9</span>, year <span class="op">==</span><span class="st"> </span><span class="dv">2001</span>, stock_id <span class="op">==</span><span class="st"> &quot;Thunnus_alalunga-71&quot;</span>)
 <span class="kw">filter</span>(data, rgn_id <span class="op">==</span><span class="st"> </span><span class="dv">9</span>, year <span class="op">==</span><span class="st"> </span><span class="dv">2001</span>, stock_id <span class="op">==</span><span class="st"> &quot;Tetrapturus_audax-71&quot;</span>)
 
@@ -377,13 +376,13 @@ data &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
 <span class="st">   </span><span class="kw">filter</span>(year <span class="op">&gt;=</span><span class="st"> </span><span class="dv">2001</span>)
 
 
-<span class="kw">write.csv</span>(data_gf, <span class="st">&quot;data/fis_bbmsy_gf.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>) 
+<span class="kw">write.csv</span>(data_gf, <span class="st">&quot;output/fis_bbmsy_gf.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>) 
  
 bbmsy &lt;-<span class="st"> </span>data_gf <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">select</span>(rgn_id, stock_id, year, bbmsy) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(bbmsy))
 
-<span class="kw">write.csv</span>(bbmsy, <span class="st">&quot;data/fis_bbmsy.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>) </code></pre></div>
+<span class="kw">write.csv</span>(bbmsy, <span class="st">&quot;output/fis_bbmsy.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>) </code></pre></div>
 </div>
 </div>
 </div>

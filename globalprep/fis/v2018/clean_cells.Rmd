@@ -70,6 +70,7 @@ Note: When using spatial polygons (e.g. **regions**) in `extract`, the extract m
 plot(regions[1][regions$rgn_id %in% c(260,262),])
 ```
 
+Extract values to create raster (this may take a while)
 ```{r}
 
 ## associate each cell value with ohi and fao regions
@@ -220,7 +221,7 @@ One issue of concern: Some regions aren't assigned an FAO region value (in place
 ```{r}
 
 ## see what percentage have no FAO region assigned
-sum(is.na(ohi_fao_cells$fao_id))/max(cells$CellID, na.rm=TRUE) # 83803/259200 or 33% is NA
+sum(is.na(ohi_fao_cells$fao_id))/max(ohi_fao_cells$CellID, na.rm=TRUE) # 84,218/259,200 or 32% is NA
 
 ```
 

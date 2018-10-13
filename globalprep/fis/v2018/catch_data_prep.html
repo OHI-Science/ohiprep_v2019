@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Oct 3 08:12:27 2018 by isu" />
+<meta name="author" content="Compiled on Fri Oct 12 14:33:31 2018 by isu" />
 
 
 <title>OHI 2018: Food Provision, Preparing catch data for BBmsy calculations and mean catch (weights in FIS model) and FP weights</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2018: Food Provision, Preparing catch data for BBmsy calculations and mean catch (weights in FIS model) and FP weights</h1>
-<h4 class="author"><em><em>Compiled on Wed Oct 3 08:12:27 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Fri Oct 12 14:33:31 2018 by isu</em></em></h4>
 
 </div>
 
@@ -312,6 +312,7 @@ div.tocify {
 <span class="kw">library</span>(here)
 <span class="kw">library</span>(sf)
 <span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(maps)
 
 <span class="kw">setwd</span>(here<span class="op">::</span><span class="kw">here</span>(<span class="st">&quot;globalprep/fis/v2018&quot;</span>))
 <span class="kw">source</span>(<span class="st">'../../../src/R/common.R'</span>)
@@ -327,9 +328,7 @@ fis_path =<span class="st"> </span><span class="kw">file.path</span>(dir_M,<span
 <h1>Load Data</h1>
 <div id="combine-industrial-and-non-industrial-catch" class="section level2">
 <h2>Combine Industrial and Non-Industrial Catch</h2>
-<ul>
-<li>The raw Watson data is separated into industrial and non-industrial fishing. Combine both types for each year from 1950-2015.</li>
-</ul>
+<p>The raw Watson data is separated into industrial and non-industrial fishing. Combine both types for each year from 1950-2015.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">years &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1950</span><span class="op">:</span><span class="dv">2015</span>)
 data_files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(path_data, <span class="st">&quot;annual_catch&quot;</span>), <span class="dt">full.names =</span> T)
 
@@ -340,6 +339,12 @@ doParallel<span class="op">::</span><span class="kw">registerDoParallel</span>(<
   
   ## find file path of the respective year of data
   yr &lt;-<span class="st"> </span><span class="kw">as.character</span>(yr)
+  ## check if file already exists in mazu
+  <span class="cf">if</span>(<span class="kw">file.exists</span>(<span class="kw">paste0</span>(fis_path, <span class="st">&quot;/annual_catch/&quot;</span>, <span class="kw">sprintf</span>(<span class="st">&quot;Catch_%s.rds&quot;</span>,yr)))){
+    
+    <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">&quot;Catch_%s.rds already exists in Mazu&quot;</span>, yr))
+    
+    } <span class="cf">else</span> {
   ## Select the catch data for the respective year
   datanames &lt;-<span class="st"> </span>data_files[<span class="kw">which</span>(<span class="kw">str_detect</span>(data_files, yr))]
   ## read in the two data tables
@@ -349,8 +354,9 @@ doParallel<span class="op">::</span><span class="kw">registerDoParallel</span>(<
   combined &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(list_data)
   
   ## save to fis folder in mazu
-  <span class="kw">saveRDS</span>(combined, <span class="kw">paste0</span>(fis_path, <span class="st">&quot;annual_catch/&quot;</span>, <span class="kw">sprintf</span>(<span class="st">&quot;Catch_%s.rds&quot;</span>,yr)))
-  
+  <span class="kw">saveRDS</span>(combined, <span class="kw">paste0</span>(fis_path, <span class="st">&quot;/annual_catch/&quot;</span>, <span class="kw">sprintf</span>(<span class="st">&quot;Catch_%s.rds&quot;</span>,yr)))
+    }
+    
   }</code></pre></div>
 <p>Look at catch data</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## read in one of the catch data
@@ -364,7 +370,8 @@ catch &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class=
 <h2>Read in Cells Datatable</h2>
 <p>Since we are using a new data source, we recreate the cells.csv file in <strong>clean_cells.Rmd</strong>, which will include cell ids and corresponding OHI and FAO region ids, which is later used to align catch data with appropriate regions.</p>
 <p>These files are large so using the data.table package is recommended due to R memory limitations. Check that the cell values match up with the cell values in the catch data.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'cells.csv'</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'cells.csv'</span>)
+<span class="kw">head</span>(cells)</code></pre></div>
 </div>
 </div>
 <div id="aggregate-catch" class="section level1">
@@ -374,7 +381,7 @@ catch &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class=
 <li><p>The catch is used to weight scores per region. For this we need to use catch records, including those not reported at the species level. See note below.</p></li>
 <li><p>The catch data at species level is used to calculate stock status (BBmsy) per stock (remember that our definition of a stock is a species caught within a single FAO area).</p></li>
 </ol>
-<p>Note: Saved two versions of catch aggregation. One using IUU and Reported only (<code>Landings</code>) as the catch sum and one using IUU, Reported, and Discards (<code>CatchTotal</code>).</p>
+<p>Note: Saved two versions of catch aggregation. One using IUU and Reported only (<code>Landings</code>) as the catch sum and one using IUU, Reported, and Discards (<code>CatchTotal</code>). For final output just use the latter.</p>
 <p><strong>Total Catch</strong> - First aggregation</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## list all data files
 data_files &lt;-<span class="st"> </span><span class="kw">list.files</span>(<span class="kw">file.path</span>(fis_path, <span class="st">&quot;annual_catch&quot;</span>), <span class="dt">full.names =</span> <span class="ot">TRUE</span>)
@@ -397,11 +404,11 @@ stock_rgn_total &lt;-<span class="st"> </span><span class="cf">function</span>(f
   
 output_df &lt;-<span class="st"> </span>catch <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">CatchTotal =</span> IUU <span class="op">+</span><span class="st"> </span>Reported <span class="op">+</span><span class="st"> </span>Discards) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">    </span>dplyr<span class="op">::</span><span class="kw">select</span>(Year, TaxonName, CommonName, Cell, CatchTotal) <span class="op">%&gt;%</span>
+<span class="st">    </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="dt">year =</span> Year, TaxonName, CommonName, Cell, CatchTotal) <span class="op">%&gt;%</span>
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">rename</span>(<span class="dt">CellID =</span> Cell) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># match what is in cells.csv</span>
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">left_join</span>(cells, <span class="dt">by =</span> <span class="st">&quot;CellID&quot;</span>) <span class="op">%&gt;%</span>
-<span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">catch_prop =</span> CatchTotal <span class="op">*</span><span class="st"> </span>area) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># NAs produced here due to not having a Cell ID that corresponds to a cell id in cells data</span>
-<span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(Year, rgn_id, fao_id, TaxonName, CommonName) <span class="op">%&gt;%</span>
+<span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">catch_prop =</span> CatchTotal <span class="op">*</span><span class="st"> </span>area) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># no NAs - every cell ID matches</span>
+<span class="st">    </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(year, rgn_id, fao_id, TaxonName, CommonName) <span class="op">%&gt;%</span>
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">summarise</span>(<span class="dt">catch =</span> <span class="kw">sum</span>(catch_prop)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span>
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">stock_id =</span> <span class="kw">gsub</span>(<span class="st">&quot; &quot;</span>, <span class="st">&quot;_&quot;</span>, <span class="kw">paste</span>(TaxonName, fao_id, <span class="dt">sep=</span><span class="st">'-'</span>), <span class="dt">fixed=</span><span class="ot">TRUE</span>))<span class="op">%&gt;%</span>
@@ -420,11 +427,11 @@ total_catch &lt;-<span class="st"> </span><span class="kw">map_df</span>(data_fi
 <span class="co"># stock_rgn_landings &lt;- function(file) {</span>
 <span class="co"># </span>
 <span class="co"># output_df &lt;- readRDS(file) %&gt;%</span>
-<span class="co">#         dplyr::select(Year, TaxonName, CommonName, Cell, Landings) %&gt;%</span>
+<span class="co">#         dplyr::select(year = Year, TaxonName, CommonName, Cell, Landings) %&gt;%</span>
 <span class="co">#         dplyr::rename(CellID = cell_id) %&gt;% # change cellid name to match what is in cells.csv</span>
 <span class="co">#         dplyr::left_join(cells, by = &quot;CellID&quot;) %&gt;%</span>
 <span class="co">#         dplyr::mutate(catch_prop = Landings * area) %&gt;% # NAs produced here due to lack of assigned area, ok</span>
-<span class="co">#         dplyr::group_by(Year, rgn_id, fao_id, TaxonName, CommonName) %&gt;%</span>
+<span class="co">#         dplyr::group_by(year, rgn_id, fao_id, TaxonName, CommonName) %&gt;%</span>
 <span class="co">#         dplyr::summarise(catch = sum(catch_prop, na.rm=TRUE)) %&gt;% # do we want to keep NAs?</span>
 <span class="co">#         dplyr::ungroup() %&gt;%</span>
 <span class="co">#         dplyr::mutate(stock_id = gsub(&quot; &quot;, &quot;_&quot;, paste(taxon_scientific_name, fao_id, sep='-'), fixed=TRUE)) %&gt;%</span>
@@ -449,12 +456,14 @@ total_catch &lt;-<span class="st"> </span><span class="kw">map_df</span>(data_fi
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">taxonkey &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/watson_taxon_key.csv&quot;</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
 stock_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_M,<span class="st">'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'</span>))
 
+## check diffs - only three species in the stock catch table not in taxon key table. find the taxon keys manually
 <span class="kw">setdiff</span>(<span class="kw">paste</span>(taxonkey<span class="op">$</span>TaxonName, taxonkey<span class="op">$</span>CommonName), 
         <span class="kw">paste</span>(stock_rgn<span class="op">$</span>TaxonName, stock_rgn<span class="op">$</span>CommonName))
-no_taxonkey &lt;-<span class="st"> </span><span class="kw">setdiff</span>(<span class="kw">paste</span>(stock_rgn<span class="op">$</span>TaxonName, stock_rgn<span class="op">$</span>CommonName),
-  <span class="kw">paste</span>(taxonkey<span class="op">$</span>TaxonName, taxonkey<span class="op">$</span>CommonName))
+no_taxonkey &lt;-<span class="st"> </span><span class="kw">setdiff</span>(<span class="kw">paste</span>(stock_rgn<span class="op">$</span>TaxonName,stock_rgn<span class="op">$</span>CommonName), 
+                       <span class="kw">paste</span>(taxonkey<span class="op">$</span>TaxonName, taxonkey<span class="op">$</span>CommonName))
 
-new_taxa &lt;-<span class="st"> </span><span class="kw">filter</span>(stock_rgn, <span class="kw">paste</span>(stock_rgn<span class="op">$</span>TaxonName, stock_rgn<span class="op">$</span>CommonName) <span class="op">%in%</span><span class="st"> </span>no_taxonkey) <span class="op">%&gt;%</span>
+new_taxa &lt;-<span class="st"> </span>stock_rgn <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="kw">paste</span>(stock_rgn<span class="op">$</span>TaxonName, stock_rgn<span class="op">$</span>CommonName) <span class="op">%in%</span><span class="st"> </span>no_taxonkey) <span class="op">%&gt;%</span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(TaxonName, CommonName) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">unique</span>()
 
@@ -468,19 +477,19 @@ taxonkey &lt;-<span class="st"> </span><span class="kw">rbind</span>(taxonkey, n
 
 <span class="kw">write.csv</span>(taxonkey, <span class="st">&quot;int/watson_taxon_key_v2018.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
 <p>Add taxa to the stock catch by region.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">taxonkey &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/watson_taxon_key_v2018.csv&quot;</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## read in modified taxon key table
+taxonkey &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/watson_taxon_key_v2018.csv&quot;</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
 stock_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_M,<span class="st">'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'</span>))
 
 <span class="co"># check</span>
 <span class="kw">setdiff</span>(<span class="kw">paste</span>(taxonkey<span class="op">$</span>TaxonName, taxonkey<span class="op">$</span>CommonName), 
         <span class="kw">paste</span>(stock_rgn<span class="op">$</span>TaxonName, stock_rgn<span class="op">$</span>CommonName)) <span class="co"># these are fine</span>
-<span class="kw">setdiff</span>(<span class="kw">paste</span>(stock_rgn<span class="op">$</span>TaxonName, stock_rgn<span class="op">$</span>CommonName), <span class="co"># any here need to be corrected</span>
-  <span class="kw">paste</span>(taxonkey<span class="op">$</span>TaxonName, taxonkey<span class="op">$</span>CommonName))
+<span class="kw">setdiff</span>(<span class="kw">paste</span>(stock_rgn<span class="op">$</span>TaxonName, stock_rgn<span class="op">$</span>CommonName), 
+  <span class="kw">paste</span>(taxonkey<span class="op">$</span>TaxonName, taxonkey<span class="op">$</span>CommonName)) <span class="co"># any diffs here will need to be corrected</span>
 
 
 stock_rgn_taxa &lt;-<span class="st"> </span>stock_rgn <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">left_join</span>(taxonkey, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;TaxonName&quot;</span>,<span class="st">&quot;CommonName&quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">rename</span>(<span class="dt">year =</span> Year)
+<span class="st">  </span><span class="kw">left_join</span>(taxonkey, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;TaxonName&quot;</span>,<span class="st">&quot;CommonName&quot;</span>))
 
 <span class="kw">summary</span>(stock_rgn_taxa) <span class="co"># there should be no NAs for Taxonkey</span>
 
@@ -498,16 +507,30 @@ stock_rgn_taxa &lt;-<span class="st"> </span>stock_rgn <span class="op">%&gt;%</
 <p>Take a look at catch data with missing ohi and fao regions in <strong>stock_catch_by_rgn_taxa</strong>. These have taxon key matches, but no ohi or fao regions assigned to them.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_M,<span class="st">'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv'</span>))
 
+<span class="co"># No NAs for OHI regions, good</span>
 df_na &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(rgn_id))</code></pre></div>
+<span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(rgn_id))
+<span class="kw">nrow</span>(df_na)
+
+<span class="co"># 147,269 catch data without fao regions assigned</span>
+df_na &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(fao_rgn))
+<span class="kw">nrow</span>(df_na)</code></pre></div>
 <p>Check NA values before taxa was added</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## before adding in taxa info
 stock_rgn &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_M,<span class="st">'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn.csv'</span>))
+
+## no NAs
 stock_na &lt;-<span class="st"> </span>stock_rgn <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(rgn_id))
-<span class="kw">View</span>(stock_na)</code></pre></div>
+<span class="kw">nrow</span>(stock_na)
+
+stock_na &lt;-<span class="st"> </span>stock_rgn <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(fao_rgn))
+<span class="kw">nrow</span>(stock_na)</code></pre></div>
 <p>Look at summary info for original catch file and output after joining to cells.csv</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">catch &lt;-<span class="st"> </span><span class="kw">readRDS</span>(<span class="kw">file.path</span>(fis_path, <span class="st">&quot;annual_catch&quot;</span>,<span class="st">&quot;Catch_2014.rds&quot;</span>))
+
 <span class="kw">summary</span>(catch) <span class="co"># no NAs</span>
 
 output_df &lt;-<span class="st"> </span>catch <span class="op">%&gt;%</span><span class="st"> </span>
@@ -515,18 +538,20 @@ output_df &lt;-<span class="st"> </span>catch <span class="op">%&gt;%</span><spa
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">select</span>(Year, TaxonName, CommonName, Cell, CatchTotal) <span class="op">%&gt;%</span>
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">rename</span>(<span class="dt">CellID =</span> Cell) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># match what is in cells.csv</span>
 <span class="st">    </span>dplyr<span class="op">::</span><span class="kw">left_join</span>(cells)
-<span class="kw">summary</span>(output_df) <span class="co"># 31,367 NAs</span>
 
+<span class="kw">summary</span>(output_df) <span class="co"># FAO ID 29,703 NAs</span>
+
+## after fix cells.csv, no NAs in ohi rgns, just in fao_id
 output_na &lt;-<span class="st"> </span>output_df <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(rgn_id)) <span class="co"># extract just the rows with NAs</span></code></pre></div>
-<p>Look at which cells we are missing ohi and fao regions for in the 2014 catch. Looks like a lot of the cells in Watson catch with missing OHI and FAO regions are on land along the coastline except an area above Russia and the Netherlands. Should be alright? (Iwen 8/27)</p>
+<span class="st">  </span><span class="kw">filter</span>(<span class="kw">is.na</span>(fao_id)) <span class="co"># extract just the rows with NAs</span></code></pre></div>
+<p>Look at which cells we are missing ohi and fao regions for in the 2014 catch. Looks like a lot of the cells in Watson catch with missing FAO regions are on land along the coastline.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">watson_rast &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">extent</span>(<span class="kw">c</span>(<span class="op">-</span><span class="dv">180</span>, <span class="dv">180</span>, <span class="op">-</span><span class="dv">90</span>, <span class="dv">90</span>)), <span class="dt">res =</span> <span class="fl">0.5</span>, <span class="dt">crs =</span> <span class="st">'+init=epsg:4326'</span>)
 <span class="kw">values</span>(watson_rast) &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="kw">ncell</span>(watson_rast) <span class="co"># should have 260 rows and 720 columns</span>
 
 cell_na &lt;-<span class="st"> </span><span class="kw">unique</span>(<span class="kw">data.frame</span>(<span class="dt">cell_id =</span> output_na<span class="op">$</span>CellID, <span class="dt">value =</span> <span class="dv">1</span>)) <span class="co"># set random value for viewing</span>
 cell_na_plot &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">subs</span>(watson_rast, cell_na, <span class="dt">by =</span> <span class="st">&quot;cell_id&quot;</span>, <span class="dt">which =</span> <span class="st">&quot;value&quot;</span>, <span class="dt">subsWithNA=</span><span class="ot">TRUE</span>)
 
-<span class="kw">map</span>(<span class="st">'legacy_world'</span>) 
+maps<span class="op">::</span><span class="kw">map</span>(<span class="st">'legacy_world'</span>) 
 <span class="kw">plot</span>(cell_na_plot, <span class="dt">add=</span><span class="ot">TRUE</span>)</code></pre></div>
 <hr />
 </div>
@@ -534,7 +559,7 @@ cell_na_plot &lt;-<span class="st"> </span>raster<span class="op">::</span><span
 <div id="prep-data-for-bbmsy-calculations" class="section level1">
 <h1>Prep data for B/Bmsy calculations</h1>
 <p>Catch-MSY is the model we use to estimate stock status for all global stocks. This model requires information about the resilience of each species in addition to the catch data for each year.</p>
-<p>Load taxonomic resilience information</p>
+<p>Load taxonomic resilience information, created in <code>species_resilience_lookup_table.Rmd</code>. The species resilience prep file did not produce any new Resilience information this year. Use 2017 taxon resilience lookup table.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## add the taxon_resilence data to catch for b/bmsy calculations
 taxon_res =<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">'../v2017/data/taxon_resilience_lookup.csv'</span>) <span class="op">%&gt;%</span>
 <span class="st">              </span><span class="co">#mutate(common = ifelse(common %in% &quot;Silver croaker&quot;, paste(common, sciname, sep=&quot; &quot;), common)) %&gt;%</span>
@@ -547,7 +572,6 @@ taxon_res =<span class="st"> </span><span class="kw">read_csv</span>(<span class
 <li>Keep all stocks that have at least an average annual harvest of 1000 tons</li>
 <li>Keep all stocks with time series of 20 years or more</li>
 </ol>
-<p>There are some missing OHI and FAO regions, don’t worry? (Iwen 8/27)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## set variables to filter by
 min_yrs =<span class="st"> </span><span class="dv">20</span>
 min_tons =<span class="st"> </span><span class="dv">1000</span>
@@ -578,7 +602,7 @@ no_res &lt;-<span class="st"> </span><span class="kw">filter</span>(stks, <span 
 <span class="st">          </span>dplyr<span class="op">::</span><span class="kw">select</span>(TaxonName, CommonName) <span class="op">%&gt;%</span>
 <span class="st">          </span><span class="kw">distinct</span>()
     
-<span class="kw">nrow</span>(no_res) <span class="co"># 270 species do not have a Resilience. These will get assigned a Medium Resilience by default by the CMSY model. (255 species don't have a Resilience for the Landings only data)</span>
+<span class="kw">nrow</span>(no_res) <span class="co"># 271 species do not have a Resilience. These will get assigned a Medium Resilience by default by the CMSY model. (255 species don't have a Resilience for the Landings only data)</span>
 
 <span class="kw">write.csv</span>(stks, <span class="dt">file =</span> <span class="st">'output/stock_catch.csv'</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
 <span class="co"># write.csv(stks, file = 'output/stock_catch_landings.csv', row.names = FALSE)</span></code></pre></div>
@@ -609,7 +633,8 @@ compare_plot &lt;-<span class="st"> </span><span class="kw">ggplot</span>(both, 
 <span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">col=</span><span class="st">&quot;red&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Log Catch v Landings (Prep for B/Bmsy)&quot;</span>)
 
-<span class="kw">ggplotly</span>(compare_plot)</code></pre></div>
+compare_plot
+<span class="co">#ggplotly(compare_plot) # might crash RStudio</span></code></pre></div>
 <hr />
 </div>
 </div>
@@ -645,9 +670,8 @@ catch &lt;-<span class="st"> </span>catch <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(rgn_id, fao_id, Taxonkey, stock_id, year) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">summarize</span>(<span class="dt">catch =</span> <span class="kw">sum</span>(tons)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">ungroup</span>()</code></pre></div>
-<p>Take a look at a few stocks. Elasmobranchii is missing after I made the adjustments to cells and taxa matching - problem? (Iwen 8/27)</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(dplyr<span class="op">::</span><span class="kw">filter</span>(catch, stock_id <span class="op">==</span><span class="st"> &quot;Elasmobranchii-57&quot;</span> <span class="op">&amp;</span><span class="st"> </span>rgn_id<span class="op">==</span><span class="dv">1</span>))
-<span class="kw">data.frame</span>(dplyr<span class="op">::</span><span class="kw">filter</span>(catch, stock_id <span class="op">==</span><span class="st"> &quot;Carcharhinidae-57&quot;</span> <span class="op">&amp;</span><span class="st"> </span>rgn_id<span class="op">==</span><span class="dv">1</span>))
+<p>Take a look at a few stocks.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(dplyr<span class="op">::</span><span class="kw">filter</span>(catch, stock_id <span class="op">==</span><span class="st"> &quot;Carcharhinidae-57&quot;</span> <span class="op">&amp;</span><span class="st"> </span>rgn_id<span class="op">==</span><span class="dv">1</span>))
 <span class="kw">data.frame</span>(dplyr<span class="op">::</span><span class="kw">filter</span>(catch, stock_id <span class="op">==</span><span class="st"> &quot;Marine_fishes_not_identified-57&quot;</span> <span class="op">&amp;</span><span class="st"> </span>rgn_id<span class="op">==</span><span class="dv">1</span>))</code></pre></div>
 </div>
 <div id="fill-in-zeros" class="section level2">
@@ -730,7 +754,10 @@ plot_check &lt;-<span class="st"> </span><span class="kw">ggplot</span>(check, <
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.4</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">col=</span><span class="st">&quot;red&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Catch Comparison for 2014 (v2017, v2018)&quot;</span>)
-<span class="kw">ggplotly</span>(plot_check)</code></pre></div>
+
+plot_check
+
+<span class="co">#ggplotly(plot_check) #might crash RStudio</span></code></pre></div>
 <p>Plot v2016 with v2017 mean catch</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">old_<span class="dv">2016</span> &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../v2016/data/mean_catch.csv&quot;</span>)
 old_2016_filt &lt;-<span class="st"> </span>old_<span class="dv">2016</span> <span class="op">%&gt;%</span>
@@ -752,7 +779,9 @@ plot_check &lt;-<span class="st"> </span><span class="kw">ggplot</span>(check, <
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.4</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">col=</span><span class="st">&quot;red&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Catch Comparison for 2010 (v2016, v2017)&quot;</span>) <span class="co"># 2010 is most recent shared year</span>
-<span class="kw">ggplotly</span>(plot_check)</code></pre></div>
+plot_check
+
+<span class="co">#ggplotly(plot_check) # might Crash RStudio</span></code></pre></div>
 <p>Use v2018 mean Landings catch to compare with v2017 mean catch</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">new &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;output/mean_catch_landings.csv&quot;</span>)
 new_filt &lt;-<span class="st"> </span>new <span class="op">%&gt;%</span><span class="st"> </span>
@@ -776,7 +805,8 @@ plot_check &lt;-<span class="st"> </span><span class="kw">ggplot</span>(check, <
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.4</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">col=</span><span class="st">&quot;red&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Catch Comparison for 2014 (v2017, v2018 Landings)&quot;</span>)
-<span class="kw">ggplotly</span>(plot_check)</code></pre></div>
+plot_check
+<span class="co">#ggplotly(plot_check) #might crash RStudio</span></code></pre></div>
 <p>Compare v2018 Catch (IUU+Reported+Discards) with v2018 Landings only (IUU+Reported)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">all_catch &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;output/mean_catch.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2015</span>) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -797,7 +827,9 @@ plot_check &lt;-<span class="st"> </span><span class="kw">ggplot</span>(check, <
 <span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.4</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">col=</span><span class="st">&quot;red&quot;</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">&quot;Landings v Total Catch (v2018, DY 2015)&quot;</span>)
-<span class="kw">ggplotly</span>(plot_check)</code></pre></div>
+plot_check
+
+<span class="co">#ggplotly(plot_check)</span></code></pre></div>
 </div>
 </div>
 <div id="prep-data-for-food-provision-weights" class="section level1">

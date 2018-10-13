@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Wed Sep 12 17:48:38 2018 by isu" />
+<meta name="author" content="Compiled on Fri Oct 12 14:38:54 2018 by isu" />
 
 
 <title>OHI 2018: Food Provision, Fix Cell Issues</title>
@@ -264,7 +264,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2018: Food Provision, Fix Cell Issues</h1>
-<h4 class="author"><em><em>Compiled on Wed Sep 12 17:48:38 2018 by isu</em></em></h4>
+<h4 class="author"><em><em>Compiled on Fri Oct 12 14:38:54 2018 by isu</em></em></h4>
 
 </div>
 
@@ -277,9 +277,9 @@ div.tocify {
 </div>
 <div id="setup" class="section level1">
 <h1>Setup</h1>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(reshape2)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#library(reshape2)</span>
 <span class="kw">library</span>(tidyverse)
-<span class="kw">library</span>(seaaroundus)
+<span class="co">#library(seaaroundus)</span>
 <span class="kw">library</span>(rgdal)
 <span class="kw">library</span>(raster)
 <span class="kw">library</span>(here)
@@ -303,6 +303,7 @@ div.tocify {
 <p>Note: When using spatial polygons (e.g. <strong>regions</strong>) in <code>extract</code>, the extract method returns the values of the cells of a Raster object (e.g. <strong>watson_rast</strong>) that are covered by a polygon. A cell is covered if its center is inside the polygon, but setting <code>weights = TRUE</code> and <code>normalizeWeights = FALSE</code> accounts from the fraction of each cell that is covered by each polygon.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## some overlap between these fao region polygons (check it out):
 <span class="kw">plot</span>(regions[<span class="dv">1</span>][regions<span class="op">$</span>rgn_id <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">260</span>,<span class="dv">262</span>),])</code></pre></div>
+<p>Extract values to create raster (this may take a while)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## associate each cell value with ohi and fao regions
 ohi_to_saup_raster &lt;-<span class="st"> </span>raster<span class="op">::</span><span class="kw">extract</span>(watson_rast, regions, <span class="dt">weights =</span> <span class="ot">TRUE</span>, <span class="dt">normalizeWeights =</span> <span class="ot">FALSE</span>, <span class="dt">progress =</span> <span class="st">'text'</span>) 
 
@@ -326,6 +327,7 @@ cells_raw &lt;-<span class="st"> </span>region_prop_df <span class="op">%&gt;%</
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Check raw file
 cells_raw &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns.csv&quot;</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">arrange</span>(rgn_id)
+
 old_cells_raw &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2015/raw/saup_rasters_to_ohi_rgns.csv&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">arrange</span>(rgn_id)
 
@@ -334,157 +336,109 @@ old_cells_raw &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<sp
 <span class="kw">dim</span>(old_cells_raw) <span class="co"># 290763 rows</span>
 <span class="kw">setdiff</span>(cells_raw<span class="op">$</span>wat_cell_id, old_cells_raw<span class="op">$</span>saup_cell_id)</code></pre></div>
 </div>
-<div id="save-ocean-only-ohi-cellid-datatable" class="section level3">
-<h3>Save Ocean Only OHI-CellID Datatable</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## save only the ocean cells (this will probably be the file we actually need)
-ocean_df &lt;-<span class="st"> </span>all_df <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(rgn_typ <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;eez&quot;</span>, <span class="st">'eez-ccamlr'</span>, <span class="st">'eez-disputed'</span>, <span class="st">'eez-inland'</span>, <span class="st">'fao'</span>))
-
-<span class="kw">write.csv</span>(ocean_df, <span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns_noLand.csv&quot;</span>), <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
 </div>
-<div id="check-cell-proportions" class="section level3">
-<h3>Check Cell Proportions</h3>
-<p>Calculate total proportion of each cell within each eez - should add up to 1.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cells_raw &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns.csv&quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">rename</span>(<span class="dt">CellID =</span> wat_cell_id) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">group_by</span>(CellID) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total_area =</span> <span class="kw">sum</span>(proportionArea)) </code></pre></div>
-<p>List of cells with areas &gt; 1 (indicates something strange is going on)</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bad_ones &lt;-<span class="st"> </span>cells_raw <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(total_area <span class="op">&gt;</span><span class="dv">1</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(CellID) 
-
-<span class="kw">data.frame</span>(bad_ones)</code></pre></div>
-</div>
-<div id="compile-list-of-region-types" class="section level3">
-<h3>Compile List of Region Types</h3>
-<p>For each cell ID, create new column listing all the associated region types.</p>
-<p>Helps to identify cells with EEZ or FAO categories and used later to determine whether cells with OHI regions but no FAO region are an issue:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cells_water &lt;-<span class="st"> </span>cells_raw <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">group_by</span>(CellID) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cell_rgns =</span> <span class="kw">paste</span>(<span class="kw">sort</span>(<span class="kw">unique</span>(rgn_typ)), <span class="dt">collapse=</span><span class="st">&quot;, &quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(CellID)</code></pre></div>
-<p>Check this went ok:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">unique</span>(cells_water<span class="op">$</span>cell_rgns)
-list &lt;-<span class="st"> </span><span class="kw">table</span>(cells_water<span class="op">$</span>cell_rgns)
-list
-
-## Look at cells with both eez and land
-<span class="kw">filter</span>(cells_water, cell_rgns<span class="op">==</span><span class="st">&quot;eez, land&quot;</span>)</code></pre></div>
-<p>Subset region types in the ocean only cells data frame.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># List the types of cells we want to keep</span>
-eez_fao_cats &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;eez&quot;</span>, <span class="st">&quot;eez-ccamlr&quot;</span>, <span class="st">&quot;eez-ccamlr, land-ccamlr&quot;</span>, <span class="st">&quot;eez-disputed&quot;</span>,
-                  <span class="st">&quot;eez-disputed, fao&quot;</span>, <span class="st">&quot;eez-disputed, land-disputed&quot;</span>, <span class="st">&quot;eez-disputed, land, land-disputed&quot;</span>, <span class="st">&quot;eez, eez-ccamlr&quot;</span>,
-                  <span class="st">&quot;eez, eez-disputed&quot;</span>, <span class="st">&quot;eez, eez-disputed, fao&quot;</span>, <span class="st">&quot;eez, eez-disputed, land&quot;</span>, <span class="st">&quot;eez, eez-disputed, land-disputed&quot;</span>,
-                  <span class="st">&quot;eez, eez-disputed, land, land-disputed&quot;</span>, <span class="st">&quot;eez, fao&quot;</span>, <span class="st">&quot;eez, land&quot;</span>, <span class="st">&quot;eez, land, land-noeez&quot;</span>, <span class="st">&quot;fao&quot;</span>)      
-
-
-cells_water &lt;-<span class="st"> </span>cells_water <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(CellID, cell_rgns <span class="op">%in%</span><span class="st"> </span>eez_fao_cats)</code></pre></div>
-</div>
-<div id="adjust-for-area-not-equal-to-1" class="section level3">
-<h3>Adjust for Area Not Equal to 1</h3>
-<p>Cells should have a total area of &lt;=1. What causes some cells to have more…and is this a large problem? No, most cells are fine. This seems to happen because of polygon overlap.</p>
-<ul>
-<li>scenario 1: FAO region 262 overlaps other FAO region polygons by a small amount. In this case a small proportion of the catch within a cell will be assigned to two regions. This will be a small error. (No correction)</li>
-<li>scenario 2: In many cases, the total area is very close to 1 which may reflect rounding error and is not significant. (Usually no correction)</li>
-<li>scenario 3: In some cases, the regions are small islands where there doesn’t appear to be a hole so both the land and underlying eez are counted.</li>
-</ul>
-<p>This can also occur along any eez/land boundary…but it looks like it mainly happens for islands. If the overlap is for land/eez within the same region, this will be corrected.</p>
-<p>Scenario 3:</p>
+<div id="a-few-modifications-to-the-data" class="section level2">
+<h2>A few modifications to the data</h2>
+<div id="merge-land-and-eez-areas" class="section level3">
+<h3>Merge land and eez areas</h3>
+<p>Originally, we included only water areas, but some rasters were excluded because the Watson raster doesn’t exactly align with our region map.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ohi_cells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns.csv&quot;</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">rename</span>(<span class="dt">CellID =</span> wat_cell_id) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(CellID, rgn_id) <span class="op">%&gt;%</span><span class="st">   </span><span class="co"># groups land and eez data (that way the cell catch is fully applied to the region...rather than cutting the portion that overlaps land) </span>
 <span class="st">  </span>dplyr<span class="op">::</span><span class="kw">summarise</span>(<span class="dt">area =</span> <span class="kw">sum</span>(proportionArea)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">area =</span> <span class="kw">ifelse</span>(area <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, area))<span class="op">%&gt;%</span><span class="st">  </span><span class="co"># this corrects when there is land/eez overlap within the same region resulting in cell area &gt;1 (scenario 3 above)</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">area =</span> <span class="kw">ifelse</span>(area <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, area))<span class="op">%&gt;%</span><span class="st">  </span><span class="co"># this corrects when there is land/eez overlap within the same region resulting in cell area &gt;1</span>
 <span class="st">  </span><span class="kw">ungroup</span>()  </code></pre></div>
-<p>Scenario 1 and 2:</p>
-<p>Remaining errors from scenario 1 and 2 above. Take a look at the cells that have overlapping area (total area greater than 1). These are very small errors..nothing to be concerned about.</p>
+</div>
+<div id="check-cell-proportions" class="section level3">
+<h3>Check Cell Proportions</h3>
+<p>Calculate total proportion coverage of each cell, which should add up to 1. When the total area doesn’t equal 1, it means there is overlap of polygons and a portion of the cell gets assigned to multiple regions.</p>
+<p>There is a bit of weirdness, but nothing that seems overly concerning to me. The number of cells with this issue is fairly small, and I believe many of the biggest offenders are land discrepancies.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bad_ones &lt;-<span class="st"> </span>ohi_cells <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">group_by</span>(CellID) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total_cell_area =</span> <span class="kw">sum</span>(area)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(total_cell_area <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">arrange</span>(CellID) 
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">total_area =</span> <span class="kw">sum</span>(area)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(total_area <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(CellID) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="op">-</span>total_area)
 
-<span class="kw">data.frame</span>(bad_ones)</code></pre></div>
-<p>Get the list of cell ids that are duplicated, and use this list of values to adjust the area to equal 1 ONLY for those cells that are not duplicated (wait what is this doing?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Id duplicated cells:
-dup &lt;-<span class="st"> </span>ohi_cells<span class="op">$</span>CellID[<span class="kw">duplicated</span>(ohi_cells<span class="op">$</span>CellID)]</code></pre></div>
-<p>Check cells with area less than 1. These are the cells that were cut off prematurely due to edge effects, etc.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tmp &lt;-<span class="st"> </span>ohi_cells <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>(CellID <span class="op">%in%</span><span class="st"> </span>dup) <span class="op">&amp;</span><span class="st"> </span>area <span class="op">&lt;</span><span class="st"> </span><span class="dv">1</span>)
-<span class="kw">head</span>(tmp)</code></pre></div>
-<hr />
+<span class="kw">data.frame</span>(bad_ones)
+<span class="kw">table</span>(bad_ones<span class="op">$</span>rgn_id)
+<span class="kw">hist</span>(bad_ones<span class="op">$</span>total_area)</code></pre></div>
+</div>
+<div id="correct-for-cells-with-proportion-1" class="section level3">
+<h3>Correct for cells with proportion &lt;1</h3>
+<p>The opposite issue is when a cell has only partial coverage (i.e., proportion is &lt;1). In these cases, we will adjust to equal 1.</p>
+<p>Get a list of cells that are not duplicated and have areas &lt;1, and adjust these to equal 1. These are the cells that were cut off prematurely due to edge effects, etc. If area is &lt;1 and the cell is not duplicated, the area will be converted to 1.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## ID singleton cells:
+dups &lt;-<span class="st"> </span>ohi_cells<span class="op">$</span>CellID[<span class="kw">duplicated</span>(ohi_cells<span class="op">$</span>CellID)]
+nodups &lt;-<span class="st"> </span>ohi_cells<span class="op">$</span>CellID[<span class="op">-</span><span class="kw">which</span>(ohi_cells<span class="op">$</span>CellID <span class="op">%in%</span><span class="st"> </span>dups)]
+<span class="kw">length</span>(<span class="kw">unique</span>(ohi_cells<span class="op">$</span>CellID))
+<span class="kw">length</span>(nodups)
+<span class="kw">length</span>(dups)
+
+tmp &lt;-<span class="st"> </span>ohi_cells <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(CellID <span class="op">%in%</span><span class="st"> </span>nodups <span class="op">&amp;</span><span class="st"> </span>area <span class="op">&lt;</span><span class="st"> </span><span class="dv">1</span>)
+<span class="kw">head</span>(tmp)
+<span class="kw">sum</span>(<span class="kw">duplicated</span>(tmp<span class="op">$</span>CellID))
+
+ohi_cells &lt;-<span class="st"> </span>ohi_cells <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">area =</span> <span class="kw">ifelse</span>(CellID <span class="op">%in%</span><span class="st"> </span>nodups <span class="op">&amp;</span><span class="st"> </span>area <span class="op">&lt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, area))
+
+<span class="kw">write.csv</span>(ohi_cells, <span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns_v2.csv&quot;</span>), 
+          <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
 </div>
 </div>
 <div id="match-cell-ids-with-fao-regions" class="section level2">
 <h2>Match Cell IDs with FAO Regions</h2>
-<p>Similar steps were used for extracting cell values for FAO regions as you did with the OHI shapefile. This is already done in <a href="https://github.com/OHI-Science/ohiprep_v2018/blob/9ed3d24d6ef293ef21443fb0957e0aa0d4cb8970/globalprep/fis/v2016/saup_rasters_to_ohi_rgns.R">saup_rasters_to_ohi_rgns.R</a></p>
+<p>Similar steps were used for extracting cell values for FAO regions as the OHI shapefile. This is already done in <a href="https://github.com/OHI-Science/ohiprep_v2018/blob/9ed3d24d6ef293ef21443fb0957e0aa0d4cb8970/globalprep/fis/v2016/saup_rasters_to_ohi_rgns.R">saup_rasters_to_ohi_rgns.R</a></p>
 <p>Since data source is the same, just read in the FAO raster - check with the new dataframe I created above.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fao_cells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2015/raw/saup_rasters_to_fao_rgns.csv&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">rename</span>(<span class="dt">wat_cell_id =</span> saup_cell_id) <span class="co"># to match with others using watson</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fao_regions &lt;-<span class="st"> </span><span class="kw">readOGR</span>(<span class="dt">dsn =</span> <span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/Global/NCEAS-Regions_v2014/orig/FAO_AREAS&quot;</span>), <span class="dt">layer=</span><span class="st">&quot;FAO_AREAS&quot;</span>)  
+fao_regions &lt;-<span class="st"> </span>fao_regions[fao_regions<span class="op">$</span>F_LEVEL <span class="op">==</span><span class="st"> &quot;MAJOR&quot;</span>, ]
+<span class="kw">plot</span>(fao_regions)</code></pre></div>
 <hr />
 </div>
 <div id="final-wrangling-of-cells" class="section level2">
 <h2>Final Wrangling of Cells</h2>
 <p>Read in the dataset matching each cell to an FAO region (need both OHI and FAO region for analysis)</p>
-<p>If the cell covers greater than 1 region (or duplicated), leave it be. If it doesn’t cover greater than 1 region, then change cell areas to 1 to capture entire cell’s catch (these are less than 1 area due to edge effects)</p>
-<p>Note: Currently CellID in <code>ohi_cells</code> range from 8 to 259,200. CellID in <code>fao_cells</code> ranges from 1 to 252,083. After joining, <code>ohi_fao_cells</code> ranges from 8 to 259,200. Makes sense because there are many OHI regions with cells that are not assigned FAO regions (likely due ot being along the land-ocean boundary). It’s okay to ignore, very small percentage.</p>
+<p>Note: Currently CellID in <code>ohi_cells</code> range from 8 to 259,200. CellID in <code>fao_cells</code> ranges from 1 to 252,083. There are many OHI regions with cells that are not assigned FAO regions (likely due to being along the land-ocean boundary). It’s okay to ignore, very small percentage.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fao_cells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2015/raw/saup_rasters_to_fao_rgns.csv&quot;</span>)) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">rename</span>(<span class="dt">CellID =</span> saup_cell_id)
+<span class="kw">sum</span>(<span class="kw">duplicated</span>(fao_cells<span class="op">$</span>CellID)) <span class="co"># good: no duplicates</span>
 
-## Taken from earlier just to make sure we are using the right `cells` data table
-ohi_cells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns.csv&quot;</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">rename</span>(<span class="dt">CellID =</span> wat_cell_id) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">group_by</span>(CellID, rgn_id) <span class="op">%&gt;%</span><span class="st">   </span><span class="co"># groups land and eez data (that way the cell catch is fully applied to the region...rather than cutting the portion that overlaps land) </span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">summarise</span>(<span class="dt">area =</span> <span class="kw">sum</span>(proportionArea)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">area =</span> <span class="kw">ifelse</span>(area <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>, <span class="dv">1</span>, area))<span class="op">%&gt;%</span><span class="st">  </span><span class="co"># this corrects when there is land/eez overlap within the same region resulting in cell area &gt;1 (scenario 3 above)</span>
-<span class="st">  </span><span class="kw">ungroup</span>()  
-
-dup &lt;-<span class="st"> </span>cells<span class="op">$</span>CellID[<span class="kw">duplicated</span>(cells<span class="op">$</span>CellID)]
+ohi_cells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns_v2.csv&quot;</span>)) 
 
 ohi_fao_cells &lt;-<span class="st"> </span>ohi_cells <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">area =</span> <span class="kw">ifelse</span>(CellID <span class="op">%in%</span><span class="st"> </span>dup, area, <span class="dv">1</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">left_join</span>(fao_cells) 
+<span class="st">  </span><span class="kw">full_join</span>(fao_cells, <span class="dt">by=</span><span class="st">&quot;CellID&quot;</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(CellID) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">area =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(area), <span class="dv">1</span>, area))  <span class="co"># these are fao regions with no corresponding ohi</span>
+
 
 <span class="kw">summary</span>(ohi_fao_cells) <span class="co"># 84,218 NAs in fao_id</span></code></pre></div>
 <p>From <code>summary(ohi_fao_cells)</code> we see that there are many NAs in the <code>fao_id</code> field. The corresponding <code>ocean</code> field is also an NA.</p>
-<p>One issue of concern: Some regions aren’t assigned an FAO region value (in places where land &gt; 50% of cell cover)…and we need both for the analysis</p>
+<p>One issue of concern: Some regions aren’t assigned an FAO region value (in places where land &gt; 50% of cell cover)…and we need both for the analysis. Previous analyses indicate that most of these are land issues. So not worrying about for now, but might want to do gapfilling in the future.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## see what percentage have no FAO region assigned
-<span class="kw">sum</span>(<span class="kw">is.na</span>(ohi_fao_cells<span class="op">$</span>fao_id))<span class="op">/</span><span class="kw">max</span>(cells<span class="op">$</span>CellID, <span class="dt">na.rm=</span>T) <span class="co"># 83803/259200 or 33% is NA</span>
-
-## check to see how many cell IDs remain after we take out the land cells:
-cells_df_water &lt;-<span class="st"> </span>ohi_fao_cells <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">filter</span>(CellID <span class="op">%in%</span><span class="st"> </span>cells_water<span class="op">$</span>CellID)
-
-<span class="kw">summary</span>(cells_df_water)
-
-## check percentage of cells that are missing
-## N = 558, and only 0.2% of all cells...not too bad???...does not seem worth fretting over?? Increased in number from last year (N = 187 last year), since cells_df_water was created from new OHI shapefile (Mel fixed topology).
-<span class="kw">sum</span>(<span class="kw">is.na</span>(cells_df_water<span class="op">$</span>fao_id))<span class="op">/</span><span class="kw">max</span>(cells_df_water<span class="op">$</span>CellID) <span class="co"># 558/252083</span></code></pre></div>
+<span class="kw">sum</span>(<span class="kw">is.na</span>(ohi_fao_cells<span class="op">$</span>fao_id))<span class="op">/</span><span class="kw">max</span>(ohi_fao_cells<span class="op">$</span>CellID, <span class="dt">na.rm=</span><span class="ot">TRUE</span>) <span class="co"># 84,218/259,200 or 32% is NA</span></code></pre></div>
 <hr />
 </div>
 <div id="save-file" class="section level2">
 <h2>Save File</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(cells_df_water, <span class="dt">file =</span> <span class="st">&quot;cells.csv&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(ohi_fao_cells, <span class="dt">file =</span> <span class="st">&quot;cells.csv&quot;</span>, <span class="dt">row.names=</span><span class="ot">FALSE</span>)</code></pre></div>
 <hr />
 </div>
 <div id="check-output" class="section level2">
 <h2>Check Output</h2>
 <p>Compare this year’s cells.csv with last year’s cells.csv output</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## new cells output
-cells &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">'cells.csv'</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>X1) <span class="op">%&gt;%</span>
+cells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'cells.csv'</span>)  <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">arrange</span>(CellID) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cell_fao_ohi =</span> <span class="kw">paste</span>(CellID, fao_id, rgn_id, <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>))
 
 ## checking old cells.csv files
-old_cells &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">'../v2017/cells.csv'</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>X1) <span class="op">%&gt;%</span><span class="st"> </span>
+old_cells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">'../v2017/cells.csv'</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>X) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">arrange</span>(CellID) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cell_fao_ohi =</span> <span class="kw">paste</span>(CellID, fao_id, rgn_id, <span class="dt">sep=</span><span class="st">&quot;_&quot;</span>))
 
-<span class="kw">dim</span>(cells)[<span class="dv">1</span>]<span class="op">-</span><span class="kw">dim</span>(old_cells)[<span class="dv">1</span>] <span class="co"># there are 504 more rows maybe due ot extra data</span>
+<span class="kw">dim</span>(cells)[<span class="dv">1</span>]<span class="op">-</span><span class="kw">dim</span>(old_cells)[<span class="dv">1</span>] <span class="co"># there are 84409 more rows due to adding land</span>
 
 ## Diff in IDs in new cells csv versus old
 new_old &lt;-<span class="st"> </span><span class="kw">setdiff</span>(cells<span class="op">$</span>cell_fao_ohi, old_cells<span class="op">$</span>cell_fao_ohi)
