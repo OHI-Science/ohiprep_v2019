@@ -24,7 +24,7 @@ From Jamie's clean_cells.R script in v2017. This script fixes the issue of some 
 
 Also takes code from [saup_rasters_to_ohi_rgns.R](https://github.com/OHI-Science/ohiprep_v2018/blob/9ed3d24d6ef293ef21443fb0957e0aa0d4cb8970/globalprep/fis/v2016/saup_rasters_to_ohi_rgns.R) to re-write fao and ohi regions with cell information.
 
-The output is saved as cells.csv
+The output is saved as int/cells.csv
 
 # Setup 
 
@@ -61,7 +61,7 @@ values(watson_rast) <- 1:ncell(watson_rast) # should have 260 rows and 720 colum
 
 Script taken from [v2016 saup_rasters_to_ohi_rgns.R script](https://github.com/OHI-Science/ohiprep_v2018/blob/9ed3d24d6ef293ef21443fb0957e0aa0d4cb8970/globalprep/fis/v2016/saup_rasters_to_ohi_rgns.R). 
 
-Result of `ohi_to_saup_raster` will be a list of length 526 (the same number of rows in the shapefile **regions**). Each element in the list will be associated with at least one cell number in a range from 1 to `ncell(watson_rast)` or 259,200. 
+Result of `ohi_to_wats_raster` will be a list of length 526 (the same number of rows in the shapefile **regions**). Each element in the list will be associated with at least one cell number in a range from 1 to `ncell(watson_rast)` or 259,200. 
 
 Note: When using spatial polygons (e.g. **regions**) in `extract`, the extract method returns the values of the cells of a Raster object (e.g. **watson_rast**) that are covered by a polygon. A cell is covered if its center is inside the polygon, but setting `weights = TRUE` and `normalizeWeights = FALSE` accounts from the fraction of each cell that is covered by each polygon.
 
@@ -74,13 +74,13 @@ Extract values to create raster (this may take a while)
 ```{r}
 
 ## associate each cell value with ohi and fao regions
-ohi_to_saup_raster <- raster::extract(watson_rast, regions, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
+ohi_to_wats_raster <- raster::extract(watson_rast, regions, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
 
 ## assign rgn type and id (e.g. eez_100) to each element in the list
-names(ohi_to_saup_raster) <- paste(regions$type_w_ant, regions$rgn_ant_id, sep="_")
+names(ohi_to_wats_raster) <- paste(regions$type_w_ant, regions$rgn_ant_id, sep="_")
 
 ## combine all 526 elements into a data frame with col names '.id', 'value', and 'weight'
-region_prop_df <- plyr::ldply(ohi_to_saup_raster, rbind)
+region_prop_df <- plyr::ldply(ohi_to_wats_raster, rbind)
 
 ## splits up rgn type and id, rename col
 cells_raw <- region_prop_df %>%
@@ -229,7 +229,7 @@ sum(is.na(ohi_fao_cells$fao_id))/max(ohi_fao_cells$CellID, na.rm=TRUE) # 84,218/
 
 ## Save File
 ```{r} 
-write.csv(ohi_fao_cells, file = "cells.csv", row.names=FALSE)
+write.csv(ohi_fao_cells, file = "int/cells.csv", row.names=FALSE)
 ```
 ***
 
@@ -239,7 +239,7 @@ Compare this year's cells.csv with last year's cells.csv output
 ```{r}
 
 ## new cells output
-cells <- read.csv('cells.csv')  %>%
+cells <- read.csv('int/cells.csv')  %>%
   arrange(CellID) %>%
   mutate(cell_fao_ohi = paste(CellID, fao_id, rgn_id, sep="_"))
 

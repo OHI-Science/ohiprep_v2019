@@ -49,3 +49,9 @@ A description of files:
    - `output/fis_bbmsy.csv`
 
 
+A description of data check files:
+
+* data_check.Rmd: Checks data discrepancies after completing data preparation scripts. All the files in `datacheck` folder are created in this script.
+
+
+* check_scores.R: Checks discrepancies in scores after adding FIS layers to ohi-global

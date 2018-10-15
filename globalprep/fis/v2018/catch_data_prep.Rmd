@@ -32,7 +32,7 @@ An example of our aggregation proces: New Zealand is located entirely in FAO reg
 
 ## Updates from previous assessment
 
-Using Watson 2018 data this year, which now incorporates artisanal fishing in addition to commerical (last year Sea Around Us data only included [commercial](https://rawgit.com/OHI-Science/ohi-global/draft/global_supplement/Supplement.html#561_fisheries_(subgoal_of_food_provision))). Catch data now goes from 1950 - 2015. Previously catch data was only available through 2014 from the Sea Around Us (SAUP). New Watson data doesn't have Taxon Key information. Add it in from Watson 2017 data after aggregating catch to work with a relativey smaller dataframe. No longer using SAUP to create cells.csv - took a raster template of Watson (watson_cell_id_rast.tif) created by Casey for a different project.
+Using Watson 2018 data this year, which now incorporates artisanal fishing in addition to commerical (last year Sea Around Us data only included [commercial](https://rawgit.com/OHI-Science/ohi-global/draft/global_supplement/Supplement.html#561_fisheries_(subgoal_of_food_provision))). Catch data now goes from 1950 - 2015. Previously catch data was only available through 2014 from the Sea Around Us (SAUP). New Watson data doesn't have Taxon Key information. Add it in from Watson 2017 data after aggregating catch to work with a relatively smaller dataframe. No longer using SAUP to create cells.csv - took a raster template of Watson (watson_cell_id_rast.tif) created by Casey for a different project.
 
 ***
 
@@ -148,7 +148,7 @@ These files are large so using the data.table package is recommended due to R me
 
 ```{r load_data, eval=F}
 
-cells <- read.csv('cells.csv')
+cells <- read.csv('int/cells.csv')
 head(cells)
 
 ```
@@ -445,7 +445,7 @@ no_res <- filter(stks, is.na(Resilience)) %>%
 nrow(no_res) # 271 species do not have a Resilience. These will get assigned a Medium Resilience by default by the CMSY model. (255 species don't have a Resilience for the Landings only data)
 
 write.csv(stks, file = 'output/stock_catch.csv', row.names = FALSE)
-# write.csv(stks, file = 'output/stock_catch_landings.csv', row.names = FALSE)
+# write.csv(stks, file = 'output/temp/stock_catch_landings.csv', row.names = FALSE)
 
 ```
 
@@ -455,7 +455,7 @@ Take a look at the stock data datatable
 ```{r, eval=FALSE}
 
 stks = read.csv('output/stock_catch.csv')
-stks_landings = read.csv('output/stock_catch_landings.csv')
+stks_landings = read.csv('output/temp/stock_catch_landings.csv')
 
 DT::datatable(head(stks,n=100))
 
@@ -593,7 +593,7 @@ mean_catch_toolbox <- mean_catch %>%
   data.frame()
 
 write.csv(mean_catch_toolbox, "output/mean_catch.csv", row.names=FALSE)
-# write.csv(mean_catch_toolbox, "output/mean_catch_landings.csv", row.names=FALSE)
+# write.csv(mean_catch_toolbox, "output/temp/mean_catch_landings.csv", row.names=FALSE)
 
 ```
 
@@ -670,7 +670,7 @@ plot_check
 
 Use v2018 mean Landings catch to compare with v2017 mean catch
 ```{r, eval=FALSE}
-new <- read.csv("output/mean_catch_landings.csv")
+new <- read.csv("output/temp/mean_catch_landings.csv")
 new_filt <- new %>% 
   mutate(new_log_catch = log(mean_catch+1)) %>% 
   filter(Year == 2014) %>% 
@@ -706,7 +706,7 @@ all_catch <- read.csv("output/mean_catch.csv") %>%
   mutate(log_mean_catch = log(mean_catch+1)) %>% 
   dplyr::select(rgn_id, stock_id_taxonkey, year, log_mean_catch)
  
-landings <- read.csv("output/mean_catch_landings.csv") %>% 
+landings <- read.csv("output/temp/mean_catch_landings.csv") %>% 
   filter(Year == 2015) %>% 
   mutate(log_mean_landings = log(mean_catch+1)) %>% 
   dplyr::select(rgn_id, stock_id_taxonkey, Year, log_mean_landings)
