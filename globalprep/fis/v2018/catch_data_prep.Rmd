@@ -368,6 +368,7 @@ summary(output_df) # FAO ID 29,703 NAs
 ## after fix cells.csv, no NAs in ohi rgns, just in fao_id
 output_na <- output_df %>% 
   filter(is.na(fao_id)) # extract just the rows with NAs
+
 ```
 
 Look at which cells we are missing ohi and fao regions for in the 2014 catch. Looks like a lot of the cells in Watson catch with missing FAO regions are on land along the coastline.
