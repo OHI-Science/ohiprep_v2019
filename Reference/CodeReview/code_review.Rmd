@@ -1,5 +1,5 @@
 ---
-title: 'Eastern Tropical Pacific: High Seas'
+title: 'Start of code review document'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -31,19 +31,23 @@ output:
 * Put code in Rmarkdowns to improve flow between documentation and scripting.  Break code chunks into manageable pieces.  Here is an [example](https://rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/ico/v2018/ico_data_prep.html) of one of the Rmarkdown files we use to wrangle Ocean Health Index code.
 * Document Document Document!!!
 * Check data as coding
-  * Get in the habit of checking dimensions of data after joins
-  * Pay special attention to what missing data is doing throughout an analysis
-  * Document expectations (e.g., "# length of this vector should be 0")
+     + Get in the habit of checking dimensions of data after joins
+     + Pay special attention to what missing data is doing throughout an analysis
+     + Document expectations (e.g., "# length of this vector should be 0")
 * Save intermediate data files if they take a long time to create or have information that might be useful for other aspects of the analysis
 * Avoid long dplyr chains
-* Use the ```{r}here``` [package](https://github.com/jennybc/here_here) to standardize file paths
+* Use the ```here``` [package](https://github.com/jennybc/here_here) to standardize file paths
 
 ### Final checks
 * Close everything, restart, and rerun everything (except the really long processes).  Do not save the workspace image!!!
+     + Does the code still run?
+     + Do you get the same results (we love ```git2r``` to get previous versions of data)?
+     + Be sure to check the NA's!
+     + Review warnings
+
 Always select "Don't Save" here: 
+
+
 ![](figures/Workspace.jpg)
-  * Does the code still run?
-  * Do you get the same results (we love ```{r}git2r``` to get previous versions of data)?
-  * Be sure to check the NA's!
-  * Review warnings
-* External review of complex sections!
+    
+* External review: But focus on difficult sections of code!
