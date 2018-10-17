@@ -1,21 +1,21 @@
 ---
-  title: 'OHI 2018 - Species subgoal'
+title: "OHI 2018 - Species subgoal (Biodiversity goal and resilience)"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
-  toc: true
-number_sections: true
-theme: cerulean
-highlight: haddock
-includes: 
-  in_header: '~/github/ohiprep_v2018/src/templates/ohi_hdr.html'
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
 pdf_document:
   toc: true
-editor_options: 
-  chunk_output_type: console
 ---
-
-``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE, include=FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
@@ -187,11 +187,11 @@ For each cell, we multiply the average species risk by the number of species in 
 
 ```{r}
 
-mean_risk_comp <- raster::raster("globalprep/spp/v2018/_output/mean_risk_raster_comp.tif")
+mean_risk_comp <- raster::raster(here("globalprep/spp/v2018/_output/mean_risk_raster_comp.tif"))
 
-n_comp <- raster::raster("globalprep/spp/v2018/_output/n_spp_risk_raster_comp.tif")
+n_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_comp.tif"))
 
-regions_ohi <- raster::raster("globalprep/spp/v2018/_spatial/eez_rast.tif")
+regions_ohi <- raster::raster(here("globalprep/spp/v2018/_spatial/eez_rast.tif"))
 
 risk_stack_comp <- stack(regions_ohi, mean_risk_comp, n_comp)
 risk_vals_comp <- values(risk_stack_comp) %>%
@@ -223,11 +223,11 @@ Trend is calculated using the same method as the risk calculation. For each cell
 
 ```{r}
 
-trend_comp <- raster::raster("globalprep/spp/v2018/_output/trend_raster_comp.tif")
+trend_comp <- raster::raster(here("globalprep/spp/v2018/_output/trend_raster_comp.tif"))
 
-n_trend_comp <- raster::raster("globalprep/spp/v2018/_output/n_trend_raster_comp.tif")
+n_trend_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_trend_raster_comp.tif"))
 
-regions_ohi <- raster::raster("globalprep/spp/v2018/_spatial/eez_rast.tif")
+regions_ohi <- raster::raster(here("globalprep/spp/v2018/_spatial/eez_rast.tif"))
 
 trend_stack_comp <- stack(regions_ohi, trend_comp, n_trend_comp)
 trend_vals_comp <- values(trend_stack_comp) %>%
@@ -324,7 +324,7 @@ write.csv(status, here("globalprep/spp/v2018/output/sp_status_global.csv"), row.
 ### Status: Compare to last year
 
 ```{r}
-old_spp <- read.csv("globalprep/spp_ico/v2017/output/spp_status_global.csv") %>%
+old_spp <- read.csv(here("globalprep/spp_ico/v2017/output/spp_status_global.csv")) %>%
   mutate(year = 2018) %>%
   rename(old_score = score) %>%
   left_join(status) %>%
@@ -399,7 +399,7 @@ We use a very different approach for calculating trend this year. Previously we 
 
 trend <- read.csv(here("globalprep/spp/v2018/output/sp_trend_global.csv"))  
 
-old_spp <- read.csv("globalprep/spp_ico/v2017/output/spp_trend_global.csv") %>%
+old_spp <- read.csv(here("globalprep/spp_ico/v2017/output/spp_trend_global.csv")) %>%
   rename(old_score = score) %>%
   left_join(trend) 
 
@@ -412,17 +412,17 @@ abline(v=0, col="red")
 
 ### Status/trend: save a record of gapfilling
 ```{r}
-status <- read.csv("globalprep/spp/v2018/output/sp_status_global.csv") %>%
+status <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
   mutate(gapfilled = ifelse(rgn_id == 232, 1, 0)) %>%
   mutate(method = ifelse(rgn_id == 232, "mean of neighbors", NA)) %>%
   dplyr::select(rgn_id, year, gapfilled, method)
-write.csv(status, "globalprep/spp/v2018/output/sp_status_global_gf.csv", row.names=FALSE)          
+write.csv(status, here("globalprep/spp/v2018/output/sp_status_global_gf.csv"), row.names=FALSE)          
 
-trend <- read.csv("globalprep/spp/v2018/output/sp_trend_global.csv") %>%
+trend <- read.csv(here("globalprep/spp/v2018/output/sp_trend_global.csv")) %>%
   mutate(gapfilled = ifelse(rgn_id == 232, 1, 0)) %>%
   mutate(method = ifelse(rgn_id == 232, "mean of neighbors", NA)) %>%
   dplyr::select(rgn_id, gapfilled, method)
-write.csv(trend, "globalprep/spp/v2018/output/sp_trend_global_gf.csv", row.names=FALSE)          
+write.csv(trend, here("globalprep/spp/v2018/output/sp_trend_global_gf.csv"), row.names=FALSE)          
 
 
 ```
@@ -436,13 +436,9 @@ We reproject the data to have higher resolution in order to more easily extract 
 We modify the method a bit from above due to size of the rasters.  
 ```{r, eval=FALSE}
 
-#3nm raster file
-rgns <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
-plot(rgns)
-
 # relevant species files
-mean_risk_comp <- raster::raster("globalprep/spp/v2018/_output/mean_risk_raster_comp.tif")
-n_comp <- raster::raster("globalprep/spp/v2018/_output/n_spp_risk_raster_comp.tif")
+mean_risk_comp <- raster::raster(here("globalprep/spp/v2018/_output/mean_risk_raster_comp.tif"))
+n_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_comp.tif"))
 
 risk_x_n <- mean_risk_comp*n_comp
 
@@ -464,12 +460,16 @@ Extract species risk data that corresponds to 3nm regions.
 
 ```{r}
 
+#3nm raster file
+rgns <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
+plot(rgns)
+
 risk_x_n_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2018/int/risk_x_n_comp_mol.tif"))
 n_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2018/int/n_comp_mol.tif"))
 
 risk_stack <- stack(risk_x_n_mol, n_mol)
 
-risk_df <- raster::zonal(risk_stack, rgns, fun='sum', progress="text")
+risk_df <- raster::zonal(risk_stack, rgns, fun='sum')
 
 rgn_3nm_risk <- risk_df %>%
   data.frame() %>%
@@ -486,15 +486,14 @@ We use the trend data to estimate risk values for previous years (vs. using the 
 Trend is calculated using the same method as the risk calculation. For each cell, we multiply the average species trend by the number of species in order to weight each cell's contribution by the number of species in the cell.  We sum these values for each OHI region and calculate for each region:
 (average species trend * number species)/number of species
 
-```{r}
 
-#3nm raster file
-rgns_3nm <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
-plot(rgns_3nm)
+#### Resilience: Prepare rasters for 3nm extraction (trend to estimate previous years' data)
+We reproject the data to have higher resolution in order to more easily extract the data at the 3nm scale.  
+```{r, eval=FALSE}
 
-trend_comp <- raster::raster("globalprep/spp/v2018/_output/trend_raster_comp.tif")
+trend_comp <- raster::raster(here("globalprep/spp/v2018/_output/trend_raster_comp.tif"))
 
-n_trend_comp <- raster::raster("globalprep/spp/v2018/_output/n_trend_raster_comp.tif")
+n_trend_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_trend_raster_comp.tif"))
 
 trend_x_n <- trend_comp*n_trend_comp
 
@@ -507,6 +506,15 @@ projectRaster(n_trend_comp, rgns_3nm, method="ngb", over=TRUE,
               filename=file.path(dir_M, "git-annex/globalprep/spp/v2018/int/n_trend_comp_mol.tif"),
               progress="text")
 
+```
+
+### Resilience: Extract trend data (used to estimate previous years' data)
+Extract species risk data that corresponds to 3nm regions.
+
+```{r}
+#3nm raster file
+rgns_3nm <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
+plot(rgns_3nm)
 
 trend_3nm_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2018/int/trend_x_n_comp_mol.tif"))
 n_trend_3nm_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2018/int/n_trend_comp_mol.tif"))
@@ -514,7 +522,7 @@ n_trend_3nm_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2018/int/n
 
 trend_stack <- stack(trend_3nm_mol, n_trend_3nm_mol)
 
-trend_df <- raster::zonal(trend_stack, rgns, fun='sum', progress="text")
+trend_df <- raster::zonal(trend_stack, rgns, fun='sum')
 
 rgn_3nm_trend <- trend_df %>%
   data.frame() %>%
@@ -526,7 +534,7 @@ rgn_3nm_trend <- trend_df %>%
 ```
   
 
-### Status: Get yearly risk scores based on trend
+### Resilience: Calculate yearly risk scores based on trend
 We estimate previous risk for each region, using the trend data.  We assume change in risk is linear.  
 
 ```{r}
@@ -576,7 +584,7 @@ summary(res_gf)
 filter(res_gf, is.na(spp_status))
 
 # get eez value:
-eez_status <- read.csv("globalprep/spp/v2018/output/sp_status_global.csv") %>%
+eez_status <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
   filter(rgn_id == 19) %>%
   rename(spp_status = score)
 
@@ -602,11 +610,11 @@ write.csv(resilience, here("globalprep/spp/v2018/output/sp_status_3nm.csv"), row
 
 ### Resilience: save a record of gapfilling
 ```{r}
-res <- read.csv("globalprep/spp/v2018/output/sp_status_3nm.csv") %>%
+res <- read.csv(here("globalprep/spp/v2018/output/sp_status_3nm.csv")) %>%
   mutate(gapfilled = ifelse(rgn_id == 19, 1, 0)) %>%
   mutate(method = ifelse(rgn_id == 19, "eez scale data used", NA)) %>%
   dplyr::select(rgn_id, year, gapfilled, method)
-write.csv(res, "globalprep/spp/v2018/output/sp_status_3nm_gf.csv", row.names=FALSE)          
+write.csv(res, here("globalprep/spp/v2018/output/sp_status_3nm_gf.csv"), row.names=FALSE)          
 
 
 ```
@@ -618,7 +626,7 @@ Compared to the entire EEZ, most (but not all) coastal areas have lower species 
 ```{r}
 
 # compare to eez values
-eez_status <- read.csv("globalprep/spp/v2018/output/sp_status_global.csv") %>%
+eez_status <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
   filter(year == max(year)) %>%
   dplyr::select(rgn_id, eez_score = score)
 
@@ -634,7 +642,7 @@ abline(0,1)
 status <- read.csv(here("globalprep/spp/v2018/output/sp_status_3nm.csv")) %>%
   filter(year == max(year))
 
-old_spp <- read.csv("globalprep/spp_ico/v2017/output/spp_status_3nm.csv") %>%
+old_spp <- read.csv(here("globalprep/spp_ico/v2017/output/spp_status_3nm.csv")) %>%
   mutate(year = 2018) %>%
   rename(old_score = score) %>%
   left_join(status) %>%
