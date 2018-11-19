@@ -7,7 +7,7 @@ library(ggplot2)
 
 
 
-scatterPlot <- function(repo="~/ohi-global", scenario="eez2013", commit="previous", goal, dim="score", fileSave){
+scatterPlot <- function(repo="ohi-global", scenario="eez", commit="previous", goal, dim="score", fileSave, filter_year=2017){
   #   scenario <- "eez2013"  ## options: 'eez2012', 'eez2013', 'eez2014', 'eez2015'
   #   commit <- "final_2014"   ## 'final_2014', 'previous', a commit code (ie., 'e30e7a4')
   #   fileSave <- 'LSP_trend_data'
@@ -15,10 +15,9 @@ scatterPlot <- function(repo="~/ohi-global", scenario="eez2013", commit="previou
   ## Useful code: repository(repo)
   ## Useful code: commits(repo)
   
-  repo2 <- sprintf("../%s", repo)
-  
+
   if (commit == "previous") {
-    commit2 = substring(git2r::commits(git2r::repository(repo2))[[1]]@sha, 
+    commit2 = substring(git2r::commits(git2r::repository(repo))[[1]]@sha, 
                         1, 7)
   } else {
     if (commit == "final_2014") {
@@ -28,35 +27,36 @@ scatterPlot <- function(repo="~/ohi-global", scenario="eez2013", commit="previou
     }
   }
   
-  tmp <- git2r::remote_url(git2r::repository(repo2))
+  tmp <- git2r::remote_url(git2r::repository(here()))
   org <- stringr::str_split(tmp, "/")[[1]][4]
   path = paste0(scenario, "/scores.csv")
   data_old <- read_git_csv(paste(org, repo, sep = "/"), commit2, 
-                           path) %>% dplyr::select(goal, dimension, region_id, old_score = score)
+                           path) %>% dplyr::select(goal, dimension, region_id, year, old_score = score)
   
   
-  names <- read.csv("eez2013/layers/rgn_labels.csv") %>%
-    filter(type=="eez") %>%
-    select(region_id=rgn_id, label)
+  names <- read.csv(here(scenario, "layers/rgn_labels.csv")) %>%
+    dplyr::filter(type=="eez") %>%
+    dplyr::select(region_id=rgn_id, label)
   
   
   criteria <- ~dimension == dim
   
-  data_new <- read.csv(file.path(path)) %>%
-    left_join(data_old, by=c('goal', 'dimension', 'region_id')) %>%
-    mutate(change = score-old_score) %>%
-    filter_(criteria) %>%
-    group_by(goal) %>% 
-    mutate(mean = mean(change, na.rm=TRUE),
+  data_new <- read.csv(here(path)) %>%
+    dplyr::left_join(data_old, by=c('goal', 'dimension', 'region_id')) %>%
+    dplyr::mutate(change = score-old_score) %>%
+    dplyr::filter_(criteria) %>%
+    dplyr::group_by(goal) %>% 
+    dplyr::mutate(mean = mean(change, na.rm=TRUE),
            sd =  sd(change, na.rm=TRUE)) %>%
-    ungroup() %>%
-    mutate(z_score = (change-mean)/sd) %>%
-    mutate(z_greater_1 = ifelse(abs(z_score) > 1, "yes", "no")) %>%
-    left_join(names) %>%
-    filter(region_id != 0) %>%
-    mutate(plotLabel = ifelse(z_greater_1=="yes", as.character(label), NA))
+    dplyr::ungroup() %>%
+    dplyr::mutate(z_score = (change-mean)/sd) %>%
+    dplyr::mutate(z_greater_1 = ifelse(abs(z_score) > 1, "yes", "no")) %>%
+    dplyr::left_join(names) %>%
+    dplyr::filter(region_id != 0) %>%
+    dplyr::mutate(plotLabel = ifelse(z_greater_1=="yes", as.character(label), NA))
   
   data_new <- data_new[data_new$goal==goal,]  
+  data_new <- data_new[data_new$year==filter_year,]  
 
   p <- ggplot(data_new, aes(x=old_score, y=score)) +
     geom_point(aes(text = paste0("rgn = ", label)), shape=19) +
@@ -67,18 +67,21 @@ scatterPlot <- function(repo="~/ohi-global", scenario="eez2013", commit="previou
     #geom_text(aes(label=plotLabel), vjust=1.5, size=3)
     #geom_text(aes(label=label), vjust=1.5, size=3)
     
-  plotly_fig <- ggplotly(p)
+  plotly_fig <- plotly::ggplotly(p)
   htmlwidgets::saveWidget(plotly::as_widget(plotly_fig), "tmp_file.html", 
                           selfcontained = TRUE)
+
   my.file.rename <- function(from, to) {
     todir <- dirname(to)
     if (!isTRUE(file.info(todir)$isdir)) 
       dir.create(todir, recursive = TRUE)
     file.rename(from = from, to = to)
   }
-  my.file.rename(from = "tmp_file.html", to = file.path("changePlot_figures", 
-                                                        paste0(fileSave, "_changePlot_", Sys.Date(), ".html")))
-    ggsave(file.path('changePlot_figures', paste0(fileSave, "_scatterPlot_", Sys.Date(), '.png')), width=10, height=8)
+  
+  my.file.rename(from = "tmp_file.html", 
+                 to = here(scenario, "score_check", 
+                              sprintf("%s_changePlot_%s.html", fileSave, Sys.Date())))
+#    ggsave(file.path('changePlot_figures', paste0(fileSave, "_scatterPlot_", Sys.Date(), '.png')), width=10, height=8)
 }
 
 
