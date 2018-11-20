@@ -309,7 +309,7 @@ See how may NA values were converted to 0
 
 ```{r}
 table(mar_rgn_gf$gap_0_fill)
-## 2671 of these out of 26479+2671 cases had NA values converted to 0
+## 3790 of these out of 27810+3790 cases had NA values converted to 0
 
 ```
 
@@ -514,7 +514,7 @@ mar_sus_final = mar_sus_gf %>%
   mutate(gapfill = ifelse(is.na(Sust), "taxon_average", gapfill)) %>% # add in taxon gapfill record
   mutate(Sust = ifelse(is.na(Sust), Sust_gf_taxon, Sust)) %>% # gapfill with taxon level
   mutate(taxa_code = paste(species, species_code, sep="_")) %>%
-  select(rgn_id, species, species_code, taxa_code, year, gapfill_sus = gapfill, gapfill_fao = gap_0_fill, tonnes=value, Sust)
+  select(rgn_id, species, species_code, taxa_code, taxa_group=Taxon_code, year, gapfill_sus = gapfill, gapfill_fao = gap_0_fill, tonnes=value, Sust)
 
 ```
 
@@ -524,7 +524,7 @@ mar_sus_final = mar_sus_gf %>%
 
 ## save mariculture harvest data
 mar_harvest_tonnes = mar_sus_final %>%
-  select(rgn_id, taxa_code, year, tonnes)
+  select(rgn_id, taxa_code, taxa_group, year, tonnes)
 
 anyDuplicated(mar_harvest_tonnes) # check for duplications
 
@@ -539,7 +539,7 @@ if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
 
 ## save gapfill data for mariculture harvest
 mar_harvest_tonnes_gf = mar_sus_final %>%
-  select(rgn_id, taxa_code, year, tonnes=gapfill_fao)
+  select(rgn_id, taxa_code, taxa_group, year, tonnes=gapfill_fao)
 
 
 ## Saves the appropriate Mariculture Harvest Gapfill file depending on whether we are excluding species based on best judgement (exclude), all seaweeds (exclude_no_seaweed), or just seaweeds nei (exclude_no_nei). See method changes above
