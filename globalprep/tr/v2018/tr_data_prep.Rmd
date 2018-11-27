@@ -65,13 +65,14 @@ library(ohicore)
 library(tidyverse)
 library(stringr)
 library(WDI)
+library(here)
 
-source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/gh-pages/src/R/common.R')
 
 ## maximum year of wttc data:
 year_max <- 2017
 
-source('R/tr_fxns.R')
+source(here("globalprep/tr/v2018/R/tr_fxns.R"))
 
 
 ```
@@ -202,7 +203,7 @@ Step 2: Wrangle and clean the new data
 ```{r, eval=FALSE}
 ##Reading and wrangling 2018 data
 
-warn_raw <- read.csv('raw/tr_travelwarning_2018_raw.csv', na.strings = " ") %>% 
+warn_raw <- read.csv(here('globalprep/tr/v2018/raw/tr_travelwarning_2018_raw.csv'), na.strings = " ") %>% 
   mutate(country = as.character(country)) %>% 
   mutate(level = as.numeric(str_extract(level, '[1,2,3,4]'))) %>% 
   filter(!(regional %in% 1)) %>% # no longer relevant because we are not adjusting penalty based on subregional information
@@ -324,12 +325,15 @@ Step 4: Transform the warnings into a multiplier that is used to calculate touri
 Travel warning  | Multiplier   | Description
 --------------- | ------------ | -------------------
 Level 1 | 1 (no penalty) | Exercise Normal Precautions: This is the lowest advisory level for safety and security risk. There is some risk in any international travel. 
-Level 2 | 0.75  | Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
+Level 2 | 1  | Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
 Level 3 | 0.25  | Reconsider Travel: Avoid travel due to serious risks to safety and security.
 Level 4 | 0 (full penalty) | Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
 
 ```{r, eval=FALSE}
-scores <-  data.frame(level = c(1, 2, 3, 4), multiplier = c(1, 0.75, 0.25, 0)) 
+warn_complete <- read.csv(here("globalprep/tr/v2018/intermediate/warning_complete.csv"))
+
+scores <-  data.frame(level = c(1, 2, 3, 4), multiplier = c(1, 1, 0.25, 0)) 
+
 
 warn_multiplier <-  warn_complete %>%  
   left_join(scores, by="level") %>% 
@@ -347,7 +351,7 @@ warn_multiplier <- warn_multiplier %>%
   summarize(multiplier = mean(multiplier))
 
 #Save file with multiplier
-write.csv(warn_multiplier, "intermediate/warning.csv", row.names=FALSE)
+write.csv(warn_multiplier, here("globalprep/tr/v2018/intermediate/warning.csv"), row.names=FALSE)
 
 
 ```
@@ -356,7 +360,7 @@ write.csv(warn_multiplier, "intermediate/warning.csv", row.names=FALSE)
 Step 5: Convert names to OHI regions and clean. 
 
 ```{r travel warnings, eval=FALSE}
-warn <- read.csv("intermediate/warning.csv")
+warn <- read.csv(here("globalprep/tr/v2018/intermediate/warning.csv"))
 
 #Add rgn_id
 warn_rgn <- name_2_rgn(df_in = warn, 
@@ -378,16 +382,15 @@ sort(table(paste(warn_rgn$year, warn_rgn$rgn_id)))
 ```
 
 
-Step 6: Identify inhabited regions with no U.S. travel warning data and see if this information is available from the Canadian Government website and add warnings to the raw data csv. Make sure to label the column indicting the data source. 
-
 Next year, consider gapfilling missing territorial regions with administrative country data.
 
-NOTE: Canada's warning have the same levels as the U.S
+These uninhabited regions get cut functions.R.
+
 ```{r, eval=FALSE}
 georegion_labels <- georegion_labels
 
 ##uninhabited regions (no need to worry about these)
-uninhabited <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/LookupTables/rgn_uninhabited_islands.csv') %>% 
+uninhabited <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/gh-pages/globalprep/supplementary_information/v2018/rgn_uninhabited_islands.csv') %>% 
   filter(est_population < 100) %>% # for this purpose: consider regions with <100 people to be uninhabited
   select(rgn_id)
 
@@ -403,7 +406,7 @@ no_us_warn <- georegion_labels %>%
   select(rgn_id, rgn_name=rgn_label)
 
 ##Save regions with no data in intermediate folder
-write.csv(no_us_warn, 'intermediate/v2018_no_data.csv', row.names=FALSE)
+write.csv(no_us_warn, here('globalprep/tr/v2018/intermediate/v2018_no_data.csv'), row.names=FALSE)
 
 ```
 
@@ -424,7 +427,7 @@ abline(0,1, col="red")
 
 ### compare against last year's data
 ### these changes will reflect changes due to removing subregional warnings:
-old <- read.csv("../v2017/output/tr_travelwarnings.csv") %>%
+old <- read.csv(here("globalprep/tr/v2017/output/tr_travelwarnings.csv")) %>%
   filter(year==2017) %>%
   left_join(tmp, by="rgn_id")
 
@@ -458,15 +461,15 @@ warn_rgn_all_rgns <- warn_rgn_spread %>%
   select(rgn_id, year, multiplier) %>%
   arrange(year, rgn_id)
 
-write.csv(warn_rgn_all_rgns, 'output/tr_travelwarnings.csv', row.names=FALSE)
+write.csv(warn_rgn_all_rgns, here('globalprep/tr/v2018/output/tr_travelwarnings.csv'), row.names=FALSE)
 
 ## Create gapfill file. No gapfill in this case so gapfill = 0
 
-travelwarning_gf <- read.csv("output/tr_travelwarnings.csv") %>% 
+travelwarning_gf <- read.csv(here("globalprep/tr/v2018/output/tr_travelwarnings.csv")) %>% 
   mutate(multiplier = 0) %>% 
   rename(gapfilled = multiplier)
 
-write.csv(travelwarning_gf, 'output/tr_travlewarnings_gf.csv', row.names = FALSE)
+write.csv(travelwarning_gf, here('globalprep/tr/v2018/output/tr_travlewarnings_gf.csv'), row.names = FALSE)
 
 ```
 
