@@ -34,14 +34,14 @@ The following data are used:
 
 * Tourism sustainability: Travel and Tourism Competitiveness Index (TTCI) from World Economic Forum (WEF)
 * Proportion of workforce directly employed in tourism: World Travel & Tourism Council (WTTC)
-* Travel warnings: (U.S. State Department or Canada's Government Travel Advise and Advisory)
+* Travel warnings: (U.S. State Department)
 * Per capita GDP: (World Bank with gaps filled using CIA data), used to gapfill missing values in Tourism sustainability
 
 # Updates from previous assessment
 In 2017 we discovered that the WEF-Economics Global Competitiveness Index data used to estimate sustainability is not compatible across years.  New methods are used each year and previous year's of data are not recalculated using the updated methods. Consequently, we use the most recent data for all scenario years.
 
 Travel Warning data form the U.S State department has updated the way data is reported. This year all countries have a travel warning that ranges from level 1 (normal precautions) to level 4 (do not travel). Within each general warning for a country there are regional warnings that are obtain by clicking in each country.
-In past assesmente we identified subregional warnings and modified the penalty based on this information. This year, because the new way of reporting the data, we will no longer apply this method. We eliminated the "subregion" information/penalties and modified past data to be consistent with our new approach. Future data should be collected without including this information. More information on how to obtain the data in the traver_warning section (scroll down).
+In past assessment we identified subregional warnings and modified the penalty based on this information. This year, because the new way of reporting the data, we will no longer apply this method. We eliminated the "subregion" information/penalties and modified past data to be consistent with our new approach. Future data should be collected without including this information. More information on how to obtain the data in the traver_warning section (scroll down).
 
 
 The TTCI data is available to download in an excel file directly from the source. File was download on 07/12/2018 and saved in Mazu as a csv. No changes in data.
@@ -49,7 +49,7 @@ The TTCI data is available to download in an excel file directly from the source
 We were able to update the following data:
 * Tourism Sustainability - TTCI form WEF - No updates
 * Proportion of jobs in tourism - WTTC data reported until 2017 and unclear if 2018 is actual data or prediction so we used 2017 as the data_year (downloaded: 07/12/2018)
-* Travel warnings for 2018 (downloaded: U.S State Department 06/28/2018: Canada's Governement 07/06/2018)
+* Travel warnings for 2018 (downloaded: U.S State Department 06/28/2018)
 
 
 
@@ -173,17 +173,9 @@ identify(new$Ep, new$ep_old, labels = new$rgn_id)
 
 Primary source of information is from the U.S. State Department  (https://travel.state.gov/content/passports/en/alertswarnings.html)
 
-Secondary source of information: Canada's Government - Travel Advice and Advisories
-(https://travel.gc.ca/travelling/advisories)
 
 #### 2018 Assesment
 the U.S. State Department updated the way they report the data. This year warnings are reported for every country (not only the ones under a certain risk as it used to be). They now provide a numeric scale describing the level of warning rather than just keywords.  
-
-Data was download on 06/28/2018
-
-We also looked into Canada's Governement travel warning in order to make sure we capture as many OHI regions as possible. The Canadian government reports 18 more ohi regions including the U.S and U.S territories. 
-
-Data was download on 07/06/2018
 
 
 Previously, we identified subregional warnings and modified the penalty based on this information.  However, given the State Department's new approach, we no longer will apply this method.  We eliminated the "subregion" information/penalties and modified past data to be consistent with our new approach. Future data should be collected without including this information.
@@ -325,9 +317,9 @@ Step 4: Transform the warnings into a multiplier that is used to calculate touri
 Travel warning  | Multiplier   | Description
 --------------- | ------------ | -------------------
 Level 1 | 1 (no penalty) | Exercise Normal Precautions: This is the lowest advisory level for safety and security risk. There is some risk in any international travel. 
-Level 2 | 1  | Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
+Level 2 | 1 (no penalty) | Exercise Increased Caution:  Be aware of heightened risks to safety and security. 
 Level 3 | 0.25  | Reconsider Travel: Avoid travel due to serious risks to safety and security.
-Level 4 | 0 (full penalty) | Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
+Level 4 | 0 (full penalty, results in zero scores) | Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
 
 ```{r, eval=FALSE}
 warn_complete <- read.csv(here("globalprep/tr/v2018/intermediate/warning_complete.csv"))
@@ -384,31 +376,6 @@ sort(table(paste(warn_rgn$year, warn_rgn$rgn_id)))
 
 Next year, consider gapfilling missing territorial regions with administrative country data.
 
-These uninhabited regions get cut functions.R.
-
-```{r, eval=FALSE}
-georegion_labels <- georegion_labels
-
-##uninhabited regions (no need to worry about these)
-uninhabited <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/gh-pages/globalprep/supplementary_information/v2018/rgn_uninhabited_islands.csv') %>% 
-  filter(est_population < 100) %>% # for this purpose: consider regions with <100 people to be uninhabited
-  select(rgn_id)
-
-##Filter for information in current assesment year
-filter_no_us_warn <- warn_rgn %>% 
-  filter(year == 2018)
-
-##All inhabited regions that do not have a travel warning
-no_us_warn <- georegion_labels %>%
-  dplyr::left_join(filter_no_us_warn, by = 'rgn_id')%>% 
-  filter(is.na(multiplier)) %>% 
-  filter(!(rgn_id %in% uninhabited$rgn_id)) %>% 
-  select(rgn_id, rgn_name=rgn_label)
-
-##Save regions with no data in intermediate folder
-write.csv(no_us_warn, here('globalprep/tr/v2018/intermediate/v2018_no_data.csv'), row.names=FALSE)
-
-```
 
 Final step is to **compare with previous year's data**.
 
