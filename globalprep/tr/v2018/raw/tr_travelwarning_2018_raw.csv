@@ -1,0 +1,342 @@
+data_source,assess_year,country,level,date,regional,location,risk_factor
+US,2018,Afghanistan,4: Do not travel,1/10/18,,,"crime, terrorism,?civil unrest,?and?armed conflict"
+US,2018,Albania,1: Exercise normal precautions,6/18/18,,,
+US,2018,Albania,2: Exercise increased caution,6/18/18,1,The southern town of Lazarat,cirme
+US,2018,Algeria,2: Exercise increased caution,1/10/18,,,
+US,2018,Algeria,4: Do not travel,1/10/18,1,eastern and southern borders,terrorism
+US,2018,Algeria,4: Do not travel,1/10/18,1,Sahara Desert,terrorism
+US,2018,Andorra,1: Exercise normal precautions,1/10/18,,,
+US,2018,Angola,1: Exercise normal precautions,1/10/18,,,
+US,2018,Angola,2: Exercise increased caution,1/10/18,1,Urban areas,crime
+US,2018,Anguilla,1: Exercise normal precautions,4/10/18,,,
+US,2018,Antarctica,2: Exercise increased caution,1/10/18,,,extreme and unpredictable weather
+US,2018,Antigua and Barbuda,1: Exercise normal precautions,1/10/18,,,
+US,2018,Antigua and Barbuda,4: Do not travel,1/10/18,1,Island of Barbuda,aftermath of natural disaster
+US,2018,Argentina,1: Exercise normal precautions,1/10/18,,,
+US,2018,Armenia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Armenia,4: Do not travel,1/10/18,1,The Nagorno-Karabakh,armed conflict
+US,2018,Aruba,1: Exercise normal precautions,1/10/18,,,
+US,2018,Australia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Austria,1: Exercise normal precautions,1/10/18,,,
+US,2018,Azerbaijan,2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,Azerbaijan,4: Do not travel,1/10/18,1,The Nagorno-Karabakh,armed conflict
+US,2018,Bahrain,1: Exercise normal precautions,1/10/18,,,
+US,2018,Bangladesh,2: Exercise increased caution,6/1/18,,,crime and terrorism
+US,2018,Bangladesh,3: Reconsider travel,6/1/18,1,Dhaka,crime and terrorism
+US,2018,Bangladesh,3: Reconsider travel,6/1/18,1,"Southeast Bangladesh, including the Chittagong Hill Tracts",crime and terrorism
+US,2018,Barbados,1: Exercise normal precautions,1/10/18,,,
+US,2018,Belarus,1: Exercise normal precautions,6/18/18,,,
+US,2018,Belgium,2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,Belize,2: Exercise increased caution,1/10/18,,,crime
+US,2018,Benin,1: Exercise normal precautions,5/11/18,,,
+US,2018,Benin,2: Exercise increased caution,5/11/18,1,Urban areas,crime
+US,2018,Benin,2: Exercise increased caution,5/11/18,1,Beaches,crime
+US,2018,Bermuda,1: Exercise normal precautions,1/10/18,,,
+US,2018,Bhutan,1: Exercise normal precautions,1/10/18,,,
+US,2018,Bolivia,1: Exercise normal precautions,1/10/18,,,
+US,2018,"Bonaire, St. Eustatius, and Saba (BES)",1: Exercise normal precautions,1/10/18,,,
+US,2018,Bosnia-Herzegovina,2: Exercise increased caution,6/21/18,,,terrorism and land mines
+US,2018,Botswana,1: Exercise normal precautions,1/10/18,,,
+US,2018,Brazil,2: Exercise increased caution,1/10/18,,,crime
+US,2018,Brazil,4: Do not travel,1/10/18,1,"150 km of Brazil?s land borders with Venezuela, Colombia, Peru, Bolivia, Guyana, Suriname, French Guiana, and Paraguay",crime
+US,2018,Brazil,4: Do not travel,1/10/18,1,?Favela? neighborhoods,cirme
+US,2018,Brazil,4: Do not travel,1/10/18,1,"Brasilia?s ?satellite cities? of Ceilandia, Santa Maria, Sao Sebastiao, and Paranoa during non-daylight hours",crime
+US,2018,Brazil,4: Do not travel,1/10/18,1,Recife?s Pina Beach from Dona Benvinda de Farias Street to the Brasilia Teimosa neighborhood,crime
+US,2018,British Virgin Islands,1: Exercise normal precautions,4/10/18,,,
+US,2018,Brunei,1: Exercise normal precautions,1/10/18,,,
+US,2018,Bulgaria,1: Exercise normal precautions,1/10/18,,,
+US,2018,Burkina Faso,3: Reconsider travel,3/2/18,,,terrorism
+US,2018,Burkina Faso,4: Do not travel,3/2/18,1,The northern Sahel border region shared with Mali and Niger,crime and terrorism
+US,2018,Burma,1: Exercise normal precautions,6/13/18,,,
+US,2018,Burma,4: Do not travel,6/13/18,1,"Maungdaw, Rathedaung, Ponnagyun, and Buthidaung townships in Rakhine State",civil unrest
+US,2018,Burma,4: Do not travel,6/13/18,1,Paletwa township in Chin State,civil unrest
+US,2018,Burma,4: Do not travel,6/13/18,1,"Hpakan, Mansi, Momauk, Sumprabum, Tanai, and Waingmaw townships in Kachin State",civil unrest
+US,2018,Burma,4: Do not travel,6/13/18,1,Shadaw township in Kayah State,civil unrest
+US,2018,Burma,4: Do not travel,6/13/18,1,"Hlaingbwe, Hpapun, and Thandaung townships in Kayin State?",civil unrest
+US,2018,Burma,4: Do not travel,6/13/18,1,"Konkyan, Kutkai, Laukkaing, Matman, Mongmao, Namphan, Pangsang, and Pangwaun townships in Shan State",civil unrest
+US,2018,Burma,3: Reconsider travel,6/13/18,1,Bhamo township in Kachin State,civil unrest
+US,2018,Burma,3: Reconsider travel,6/13/18,1,Minbya and Mrauk-U townships in Rakhine State,civil unrest
+US,2018,Burma,3: Reconsider travel,6/13/18,1,"Hopang, Kyaukme, Manton, Mongkaung, Muse, Namhsan, Namtu, and Nanhkan townships in Shan State",civil unrest
+US,2018,Burma,2: Exercise increased caution,6/13/18,1,Northern Shan State,land mines
+US,2018,Burma,2: Exercise increased caution,6/13/18,1,"Parts of Kachin, Rakhine, and Chin States",land mines
+US,2018,Burundi,3: Reconsider travel,1/10/18,,,crime?and?armed conflict
+US,2018,Cabo Verde,1: Exercise normal precautions,1/10/18,,,
+US,2018,Cambodia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Cambodia,2: Exercise increased caution,1/10/18,1,Phnom Penh,crime
+US,2018,Cambodia,2: Exercise increased caution,1/10/18,1,"Very remote areas of Battambang, Banteay Meanchey, Pursat, Siem Reap, Pailin, and Kampong Thom provinces",land mines
+US,2018,Cameroon,2: Exercise increased caution,4/11/18,,,crime
+US,2018,Cameroon,4: Do not travel,4/11/18,1,"North, Far North, Northwest and Southwest Regions, and Parts of East and Adamawa Regions","crime, terrorism,?civil unrest"
+US,2018,Canada,1: Exercise normal precautions,1/10/18,,,
+US,2018,Cayman Islands,1: Exercise normal precautions,1/10/18,,,
+US,2018,Central African Republic (CAR),4: Do not travel,5/24/18,,,crime and civil unrest
+US,2018,Chad,3: Reconsider travel,1/10/18,,,"crime,?terrorism, and?minefields"
+US,2018,Chile,1: Exercise normal precautions,1/10/18,,,
+US,2018,China,2: Exercise increased caution,1/22/18,,,to the arbitrary enforcement of local laws and special restrictions on dual U.S.-Chinese nationals
+US,2018,Colombia,2: Exercise increased caution,6/28/18,,,crime and terrorism
+US,2018,Colombia,4: Do not travel,6/28/18,1,"Arauca, Cauca (except Popayan), Choc? (except Nuqu?), Nari?o, and Norte de Santander (except Cucuta)",crime and terrorism
+US,2018,Colombia,3: Reconsider travel,6/28/18,1,Several departments throughout the country,crime and terrorism
+US,2018,Comoros,1: Exercise normal precautions,1/10/18,,,
+US,2018,Congo-Brazzaville (ROC),2: Exercise increased caution,4/3/18,,,crime and civil unrest
+US,2018,Congo-Brazzaville (ROC),3: Reconsider travel,4/3/18,1,The southern and western districts of the Pool Region,civil unrest and armed conflict
+US,2018,Congo-Kinshasha (DRC),3: Reconsider travel,2/28/18,,,crime and civil unrest
+US,2018,Congo-Kinshasha (DRC),4: Do not travel,2/28/18,1,eastern DRC and the three Kasai provinces,armed conflict
+US,2018,Costa Rica,1: Exercise normal precautions,3/28/18,,,
+US,2018,Costa Rica,4: Do not travel,3/28/18,1,Poas Volcano National Park,natural disaster
+US,2018,Costa Rica,2: Exercise increased caution,3/28/18,1,Central neighborhood in Limon?,cirme
+US,2018,Costa Rica,2: Exercise increased caution,3/28/18,1,Liberia city,crime
+US,2018,Costa Rica,2: Exercise increased caution,3/28/18,1,Desamparados neighborhood in San Rafael,crime
+US,2018,Costa Rica,2: Exercise increased caution,3/28/18,1,Pavas and Hospital neighborhoods San Jose,crime
+US,2018,Cote d'Ivoire,2: Exercise increased caution,1/10/18,,,crime and terrorism
+US,2018,Croatia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Cuba,3: Reconsider travel,3/2/18,,,attacks targeting U.S. Embassy Havana employees resulting in the drawdown of embassy staff
+US,2018,Curacao,1: Exercise normal precautions,1/10/18,,,
+US,2018,Cyprus,1: Exercise normal precautions,6/18/18,,,
+US,2018,Czech Republic,1: Exercise normal precautions,1/10/18,,,
+US,2018,Denmark,2: Exercise increased caution,6/21/18,,,terrorism
+US,2018,Djibouti,1: Exercise normal precautions,1/10/18,,,
+US,2018,Domincan Republic,2: Exercise increased caution,1/10/18,,,crime
+US,2018,Dominica,1: Exercise normal precautions,4/10/18,,,
+US,2018,Ecuador,1: Exercise normal precautions,4/19/18,,,
+US,2018,Ecuador,4: Do not travel,4/19/18,1,"Esmeraldas, Carchi, and Sucumb?os provinces",crime
+US,2018,Egypt,2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,Egypt,4: Do not travel,1/10/18,1,The Sinai Peninsula (with the exception of travel to Sharm El-Sheikh by air),terrorism
+US,2018,Egypt,4: Do not travel,1/10/18,1,The Western Desert,terrorism
+US,2018,Egypt,4: Do not travel,1/10/18,1,Egyptian border areas,military zone
+US,2018,El Salvador,3: Reconsider travel,1/10/18,,,crime
+US,2018,Equatorial Guinea,1: Exercise normal precautions,1/10/18,,,
+US,2018,Eritrea,2: Exercise increased caution,3/13/18,,, travel restrictions and limited consular assistance
+US,2018,Eritrea,3: Reconsider travel,3/13/18,1,Eritrean-Ethiopian border, potential armed conflict.
+US,2018,Eritrea,3: Reconsider travel,3/13/18,1,Remote areas or off main roads,minefields
+US,2018,Estonia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Ethiopia,2: Exercise increased caution,6/7/18,,,the potential for civil unrest and communications disruptions
+US,2018,Ethiopia,4: Do not travel,6/7/18,1,Somali Regional State ,"civil unrest, terrorism, and landmines"
+US,2018,Ethiopia,3: Reconsider travel,6/7/18,1,East Hararge region of Oromia state,civil unrest
+US,2018,Ethiopia,3: Reconsider travel,6/7/18,1,Danakil Depression region in Afar,cirme
+US,2018,Ethiopia,3: Reconsider travel,6/7/18,1,"Border areas with Kenya, Sudan, South Sudan, and Eritrea",armed conflict or civil unrest
+US,2018,Fiji,1: Exercise normal precautions,1/10/18,,,
+US,2018,Finland,1: Exercise normal precautions,1/10/18,,,
+US,2018,France *Monaco,2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,French Guiana,1: Exercise normal precautions,1/10/18,,,
+US,2018,French Polynesia,1: Exercise normal precautions,1/10/18,,,
+US,2018,French West Indies,1: Exercise normal precautions,1/10/18,,,
+US,2018,Gabon,1: Exercise normal precautions,1/10/18,,,
+US,2018,Gabon,2: Exercise increased caution,1/10/18,1,Libreville and Port Gentil ,cirme
+US,2018,Georgia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Georgia,4: Do not travel,1/10/18,1,The Russian-occupied regions of South Ossetia and Abkhazia,"civil unrest, crime, and landmines"
+US,2018,Germany,2: Exercise increased caution,6/19/18,,,terrorism
+US,2018,Ghana,1: Exercise normal precautions,1/10/18,,,
+US,2018,Ghana,2: Exercise increased caution,1/10/18,1,Certain precincts of Accra,crime
+US,2018,Ghana,2: Exercise increased caution,1/10/18,1,"Certain areas of Upper West, Upper East, Northern, Volta, Western, Brong Ahafo, and Ashanti",cirme
+US,2018,Greece,1: Exercise normal precautions,1/10/18,,,
+US,2018,Grenada,1: Exercise normal precautions,1/10/18,,,
+US,2018,Guatemala,3: Reconsider travel,1/10/18,,,crime
+US,2018,Guinea,2: Exercise increased caution,2/16/18,,,civil unrest
+US,2018,Guinea-Bissau,3: Reconsider travel,1/10/18,,,crime and civil unrest
+US,2018,Guyana,2: Exercise increased caution,5/17/18,,,crime
+US,2018,Haiti,3: Reconsider travel,1/10/18,,,crime and civil unrest
+US,2018,Honduras?,3: Reconsider travel,1/10/18,,,crime
+US,2018,Honduras?,4: Do not travel,1/10/18,1,Gracias a Dios Department,
+US,2018,Hong Kong,1: Exercise normal precautions,1/10/18,,,
+US,2018,Hungary,1: Exercise normal precautions,1/10/18,,,
+US,2018,Iceland,1: Exercise normal precautions,1/10/18,,,
+US,2018,India,2: Exercise increased caution,1/10/18,,,crime and terrorism
+US,2018,India,4: Do not travel,1/10/18,1,"state of Jammu and Kashmir (except the eastern Ladakh region and its capital, Leh)",terrorism and civil unrest
+US,2018,India,4: Do not travel,1/10/18,1,Within 10 km of the India-Pakistan border,potential armed conflict
+US,2018,Indonesia,2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,Indonesia,3: Reconsider travel,1/10/18,1,Central Sulawesi and Papua,civil unrest
+US,2018,Iran,4: Do not travel,1/10/18,,,arbitrary arrest and detention of U.S. citizens
+US,2018,Iraq,4: Do not travel,1/10/18,,,terrorism and armed conflict
+US,2018,Ireland,1: Exercise normal precautions,1/10/18,,,
+US,2018,"Israel, The West Bank, and Gaza",2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,Italy,2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,Jamaica,2: Exercise increased caution,1/10/18,,,cirme
+US,2018,Jamaica,4: Do not travel,1/10/18,1,Some areas of Kingston,cirme
+US,2018,Jamaica,4: Do not travel,1/10/18,1,Some areas of Montego Bay,cirme
+US,2018,Jamaica,4: Do not travel,1/10/18,1,Spanish Town,cirme
+US,2018,Japan,1: Exercise normal precautions,1/10/18,,,
+US,2018,Jordan,2: Exercise increased caution,1/10/18,,,
+US,2018,Jordan,4: Do not travel,1/10/18,1,The border with Syria and Iraq,terrorism and armed conflict
+US,2018,Kazakhstan,1: Exercise normal precautions,5/23/18,,,
+US,2018,Kenya,2: Exercise increased caution,3/29/18,,,crime and terrorism
+US,2018,Kenya,4: Do not travel,3/29/18,1,Kenya-Somalia border and some coastal areas,terrorism
+US,2018,Kenya,3: Reconsider travel,3/29/18,1,Nairobi neighborhood of Eastleigh at all times and Old Town in Mombasa at night ,cirme
+US,2018,Kiribati,1: Exercise normal precautions,1/10/18,,,
+US,2018,Kosovo,2: Exercise increased caution,5/25/18,,,terrorism
+US,2018,Kosovo,3: Reconsider travel,5/25/18,1,"North Mitrovica, Leposavic, Zubin Potok, and Zvecan",civil unrest
+US,2018,Kuwait,1: Exercise normal precautions,1/10/18,,,
+US,2018,Kuwait,4: Do not travel,1/10/18,1,desert region near the border with Iraq,cirme
+US,2018,Kuwait,4: Do not travel,1/10/18,1,City of Al Jahra in northwest of Kuwait City,cirme
+US,2018,Kuwait,4: Do not travel,1/10/18,1,The Jeleeb Al-Shuyoukh area in Kuwait City,crime
+US,2018,Kyrgyzstan,1: Exercise normal precautions,4/24/18,,,
+US,2018,Laos,1: Exercise normal precautions,1/10/18,,,
+US,2018,Laos,3: Reconsider travel,1/10/18,1,Xaisomboun Province,civil unrest
+US,2018,Laos,2: Exercise increased caution,1/10/18,1,Remote areas along the border with Burma,cirme
+US,2018,Laos,2: Exercise increased caution,1/10/18,1,"Areas of Savannakhet, Xieng Khouang, Saravane, Khammouane, Sekong, Champassak, Houaphan, Attapeu, Luang Prabang, and Vientiane provinces, as well as along Route 7 (from Route 13 to the Vietnam border), Route 9 (Savannakhet to the Vietnam border), and Route 20 (Pakse to Saravane)",unexploded bombs
+US,2018,Latvia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Lebanon,3: Reconsider travel,1/10/18,,,"crime,?terrorism, and armed conflict"
+US,2018,Lebanon,4: Do not travel,1/10/18,1,border with Syria,terrorism and armed conflict
+US,2018,Lebanon,4: Do not travel,1/10/18,1,border with Israel,potential armed conflict
+US,2018,Lebanon,4: Do not travel,1/10/18,1,Refugee settlements,potential armed conflict
+US,2018,Lesotho,1: Exercise normal precautions,1/10/18,,,
+US,2018,Liberia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Liberia,2: Exercise increased caution,1/10/18,1,Urban areas and public beaches,crime
+US,2018,Libya,4: Do not travel,1/10/18,,,"crime, terrorism, civil unrest, and armed conflict"
+US,2018,Lithuania,1: Exercise normal precautions,6/18/18,,,
+US,2018,Luxembourg,1: Exercise normal precautions,1/10/18,,,
+US,2018,Macau,1: Exercise normal precautions,1/10/18,,,
+US,2018,Macedonia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Madagascar,1: Exercise normal precautions,1/10/18,,,
+US,2018,Madagascar,2: Exercise increased caution,1/10/18,1,High-traffic tourist areas,cirme
+US,2018,Malawi,1: Exercise normal precautions,1/10/18,,,
+US,2018,Malawi,2: Exercise increased caution,1/10/18,1,"The districts of Mulanje, Thyolo, Chiradzulu, Nsanje, Phalombe, rural Blantyre (outside Blantyre city), and rural Zomba (outside Zomba city)",civil unrest
+US,2018,Malaysia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Malaysia,2: Exercise increased caution,1/10/18,1,eastern area of Sabah State,crime and terrorism
+US,2018,Maldives,2: Exercise increased caution,2/6/18,,,terrorism and civil unrest
+US,2018,Mali,4: Do not travel,1/10/18,,,crime and terrorism
+US,2018,Malta,1: Exercise normal precautions,6/27/18,,,
+US,2018,Marshall Islands,1: Exercise normal precautions,1/10/18,,,
+US,2018,Mauritania,3: Reconsider travel,2/22/18,,,crime and terrorism
+US,2018,Mauritius,1: Exercise normal precautions,1/18/18,,,
+US,2018,Mexico,2: Exercise increased caution,5/7/18,,,crime
+US,2018,Micronesia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Moldova,1: Exercise normal precautions,1/10/18,,,
+US,2018,Moldova,2: Exercise increased caution,1/10/18,1,Transnistria,unsolved conflict
+US,2018,Mongolia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Montenegro,1: Exercise normal precautions,1/10/18,,,
+US,2018,Montserrat,1: Exercise normal precautions,1/10/18,,,
+US,2018,Morocco,1: Exercise normal precautions,1/10/18,,,
+US,2018,Mozambique,1: Exercise normal precautions,6/15/18,,,
+US,2018,Mozambique,3: Reconsider travel,6/15/18,1,Some northern districts in Cabo Delgado Province,violent extremism
+US,2018,Mozambique,2: Exercise increased caution,6/15/18,1,Maputo,cirme
+US,2018,Namibia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Nauru,1: Exercise normal precautions,1/10/18,,,
+US,2018,Nepal,2: Exercise increased caution,1/10/18,,,the potential for isolated political violence
+US,2018,Netherlands,1: Exercise normal precautions,6/21/18,,,
+US,2018,New Caledonia,1: Exercise normal precautions,1/10/18,,,
+US,2018,New Zealand,1: Exercise normal precautions,1/10/18,,,
+US,2018,Nicaragua,3:?Reconsider travel,6/8/18,,,"crime, civil unrest and limited healthcare availability."
+US,2018,Niger,3: Reconsider travel,1/10/18,,,crime and terrorism
+US,2018,Nigeria,3: Reconsider travel,1/10/18,,,"crime, terrorism, and piracy"
+US,2018,North Korea,4: Do not travel,1/10/18,,,due to the serious risk of arrest and long-term detention of U.S. nationals
+US,2018,Norway,1: Exercise normal precautions,1/10/18,,,
+US,2018,Oman,1: Exercise normal precautions,4/30/18,,,
+US,2018,Oman,4: Do not travel,4/30/18,1,Saudi Arabia and Yemen border areas,terrorism and armed conflict
+US,2018,Pakistan,3: Reconsider travel,1/10/18,,,
+US,2018,Pakistan,4: Do not travel,1/10/18,1,"Balochistan province, Khyber Pakhtunkhwa (KPK) province, and the Federally Administered Tribal Areas (FATA)",terrorism
+US,2018,Pakistan,4: Do not travel,1/10/18,1,The Azad Kashmir area,terrorism and the potential for armed conflict
+US,2018,Palau,1: Exercise normal precautions,1/10/18,,,
+US,2018,Panama,1: Exercise normal precautions,5/7/18,,,
+US,2018,Panama,4: Do not travel,5/7/18,1,Parts of the Mosquito Gulf,crime
+US,2018,Panama,4: Do not travel,5/7/18,1,Parts of the Dari?n Region ,cirme
+US,2018,Papua New Guinea,2: Exercise increased caution,6/27/18,,,crime and civil unrest
+US,2018,Papua New Guinea,4: Do not travel,6/27/18,1,Southern Highlands Province and Hela Province,civil unrest
+US,2018,Papua New Guinea,3: Reconsider travel,6/27/18,1,Areas near the Panguna mine in Bougainville,civil unrest
+US,2018,Papua New Guinea,3: Reconsider travel,6/27/18,1,The Highlands region ,aftermath of a natural disaster
+US,2018,Paraguay,1: Exercise normal precautions,1/10/18,,,
+US,2018,Paraguay,2: Exercise increased caution,1/10/18,1,"Amambay, Alto Paran?, Canindeyu, San Pedro, and Concepcion departments",cirme
+US,2018,Peru,1: Exercise normal precautions,1/10/18,,,
+US,2018,Peru,4: Do not travel,1/10/18,1,The Colombian - Peruvian border area in the Loreto Region,crime
+US,2018,Peru,4: Do not travel,1/10/18,1,"The area in central Peru known as the Valley of the Rivers Apurimac, Ene, and Mantaro (VRAEM)",crime and terrorism
+US,2018,Peru,3: Reconsider travel,1/10/18,1,Areas outside cities at night by car,crime
+US,2018,Philippines,2: Exercise increased caution,4/13/18,,,"crime, terrorism, civil unrest, and a measles outbreak"
+US,2018,Philippines,4: Do not travel,4/13/18,1,"Sulu Archipelago, including the southern Sulu Sea","crime, terrorism, and civil unrest"
+US,2018,Philippines,4: Do not travel,4/13/18,1,Marawi City in Mindanao ,terrorism and civil unrest
+US,2018,Philippines,3: Reconsider travel,4/13/18,1,Other areas of Mindanao,"crime, terrorism, and civil unrest"
+US,2018,Poland,1: Exercise normal precautions,1/10/18,,,
+US,2018,Portugal,1: Exercise normal precautions,6/18/18,,,
+US,2018,Qatar,1: Exercise normal precautions,1/10/18,,,
+US,2018,Romania,1: Exercise normal precautions,1/10/18,,,
+US,2018,Russia,3: Reconsider travel,6/15/18,,,terrorism and harassment
+US,2018,Russia,4: Do not travel,6/15/18,1,"The north Caucasus, including Chechnya and Mount Elbrus",terrorism and civil unrest
+US,2018,Russia,4: Do not travel,6/15/18,1,Crimea, foreign occupation and abuses by occupying authorities
+US,2018,Rwanda,1: Exercise normal precautions,3/22/18,,,
+US,2018,Rwanda,3: Reconsider travel,3/22/18,1,The Rwanda-Democratic Republic of Congo (DRC),armed conflict
+US,2018,Saint Kitts and Nevis,1: Exercise normal precautions,5/2/18,,,
+US,2018,Saint Lucia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Saint Vincent and the Grenadines,1: Exercise normal precautions,1/10/18,,,
+US,2018,Samoa,1: Exercise normal precautions,1/10/18,,,
+US,2018,Sao Tome & Principe,1: Exercise normal precautions,1/10/18,,,
+US,2018,Saudi Arabia,2: Exercise increased caution,4/16/18,,,terrorism and the threat of missile attacks on civilian targets
+US,2018,Saudi Arabia,4: Do not travel,4/16/18,1,Within 50 miles of the border with Yemen,terrorism and armed conflict
+US,2018,Senegal,1: Exercise normal precautions,5/18/18,,,
+US,2018,Senegal,2: Exercise increased caution,5/18/18,1,The Casamance region,crime and landmines
+US,2018,Serbia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Seychelles,1: Exercise normal precautions,1/10/18,,,
+US,2018,Sierra Leone,2: Exercise increased caution,1/10/18,,,crime
+US,2018,Singapore,1: Exercise normal precautions,1/10/18,,,
+US,2018,Sint Maarten,1: Exercise normal precautions,3/16/18,,,
+US,2018,Slovakia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Slovenia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Solomon Islands,1: Exercise normal precautions,1/10/18,,,
+US,2018,Somalia,4: Do not travel,1/10/18,,,"crime, terrorism, and piracy"
+US,2018,South Africa,2: Exercise increased caution,4/5/18,,,crime and drought
+US,2018,South Korea,1: Exercise normal precautions,1/10/18,,,
+US,2018,South Sudan,4: Do not travel,6/28/18,,,crime and armed conflict
+US,2018,Spain,2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,Sri Lanka,1: Exercise normal precautions,1/10/18,,,
+US,2018,Sudan,3: Reconsider travel,1/10/18,,,terrorism and civil unrest
+US,2018,Sudan,4: Do not travel,1/10/18,1,"The Darfur region, Blue Nile state, and Southern Kordofan state",crime and armed conflict
+US,2018,Suriname,1: Exercise normal precautions,1/10/18,,,
+US,2018,Eswatini,1: Exercise normal precautions,1/10/18,,,
+US,2018,Sweden,1: Exercise normal precautions,4/25/18,,,
+US,2018,Switzerland,1: Exercise normal precautions,1/10/18,,,
+US,2018,Syria,4: Do not travel,1/10/18,,,"terrorism, civil unrest, and armed conflict"
+US,2018,Taiwan,1: Exercise normal precautions,1/10/18,,,
+US,2018,Tajikistan,1: Exercise normal precautions,6/15/18,,,
+US,2018,Tanzania,2: Exercise increased caution,1/10/18,,,"crime, terrorism, and targeting of LGBTI persons"
+US,2018,Thailand,1: Exercise normal precautions,1/10/18,,,
+US,2018,Thailand,3: Reconsider travel,1/10/18,1,"Yala, Pattani, Narathiwat, and Songkhla provinces",civil unrest
+US,2018,The Bahamas,2: Exercise increased caution,1/10/18,,,cirme
+US,2018,The Gambia,1: Exercise normal precautions,1/10/18,,,
+US,2018,The Gambia,2: Exercise increased caution,1/10/18,1,The Gambia?s southern border area with the Casamance region of Senegal,landmines
+US,2018,Timor-Leste,1: Exercise normal precautions,1/10/18,,,
+US,2018,Togo,2: Exercise increased caution,1/10/18,,,crime and civil unrest
+US,2018,Tonga,1: Exercise normal precautions,1/10/18,,,
+US,2018,Trinidad and Tobago,2: Exercise increased caution,2/22/18,,,crime and terrorism
+US,2018,Trinidad and Tobago,4: Do not travel,2/22/18,1,"Laventille, Beetham, Sea Lots, Cocorite, and the interior of Queen's Park Savannah in Port of Spain",crime
+US,2018,Tunisia,2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,Tunisia,4: Do not travel,1/10/18,1,Within 30 km of southeastern Tunisia along the border with Libya,terrorism
+US,2018,Tunisia,4: Do not travel,1/10/18,1,"Mountainous areas in the country?s west, including the Chaambi Mountain National Park area",terrorism
+US,2018,Tunisia,4: Do not travel,1/10/18,1,The desert south of Remada ,military zone
+US,2018,Tunisia,4: Do not travel,1/10/18,1,"Jendouba south of Ain Drahem and west of RN15, El Kef, and Kasserine, next to the Algerian border",terrorism
+US,2018,Tunisia,4: Do not travel,1/10/18,1,Sidi Bou Zid in central Tunisia,terrorism
+US,2018,Turkey,3: Reconsider travel,6/28/18,,,terrorism and arbitrary detentions
+US,2018,Turkey,4: Do not travel,6/28/18,1,"Areas along the Turkey-Syria border and the southeastern provinces of Hatay, Kilis, Gaziantep, Sanliurfa, Sirnak, Diyarbakir, Van, Siirt, Mus, Mardin, Batman, Bingol, Tunceli, Hakkari, and Bitlis ",terrorism
+US,2018,Turkmenistan,1: Exercise normal precautions,4/18/18,,,
+US,2018,Turks and Caicos,2: Exercise increased caution,1/10/18,,,crime
+US,2018,Tuvalu,1: Exercise normal precautions,1/10/18,,,
+US,2018,Uganda,2: Exercise increased caution,1/10/18,,,crime
+US,2018,Ukraine,2: Exercise increased caution,1/10/18,,,crime and civil unrest
+US,2018,Ukraine,4: Do not travel,1/10/18,1,Crimea,armed conflict
+US,2018,United Arab Emirates (UAE),1: Exercise normal precautions,1/10/18,,,
+US,2018,United Kingdom,2: Exercise increased caution,1/10/18,,,terrorism
+US,2018,Uruguay,1: Exercise normal precautions,1/10/18,,,
+US,2018,Uzbekistan,1: Exercise normal precautions,1/10/18,,,
+US,2018,Vanuatu,1: Exercise normal precautions,1/10/18,,,
+US,2018,Venezuela,3: Reconsider travel,5/29/18,,,"crime, civil unrest, poor health infrastructure, and arbitrary arrest and detention of U.S. citizens"
+US,2018,Venezuela,4: Do not travel,5/29/18,1,On roads after dark outside of Caracas,crime
+US,2018,Venezuela,4: Do not travel,5/29/18,1,To certain neighborhoods within Caracas,crime
+US,2018,Venezuela,4: Do not travel,5/29/18,1,Within 50 miles of the Colombian border,crime
+US,2018,Vietnam,1: Exercise normal precautions,1/10/18,,,
+US,2018,Yemen,4: Do not travel,1/10/18,,,"terrorism, civil unrest, health, and armed conflict. 
+"
+US,2018,Zambia,1: Exercise normal precautions,1/10/18,,,
+US,2018,Zimbabwe,2: Exercise increased caution,1/10/18,,,crime and civil unrest
+Canada,2018,Northern Mariana Islands and Guam,1,6/19/18,,,
+Canada,2018,Mayotte,1,6/5/18,,,
+Canada,2018,Reunion,1,6/5/18,,,
+Canada,2018,Azores,1,5/1/18,,,
+Canada,2018,Canary Islands,1,5/1/18,,,
+Canada,2018,Gibraltar,1,5/1/18,,,
+Canada,2018,Falkland Islands,1,6/5/18,,,
+Canada,2018,Puerto Rico,2,5-Jun-18,,aftermath of Hurricanes Irma and Maria and zika virus,
+Canada,2018,Puerto Rico,1,5-Jun-18,1,San Juan,
+Canada,2018,U.S. Virgin Islands,2,6/5/18,,"aftermath of Hurricanes Irma and Maria, Zika virus",
+Canada,2018,Greenland,1,6/5/18,,,
+Canada,2018,Line Islands (Kiribati),1,6/5/18,,,
+Canada,2018,American Samoa,1,6/5/18,,,
+Canada,2018,Cook Islands,1,6/5/18,,,
+Canada,2018,Niue,1,6/5/18,,,
+Canada,2018,Tokelau,1,6/5/18,,,
+Canada,2018,United States,1,7/3/18,,,
+Canada,2018,Saint Pierre and Miquelon,1,6/6/18,,,

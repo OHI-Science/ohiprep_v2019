@@ -1,0 +1,204 @@
+"rgn_id","fao_id","RAM_area_m2","stockid","stocklong","idtemp2"
+8,71,NA,"BLSHARNPAC","Blue shark North Pacific",1
+9,71,NA,"BLSHARNPAC","Blue shark North Pacific",2
+11,71,NA,"BLSHARNPAC","Blue shark North Pacific",3
+12,71,NA,"BLSHARNPAC","Blue shark North Pacific",4
+12,61,NA,"BLSHARNPAC","Blue shark North Pacific",5
+13,71,NA,"BLSHARNPAC","Blue shark North Pacific",6
+13,61,NA,"BLSHARNPAC","Blue shark North Pacific",7
+14,71,NA,"BLSHARNPAC","Blue shark North Pacific",8
+14,61,NA,"BLSHARNPAC","Blue shark North Pacific",9
+15,71,NA,"BLSHARNPAC","Blue shark North Pacific",10
+15,61,NA,"BLSHARNPAC","Blue shark North Pacific",11
+16,81,NA,"BGRDRNSWWA","Blue grenadier New South Wales to Western Australia",12
+16,81,NA,"MORWONGESE","Jackass morwong Eastern half of Southeast Australia",13
+16,81,NA,"REDFEAUS","Redfish Eastern Australia",14
+16,57,NA,"BGRDRNSWWA","Blue grenadier New South Wales to Western Australia",15
+16,57,NA,"MORWONGESE","Jackass morwong Eastern half of Southeast Australia",16
+16,57,NA,"MORWONGWSE","Jackass morwong Western half of Southeast Australia",17
+16,57,NA,"REDFEAUS","Redfish Eastern Australia",18
+20,61,NA,"BMACKECS","Spotted mackerel East China Sea",19
+20,61,NA,"CMACKTSST","Chub mackerel Tsushima Strait",20
+20,61,NA,"JANCHOTSST","Japanese anchovy Tsushima Strait",21
+20,61,NA,"JCSQUIDJPNAR","Japanese flying squid Japan Autumn recruitment",22
+20,61,NA,"JCSQUIDJPNWR","Japanese flying squid Japan Winter recruitment",23
+20,61,NA,"JMACKTSST","Japanese jack mackerel Tsushima Strait",24
+20,61,NA,"OFLOUNECS","Japanese flounder East China Sea",25
+20,61,NA,"PILCHTSST","Japanese sardine Tsushima Strait",26
+20,61,NA,"RBRMECS","Red seabream East China Sea",27
+20,61,NA,"RHERRTSST","Round herring Tsushima Strait",28
+20,61,NA,"SNOWCRABNPAC","Snow crab North Pacific",29
+20,61,NA,"WLFLOUNNPAC","Willowy flounder North Pacific",30
+21,61,NA,"SNOWCRABNPAC","Snow crab North Pacific",31
+25,71,NA,"BLSHARNPAC","Blue shark North Pacific",32
+61,37,NA,"ANCHMEDGSA16","Anchovy South of Sicily",33
+68,37,NA,"ANCHMEDGSA16","Anchovy South of Sicily",34
+73,67,NA,"ALSKABSAI","Alaska skate Bering Sea and Aleutian Islands",35
+73,67,NA,"BLSHARNPAC","Blue shark North Pacific",36
+73,67,NA,"KMFLOUNBSAI","Kamchatka flounder Bering Sea and Aleutian Islands",37
+73,67,NA,"PCODBS","Pacific cod Bering Sea",38
+73,61,NA,"ALSKABSAI","Alaska skate Bering Sea and Aleutian Islands",39
+73,61,NA,"BLSHARNPAC","Blue shark North Pacific",40
+73,61,NA,"JANCHOPJPN","Japanese anchovy Pacific Coast of Japan",41
+73,61,NA,"KMFLOUNBSAI","Kamchatka flounder Bering Sea and Aleutian Islands",42
+73,61,NA,"PCODBS","Pacific cod Bering Sea",43
+73,61,NA,"PILCHPJPN","Japanese sardine Pacific Coast of Japan",44
+73,61,NA,"SAURNWPAC","Pacific saury Northwest Pacific",45
+73,61,NA,"SNOWCRABNPAC","Snow crab North Pacific",46
+95,41,NA,"PTOOTHFISHCH","Patagonian Toothfish Chile",47
+102,47,NA,"SAABALONESA","Abalone South Africa",48
+129,77,NA,"BLSHARNPAC","Blue shark North Pacific",49
+129,87,NA,"BLSHARNPAC","Blue shark North Pacific",50
+130,77,NA,"BLSHARNPAC","Blue shark North Pacific",51
+130,87,NA,"BLSHARNPAC","Blue shark North Pacific",52
+131,77,NA,"BLSHARNPAC","Blue shark North Pacific",53
+134,77,NA,"BLSHARNPAC","Blue shark North Pacific",54
+135,77,NA,"BLSHARNPAC","Blue shark North Pacific",55
+136,77,NA,"BLSHARNPAC","Blue shark North Pacific",56
+141,27,NA,"GHALV-VI-XII-XIV","Greenland halibut V-VI-XII-XIV",57
+141,27,NA,"RNGENVb-VI-VII-XIIb","Roundnose grenadier Vb-VI-VII-XIIb",58
+143,27,NA,"GHALV-VI-XII-XIV","Greenland halibut V-VI-XII-XIV",59
+145,27,NA,"GHALV-VI-XII-XIV","Greenland halibut V-VI-XII-XIV",60
+150,77,NA,"BLSHARNPAC","Blue shark North Pacific",61
+159,77,NA,"BLSHARNPAC","Blue shark North Pacific",62
+163,31,NA,"BLTILESATLC","Blueline tilefish Southern Atlantic coast",63
+163,31,NA,"BRNSHRIMPGM","Brown shrimp Gulf of Mexico",64
+163,31,NA,"COBGM","Cobia Gulf of Mexico",65
+163,31,NA,"COBSATLC","Cobia Southern Atlantic coast",66
+163,31,NA,"PINKSHRIMPGM","Pink shrimp Gulf of Mexico",67
+163,31,NA,"WSHRIMPGM","White shrimp Gulf of Mexico",68
+163,67,NA,"ALSKABSAI","Alaska skate Bering Sea and Aleutian Islands",69
+163,67,NA,"AUROCKPCOAST","Aurora rockfish Pacific Coast",70
+163,67,NA,"BLACKROCKCAL","Black rockfish California",71
+163,67,NA,"BLACKROCKORECOAST","Black rockfish Oregon",72
+163,67,NA,"BLACKROCKWASH","Black rockfish Washington",73
+163,67,NA,"BLSHARNPAC","Blue shark North Pacific",74
+163,67,NA,"BRNROCKPCOAST","Brown rockfish Pacific Coast",75
+163,67,NA,"CHROCKCPCOAST","China rockfish Central Pacific Coast",76
+163,67,NA,"CHROCKNPCOAST","China rockfish Northern Pacific Coast",77
+163,67,NA,"CPRROCKPCOAST","Copper rockfish Pacific Coast",78
+163,67,NA,"KMFLOUNBSAI","Kamchatka flounder Bering Sea and Aleutian Islands",79
+163,67,NA,"PCODBS","Pacific cod Bering Sea",80
+163,77,NA,"AUROCKPCOAST","Aurora rockfish Pacific Coast",81
+163,77,NA,"BLACKROCKCAL","Black rockfish California",82
+163,77,NA,"BLSHARNPAC","Blue shark North Pacific",83
+163,77,NA,"BRNROCKPCOAST","Brown rockfish Pacific Coast",84
+163,77,NA,"CHROCKCPCOAST","China rockfish Central Pacific Coast",85
+163,77,NA,"CHROCKSPCOAST","China rockfish Southern Pacific Coast",86
+163,77,NA,"CPRROCKPCOAST","Copper rockfish Pacific Coast",87
+163,61,NA,"ALSKABSAI","Alaska skate Bering Sea and Aleutian Islands",88
+163,61,NA,"BLSHARNPAC","Blue shark North Pacific",89
+163,61,NA,"KMFLOUNBSAI","Kamchatka flounder Bering Sea and Aleutian Islands",90
+163,61,NA,"NRSOLEGA","Northern rock sole Gulf of Alaska",91
+163,61,NA,"PCODBS","Pacific cod Bering Sea",92
+163,61,NA,"RSOLEGA","Rock sole Gulf of Alaska",93
+163,21,NA,"BLTILESATLC","Blueline tilefish Southern Atlantic coast",94
+163,21,NA,"COBSATLC","Cobia Southern Atlantic coast",95
+163,21,NA,"HADGB","Haddock Georges Bank",96
+163,21,NA,"MONKGOMNGB","Monkfish Gulf of Maine / Northern Georges Bank",97
+163,21,NA,"MONKSGBMATL","Monkfish Southern Georges Bank / Mid-Atlantic",98
+163,21,NA,"QUAHATLC","Ocean quahog Atlantic Coast",99
+163,21,NA,"SDOGATLC","Spiny dogfish Atlantic Coast",100
+163,21,NA,"YELLGB","Yellowtail flounder Georges Bank",101
+171,41,NA,"ARGHAKENARG","Argentine hake Northern Argentina",102
+172,41,NA,"ACMACKSARG","Argentine chub mackerel Southern Argentina",103
+172,41,NA,"ARGHAKENARG","Argentine hake Northern Argentina",104
+172,41,NA,"ARGHAKESARG","Argentine hake Southern Argentina",105
+172,41,NA,"PTOOTHFISHCH","Patagonian Toothfish Chile",106
+172,41,NA,"SBWHITCH","Southern blue whiting Chile",107
+172,41,NA,"SOUTHHAKECH","Southern hake Chile",108
+172,87,NA,"PTOOTHFISHCH","Patagonian Toothfish Chile",109
+172,87,NA,"SBWHITCH","Southern blue whiting Chile",110
+172,87,NA,"SOUTHHAKECH","Southern hake Chile",111
+173,41,NA,"ARGHAKENARG","Argentine hake Northern Argentina",112
+173,41,NA,"PTOOTHFISHCH","Patagonian Toothfish Chile",113
+175,27,NA,"PANDALIIIaW-IVaE","Northern shrimp IIIa (west) and IVa (east)",114
+179,27,NA,"RNGENVb-VI-VII-XIIb","Roundnose grenadier Vb-VI-VII-XIIb",115
+180,27,NA,"GHALV-VI-XII-XIV","Greenland halibut V-VI-XII-XIV",116
+180,27,NA,"MEGSPPIVa-VIa","Megrim spp. IVa and VIa",117
+180,27,NA,"PANDALIIIaW-IVaE","Northern shrimp IIIa (west) and IVa (east)",118
+180,27,NA,"RNGENVb-VI-VII-XIIb","Roundnose grenadier Vb-VI-VII-XIIb",119
+181,27,NA,"GHALV-VI-XII-XIV","Greenland halibut V-VI-XII-XIV",120
+181,27,NA,"MEGSPPIVa-VIa","Megrim spp. IVa and VIa",121
+181,27,NA,"RNGENVb-VI-VII-XIIb","Roundnose grenadier Vb-VI-VII-XIIb",122
+182,27,NA,"ANGLVIIIc-IXa","Black bellied angler VIIIc-IXa",123
+183,27,NA,"ANGLVIIIc-IXa","Black bellied angler VIIIc-IXa",124
+184,37,NA,"ANCHMEDGSA16","Anchovy South of Sicily",125
+206,71,NA,"BLSHARNPAC","Blue shark North Pacific",126
+207,71,NA,"BLSHARNPAC","Blue shark North Pacific",127
+207,61,NA,"BLSHARNPAC","Blue shark North Pacific",128
+209,61,NA,"BMACKECS","Spotted mackerel East China Sea",129
+209,61,NA,"CMACKTSST","Chub mackerel Tsushima Strait",130
+209,61,NA,"JANCHOTSST","Japanese anchovy Tsushima Strait",131
+209,61,NA,"JCSQUIDJPNAR","Japanese flying squid Japan Autumn recruitment",132
+209,61,NA,"JCSQUIDJPNWR","Japanese flying squid Japan Winter recruitment",133
+209,61,NA,"JMACKTSST","Japanese jack mackerel Tsushima Strait",134
+209,61,NA,"OFLOUNECS","Japanese flounder East China Sea",135
+209,61,NA,"PILCHTSST","Japanese sardine Tsushima Strait",136
+209,61,NA,"RBRMECS","Red seabream East China Sea",137
+209,61,NA,"RHERRTSST","Round herring Tsushima Strait",138
+209,61,NA,"WLFLOUNNPAC","Willowy flounder North Pacific",139
+210,71,NA,"BLSHARNPAC","Blue shark North Pacific",140
+210,61,NA,"APOLLNSJ","Walleye pollock Sea of Japan North",141
+210,61,NA,"APOLLPJPN","Walleye pollock Pacific Coast of Japan",142
+210,61,NA,"BLSHARNPAC","Blue shark North Pacific",143
+210,61,NA,"BMACKECS","Spotted mackerel East China Sea",144
+210,61,NA,"BMACKPJPN","Spotted mackerel Pacific Coast of Japan",145
+210,61,NA,"CMACKPJPN","Chub mackerel Pacific Coast of Japan",146
+210,61,NA,"CMACKTSST","Chub mackerel Tsushima Strait",147
+210,61,NA,"JAMBERJPN","Japanese amberjack Japan",148
+210,61,NA,"JANCHOPJPN","Japanese anchovy Pacific Coast of Japan",149
+210,61,NA,"JANCHOSETO","Japanese anchovy Inland Sea of Japan",150
+210,61,NA,"JANCHOTSST","Japanese anchovy Tsushima Strait",151
+210,61,NA,"JCSQUIDJPNAR","Japanese flying squid Japan Autumn recruitment",152
+210,61,NA,"JCSQUIDJPNWR","Japanese flying squid Japan Winter recruitment",153
+210,61,NA,"JMACKPJPN","Japanese jack mackerel Pacific Coast of Japan",154
+210,61,NA,"JMACKTSST","Japanese jack mackerel Tsushima Strait",155
+210,61,NA,"JPUFFIMKB","Japanese pufferfish Ise and Mikawa Bay",156
+210,61,NA,"JPUFFSOJECSSI","Japanese pufferfish Sea of Japan and East China Sea and Seto Inland sea",157
+210,61,NA,"KCROCKNPAC","Kichiji rockfish North Pacific",158
+210,61,NA,"OFLOUNECS","Japanese flounder East China Sea",159
+210,61,NA,"OFLOUNNSJ","Japanese flounder Sea of Japan North",160
+210,61,NA,"OFLOUNPAC","Japanese flounder Pacific Ocean",161
+210,61,NA,"OFLOUNSETO","Japanese flounder Inland Sea of Japan",162
+210,61,NA,"PCODNPAC","Pacific cod North Pacific",163
+210,61,NA,"PHFLOUNSOJ","Pointhead flounder Sea of Japan",164
+210,61,NA,"PILCHPJPN","Japanese sardine Pacific Coast of Japan",165
+210,61,NA,"PILCHTSST","Japanese sardine Tsushima Strait",166
+210,61,NA,"RBRMECS","Red seabream East China Sea",167
+210,61,NA,"RBRMSETOE","Red seabream Inland Sea of Japan (East)",168
+210,61,NA,"RBRMSETOW","Red seabream Inland Sea of Japan (West)",169
+210,61,NA,"RHERRTSST","Round herring Tsushima Strait",170
+210,61,NA,"RSFLOUNSOJ","Round-nose flounder Sea of Japan",171
+210,61,NA,"SAURNWPAC","Pacific saury Northwest Pacific",172
+210,61,NA,"SNOWCRABESJ","Snow crab Sea of Japan East",173
+210,61,NA,"SNOWCRABNPAC","Snow crab North Pacific",174
+210,61,NA,"SNOWCRABWSJ","Snow crab Sea of Japan West",175
+210,61,NA,"SPANMACKSETO","Japanese Spanish mackerel Inland Sea of Japan",176
+210,61,NA,"SSANDWSJ","Sailfin sandfish Sea of Japan West",177
+210,61,NA,"WLFLOUNNPAC","Willowy flounder North Pacific",178
+218,67,NA,"BLSHARNPAC","Blue shark North Pacific",179
+218,21,NA,"ATHAL3NOPs4VWX5Zc","Atlantic halibut Scotian Shelf and Southern Grand Banks",180
+218,21,NA,"COD2J3KL","Atlantic cod NAFO 2J3KL",181
+218,21,NA,"HAD4X5Y","Haddock NAFO-4X5Y",182
+222,27,NA,"PANDALIIIaW-IVaE","Northern shrimp IIIa (west) and IVa (east)",183
+223,27,NA,"PANDALIIIaW-IVaE","Northern shrimp IIIa (west) and IVa (east)",184
+224,41,NA,"PTOOTHFISHCH","Patagonian Toothfish Chile",185
+224,41,NA,"SBWHITCH","Southern blue whiting Chile",186
+224,41,NA,"SOUTHHAKECH","Southern hake Chile",187
+224,87,NA,"BSQLOBSTERCSCH","Yellow squat lobster Central-Southern Chile",188
+224,87,NA,"BSQLOBSTERNCH","Yellow squat lobster Northern Chile",189
+224,87,NA,"CSARDCSCH","Chilean sardine Central-Southern Chile",190
+224,87,NA,"OROUGHYCH","Orange roughy Chile",191
+224,87,NA,"PATGRENADIERCH","Patagonian grenadier Chile",192
+224,87,NA,"PCEELCSCH","Pink cusk-eel Central-Southern Chile",193
+224,87,NA,"PCEELSCH","Pink cusk-eel Southern Chile",194
+224,87,NA,"PTOOTHFISHCH","Patagonian Toothfish Chile",195
+224,87,NA,"RSQLOBSTERCSCH","Red squat lobster Central-Southern Chile",196
+224,87,NA,"RSQLOBSTERNCH","Red squat lobster Northern Chile",197
+224,87,NA,"SBWHITCH","Southern blue whiting Chile",198
+224,87,NA,"SOUTHHAKECH","Southern hake Chile",199
+224,87,NA,"SPHAKECH","South Pacific Hake Chile",200
+224,87,NA,"SSARDCH","Southern sardine Chile",201
+224,87,NA,"YNOSESKACSCH","Yellownose skate Central-Southern Chile",202
+224,87,NA,"YNOSESKASCH","Yellownose skate Southern Chile",203

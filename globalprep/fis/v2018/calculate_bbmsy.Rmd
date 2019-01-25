@@ -1,0 +1,155 @@
+---
+title: "OHI 2018: Food Provision, Calculating fisheries stock status"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+# Summary
+
+To calculate the status of global fish stocks from the Watson 2018 catch data we use catch-MSY (CMSY) developed by [Martell and Froese (2012)](http://onlinelibrary.wiley.com/doi/10.1111/j.1467-2979.2012.00485.x/full). This model requires catch and resilience information for each stock. Stocks are defined by FAO areas and are limited to only those records where catch is reported at the species level.
+
+The [`datalimited`](https://github.com/datalimited/datalimited) R package, developed by Sean Anderson, is used to run CMSY.
+
+# Setup 
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+To install the `datalimited` package:
+
+```{r install_datalimited, eval=F}
+# install.packages("devtools")
+# devtools::install_github("datalimited/datalimited")
+```
+
+```{r setup, message=F, warning=F}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
+
+library(datalimited) #has the 4 catch only models
+library(tidyverse)
+library(doParallel)
+library(here)
+
+setwd(here::here("globalprep/fis/v2018"))
+
+registerDoParallel(cores = 5)
+
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
+
+```
+
+# Load catch data
+
+Read in catch data aggregated from half degree cell to OHI region [catch_data_prep.Rmd](https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/catch_data_prep.html).
+
+```{r catch_data}
+
+catch <- read_csv('output/stock_catch.csv') %>%
+          rename(common = CommonName)
+
+```
+
+# Catch-MSY
+If the CMSY values have already been calculated for each stock, this step can be skipped: 
+```{r cmsy, eval=F}
+
+# calculate cmsy values and create a .rds file that is saved on Mazu
+
+cmsy_fits <- plyr::dlply(catch, c("stock_id", "common"), function(x) {
+  
+    #make sure the data is ordered from 1950 to 2010
+    x <- arrange(x,year)
+    
+    out <- cmsy(ct = x$tons, yr = x$year,  start_r = resilience(x$Resilience[1]), 
+      reps = 2e4)
+    
+    out$year <- x$year
+    out
+    
+  }, .parallel = TRUE)
+
+
+saveRDS(cmsy_fits, file = file.path(dir_M,"git-annex/globalprep/fis/v2018/int/cmsy-fits.rds"))
+
+
+
+```
+
+Take output and format: 
+```{r}
+cmsy_fits <- readRDS(file.path(dir_M,"git-annex/globalprep/fis/v2018/int/cmsy-fits.rds"))
+
+fake_data <- data.frame(bbmsy_q2.5 = NA, bbmsy_q25 = NA, bbmsy_q50 = NA, 
+  bbmsy_q75 = NA, bbmsy_q97.5 = NA)
+
+cmsy_bbmsy <- plyr::ldply(cmsy_fits, function(x) {
+  bbmsy_cmsy <- x$biomass[, -1] / x$bmsy
+  bbmsy_out <- tryCatch({
+    bbmsy_out <- summarize_bbmsy(bbmsy_cmsy)
+    bbmsy_out$year <- x$year
+    bbmsy_out}, error = function(e) fake_data)
+})
+
+cmsy_bbmsy$model <- "CMSY"
+
+write.csv(cmsy_bbmsy,file='output/cmsy_bbmsy.csv', row.names=FALSE)
+
+```
+
+Explore why there are some NAs (I think non convergance)
+
+```{r nas, eval=F}
+
+nas <- cmsy_bbmsy %>%
+  group_by(stock_id)%>%
+  summarize(m = mean(bbmsy_mean))%>%
+  filter(is.na(m))
+
+nrow(nas)
+
+```
+
+## Results
+
+Looking at mean bbmsy for 2014
+
+```{r}
+
+results <- read_csv('output/cmsy_bbmsy.csv') %>%
+            filter(year == 2014)
+hist(results$bbmsy_mean)
+
+```
+
+Why are so many around 0.5 (extracting half of maximum sustainable yield)?
+
+```{r}
+
+stocks_0.5 <- results %>%
+              filter(bbmsy_mean < 0.6,
+                     bbmsy_mean > 0.4)
+
+```
+
+[Anderson, S.C., Cooper, A.B., Jensen, O.P., et al. (2017) Improving estimates of population status and trend with superensemble models. Fish and Fisheries.](http://onlinelibrary.wiley.com/doi/10.1111/faf.12200/full)
+
+
+
+
+
+
+

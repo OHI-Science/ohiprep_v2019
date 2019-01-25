@@ -1,0 +1,268 @@
+---
+title: "OHI 2018: Food Provision, Fix Cell Issues"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+# Summary
+
+From Jamie's clean_cells.R script in v2017. This script fixes the issue of some half degree cells that slighlty overlap the OHI regions shapefile, leaving them with a proportional area less than 1. This would cause us to lose catch when assigning catch to cells. To fix this, we define a vector of cellids that have a proportionArea <1 and are NOT duplicated (i.e. the other portion of the area missing is not accounted for) and assign a proportionArea of 1 to these cells.
+
+Also takes code from [saup_rasters_to_ohi_rgns.R](https://github.com/OHI-Science/ohiprep_v2018/blob/9ed3d24d6ef293ef21443fb0957e0aa0d4cb8970/globalprep/fis/v2016/saup_rasters_to_ohi_rgns.R) to re-write fao and ohi regions with cell information.
+
+The output is saved as int/cells.csv
+
+# Setup 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+```{r}
+#library(reshape2)
+library(tidyverse)
+#library(seaaroundus)
+library(rgdal)
+library(raster)
+library(here)
+
+setwd(here::here("globalprep/fis/v2018"))
+
+source('../../../src/R/spatial_common.R')
+
+```
+
+# Methods
+
+## Set up a watson cell ID raster
+
+Metadata for Watson 2017 Cells data [here](https://www.nature.com/articles/sdata201739/tables/2). The column name is **Seq**, but Watson 2018 data calls it **Cells**.
+```{r}
+watson_rast <- raster(extent(c(-180, 180, -90, 90)), res = 0.5, crs = '+init=epsg:4326')
+values(watson_rast) <- 1:ncell(watson_rast) # should have 260 rows and 720 columns
+```
+
+## Match Cell IDs with OHI regions
+
+Script taken from [v2016 saup_rasters_to_ohi_rgns.R script](https://github.com/OHI-Science/ohiprep_v2018/blob/9ed3d24d6ef293ef21443fb0957e0aa0d4cb8970/globalprep/fis/v2016/saup_rasters_to_ohi_rgns.R). 
+
+Result of `ohi_to_wats_raster` will be a list of length 526 (the same number of rows in the shapefile **regions**). Each element in the list will be associated with at least one cell number in a range from 1 to `ncell(watson_rast)` or 259,200. 
+
+Note: When using spatial polygons (e.g. **regions**) in `extract`, the extract method returns the values of the cells of a Raster object (e.g. **watson_rast**) that are covered by a polygon. A cell is covered if its center is inside the polygon, but setting `weights = TRUE` and `normalizeWeights = FALSE` accounts from the fraction of each cell that is covered by each polygon.
+
+```{r}
+## some overlap between these fao region polygons (check it out):
+plot(regions[1][regions$rgn_id %in% c(260,262),])
+```
+
+Extract values to create raster (this may take a while)
+```{r}
+
+## associate each cell value with ohi and fao regions
+ohi_to_wats_raster <- raster::extract(watson_rast, regions, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
+
+## assign rgn type and id (e.g. eez_100) to each element in the list
+names(ohi_to_wats_raster) <- paste(regions$type_w_ant, regions$rgn_ant_id, sep="_")
+
+## combine all 526 elements into a data frame with col names '.id', 'value', and 'weight'
+region_prop_df <- plyr::ldply(ohi_to_wats_raster, rbind)
+
+## splits up rgn type and id, rename col
+cells_raw <- region_prop_df %>%
+  separate(.id, c('rgn_typ', 'rgn_id'), sep = '_') %>%
+  rename(wat_cell_id = value, 
+         proportionArea = weight)
+
+## save all the cell associations
+write.csv(cells_raw, file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns.csv"), row.names=FALSE)
+
+```
+
+### Compare OHI-CellID Matching 
+
+Check this year's ohi-cellID match with last year's to see what changed.
+```{r}
+
+## Check raw file
+cells_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns.csv")) %>%
+  arrange(rgn_id)
+
+old_cells_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/fis/v2015/raw/saup_rasters_to_ohi_rgns.csv")) %>% 
+  arrange(rgn_id)
+
+# new all_df has 446 more rows
+dim(cells_raw) # 291209 rows
+dim(old_cells_raw) # 290763 rows
+setdiff(cells_raw$wat_cell_id, old_cells_raw$saup_cell_id)
+
+```
+
+## A few modifications to the data
+
+### Merge land and eez areas
+Originally, we included only water areas, but some rasters were excluded because the Watson raster doesn't exactly align with our region map.
+
+```{r}
+
+ohi_cells <- read.csv(file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns.csv")) %>%
+  rename(CellID = wat_cell_id) %>%
+  group_by(CellID, rgn_id) %>%   # groups land and eez data (that way the cell catch is fully applied to the region...rather than cutting the portion that overlaps land) 
+  dplyr::summarise(area = sum(proportionArea)) %>%
+  mutate(area = ifelse(area > 1, 1, area))%>%  # this corrects when there is land/eez overlap within the same region resulting in cell area >1
+  ungroup()  
+
+```
+
+
+### Check Cell Proportions
+
+Calculate total proportion coverage of each cell, which should add up to 1.  When the total area doesn't equal 1, it means there is overlap of polygons and a portion of the cell gets assigned to multiple regions. 
+
+There is a bit of weirdness, but nothing that seems overly concerning to me.  The number of cells with this issue is fairly small, and I believe many of the biggest offenders are land discrepancies.
+```{r}
+
+bad_ones <- ohi_cells %>%
+  group_by(CellID) %>%
+  mutate(total_area = sum(area)) %>%
+  filter(total_area > 1) %>%
+  arrange(CellID) %>%
+  arrange(-total_area)
+
+data.frame(bad_ones)
+table(bad_ones$rgn_id)
+hist(bad_ones$total_area)
+
+```
+
+
+### Correct for cells with proportion <1
+The opposite issue is when a cell has only partial coverage (i.e., proportion is <1).  In these cases, we will adjust to equal 1.  
+
+Get a list of cells that are not duplicated and have areas <1, and adjust these to equal 1. These are the cells that were cut off prematurely due to edge effects, etc. If area is <1 and the cell is not duplicated, the area will be converted to 1.
+
+```{r}
+## ID singleton cells:
+dups <- ohi_cells$CellID[duplicated(ohi_cells$CellID)]
+nodups <- ohi_cells$CellID[-which(ohi_cells$CellID %in% dups)]
+length(unique(ohi_cells$CellID))
+length(nodups)
+length(dups)
+
+tmp <- ohi_cells %>% 
+  filter(CellID %in% nodups & area < 1)
+head(tmp)
+sum(duplicated(tmp$CellID))
+
+ohi_cells <- ohi_cells %>%
+  mutate(area = ifelse(CellID %in% nodups & area < 1, 1, area))
+
+write.csv(ohi_cells, file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns_v2.csv"), 
+          row.names=FALSE)
+
+```
+
+
+## Match Cell IDs with FAO Regions
+
+Similar steps were used for extracting cell values for FAO regions as the OHI shapefile. This is already done in [saup_rasters_to_ohi_rgns.R](https://github.com/OHI-Science/ohiprep_v2018/blob/9ed3d24d6ef293ef21443fb0957e0aa0d4cb8970/globalprep/fis/v2016/saup_rasters_to_ohi_rgns.R)
+
+Since data source is the same, just read in the FAO raster - check with the new dataframe I created above.
+```{r}
+
+fao_regions <- readOGR(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/orig/FAO_AREAS"), layer="FAO_AREAS")  
+fao_regions <- fao_regions[fao_regions$F_LEVEL == "MAJOR", ]
+plot(fao_regions)
+
+```
+
+*** 
+
+## Final Wrangling of Cells
+
+Read in the dataset matching each cell to an FAO region (need both OHI and FAO region for analysis)
+
+Note: Currently CellID in `ohi_cells` range from 8 to 259,200. CellID in `fao_cells` ranges from 1 to 252,083. There are many OHI regions with cells that are not assigned FAO regions (likely due to being along the land-ocean boundary). It's okay to ignore, very small percentage.
+```{r}
+
+fao_cells <- read.csv(file.path(dir_M, "git-annex/globalprep/fis/v2015/raw/saup_rasters_to_fao_rgns.csv")) %>%
+  rename(CellID = saup_cell_id)
+sum(duplicated(fao_cells$CellID)) # good: no duplicates
+
+ohi_cells <- read.csv(file.path(dir_M, "git-annex/globalprep/fis/v2018/raw/watson_rasters_to_ohi_rgns_v2.csv")) 
+
+ohi_fao_cells <- ohi_cells %>%
+  full_join(fao_cells, by="CellID") %>%
+  arrange(CellID) %>%
+  mutate(area = ifelse(is.na(area), 1, area))  # these are fao regions with no corresponding ohi
+
+
+summary(ohi_fao_cells) # 84,218 NAs in fao_id
+
+```
+
+From `summary(ohi_fao_cells)` we see that there are many NAs in the `fao_id` field. The corresponding `ocean` field is also an NA.
+
+One issue of concern: Some regions aren't assigned an FAO region value (in places where land > 50% of cell cover)...and we need both for the analysis.  Previous analyses indicate that most of these are land issues.  So not worrying about for now, but might want to do gapfilling in the future.
+```{r}
+
+## see what percentage have no FAO region assigned
+sum(is.na(ohi_fao_cells$fao_id))/max(ohi_fao_cells$CellID, na.rm=TRUE) # 84,218/259,200 or 32% is NA
+
+```
+
+***
+
+## Save File
+```{r} 
+write.csv(ohi_fao_cells, file = "int/cells.csv", row.names=FALSE)
+```
+***
+
+## Check Output
+
+Compare this year's cells.csv with last year's cells.csv output
+```{r}
+
+## new cells output
+cells <- read.csv('int/cells.csv')  %>%
+  arrange(CellID) %>%
+  mutate(cell_fao_ohi = paste(CellID, fao_id, rgn_id, sep="_"))
+
+## checking old cells.csv files
+old_cells <- read.csv('../v2017/cells.csv') %>%
+  dplyr::select(-X) %>% 
+  arrange(CellID) %>% 
+  mutate(cell_fao_ohi = paste(CellID, fao_id, rgn_id, sep="_"))
+
+dim(cells)[1]-dim(old_cells)[1] # there are 84409 more rows due to adding land
+
+## Diff in IDs in new cells csv versus old
+new_old <- setdiff(cells$cell_fao_ohi, old_cells$cell_fao_ohi)
+## Diff in IDs in old cells csv versus new
+old_new <- setdiff(cells$cell_fao_ohi,old_cells$cell_fao_ohi)
+
+## Take a look at locations of new cell IDs, using watson_rast as the template
+library(maps)
+
+cell_diff <- data.frame(cell_id = substr(new_old, 1,6), value = 1)
+cell_diff$cell_id <- as.numeric(gsub("_","",cell_diff$cell_id))
+unique_cell_diff <- unique(cell_diff)
+diff_plot <- raster::subs(watson_rast, unique_cell_diff, by = "cell_id", which = "value", subsWithNA=TRUE)
+map('legacy_world'); plot(diff_plot, add=T) # not sure crs aligns but just for visualizing
+
+```

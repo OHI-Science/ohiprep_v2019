@@ -1,0 +1,290 @@
+---
+title: 'OHI 2018: LSP, Rasterize WDPA polygons'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+# Summary
+
+* Setup WDPA shapefile for lasting special places by filtering out non-"Designated" protected areas, and filtering out "non-MPA programmatic management plans" (US protected areas that distort scores).
+* Rasterize the result using `fasterize::fasterize()` (not `gdal_rast2()` as in previous assessments) and save to disk using `writeRasterBlocks()` defined in this script.
+
+View lsp_data_prep.Rmd for full description of Lasting Special Places data preparation.
+
+# Updates from previous assessment
+
+Using `fasterize::fasterize()` to rasterize the WDPA polygons, rather than ArcGIS.  This allows the entire process to be completed in R. 
+
+Using `fasterize()` argument `fun=min` to assign oldest year to an area where there are overlapping polygons. Prior assessment re-ordered the status year with the oldest year at the end, so that `gdalUtils::gdal_rasterize()` in `gdal_rast2()` would work correctly. Both achieve the same results.
+
+***
+
+# Setup
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = FALSE, message = FALSE, warning = FALSE, eval=FALSE)
+library(rgdal)
+library(gdalUtils)
+library(tidyverse)
+source('~/github/ohiprep_v2018/src/R/common.R')
+
+goal     <- 'globalprep/lsp'
+scenario <- 'v2018'
+dir_goal_anx   <- file.path(dir_M, 'git-annex', goal, scenario) 
+dir_goal  <- file.path('~/github/ohiprep_v2018', goal, scenario)
+dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
+                         'wdpa_mpa/d2018')
+
+## set up provenance tracking for this script:
+# library(provRmd); prov_setup() #devtools::install_github('oharac/provRmd', build_vignettes = TRUE)
+
+```
+
+
+# Methods
+
+## Filter WDPA Shapefile 
+
+Read in the polygons from the WDPA dataset; filter as needed.
+
+``` {r filter_and_reorder_poly}
+
+shp_raw     <- file.path(dir_data, 'WDPA_June2018-shapefile', 'WDPA_June2018-shapefile-polygons')
+shp_reorder <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_ordered')
+
+if(!file.exists(paste0(shp_reorder, '.shp'))) {
+  message('No shp found for filtered/reordered WDPA database')
+  ## Read in the raw shapefile (3.6 GB); 472 sec on Mazu
+  message('Reading in raw shapefile: \n  ', shp_raw)
+  ptm <- proc.time()
+  wdpa_poly <- rgdal::readOGR(dsn = dirname(shp_raw), 
+                       layer = basename(shp_raw),
+                       stringsAsFactors = FALSE)
+  message('elapsed: ', (proc.time() - ptm)[3])
+  
+  ## filter polygons
+  # glimpse(wdpa_poly@data) ## check class of STATUS_YR
+  wdpa_poly@data <- wdpa_poly@data %>%
+    setNames(tolower(names(.))) %>%
+    dplyr::select(wdpaid, name, orig_name, 
+           desig, desig_eng, desig_type,
+           iucn_cat, 
+           marine, no_take, no_tk_area, 
+           status, status_yr, 
+           mang_auth, mang_plan, verif,
+           sub_loc, parent_iso, iso3) %>%
+    dplyr::mutate(status_yr = as.integer(status_yr))
+  
+  # wdpa_poly@data$status %>% unique()
+  ## [1] "Designated"   "Proposed"     "Inscribed"    "Not Reported" "Adopted"     
+
+  # x <- wdpa_poly@data %>% filter(str_detect(tolower(mang_plan), 'non-mpa program'))
+  ## 84 observations
+  wdpa_poly <- wdpa_poly[wdpa_poly@data$status == 'Designated', ]
+  wdpa_poly <- wdpa_poly[!str_detect(tolower(wdpa_poly@data$mang_plan), 'non-mpa program'), ]
+  
+  message('Writing filtered WDPA polygons to: \n  ', shp_reorder)
+  ## probably gonna take half an hour to write?
+  ptm <- proc.time()
+  writeOGR(wdpa_poly, 
+           dsn = dirname(shp_reorder), layer = basename(shp_reorder),
+           driver = 'ESRI Shapefile')
+  message('elapsed: ', (proc.time() - ptm)[3])
+  ## lots of warnings similar to:
+  ##   "Warning 1: Value 555593627 of field WDPAID of feature 507 not successfully written."
+  ## warning ignored: WDPAID field not used in analysis
+  
+  rm('wdpa_poly') ### clean up memory
+  
+} else {
+  ## filtered shapefile exists; confirm
+  message('Filtered shapefile exists: \n  ', shp_reorder)
+}
+
+```
+
+## Transform to Mollweide Projection
+
+Transform ordered polygons to Mollweide and save as new polygons.
+
+``` {r transform_poly}
+
+shp_xformed <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_xformed')
+
+if(!file.exists(paste0(shp_xformed, '.shp'))) {
+  message('No shp found for filtered/reordered/transformed WDPA database')
+  
+  if(!exists('wdpa_poly1')) {
+    
+    message('loading wdpa polygons (filtered and ordered)')
+    shp_reorder <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_ordered')
+    wdpa_poly1 <- readOGR(dsn = dirname(shp_reorder), 
+                          layer = basename(shp_reorder),
+                          stringsAsFactors = FALSE)
+  }
+
+  message('Spatial transforming WDPA polygons to Mollweide')
+  crs_mol <- CRS('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs')
+  ptm <- proc.time()
+  wdpa_poly2 <- spTransform(wdpa_poly1, crs_mol)
+  message('elapsed: ', (proc.time() - ptm)[3])  ### elapsed: 251 s on Mazu
+  
+  message('Writing filtered/reorderedtransformed WDPA polygons to: \n  ', shp_xformed)
+  ptm <- proc.time()
+  writeOGR(wdpa_poly2, dsn = dirname(shp_xformed), layer = basename(shp_xformed),
+           driver = 'ESRI Shapefile')
+  message('elapsed: ', (proc.time() - ptm)[3])
+  ## elapsed: 734.635 s on Mazu
+  
+  rm('wdpa_poly1', 'wdpa_poly2') ### clean up the memory
+  
+} else {
+  ## transformed shapefile exists
+  message('Transformed WDPA shapefile exists at \n  ', shp_xformed)
+  message('Go inspect it to make sure it looks good!')
+}
+
+```
+
+### Define some raster functions.
+
+Here we define `gdal_rast2()` function as a wrapper for `gdalUtils::gdal_rasterize()`, which has some clunky arguments.  This was originally written for OHIBC.
+
+Here we also define `writeRasterBlocks()` to write out very large rasters chunk-by-chunk to avoid an issue in which `writeRaster()` fails due to inability to work with long vectors (over 2 billion elements?).
+
+``` {r define_gdal_rast2}
+## from OHIBC...
+
+
+writeRasterBlocks <- function(rast, filename) {
+  bs <- blockSize(rast)
+  rast <- writeStart(rast, filename, overwrite = TRUE)
+  ptm <- proc.time()
+  for (i in 1:bs$n) { # i <- 1
+    message('... writing block ', i, ' of ', bs$n, ' to ', basename(filename), 
+        ' (', (proc.time() - ptm)[3], ' sec)')
+    v <- getValues(rast, row = bs$row[i], nrows = bs$nrows[i] )
+    rast <- writeValues(rast, v, bs$row[i])
+  }
+  rast <- writeStop(rast)
+  # return(rast)
+}
+
+
+
+```
+
+
+## Shapefile to Raster: `fasterize()`
+
+`fasterize()` from the `fasterize` package takes advantage of Simple Features objects from the `sf` package, rather than objects from the `sp` package.  It is considerably faster; it returned a completed raster in ten minutes.  However, saving the very large (18GB) resulting raster proved problematic.  The `writeRasterBlocks()` function defined above helped get around that problem though still took over an hour to write the raster to disk.
+
+``` {r fasterize_wdpa, eval = TRUE}
+
+library(sf)
+library(fasterize) ### devtools::install_github('ecohealthalliance/fasterize')
+rast_wdpa_file   <- file.path(dir_goal_anx, 'rast', 'wdpa_2018_moll_500m.tif')
+
+if(!file.exists(rast_wdpa_file)) {
+shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_xformed')
+  
+  ptm <- proc.time()
+  wdpa_poly <- sf::st_read(dsn = dirname(shp_xformed_file),
+                           layer = basename(shp_xformed_file))
+  cat('elapsed: ', (proc.time() - ptm)[3])
+  ### 47-53 seconds to read in the polygons (about 472 sec for readOGR)
+
+  rast_base <- raster::raster(file.path(dir_M, 'git-annex/globalprep/spatial/d2014',
+                                'data/rgn_mol_raster_500m',
+                                'rgn_inland1km_mol_500mcell.tif'))
+  
+  # test_poly <- sf::st_read(path.expand('~/github/ohibc/prep/spatial'),
+  #                             'ohibc_offshore_3nm',
+  #                             stringsAsFactors = FALSE) %>%
+  #   st_transform(rast_base@crs@projargs)
+  # poly_ext <- raster::extent(as.vector(st_bbox(test_poly)))
+  # 
+  # rast_base <- raster::crop(rast_base, poly_ext)
+  # test_poly <- wdpa_poly[1:100, ]
+  
+  ## For any overlapping polygons, assign the oldest (minimum) status year to that area
+  ptm <- proc.time()
+  rast_wdpa <- fasterize(wdpa_poly, rast_base, field = 'status_yr', fun = 'min')
+  cat('fasterize elapsed: ', (proc.time() - ptm)[3]) 
+  ### 358 - 403 seconds?! holy crap, if it rasterized properly...
+  
+  # ptm <- proc.time()
+  # raster::writeRaster(rast_wdpa, rast_wdpa_file)
+  # cat('writeRaster elapsed: ', (proc.time() - ptm)[3])
+  ### writeRaster failed on an issue with large vectors...
+  ### see below about writing block by block approach.
+  
+  library(raster)
+  # rast <- rast_wdpa
+  # filename <- rast_wdpa_file
+  ptm <- proc.time()
+  x <- writeRasterBlocks(rast_wdpa, rast_wdpa_file)
+  message('writeRaster elapsed: ', (proc.time() - ptm)[3])
+  
+}
+
+
+```
+
+## Data Checking
+
+Compare shapfile 2017 v 2018.
+
+```{r}
+
+library(sf)
+library(raster)
+
+## Read in reordered shapefile
+# shp_reorder <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_ordered')
+# shp_reorder17 <- file.path(dir_data, '../d2017', 'shps', 'WDPA_May2017_shp_ordered')
+  
+## Read in as shapefile
+# wdpa_order <- rgdal::readOGR(dsn = dirname(shp_reorder), 
+#                        layer = basename(shp_reorder),
+#                        stringsAsFactors = FALSE)
+# 
+# wdpa_order17 <- rgdal::readOGR(dsn = dirname(shp_reorder17), 
+#                        layer = basename(shp_reorder17),
+#                        stringsAsFactors = FALSE)
+
+## Subtract wdpa_order17 from wdpa_order to view differences
+
+
+
+## Read in as sf
+wdpa_sf <- st_read(dsn = file.path(dir_data, 'shps'), layer = "WDPA_June2018_shp_ordered")
+wdpa_sf_17 <- st_read(dsn = file.path(dir_data, '../d2017', 'shps'), layer = 'WDPA_May2017_shp_ordered')
+
+plot(wdpa_sf[1])
+wdpa_diff <- st_difference(wdpa_sf[1], wdpa_sf_17[1])
+plot(wdpa_diff)
+ggplot(wdpa_diff) +
+  geom_sf()
+
+
+## Convert back to 'Spatial' object
+# wdpa_order <- as(variable, "Spatial")
+
+
+```
+

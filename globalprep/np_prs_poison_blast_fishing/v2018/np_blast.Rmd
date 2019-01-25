@@ -1,0 +1,492 @@
+---
+title: 'OHI 2018: preparing data for areas of blast fishing (pressure)'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+#Summary
+
+The area of blast fishing data layer is created from spatialized bycatch by gear data provided by Watson (2017).
+!!!!!!! Describe standarization method!!!!!!!!!!
+
+Not needed!!!!!???
+ [(VGPM)](http://www.science.oregonstate.edu/ocean.productivity/) as described in [Behrenfeld and Falkowski (1997)](http://www.science.oregonstate.edu/ocean.productivity/references/L&O%201997a.pdf)
+
+This infromation will replace the historically used data for the blast pressure.
+
+#Updates from previous assessment
+
+Previoulsly, this layer used data from Burke et al. (2011). Watson's data (2017), presents bycatch per gear type. For this data prep we will use the data provided under the "explosive" gear type to calculate the pressure from blast fishing.
+
+
+***
+
+#Data Source
+
+**Reference**: [Watson (2017)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5387926/)
+
+**Downloaded**: April 21, 2017
+
+**Description**:  Catch per half degree cell (raw values are in tons per km^2^)  
+
+**Native data resolution**: 0.5 degree    
+
+!!!!!!CHECK
+**Time range**: 2003 - 2014  (raw data goes back to 1950 but NPP data limits time series to 2003)
+
+**Format**:  Tabular  
+
+#Citation information  
+Watson, R. A. (2017). A database of global marine commercial, small-scale, illegal and unreported fisheries catch 1950–2014. *Scientific Data*, 4.
+
+***
+  
+# Methods
+
+## Setup
+
+Load all relevant libraries including parallel processing packages.
+
+```{r setup,message=FALSE,warning=FALSE,verbose=FALSE}
+
+#set options for all chunks in code
+knitr::opts_chunk$set(warning=FALSE, message=FALSE,fig.width = 6, fig.height = 4, fig.path = 'figs/')
+
+# comment out when knitting
+# setwd("~/github/ohiprep_v2018/globalprep/np_prs_poison_blast_fishing/v2018")
+library(plyr)
+library(tidyverse)
+library(parallel)
+library(foreach)
+library(doParallel)
+library(raster)
+library(rasterVis)
+library(seaaroundus)
+library(RColorBrewer)
+library(cowplot)
+library(stringr)
+library(rgdal)
+library(sf)
+
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/spatial_common.R')
+
+ocean <- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
+
+
+options(scipen=999)
+
+cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+mytheme=rasterTheme(region=cols)
+
+#set mollweide projection CRS
+mollCRS=crs('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs')
+  
+#paths !!!!! SEE IF NECESARY - MODIFY
+ ##dir_git <- file.path(dir_M,'git-annex/globalprep/prs_fish/v2017')
+ 
+  
+```
+
+## Aggregate annual catch by type of gear
+
+First get the template raster with a resolution of 0.5 degree cells. The `getcells()` function comes from the [seaaroundus R package](https://github.com/ropensci/seaaroundus).
+
+The values of these cells are the Cell ID numbers. In the fisheries catch dataset, these Cell ID numbers match up with the "Seq" numbers.
+
+```{r}
+
+  saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
+
+   saup_rast <- raster(ncol=720, nrow=360)
+   saup_rast[] <- saup_cells
+   
+   plot(saup_rast,col=cols,main = "SAUP Cell IDs")
+
+```
+
+For each year read in the raw data, filter for appropriate type of gear (explosives) and then summarize total catch per cell (in kg/km^2^)
+
+```{r,eval=F}
+
+years = c(2003:2014)
+
+foreach(yr = years) %dopar%{ #yr = 2014
+  
+  #read in raw data for the year
+  raw <- readRDS(paste0(file.path(dir_M,'git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data/catch_data_'),yr,'.rds'))
+  
+##NOTE: catch is in tonnes per square kilometer in a year.
+  
+ blast <- raw %>%
+          dplyr::filter(GearName == "explosives") %>%
+          rowwise() %>%
+          dplyr::mutate(catch = sum(LSF_CR, SSF_CR, IUU_CR, Discards_CR, na.rm=TRUE) * 1000) %>% #converting from tonnes to kg to get rid of low values
+          dplyr::group_by(Seq) %>%
+          dplyr::summarise(cell_catch = sum(catch))
+ 
+    #rasterize catch by swapping cell ids with (calls the suap raster we made above)
+raster::subs(saup_rast, blast, by = 'Seq', which = 'cell_catch', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/prs_blast/v2018/int/total_catch_cell/blast_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
+  
+}
+
+
+```
+
+
+## Extract catch values for each OHI region
+
+```{r}
+
+### convert density of fish (kg/km2) to catch total (kg)
+
+blast_crs <- raster(file.path (dir_M,'git-annex/globalprep/prs_blast/v2018/int/total_catch_cell/blast_2003.tif'))
+
+# raster_area <- area(blast_crs)
+# 
+# blast_rast_loc <- file.path(dir_M, "git-annex/globalprep/prs_blast/v2018/int/total_catch_cell")
+
+
+##Code from: https://github.com/OHI-Science/ohiprep_v2018/blob/master/globalprep/hab_prs_hd_subtidal_soft_bottom/v2017/data_prep.R not sure this is needed. Did not run this loop. 
+
+# for(catch_year in 2003:2014){ # catch_year = 2003
+#   
+#   cat(catch_year)
+#   
+#   catch <- raster(file.path(catch_rast_loc, sprintf("dem_dest_%s.tif", catch_year)))
+#   
+#   catch_count  <- overlay(catch, raster_area, fun = function(x,y){x*y}, progress = 'text',
+#                            filename = file.path(dir_M,
+#                           sprintf("git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2017/int/catch_count_%s.tif", catch_year))) 
+# }
+
+
+## make crs the same for each ohi region
+
+ohi_regions <- st_read(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017"), layer="regions_2017_update")
+
+ohi_regions_wgs <-  st_transform(ohi_regions, proj4string(blast_crs))
+
+blast_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/prs_blast/v2018/int/total_catch_cell"), full.names = TRUE) 
+
+
+#registering cores for parallel processing
+registerDoParallel(3) 
+
+#Loop process in parallel cores
+foreach(blast_catch = blast_rasts) %dopar% { # blast_catch = blast_rasts[1]
+
+cat(blast_catch)
+catch_year <- str_sub(blast_catch, -8, -5)
+
+catch <- raster(blast_catch)
+
+data <- raster::extract(catch, ohi_regions, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
+
+names(data) <- paste(ohi_regions$type_w_ant, ohi_regions$rgn_ant_id, sep="_") 
+blast_rgn   <- plyr::ldply(data, rbind)
+
+# the following code keeps the raster information when the raster lands partially on the land polygons
+blast_rgn <- blast_rgn %>%
+  tidyr::separate(.id, c("rgn_type", "rgn_id"), sep="_") %>%
+  dplyr::mutate(kg = value*weight) %>%
+  dplyr::group_by(rgn_type, rgn_id) %>%
+  dplyr::summarize(kg = sum(kg, na.rm=TRUE)) %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::summarize(kg = sum(kg, na.rm=TRUE)) %>%
+  dplyr::ungroup() %>%
+  dplyr::arrange(as.numeric(as.character(rgn_id))) %>%
+  dplyr::mutate(year = catch_year)
+
+write.csv(blast_rgn, sprintf("int/blast_catch_rgn_%s.csv", catch_year), row.names=FALSE)
+
+}
+
+
+
+
+```
+
+
+## Mean Value
+
+```{r}
+## For one cvs (year 2012 to compare with old data)
+
+blast_rgn_df <- read.csv('int/blast_catch_rgn_2012.csv')
+##There are 13 regions with data
+
+
+##read the old data
+blast_old <- read.csv('../v2013/data/blast_poison_3nm.csv')
+
+
+
+
+```
+
+
+
+
+## Reference Point
+
+Look at all mean catch data standardized by the 95th quantile as the reference point.
+
+```{r ref_point}
+
+mean_hb <- list.files('int/high_bycatch/five_year_means', full.names=TRUE)
+mean_lb <- list.files('int/low_bycatch/five_year_means', full.names=TRUE)
+mean_art <- list.files('int/artisanal/five_year_means', full.names = TRUE)
+
+# HIGH BYCATCH
+
+#get data across all years
+vals <- c()
+
+for(i in 2007:2014){ # i = 2007
+#print(i)
+  m <- mean_hb[which(str_sub(mean_hb, -8, -5) == i)] %>%
+    raster()%>%
+    getValues()
+  
+ n <- m[!is.na(m)]
+
+  vals <- c(vals, n)
+
+}
+
+ref_hb <- quantile(vals, prob = 0.9999, na.rm=T)  #8.67
+
+
+#LOW BYCATCH
+
+#get data across all years
+lb_vals <- c()
+
+for(i in 2007:2014){
+
+  m <- mean_lb[which(str_sub(mean_lb, -8, -5) == i)] %>%
+    raster() %>%
+    getValues()
+
+  n <- m[!is.na(m)]
+  
+  lb_vals <- c(lb_vals, n)
+
+}
+
+ref_lb <- quantile(lb_vals, prob = 0.9999, na.rm=TRUE) #9.41
+
+#Artisanal
+
+#get data across all years
+art_vals <- c()
+
+for(i in 2007:2014){
+
+  m <- mean_art[which(str_sub(mean_art, -8, -5) == i)]%>%
+    raster()%>%
+    getValues()
+
+  n <- m[!is.na(m)]
+  
+  art_vals <- c(art_vals,n)
+
+}
+
+ref_art <- quantile(art_vals, prob = 0.9999, na.rm=TRUE) #5.98
+
+```
+
+The reference point is `r ref_hb` for high bycatch, `r ref_lb` for low bycatch and `r ref_art` for artisanal.
+
+## Rescale, Resample and Reproject
+
+```{r rescale, eval=F}
+
+mean_hb <- list.files('int/high_bycatch/five_year_means',full.names=T)
+mean_lb <- list.files('int/low_bycatch/five_year_means',full.names=T)
+mean_art <- list.files('int/artisanal/five_year_means',full.names = T)
+
+registerDoParallel(8)
+
+foreach (i = 2003:2010) %dopar%{ # i = 2003
+  
+  yrs <- c(i:(i+4))
+  
+  out_hb <- mean_hb[which(substr(mean_hb, 45, 48) == i)] %>%
+            raster()%>%
+            calc(fun=function(x){ifelse(x>ref_hb, 1, x/ref_hb)}) %>%
+            calc(fun=function(x){ifelse(x<0, 0, x)}) %>%
+            projectRaster(crs = mollCRS, over=TRUE, method = 'ngb') %>%
+            resample(ocean, method = 'ngb', filename = paste0(file.path(dir_git), '/output/high_bycatch/hb_fish_pressure_', yrs[1], '-', yrs[5], '.tif'), overwrite = TRUE)
+  
+  out_lb <- mean_lb[which(substr(mean_lb, 44, 47) == i)] %>%
+            raster() %>%
+            calc(fun=function(x){ifelse(x>ref_lb, 1, x/ref_lb)}) %>%
+            calc(fun=function(x){ifelse(x<0, 0, x)}) %>%
+            projectRaster(crs = mollCRS, over=TRUE, method = "ngb") %>%
+            resample(ocean, method = 'ngb', filename = paste0(file.path(dir_git),'/output/low_bycatch/lb_fish_pressure_',yrs[1],'-',yrs[5],'.tif'),overwrite=T)
+
+
+  out_art <- mean_art[which(substr(mean_art, 42, 45) == i)] %>%
+            raster() %>%
+            calc(fun = function(x){ifelse(x>ref_art, 1, x/ref_art)}) %>%
+            calc(fun = function(x){ifelse(x<0, 0, x)}) %>%
+            projectRaster(crs = mollCRS, over=TRUE, method = "ngb") %>%
+            resample(ocean, method = 'ngb', filename = paste0(file.path(dir_git), '/output/artisanal/art_fish_pressure_', yrs[1], '-', yrs[5], '.tif'), overwrite=TRUE)
+
+}
+
+```
+
+***
+
+# Results
+
+```{r results}
+
+hb <- raster(file.path(dir_git, 'output/high_bycatch/hb_fish_pressure_2010-2014.tif'))
+lb <- raster(file.path(dir_git, 'output/low_bycatch/lb_fish_pressure_2010-2014.tif'))
+art <- raster(file.path(dir_git, 'output/artisanal/art_fish_pressure_2010-2014.tif'))
+
+s = stack(hb, lb, art)
+plot(s, col=cols, axes=FALSE, box=FALSE)
+
+```
+
+***
+
+# Extract the data by OHI region
+
+```{r extract, eval = F}
+
+# raster/zonal data
+
+zones <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/regions_eez_with_fao_ant.tif"))  # raster data
+rgn_data <- read.csv(file.path(dir_M, "git-annex/globalprep/spatial/d2014/data/rgn_mol_raster_1km/regionData.csv"))    # data for sp_id's used in raster
+
+### Low bycatch data first
+# get raster data:
+rasts <- list.files(file.path(dir_git,'output/low_bycatch'), full =TRUE)
+
+pressure_stack <- stack(rasts)
+
+# extract data for each region:
+regions_stats <- zonal(pressure_stack,  zones, fun="mean", na.rm=TRUE, progress="text")
+regions_stats2 <- data.frame(regions_stats) 
+write.csv(regions_stats2, "int/low_bycatch.csv", row.names=FALSE)
+setdiff(regions_stats2$zone, rgn_data$ant_id) 
+setdiff(rgn_data$ant_id, regions_stats2$zone)
+
+data <- merge(rgn_data, regions_stats2, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
+  tidyr::gather("year", "pressure_score", starts_with("lb")) 
+
+lb_data <- data %>%
+  dplyr::mutate(year = stringr::str_sub(year, -4, -1)) %>%
+  dplyr::mutate(year = as.numeric(year)) %>%
+  dplyr::filter(rgn_id <= 250) %>%
+  dplyr::select(rgn_id, year, pressure_score)
+
+write.csv(lb_data, "output/lb.csv", row.names=FALSE)
+summary(lb_data)
+filter(lb_data, is.na(pressure_score))
+
+rasts <- list.files(file.path(dir_git,'output/high_bycatch'), full = TRUE)
+
+pressure_stack <- stack(rasts)
+
+# extract data for each region:
+regions_stats <- zonal(pressure_stack,  zones, fun="mean", na.rm=TRUE, progress="text")
+regions_stats2 <- data.frame(regions_stats)
+write.csv(regions_stats2, "int/high_bycatch.csv", row.names = FALSE)
+setdiff(regions_stats2$zone, rgn_data$ant_id) 
+setdiff(rgn_data$ant_id, regions_stats2$zone) 
+
+data <- merge(rgn_data, regions_stats, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
+  tidyr::gather("year", "pressure_score", starts_with("hb")) 
+
+hb_data <- data %>%
+  dplyr::mutate(year = stringr::str_sub(year, -4, -1)) %>%
+  dplyr::mutate(year = as.numeric(year)) %>%
+  dplyr::filter(rgn_id <= 250) %>%
+  dplyr::select(rgn_id, year, pressure_score) # na values 71, 72, 74, 75, 188, 215
+
+write.csv(hb_data, "output/hb.csv", row.names=FALSE)
+
+
+rasts <- list.files(file.path(dir_git,'output/artisanal'), full = TRUE)
+
+pressure_stack <- stack(rasts)
+
+
+# extract data for each region:
+regions_stats <- zonal(pressure_stack,  zones, fun="mean", na.rm=TRUE, progress="text")
+regions_stats2 <- data.frame(regions_stats)
+write.csv(regions_stats2, "int/artisanal.csv", row.names = FALSE)
+setdiff(regions_stats2$zone, rgn_data$ant_id) # antarctica regions are in there, makes sense....no land
+setdiff(rgn_data$ant_id, regions_stats2$zone) # 213 is in there, that makes sense (Antarctica)
+
+data <- merge(rgn_data, regions_stats, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
+  tidyr::gather("year", "pressure_score", starts_with("art")) 
+
+art_data <- data %>%
+  dplyr::mutate(year = stringr::str_sub(year, -4, -1)) %>%
+  dplyr::mutate(year = as.numeric(year)) %>%
+  dplyr::filter(rgn_id <= 250) %>%
+  dplyr::select(rgn_id, year, pressure_score)
+
+write.csv(art_data, "output/art.csv", row.names=FALSE)
+
+## compare with previous year's data
+
+new <- read.csv("output/lb.csv") %>%
+  filter(year == 2010) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+old <- read.csv("../v2016/output/comm_fish_lb_2016.csv") %>%
+  left_join(new, by = 'rgn_id')
+
+plot(old$new_pressure_score, old$pressure_score)
+abline(0, 1, col="red")
+
+
+new <- read.csv("output/hb.csv") %>%
+  filter(year == 2010) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+old <- read.csv("../v2016/output/comm_fish_hb_2016.csv") %>%
+  left_join(new, by = 'rgn_id')
+
+plot(old$new_pressure_score, old$pressure_score)
+abline(0, 1, col="red")
+
+
+new <- read.csv("output/art.csv") %>%
+  filter(year == 2010) %>%
+  dplyr::select(rgn_id, new_pressure_score = pressure_score) 
+
+old <- read.csv("../v2016/output/artisanal_fish_lb_2016.csv") %>%
+  left_join(new, by = 'rgn_id')
+
+plot(old$new_pressure_score, old$pressure_score)
+abline(0, 1, col="red")
+
+```
+
+***
+
+

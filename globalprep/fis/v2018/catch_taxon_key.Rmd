@@ -1,0 +1,86 @@
+---
+title: "OHI 2018: Food Provision, Watson Catch Data Taxon Key"
+author: "Iwen Su"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+# Summary
+
+Watson catch data (2018) doesn't have `TaxonKey` information like it did last year. Previous years of data we are able to match the stocks to FAO and OHI regions using the spatial boundaries provided by Christopher Free (2017). Pull from last year's datasets.
+
+# Setup
+
+```{r}
+
+## Libraries
+library(readr)
+library(dplyr)
+library(raster)
+library(parallel)
+library(purrr)
+library(stringr)
+library(tidyr)
+library(foreach)
+library(here)
+
+setwd(here::here("globalprep/fis/v2018"))
+source('../../../src/R/common.R')
+source('../../../src/R/spatial_common.R')
+
+## Paths for data
+path_data = file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/int")
+fis_path = file.path(dir_M,"git-annex/globalprep/fis/v2018/int")
+
+```
+
+```{r}
+
+## Read in Watson 2017 data from the impact acceleration project
+watson_old <- list.files(file.path(dir_M, "git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data"), full.names = T)
+
+## Select all catch data to grab TaxonKey information
+
+taxonList <- list()
+  
+for(i in 1:length(watson_old)){ # i=65
+  
+  taxonkey <- readRDS(watson_old[i]) %>% 
+    dplyr::select(Taxonkey, TaxonName, CommonName) %>%
+    distinct()
+  
+  taxonList[[i]] <- taxonkey
+  
+  }
+
+## Extract only unique Taxon Key in all catch data
+all_taxon <- dplyr::bind_rows(taxonList) %>% 
+  distinct()
+
+anyDuplicated(all_taxon) # check for duplicates - should be 0
+
+## Correct weirdness in any trailing, leading, or excess white space
+all_taxon <- all_taxon %>% 
+  mutate(CommonName = str_squish(CommonName),
+         TaxonName = str_squish(TaxonName))
+
+## Save for future reference
+write.csv(all_taxon, "int/watson_taxon_key.csv", row.names = F)
+
+```
+

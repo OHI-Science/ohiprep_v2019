@@ -1,0 +1,504 @@
+---
+title: "OHI 2018 - Pressure: Ultraviolet Radiation"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: "~/github/ohiprep/src/templates/ohi_hdr.html"
+pdf_document:
+  toc: true
+---
+
+# Summary
+
+The Ultraviolet Radiation pressure layer is generated from daily data on Local Noon Erythemal UV Irradiance (mW/m2) derived from satellite observations. 
+
+1. Average the data for each week/year/cell  
+1. For each week/year/cell, calculate the mean and sd, so each cell would have ~624 (12*52) values (2004-2016)  
+1. Determine which of these were anomalous, defined as greater than the mean plus 1 standard deviation  
+1. Sum weekly anomalies for each year/cell (for a total of 52 possible anomalies per year/cell)  
+1. Calculate the total number of anomalies in the reference period (in our case, 2004-2009, for a total of 52*5 anomalies per cell)  
+1. Calculate the total number of anomalies in 5-year periods (e.g. 2013-2017)    
+1. then for each cell, get the difference between current anomalies and reference anomalies (total over the reference period 2005-2009)    
+1. Rescale the data to be between 0-1 by using the 99.99th quantile as the reference point
+
+# Updates from previous assessment
+
+One additional year of data, and revised data for years 2014-2015 were incorporated (though these revisions to the source data occured in 2016, the updated data were only first included in this - the 2018 - assessment). Added gapfilling where weeks with one or no days of data are gapfilled with days from previous and subsequent weeks. 
+
+***
+
+# Data Source
+
+**Reference**: The Ultraviolet Radiation pressures layer uses the [Aura OMI GLobal Surface UVB Data Product](http://disc.sci.gsfc.nasa.gov/Aura/data-holdings/OMI/omuvbd_v003.shtml).  
+**Native Data Resolution**: 1 degree  
+**Values**: Level-3 OMI Surface UV Irradiance and Erythemal Dose- OMUVBd  
+**Time Range**: Daily data from 2005 - 2017 (10/1/2004 through 7/14/2018, but only full years of data are used)
+**Format**: NetCDF HDF5 (.he5.nc)
+**Downloaded**: July 24, 2018
+
+***
+  
+# Methods  
+
+## Setup
+
+```{r setup, message = F, warning = F, eval=F}
+
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
+
+## comment out when knitting; set first when doing the data prep!
+# setwd("~/github/ohiprep_v2018/globalprep/prs_uv/v2018") # update to reflect current assessment year!
+
+## rhdf5 package for working with HDF5 files, from bioconductor: http://bioconductor.org/packages/release/bioc/html/rhdf5.html 
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("rhdf5")
+
+library(raster)
+source("../../../src/R/common.R")
+
+library(ncdf4)
+library(rgdal)
+library(sf) # use simple features rather than sp
+library(rhdf5)
+library(ggplot2)
+library(RColorBrewer)
+library(foreach)
+library(doParallel)
+library(dplyr)
+library(readr)
+library(stringr)
+library(httr)
+library(lubridate)
+library(googleVis)
+library(animation)
+library(plotly)
+
+## update these 3 to reflect current assessment year, or whichever year data is being used!!!
+data_yr <- "d2018"
+raw_data_dir <- file.path(dir_M, "git-annex/globalprep/_raw_data/NASA_OMI_AURA_UV", data_yr)
+int_sp_data <- file.path(dir_M, "git-annex/globalprep/prs_uv/v2018/int") # intermediate spatial data location
+out_dir <- file.path(dir_M, sprintf("git-annex/globalprep/prs_uv/v2018/output"))
+
+## years of data we are using for this data layer
+yrs <- c(2005:2017)
+mths <- str_pad(1:12, 2, "left", pad = "0")
+days_full <- seq(1, 358, 7)
+
+## global ocean raster at 1km for resampling/projecting purposes
+ocean <- raster(file.path(dir_M, "model/GL-NCEAS-Halpern2008/tmp/ocean.tif"))
+ocean_shp <- st_read(file.path(dir_M, "git-annex/globalprep/spatial/d2014/data"), layer = "regions_gcs")
+land <- ocean_shp %>% filter(rgn_typ %in% c("land", "land-disputed", "land-noeez")) %>% st_geometry()
+
+## define mollweide projection CRS
+mollCRS <- crs("+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
+ 
+## define colors in spectral format for plotting rasters -- rainbow color scheme  
+cols <- rev(colorRampPalette(brewer.pal(9, "Spectral"))(255))
+```
+
+
+## Downloading the NetCDF (.he5.nc) Files 
+
+
+Data files can be found in the [GES DISC EARTHDATA Data Archive](https://disc.gsfc.nasa.gov/datasets/OMUVBd_V003/summary). An EarthData account will be required, and will need to be linked to the GES DISC data archive, see [instructions here](https://disc.gsfc.nasa.gov/earthdata-login). Download a links list for the variable "ErythemalDailyDose", in NetCDF format. Note this list is __valid for only 2 days__ so a new one must be generated if data is to be downloaded after that time frame. Once the links list _.txt_ file has been downloaded, the code below will use the list and earthdata login info (username and password) to download the new data files into the raw data directory. The naming convention of the downloaded files: 'OMI-Aura' refers to the instrument, 'L3' means it is a level 3 data product, 'OMUVBd' is the measurement, the first date is when the data was recorded, the second date and time corresponds to modification/upload of the data.
+
+
+
+```{r earthdata login info, eval = F}
+## need  username and password, define in console when prompted (or read from secure file), don't save here!!
+usrname <- readline("Type earthdata username:")
+pass <- readline("Type earthdata password:")
+```
+
+
+```{r download the data, eval = F}
+## this doesn't run on Mazu for some reason; use 'uv_download_data.R' run locally on R to download locally, then map Mazu at manually move over files
+
+## read in file list .text, downloaded from earthdata & saved in destination folder (same as raw_data_dir)
+file_list_raw <- read_delim(file.path(raw_data_dir, "file_list.txt"), delim = "\n", col_names = FALSE)
+file_list <- file_list_raw %>% 
+  mutate(url_str = as.character(X1)) %>% 
+  mutate(check_netcdf = str_match(url_str, pattern = "http.*OMI-Aura_L3-OMUVBd.*nc")) %>%
+  filter(!is.na(check_netcdf)) %>% 
+  select(url_str)
+
+## set up timekeeping for data download
+t0 = Sys.time()
+n.pym = length(file_list$url_str)
+i.pym = 0
+
+## download the data
+for(i in 1:3){
+  url = as.character(file_list[i,])
+  name_raw_file = substr(url, 88, 144)
+  
+  x = httr::GET(url, authenticate(usrname, pass, type = "basic"), verbose(info = TRUE, ssl = TRUE))
+  bin = content(x, "raw")
+  writeBin(bin, file.path(raw_data_dir, "data", name_raw_file)) # gnutls_handshake() failed: Handshake failed
+  
+  i.pym <- i.pym + 1
+  min.done <- as.numeric(difftime(Sys.time(), t0, units="mins"))
+  min.togo <- (n.pym - i.pym) * min.done/i.pym
+  print(sprintf("Retrieving %s of %s. Minutes done=%0.1f, to go=%0.1f",
+                i.pym, n.pym, min.done, min.togo)) # approx time remaining for data download
+}
+
+## tip: after downloading, check all .he5.nc files are about the same size i.e. they all downloaded properly/fully
+```
+
+
+## Create rasters from NetCDF files
+
+```{r list and check raw files, eval = F}
+## list and check missing dates in NetCDF data files
+
+## list all files from raw data folder
+files <- list.files(file.path(raw_data_dir, "data"), pattern = "OMI-Aura_L3-OMUVBd.*.he5.nc$", full.names = TRUE) # netcdf not hdf
+files <- files[substr(files, 96, 99) %in% yrs] # select only files for yrs we want
+
+## check all days are there; should go from Oct 2004 through Dec 31 of last full year of data
+files_df <- files %>% 
+  data.frame() %>% 
+  rename(fullname = ".") %>% # View(files_df)
+  mutate(post_modify_date = substr(fullname, 111, 119),
+         year = substr(fullname, 96, 99), 
+         mo = substr(fullname, 101, 102), 
+         dy = substr(fullname, 103, 104)) %>%
+  mutate(date = paste(year, mo, dy, sep = "-"),
+         wk_of_yr = lubridate::week(as_date(date))) %>% 
+  group_by(year, wk_of_yr) %>% 
+  mutate(nday_in_wk = n()) %>% 
+  ungroup() 
+
+check_ndays <- files_df %>%
+  group_by(year, mo) %>% # group_by(year) %>% 
+  summarize(ndays = n()) # View(check_ndays)
+```
+
+
+
+### Caluculate Weekly Means and Standard Deviations
+
+Calculate weekly means and standard deviations across all years:
+
+```{r calc weekly means and st devs, eval = F}
+## for every week in each year of the time series, calculate weekly mean and standard deviation
+registerDoParallel(3)
+
+## note: 2016 wk 22 has only 4 layers (4th layer all NAs) and length(days)=52; missing all week 23
+
+foreach (yr = yrs) %dopar% { # j = 22; yr = 2016
+  
+  l <- files[substr(files, 96, 99) == yr]
+  
+  days_df <- files_df %>%
+    filter(year == yr) %>%
+    select(wk_of_yr, nday_in_wk) %>%
+    distinct() %>% # select just distinct weeks with number of data days they contain
+    tidyr::complete(wk_of_yr = seq(1:53)) %>% # possible max 53 weeks
+    mutate(nday_in_wk = replace(nday_in_wk, is.na(nday_in_wk), 0)) %>% # zeros if no data
+    mutate(lag_nday = lag(nday_in_wk),
+           lag_nday = replace(lag_nday, is.na(lag_nday), 1),
+           doy = cumsum(lag_nday)) # day-of-year for start of each week of data
+  
+  days <- days_df$doy
+  weeks <- days_df$wk_of_yr
+
+  for (j in weeks[-length(weeks)]) { # print(days[j]:(days[j+1]-1)) # checking without foreach+dopar
+    
+    ## gapfill for weeks with 1 or fewer days using prev + subseq. weeks
+    if(days_df$nday_in_wk[j] < 2){
+      wk_files <- l[days[j-1]:(days[j+2]-1)] # gapfilling
+    } else {
+      wk_files <- l[days[j]:(days[j+1]-1)]
+    }
+    
+    rasters <- raster(wk_files[1], varname = "ErythemalDailyDose")
+    for(i in wk_files[-1]){
+      r <- raster(i, varname = "ErythemalDailyDose")
+      rasters <- stack(rasters, r)
+    }
+    uv_week <- rasters
+    week = str_pad(weeks[j], 2, "left", pad = "0") 
+    
+    
+    week_mean <- calc(uv_week, fun = function(x) {mean(x, na.rm = TRUE)},
+                      filename = sprintf("%s/weekly_means/weekly_means_%s_%s.tif", 
+                                         int_sp_data, yr, week), overwrite = TRUE)
+    
+    week_sd <- calc(uv_week, fun = function(x) {sd(x, na.rm = TRUE)},
+                    filename = sprintf("%s/weekly_sd/weekly_sd_%s_%s.tif", 
+                                       int_sp_data, yr, week), overwrite = TRUE)
+    
+    week_mean_sd <- overlay(week_mean, week_sd, fun = function(x, y) {x + y},
+                            filename = sprintf("%s/weekly_mean_sd/weekly_mean_sd_%s_%s.tif", 
+                                               int_sp_data, yr, week), overwrite = TRUE)
+    
+  }
+}
+
+
+## get weekly climatologies across all years in the time series
+names_weekly <- list.files(file.path(int_sp_data, "weekly_means"), full.names = TRUE)
+match_weeks <- substr(names_weekly, 87, 92) %>% unique()
+
+## check all weeks expected to be there are there
+names_weekly_df <- names_weekly %>% 
+  data.frame() %>%
+  rename(fullname = ".") %>% 
+  mutate(yr = substr(fullname, 82, 85),
+         wk = substr(fullname, 87, 88)) # View(names_weekly_df)
+
+tmp <- names_weekly_df %>% # View(tmp)
+  select(yr, wk) %>%
+  group_by(yr) %>% 
+  summarize(maxwk = max(wk))
+
+
+foreach(i = match_weeks) %dopar% {
+  w = names_weekly[(substr(names_weekly, 87, 92) == i)] %>% stack()
+  
+  m   <- calc(w, fun = function(x){mean(x, na.rm = TRUE)}, 
+              filename = sprintf("%s/weekly_climatologies/mean_week_%s", int_sp_data, i),
+              overwrite = TRUE)
+  
+  sd  <- calc(w, fun = function(x){sd(x, na.rm = TRUE)}, 
+              filename = sprintf("%s/weekly_climatologies/sd_week_%s", int_sp_data, i),
+              overwrite = TRUE)
+  
+  m_sd <- overlay(m, sd, fun = function(x, y){x + y},
+                  filename = sprintf("%s/weekly_climatologies/mean_sd_week_%s", int_sp_data, i),
+                  overwrite = TRUE) ## climatologies based on mean & sd of all years, additional year each assessment...
+}
+```
+
+
+## Compare to Climatology
+
+Compare each week in each year to the climatology for that week. The climatology is equal to the mean plus one standard deviation.
+
+```{r compare week to climatology, eval = F}
+## loop to calculate annual positive anomalies
+foreach (i = yrs) %dopar% {
+  
+  match_weeks <- names_weekly_df %>% filter(yr == i)
+  s = stack()
+
+  for(j in match_weeks$wk) {
+    w_mean = raster(sprintf("%s/weekly_means/weekly_means_%s_%s.tif", int_sp_data, i, j)) # mean UV for week j, year i
+    w_anom = raster(sprintf("%s/weekly_climatologies/mean_sd_week_%s.tif", int_sp_data, j)) # week j climatology
+    count = overlay(w_mean, w_anom, fun = function(x, y){ifelse(x > y, 1, 0)}) # compare to average anomaly for that week
+    s = stack(s, count)
+  }
+  
+  year = calc(s, fun = function(x){sum(x, na.rm = TRUE)},
+              filename = sprintf("%s/annual_anomalies_diff/annual_pos_anomalies_%s.tif", int_sp_data, i),
+              overwrite = TRUE) ## each assessment get new year of data, another layer in this calculation...
+}
+```
+
+
+## Calculate Differences
+
+Calculate the difference in total number of anomalies over a 5 year period compared to the first 5 years (2005-2009)
+
+```{r calculate differences, eval = F}
+
+l <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
+                        pattern = "anomalies", full.names = TRUE)
+
+## reference period is 2005-2009
+ref <- l[1:5] %>% stack() %>%
+        calc(., fun = function(x){sum(x, na.rm = TRUE)})
+
+plot(ref, col = cols, axes = FALSE, main = "Total Number of Anomalies 2005-2009")
+plot(land, add = TRUE)
+
+registerDoParallel(4)
+
+foreach(i = 2005:(max(yrs) - 4)) %dopar% {
+  
+  ## calculate difference between total number of anomalies in recent and historical (2005-2009) time periods
+  y <- i:(i + 4)
+  s <- stack(l[str_sub(l, -8, -5) %in% y]) %>% sum(., na.rm = TRUE)
+  diff <- s - ref
+  projection(diff) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  
+  writeRaster(diff, 
+              filename = sprintf("%s/annual_anomalies_diff/annual_diff_%s_%s.tif", 
+                                 int_sp_data, y[1], y[5]), 
+              overwrite = TRUE)
+  
+}
+```
+
+
+## Rescale
+
+```{r rescale, eval = F}
+
+ref_files <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
+                        full.names = TRUE, pattern = "diff")
+
+## this says reference point is 41
+read.csv("../../supplementary_information/v2016/reference_points_pressures.csv", stringsAsFactors = FALSE) %>%
+             filter(pressure == "Ultraviolet Radiation Anomalies") %>%
+             dplyr::select(ref_point) %>%
+             as.numeric(.$ref_point)
+
+## get the reference point (resc_num = rescale number, excludes baseline 2005_2009 tif)
+vals <- c()
+for(i in 2006:(max(yrs) - 4)){
+  max_yr <- i + 4
+  m <- raster(ref_files[str_sub(ref_files, -13, -10) == i]) %>% 
+    mask(as(land, "Spatial"), inverse = TRUE) %>% getValues()
+  vals <- c(vals, m)
+}
+resc_num  <- stats::quantile(vals, prob = 0.9999, na.rm = TRUE) # 42 for v2018
+
+## rescale using reference point
+for(file in ref_files){
+  
+  print(file)
+  
+  the_name <- gsub(".tif", "", basename(file))
+  m <- raster(file) %>% 
+    calc(fun = function(x){ifelse(x > 0, ifelse(x > resc_num, 1, x/resc_num), 0)}, 
+         filename = file.path(int_sp_data, sprintf("rescaled/%s_rescaled.tif", the_name)),
+         overwrite = TRUE)
+}
+
+resc_files <- list.files(file.path(int_sp_data, "rescaled"), 
+                        full.names = TRUE, pattern = "rescaled.tif")
+
+## resample to ocean raster scale (~1km) and then mask
+registerDoParallel(4)
+foreach(i = 2005:(max(yrs) - 4)) %dopar% {
+  max_yr <- i + 4
+  
+  mol1km_masked <- resc_files[str_sub(resc_files, -22, -19) == i] %>%
+    raster() %>% 
+    projectRaster(crs = mollCRS, over = TRUE, method = "ngb") %>%
+    resample(ocean, method = "ngb") %>%
+    mask(ocean, 
+         filename = file.path("/home/shares/ohi/git-annex/globalprep/prs_uv/v2018/testing/output", 
+                              sprintf("uv_%s_%s-2005_2009_mol_1km.tif", i, max_yr)),
+         overwrite = TRUE)
+}
+```
+
+***
+
+# Results
+ 
+```{r view_output, eval=F}
+
+mol1km_masked <- list.files(out_dir, pattern = "uv_.*_mol_1km.tif", full.names = TRUE)
+out <- raster(mol1km_masked[length(mol1km_masked)])
+plot(out, box = FALSE, col = cols, axes = FALSE, main = "UV Pressure Layer \n OHI 2018")
+```
+
+
+## Extract Data for Each Region
+
+```{r extract_region_data, eval=F}
+
+## load raster/zonal data
+zones <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/regions_eez_with_fao_ant.tif"))
+rgn_data <- read.csv("~/github/ohi-global/eez/spatial/regions_list.csv") %>%
+  filter(rgn_id <= 250)
+
+## get raster data
+rasts <- list.files(out_dir, full = TRUE, pattern = "uv_.*_mol_1km.tif")
+pressure_stack <- stack(rasts)
+```
+
+```{r gif, eval=F}
+
+saveGIF({
+  for(i in 1:nlayers(pressure_stack)){
+    n = sprintf("UV Pressure %s", 
+                substr(names(pressure_stack[[i]]), 4, 12))
+    plot(pressure_stack[[i]], 
+         zlim = c(0, 1), # don't forget to fix the zlimits
+         axes = FALSE, box = FALSE, col = cols,
+         main = n)}}, 
+  ani.width = 750,
+  ani.height = 400,
+  movie.name = "uv.gif")
+```
+
+```{r extract_region_results, eval = F}
+
+## extract data for each region
+regions_stats <- zonal(pressure_stack, zones, fun = "mean", na.rm = TRUE, 
+                       progress = "text") %>% data.frame()
+write.csv(regions_stats, "int/uv_mean_rgn.csv", row.names = FALSE)
+
+## check regions are all present or missing as expected
+setdiff(regions_stats$zone, rgn_data$rgn_id) # high seas and Antarctica
+setdiff(rgn_data$rgn_id, regions_stats$zone) # Antarctica is 213
+
+data <- merge(rgn_data, regions_stats, all.y = TRUE, by.x = "rgn_id", by.y = "zone") %>%
+  tidyr::gather("year", "pressure_score", starts_with("uv")) %>%
+  filter(rgn_id <= 250) # filter out non OHI global regions
+
+uv_data <- data %>%
+  mutate(year = substring(year, 9, 12)) %>%
+  mutate(year = as.numeric(year)) %>%
+  dplyr::select(rgn_id, rgn_name, year, pressure_score)
+```
+
+
+```{r save_results, eval=F}
+
+## visualize data using googleVis plot
+plotData <- uv_data %>%
+  dplyr::select(rgn_name, year, pressure_score)
+motion = gvisMotionChart(plotData, 
+                         idvar = "rgn_name", 
+                         timevar = "year")
+plot(motion)
+print(motion, file = "uv.html")
+
+
+## save data layer
+uv_data <- uv_data %>%
+  dplyr::select(rgn_id, year, pressure_score)
+write.csv(uv_data, "output/uv.csv", row.names = FALSE)
+```
+
+
+```{r compare_previous_year, eval=F}
+
+uv_data <- read.csv("output/uv.csv")
+
+old <- uv_data %>% 
+  filter(year == 2016) %>% # data years lag assessment yrs by 1
+  select(-year, new_pressure = pressure_score) %>% 
+  left_join(read.csv("../v2017/output/uv.csv") %>% filter(year == 2016),
+             by = c("rgn_id")) %>% 
+  rename(old_pressure = pressure_score)
+
+plot_diff <- ggplot(old, aes(new_pressure, old_pressure, label = rgn_id)) + 
+  geom_point() + 
+  geom_abline()
+ggplotly(plot_diff)
+
+# ggplot(old %>% mutate(difference = new_pressure - old_pressure), aes(difference)) + geom_histogram(binwidth = 0.002)
+```
+
+
+***
+
+# Citation information  
+
+Niilo Kalakoski, Panu Lahtinen, Jari Hovila (May 2016) OMI/Aura Surface UVB Irradiance and Erythemal Dose Daily L3 Global Gridded 1.0 degree x 1.0 degree V3, NASA Goddard Space Flight Center.

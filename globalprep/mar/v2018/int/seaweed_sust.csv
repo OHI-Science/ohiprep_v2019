@@ -1,0 +1,18 @@
+country,species_fao,fao,environment,species_Truj,taxon,match_type,gapfill,Maric_sustainability,Genetic.escapees
+NA,Laver (Nori),,,Laver (Nori),,species,sp_average,0.693333333,1
+NA,Nori nei,,,Laver (Nori),,species,sp_average,0.693333333,1
+NA,Bright green nori,,,Laver (Nori),,species,sp_average,0.693333333,1
+NA,Green laver,,,Laver (Nori),,species,sp_average,0.693333333,1
+NA,Brown seaweeds,,,Brown seaweeds,,species,sp_average,0.93,1
+NA,[Chondracanthus chamissoi],,,[Chondracanthus chamissoi],AL,taxon,taxon_average,0.83,0.95
+NA,[Porphyra columbina],,,[Porphyra columbina],AL,taxon,taxon_average,0.83,0.95
+NA,Babberlocks,,,Babberlocks,AL,taxon,taxon_average,0.83,0.95
+NA,Caulerpa seaweeds,,,Caulerpa seaweeds,AL,taxon,taxon_average,0.83,0.95
+NA,Coarse seagrape,,,Coarse seagrape,AL,taxon,taxon_average,0.83,0.95
+NA,Dulse,,,Dulse,AL,taxon,taxon_average,0.83,0.95
+NA,Fusiform sargassum,,,Fusiform sargassum,AL,taxon,taxon_average,0.83,0.95
+NA,Japanese kelp,,,Japanese kelp,AL,taxon,taxon_average,0.83,0.95
+NA,Mozuku,,,Mozuku,AL,taxon,taxon_average,0.83,0.95
+NA,Seaweeds nei,,,Seaweeds nei,AL,taxon,taxon_average,0.83,0.95
+NA,Wakame,,,Wakame,AL,taxon,taxon_average,0.83,0.95
+NA,Wakame nei,,,Wakame nei,AL,taxon,taxon_average,0.83,0.95

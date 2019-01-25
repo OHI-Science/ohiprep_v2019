@@ -1,0 +1,509 @@
+---
+title: "OHI 2018 - Soft bottom pressure data prep"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+# Summary
+The habitat pressure data layer is created from fish catch by gear type of industrial and non industrial fishing profided by Watson (2018). Total tonnes of catch are calculated for each OHI region and then standarized by area (km^2) soft-bottom habitat in each region. These values are then rescaled to be between 0 and 1. 
+
+# Updates from previous assessment
+This year we are using the Watson (2018) data to calculate the soft bottom pressure rather than Sea Around Us. 
+
+Data reports catch by gear type. For each gear type we assing a multiplier acording to how much the gear affects the sea bottom. Here the table with the multipliers (1 is extramly harmfull and 0 is not harmful)
+
+Gear  | Multiplier
+------|-----------
+Trawl | 1
+Dredge | 1
+Gillnet | 0.5
+Trap  | 0.5
+Other | 0.25
+Trawl midwater | 0
+Pole and Line | 0
+Longline | 0
+Purse seine | 0
+Seine | 0
+
+Also this year artisanal catches were included in our analysis because the small scale fisheries includes catch from soft-bottom destructive gear types. 
+
+
+***
+
+# Data Source 
+**Reference**: Watson, R. A. and Tidd, A. 2018. Mapping nearly a century and a half of global marine fishing: 1869–2015. Marine Policy, 93, pp. 171-177. [(Paper URL)](https://www.sciencedirect.com/science/article/pii/S0308597X18300605?via%3Dihub)
+
+**Downloaded**: July 17, 2018 from IMAS portal (see prs_fish layer for more details)
+
+**Description**:  Global fisheries landings data per cell separated by Industrial versus Non-Industrial catch, IUU, and discards.
+
+**Native data resolution**: 
+
+**Time range**: 1950 - 2015
+
+**Format**:  csv format
+
+***
+  
+# Methods 
+First create one raster a year with all catches (industrial and non industrial) using gear that harm soft-bottom. 
+Then extract catches per OHI regions and standarize by soft-bottom habitat of each region.We usd a ln(x + 1) transformation becasue density data was extremely skewed. Finally, we rescale the transformed data dividing by the maximum value across all years. A second rescale was done using the media values across years. 
+
+This script provides pressure scores, health indicators and trend values for soft bottom habitats.  
+
+***
+
+## Setup
+
+```{r, eval=FALSE}
+
+library(tidyverse)
+library(parallel)
+library(foreach)
+library(doParallel)
+library(raster)
+library(rasterVis)
+library(seaaroundus)
+library(RColorBrewer)
+library(cowplot)
+library(colorspace)
+library(sp)
+library(rgdal)
+library(sf)
+
+#setwd("~/github/ohiprep_v2018/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018")
+#setwd("globalprep/hab_prs_hd_subtidal_soft_bottom/v2018")
+
+registerDoParallel(4) # registering cores for parallel processing
+
+
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/spatial_common.R')
+
+
+## color palette
+cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+mytheme=rasterTheme(region=cols)
+
+
+options(scipen=999)
+
+
+```
+
+## Aggregate annual industrial catch by type of gear
+
+First get the template raster with a resolution of 0.5 degree cells. The `getcells()` function comes from the [seaaroundus R package](https://github.com/ropensci/seaaroundus).
+
+The values of these cells are the Cell ID numbers. In the fisheries catch dataset, these Cell ID numbers match up with the "Seq" numbers.
+
+```{r, eval=FALSE}
+
+saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
+
+saup_rast <- raster(ncol=720, nrow=360)
+saup_rast[] <- saup_cells
+
+plot(saup_rast,col=cols,main = "SAUP Cell IDs")
+
+```
+
+
+Then create one raster per year for industrial and non industrial catches using gear that harm soft bottom. 
+
+
+```{r, eval=FALSE}
+years <-  c(2003:2015)
+
+##Data frame with each gear in the dataset with the corresponding multiplier according to how much they harm the ocean bottom
+multipliers <- data.frame(FleetGearName = c("Dredge", "Gillnet", "Lines Non-tuna", "Longline Non-tuna", "LonglineTuna", "Other", "Pole and Line Tuna", "Purse seine Non-tuna", "Purse seine Tuna", "Seine", "Trap", "Trawl", "Trawl midwater"), multiplier = c(1, 0.5, 0, 0, 0, 0.25, 0, 0, 0, 0, 0.5, 1, 0))
+
+##Loop to create rasters of catches using gear that hasr the soft bottom.
+
+foreach(yr = years) %dopar%{ #yr = 2015
+  
+  ##read in raw data for indurtrial catch per the year
+  raw_ind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchInd_'),yr,'.rds'))
+  
+  ## Wrangle data, discount catch by multipleir and add catches per cell
+  catch_ind <- raw_ind %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
+    dplyr::left_join(multipliers, by = "FleetGearName") %>% 
+    dplyr::mutate(catch_discount = catch*multiplier) %>% 
+    dplyr::group_by(Cell) %>%
+    dplyr::summarise(cell_catch_ind = sum(catch_discount)) 
+  
+   ##read in raw data for non-indurtrial catch per the year
+  raw_Nind <- readRDS(paste0(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_'),yr,'.rds'))
+  
+  ## Wrangle data, discount catch by multipleir and add catches per cell
+  catch_Nind <- raw_Nind %>%
+    rowwise() %>%
+    dplyr::mutate(catch = sum(Reported, IUU, Discards, na.rm=TRUE)) %>%
+    left_join(multipliers, by = "FleetGearName") %>% 
+    dplyr::mutate(catch_discount = catch*multiplier) %>% 
+    dplyr::group_by(Cell) %>%
+    dplyr::summarise(cell_catch_Nind = sum(catch_discount))
+  
+
+  ##Sum industrian and non-industrial
+  catch_total <- catch_ind %>% 
+    dplyr::full_join(catch_Nind, by= "Cell") %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(total = sum(cell_catch_ind, cell_catch_Nind, na.rm=TRUE)) %>%
+    dplyr::select(Cell, total)
+
+  #rasterize catch by swapping cell ids with (calls the suap raster we made above)
+  raster::subs(saup_rast, catch_total, by = 'Cell', which = 'total', subsWithNA=TRUE, filename = file.path(dir_M, paste0('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_',yr,'.tif')), overwrite=TRUE) #saves raster directly to Mazu
+  
+}
+
+##Reading in the raster to make sure it looks as expected
+test<- raster(file.path(dir_M, ('git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2015.tif')))
+
+plot(test) ##Looks like all information is there!
+
+
+```
+
+
+## Extract values for each OHI region
+
+```{r, eval=FALSE}
+
+## Read tif as rasters for all catches using gear that harm soft bottom
+
+## Reference raster
+catch_crs <- raster(file.path (dir_M,'git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int/catch_count_2003.tif'))
+
+## OHI region polygons
+ohi_regions <- st_read(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017"), layer="regions_2017_update")
+
+## Make the region coordinate reference system the same as the catch data
+ohi_regions_wgs <-  st_transform(ohi_regions, proj4string(catch_crs))
+
+
+## List of all tifs with catches that need to be read in the loop
+catch_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018/int"), pattern = 'catch_count_.*.tif', full.names = TRUE)
+
+##catch_rasts <- catch_rasts[c(1,2,3,4,5,6,7,8,9,10,11,13)] Filter for the 12 missing rasters to run in the loop
+
+
+#registering cores for parallel processing
+registerDoParallel(4)
+
+foreach(sb_catch = catch_rasts) %dopar% { # sb_catch = catch_rasts[12]
+
+cat(sb_catch)
+
+catch_year <- str_extract(basename(sb_catch), "(\\d)+") ##extract the correspending year for each file
+
+catch <- raster(sb_catch)
+
+data <- raster::extract(catch, ohi_regions_wgs, weights = TRUE, normalizeWeights = FALSE, progress = 'text') 
+
+names(data) <- paste(ohi_regions$type_w_ant, ohi_regions$rgn_ant_id, sep="_") 
+sb_catch_rgn   <- plyr::ldply(data, rbind)
+
+# the following code keeps the raster information when the raster lands partially on the land polygons
+sb_catch_rgn <- sb_catch_rgn %>%
+  tidyr::separate(.id, c("rgn_type", "rgn_id"), sep="_") %>%
+  dplyr::mutate(tonnes = value*weight) %>%
+  dplyr::group_by(rgn_type, rgn_id) %>%
+  dplyr::summarize(tonnes = sum(tonnes, na.rm=TRUE)) %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::summarize(tonnes = sum(tonnes, na.rm=TRUE)) %>%
+  dplyr::ungroup() %>%
+  dplyr::arrange(as.numeric(as.character(rgn_id))) %>%
+  dplyr::mutate(year = catch_year)
+
+write.csv(sb_catch_rgn, sprintf("int/sb_catch_rgn_%s.csv", catch_year), row.names=FALSE)
+
+}
+
+
+```
+
+## Standarized catches per soft-bottom area
+
+```{r, eval=FALSE}
+area <-  read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/globalprep/hab_prs_hd_subtidal_soft_bottom/v2016/output/habitat_extent_softbottom.csv")
+
+
+## Read in csv for each year and combine them in one data frame
+
+## Make sure you are in the correct wd
+#setwd("~/github/ohiprep_v2018/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018") 
+
+files <- list.files("int", pattern = "sb_catch_rgn_.*.csv", full.names = TRUE) 
+
+sb_catch_list <- lapply(files, function(x){read.csv(file=x)})
+
+sb_catch_all <- bind_rows(sb_catch_list)
+  
+
+data_density <- sb_catch_all %>%
+  left_join(area, by="rgn_id") %>%
+  filter(rgn_id <= 250) %>%
+  mutate(density = tonnes/km2)
+
+## find max density for each year
+max <- data_density %>%
+  group_by(year) %>%
+  summarize(maxDensity = max(density, na.rm=TRUE)) %>%
+  data.frame()
+
+write.csv(max, "int/reference_point_max.csv", row.names=FALSE) ##Make sure you are working in the correct working directory
+
+
+## Reference point = max values accroass all years
+ref_point <- read.csv("int/reference_point_max.csv")
+ref_point_max <- max(ref_point$maxDensity)
+
+##ref_point = 7052.172 (year 2015)
+
+## cheking for distribution of data. In the past density data happens to be very skewed
+hist(data_density$density) ## Yes, very skewed data
+
+## rescale the density: 
+## density is rescaled twice to reduce skew
+
+data_rescaled <- data_density %>%
+  mutate(density_rescaled_max = log(density + 1)/log(ref_point_max + 1)) %>% #pressure-type measure
+  mutate(inv_dens_rescaled_max = 1 - density_rescaled_max)  # health-type measure
+
+hist(data_rescaled$density_rescaled_max)
+hist(data_rescaled$inv_dens_rescaled_max)
+
+
+## Find the second rescaling point - median value of healthy-type meassure for each year
+ref_median <- data_rescaled %>%
+  group_by(year) %>%
+  summarize(ref_median = median(inv_dens_rescaled_max, na.rm=TRUE)) %>%
+  data.frame()
+
+write.csv(ref_median, "int/reference_point_median.csv", row.names=FALSE)
+
+
+ref_point_median <- min(ref_median$ref_median) # 0.8590695
+
+
+## Rescale for second time:  
+data_rescaled_2 <- data_rescaled %>%
+  mutate(density_rescaled_median = inv_dens_rescaled_max/ref_point_median) %>%
+  mutate(density_rescaled_median_capped = ifelse(density_rescaled_median > 1, 
+                                                   1, 
+                                                   density_rescaled_median))
+
+  hist(data_rescaled_2$density_rescaled_median_capped)
+  
+ 
+  hist(data_rescaled_2$density_rescaled_median_capped[data_rescaled_2$year==2014])
+  filter(data_rescaled_2, rgn_id==163)
+  filter(data_rescaled_2, year==2010)
+
+
+```
+
+## Comparing to old data
+
+```{r, eval=FALSE}
+
+  ## check against old data
+old <- read.csv("../v2017/output/habitat_health_softbottom.csv") %>%
+  dplyr::filter(year == 2014) %>% 
+  dplyr::select(rgn_id, old_health=health)
+  
+
+compare <- data_rescaled_2 %>%
+  filter(year==2014) %>%
+  dplyr::select(rgn_id, health = density_rescaled_median_capped) %>%
+  left_join(old)
+
+plot(health ~old_health, data=compare)
+abline(0,1, col = 'red')
+## Not a great correlation, but different years data and fisheries data is very different
+## some new NA values, but it doesn't seem like these have soft-bottom habitat
+## (at least according to our raster data)
+
+
+compare_plot <- ggplot(data = test, aes(x = old_health, y = health, label = rgn_id))+
+  geom_point()+
+  geom_abline(color = "red")
+
+plot(compare_plot)
+ggplotly(compare_plot)
+
+
+```
+
+
+## Calculate and save trend
+
+```{r, eval=FALSE}
+### Get relevant data
+
+save_dir <- "output"
+
+condition_pressure <- data_rescaled_2 %>%
+  mutate(habitat = "soft_bottom") %>%
+  mutate(pressure = 1 - density_rescaled_median_capped) %>% ##trasnfomes it back into pressure-measssure
+  dplyr::select(rgn_id, year, habitat, health=density_rescaled_median_capped, pressure) %>%
+  filter(!is.na(pressure))
+
+hist(condition_pressure$pressure)
+
+# get habitat trends
+stop_year <- max(condition_pressure$year)
+
+trend <- data.frame()
+
+for (status_year in (stop_year-4):stop_year){ #status_year = 2011
+  trend_years <- status_year:(status_year - 4)
+  first_trend_year <- min(trend_years)
+  
+  trend_new <- condition_pressure %>%
+    filter(year %in% trend_years) %>%
+    group_by(rgn_id) %>%
+    do(mdl = lm(health ~ year, data=.),
+       adjust_trend = .$health[.$year == first_trend_year]) %>%
+    summarize(rgn_id = rgn_id,
+              trend = round(coef(mdl)['year']/adjust_trend * 5, 4)) %>%
+    ungroup() %>%
+    mutate(trend = ifelse(trend > 1, 1, trend)) %>%
+    mutate(trend = ifelse(trend < (-1), (-1), trend))
+  
+  trend_new <- trend_new %>%
+    dplyr::mutate(habitat = "soft_bottom") %>%
+    dplyr::mutate(year = status_year) %>%
+    dplyr::select(rgn_id, year, habitat, trend)
+  
+  trend <- rbind(trend, trend_new)
+}
+  
+write.csv(trend, file.path(save_dir, "habitat_trend_softbottom.csv"), row.names=FALSE)
+ 
+  health <- condition_pressure %>%
+    dplyr::mutate(habitat = "soft_bottom") %>%
+    dplyr::select(rgn_id, year, habitat, health)
+  
+  write.csv(health, file.path(save_dir, "habitat_health_softbottom.csv"), row.names=FALSE)
+  
+  pressure <- condition_pressure %>%
+  dplyr::select(rgn_id, year, pressure_score = pressure)
+  
+  write.csv(pressure, file.path(save_dir, "hd_sb_subtidal.csv"), row.names=FALSE)
+  
+```
+
+Compare trend, pressure, pressure output to last year's values
+
+```{r, eval=FALSE}
+
+ ## Health data
+old_health <- read.csv("../v2017/output/habitat_health_softbottom.csv") %>%
+  dplyr::filter(year == 2014) %>% 
+  dplyr::select(rgn_id, old_health=health)
+  
+
+compare_health <-  read.csv("output/habitat_health_softbottom.csv")%>%
+  filter(year==2014) %>%
+  dplyr::select(rgn_id, health) %>%
+  left_join(old_health)
+
+plot(health ~old_health, data=compare_health)
+abline(0,1, col = 'red')
+
+
+##Pressure
+old_pressure <- read.csv("../v2017/output/hd_sb_subtidal.csv") %>%
+  dplyr::filter(year == 2014) %>% 
+  dplyr::select(rgn_id, old_pressure= pressure_score)
+  
+
+compare_pressure <-  read.csv("output/hd_sb_subtidal.csv")%>%
+  filter(year==2014) %>%
+  dplyr::select(rgn_id, pressure=pressure_score) %>%
+  left_join(old_pressure)
+
+plot(pressure ~old_pressure, data=compare_pressure)
+abline(0,1, col = 'red')
+
+compare_pressure_plot <- ggplot(data = compare_pressure, aes(x = old_pressure, y = pressure, label = rgn_id))+
+  geom_point()+
+  geom_abline(color = "red")
+
+plot(compare_plot)
+ggplotly(compare_pressure_plot)
+
+
+
+##Trend
+old_trend <- read.csv("../v2017/output/habitat_trend_softbottom.csv") %>%
+  dplyr::filter(year == 2014) %>% 
+  dplyr::select(rgn_id, old_trend= trend)
+  
+
+compare_trend <-  read.csv("output/habitat_trend_softbottom.csv")%>%
+  filter(year==2014) %>%
+  dplyr::select(rgn_id, trend) %>%
+  left_join(old_trend)
+
+plot(trend ~old_trend, data=compare_trend)
+abline(0,1, col = 'red')
+
+## Comparisons in general are not great but not too bad. Consider:this year we included more destructive gear, we also included artisanal (non-commercial catches) and Watson updated its methods
+
+
+```
+
+
+# Gapfill
+
+There was no gapfilling for these data. Created gapfill files with values of 0.
+Note: Every data layer has to have a corresponding gapfill file. If there is no gapfilling the gafill column is fill in with 0 as done below.
+
+```{r, eval=FALSE}
+
+hab_health_sb_gf <- read.csv("output/habitat_health_softbottom.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_health_sb_gf, "output/habitat_health_softbottom_gf.csv", row.names=FALSE)
+
+
+hab_trend_sb_gf <- read.csv("output/habitat_trend_softbottom.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hab_trend_sb_gf, "output/habitat_trend_softbottom_gf.csv", row.names=FALSE)
+
+
+hd_sb_subtidal_gf <- read.csv("output/hd_sb_subtidal.csv")%>%
+  mutate(gapfilled = 0) %>% 
+  select(rgn_id, year, gapfilled)
+
+write.csv(hd_sb_subtidal_gf, "output/hd_sb_subtidal_gf.csv", row.names=FALSE)
+
+
+
+```
+
+
+
+

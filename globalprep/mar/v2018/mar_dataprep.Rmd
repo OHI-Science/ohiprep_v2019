@@ -1,0 +1,989 @@
+---
+title: 'OHI 2018: Mariculture '
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/mar/v2018/mar_dataprep.html]?bro
+
+# Summary
+This analysis converts FAO mariculture data into data used to calculate the OHI global mariculture status score.  This also calculates the genetic escapee from mariculture pressure data.
+
+# Updates from previous assessment
+
+* New year of FAO mariculture yield data for 2016. 
+* Included edible seaweed species for the 2018 assessment (see species_list.csv). Tested three different scenarios of including/excluding seaweed (best judgement, exclude all seaweeds, exclude only seaweeds nei)
+* Added a row for Edible seaweeds taxa in Truj_label_sust.csv using the average of all seaweed species provided by Trujillo. 
+* Check for changes in genetic escapee data or general methods. We may be updating our approach to reference points in future assessments. All the reference point calculations occur in the ohi-global toolbox.
+
+
+***
+
+# Data Source 
+
+## Production data
+
+**Reference**:      
+http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
+Release date: March 2018
+FAO Global Aquaculture Production Quantity 1950_2016
+FAO metadata found [here](http://ref.data.fao.org/dataset?entryId=033ae7cf-b322-4dc5-8dfe-140140c56008&tab=metadata)
+
+**Downloaded**: 4/11/2018
+
+**Description**:  Quantity (tonnes) of mariculture for each country, species, year.
+
+**Time range**: 1950-2016 
+
+## Sustainability data
+
+**Reference**:      
+Mariculture Sustainability Index (Trujillo 2008)
+
+Trujillo, Pablo. 2008. “Using a Mariculture Sustainability Index to Rank Countries’ Performance.” In Fisheries Centre Research Reports, edited by Jackie Alder and Daniel Pauly. University of British Columbia, Vancouver, Canada: Fisheries Centre Research Reports. https://circle.ubc.ca/handle/2429/40933. 
+
+Original data table is located in the Trujillo 2008 paper saved in the OHI Zotero database.
+
+**Description**:  
+
+Original MSI rescaled from 1-10 to 0-1 for mariculture taxa groups.
+
+***
+  
+# Methods
+
+```{r setup, message=FALSE, warning=FALSE}
+
+knitr::opts_chunk$set(eval=FALSE)
+  
+## load libraries, set directories
+library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
+library(dplyr)
+library(stringr)
+library(tidyr)
+
+## comment out when knitting
+# setwd("globalprep/mar/v2018")
+
+
+## Load FAO-specific user-defined functions
+source('mar_fxs.R') # functions specific to mariculture dealing with compound countries
+source('../../../src/R/fao_fxn.R') # function for cleaning FAO files
+source('../../../src/R/common.R') # directory locations
+
+```
+
+# Import Raw Data: FAO Mariculture data
+
+Mariculture production in tonnes.
+
+```{r}
+
+mar <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_mariculture/d2018/FAO_GlobalAquacultureProduction_Quantity_1950_2016.csv'), check.names=FALSE, stringsAsFactors=FALSE) ; head(mar) 
+
+```
+
+# Wrangle: 
+
+## Tidy mariculture data
+
+Filter freshwater mariculture, make long format, and clean FAO codes.
+
+```{r}
+
+mar <- mar %>%
+  rename(country = `Country (Country)`,
+         FAO_name = `Species (ASFIS species)`, 
+         fao = `Aquaculture area (FAO major fishing area)`, 
+         environment = `Environment (Environment)`)
+table(mar$environment)  
+
+## include only marine environments
+mar <- mar %>%
+filter(environment %in% c("Brackishwater", "Marine"))  
+
+## convert to long format and clean FAO codes:
+## for some reason, I can't provide the data range in gather programatically!
+mar <- mar %>%
+  select(-Unit) 
+
+mar <- mar %>%
+  gather(key="year", value="value", num_range("",1950:2016)) %>%
+    fao_clean_data() 
+
+```
+
+## Update species names
+
+Update species name in the `raw/species_list.csv` file with names in the `mar` dataset (exclude non-food species). I simplified the species_list.  I cut the "species" name columns because it wasn't clear what this was trying to accomplish and created potential error.  
+
+```{r}
+
+## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.
+mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+  select(FAO_name, exclude, alias, Taxon_code)
+#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+#  select(FAO_name, exclude_no_seaweed, alias, Taxon_code)
+#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+#  select(FAO_name, exclude_no_nei, alias, Taxon_code)
+
+new.spp <- setdiff(mar$FAO_name, mar_sp$FAO_name)
+new.spp # check: if dim has 0 rows it means all match
+## if there is a list of species, hand check species_list.csv to see whether to keep (exclude seaweeds and species harvested for ornamental/medicinal), check if synonyms match Trujillo names
+
+## REMOVE SPECIES not relevant to mariculuture goal (i.e., non-food species)
+mar <- mar %>% left_join(mar_sp, by="FAO_name") 
+
+## Filters out species that should be excluded from the MAR sub-goal, depending on which of the 3 scenarios was read in. Searches for column name "exclude", "exclude_no_seaweed", or "exclude_no_nei"
+if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
+  
+ mar <- mar %>% filter(exclude==0)
+
+ } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
+  
+   mar <- mar %>% filter(exclude_no_seaweed==0)
+
+   } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
+  
+     mar <- mar %>% filter(exclude_no_nei==0)
+
+     }
+ 
+## change names using species alias or FAO species name (global changes)
+mar$species <- ifelse(!is.na(mar$alias), mar$alias, mar$FAO_name) 
+
+## sum production values for each group to account for duplicate rows after name change (remove NA values)
+mar <- mar %>%
+  filter(!is.na(value)) %>%
+  group_by(country, fao, environment, species, year, Taxon_code) %>% 
+    summarize(value = sum(value)) %>% 
+  ungroup()
+
+
+## eliminate country-species data with zero production throughout the time-series (1950-recent)
+mar <- mar %>%
+  group_by(country, species) %>%
+  mutate(total_value = sum(value)) %>%
+  filter(total_value > 0) %>%
+  select(-total_value) %>%
+  ungroup()
+
+```
+
+
+## Convert country names to OHI regions
+
+```{r}
+
+# Divide mariculture from countries that we report as separate regions (assume equal production in all regions)
+# Netherlands Antilles: Conch restoration among Aruba, Bonaire, Curacao
+# Channel Islands: Jersey and Guernsey
+# Bonaire/S.Eustatius/Saba
+# Yugoslavia SFR: no longer a country after 1992
+
+mar <- mar %>%
+  mutate(country = ifelse(country=="R\xe9union", "Reunion", country)) %>%  # this one is hard to get right
+  mar_split()  # function in mar_fxs.R
+
+mar_rgn <- name_2_rgn(df_in = mar, 
+                       fld_name='country', 
+                       flds_unique=c('species', 'fao', 'environment', 'Taxon_code', 'year')) 
+
+
+## sum values of regions with multiple subregions
+mar_rgn <- mar_rgn %>%
+  group_by(fao, environment, species, year, Taxon_code, rgn_id) %>% 
+  summarize(value = sum(value)) %>%
+  ungroup()
+
+```
+
+**Take a look at the tidied data for a single year and region**
+
+```{r}
+
+data.frame(filter(mar_rgn, rgn_id==130) %>%
+  filter(year==2013) %>%
+  arrange(species))
+
+```
+
+For some regions, a specific species can be altered so that it matches more general Trujillo sustainability data.  In this case, I don't want the name changes to be global because some regions may have more specific species data. 
+
+(Will explore this in the future, but will not implement this year).
+
+```{r, }
+# ## based on looking at the list, make a few name changes to match the regions Trujillo data
+# # Chile name modification
+# mar_rgn$species[mar_rgn$rgn_id==224 & mar_rgn$species == "Red abalone"] <- "Abalones nei"
+# mar_rgn$species[mar_rgn$rgn_id==224 & mar_rgn$species == "Japanese abalone"] <- "Abalones nei"
+# 
+# # China
+# mar_rgn$species[mar_rgn$rgn_id==209 & mar_rgn$species == "Areolate grouper"] <- "Groupers nei"
+# mar_rgn$species[mar_rgn$rgn_id==209 & mar_rgn$species == "Greasy grouper"] <- "Groupers nei"
+# mar_rgn$species[mar_rgn$rgn_id==209 & mar_rgn$species == "Hong Kong grouper"] <- "Groupers nei"
+# mar_rgn$species[mar_rgn$rgn_id==209 & mar_rgn$species == "Orange-spotted grouper"] <- "Groupers nei"
+# 
+# # Honduras
+# mar_rgn$species[mar_rgn$rgn_id==133 & mar_rgn$species == "Whiteleg shrimp"] <- "Penaeus shrimps nei"
+# 
+# # Italy
+# mar_rgn$species[mar_rgn$rgn_id==84 & mar_rgn$species == "Pacific cupped oyster"] <- "Cupped oysters nei"
+# 
+# # New Zealand
+# mar_rgn$species[mar_rgn$rgn_id==162 & mar_rgn$species == "Rainbow abalone"] <- "Abalones nei"
+# 
+# # Pakistan
+# mar_rgn$species[mar_rgn$rgn_id==53 & mar_rgn$species == "Penaeus shrimps nei"] <- "Marine crustaceans nei"
+# 
+# # Philippines
+# mar_rgn$species[mar_rgn$rgn_id==15 & mar_rgn$species == "Whiteleg shrimp"] <- "Penaeus shrimps nei"
+# 
+# # Portugal
+# mar_rgn$species[mar_rgn$rgn_id==183 & mar_rgn$species == "Golden carpet shell"] <- "Marine molluscs nei"
+# mar_rgn$species[mar_rgn$rgn_id==183 & mar_rgn$species == "Peppery furrow"] <- "Marine molluscs nei"
+# mar_rgn$species[mar_rgn$rgn_id==183 & mar_rgn$species == "Solen razor clams nei"] <- "Razor clams nei"
+# mar_rgn$species[mar_rgn$rgn_id==183 & mar_rgn$species == "Atlantic bluefin tuna"] <- "Marine fishes nei"
+# mar_rgn$species[mar_rgn$rgn_id==183 & mar_rgn$species == "Meagre"] <- "Marine fishes nei"
+# mar_rgn$species[mar_rgn$rgn_id==183 & mar_rgn$species == "Seabasses nei"] <- "Marine fishes nei"
+# mar_rgn$species[mar_rgn$rgn_id==183 & mar_rgn$species == "Soles nei"] <- "Marine fishes nei"
+# mar_rgn$species[mar_rgn$rgn_id==183 & mar_rgn$species == "White seabream"] <- "Marine fishes nei"
+# 
+# # Spain
+# mar_rgn$species[mar_rgn$rgn_id==182 & mar_rgn$species == "Atlantic bluefin tuna"] <- "Tuna-like fishes nei"
+# 
+# # Turkey
+# mar_rgn$species[mar_rgn$rgn_id==76 & mar_rgn$species == "Atlantic bluefin tuna"] <- "Tuna-like fishes nei"
+# mar_rgn$species[mar_rgn$rgn_id==76 & mar_rgn$species == "European seabass"] <- "Seabasses nei"
+# 
+# ### sum values of regions with multiple subregions
+# mar_rgn <- mar_rgn %>%
+#   group_by(fao, environment, species, year, Taxon_code, rgn_id) %>%
+#   summarize(value = sum(value)) %>%
+#   ungroup()
+
+
+```
+
+# Gapfilling
+
+## Fill in missing years after first year of harvest data with 0 values
+
+For example: Production of blue shrimp in Maine starts in 1983 -- don't include years before that.
+
+Checked to make sure that there weren't instances in which it made more sense to carry the previous year's data forward as a method of gapilling. This didn't seem to be the case.
+
+```{r}
+
+## spread mar_rgn to create a value for every year-species-region (if missing it will be given a NA)
+mar_rgn_spread <- spread(mar_rgn, year, value)
+dim(mar_rgn_spread)
+
+## turn data frame back into long format
+mar_rgn_gf <- gather(mar_rgn_spread, "year", "value", num_range("",1950:2016)) %>%
+  arrange(rgn_id, species, year, Taxon_code, fao, environment) 
+
+## NA values are converted to zero.
+mar_rgn_gf <- mar_rgn_gf %>%
+  mutate(year = as.numeric(as.character(year))) %>%
+  mutate(value_w_0 = ifelse(is.na(value), 0, value)) %>%
+  group_by(fao, environment, species, Taxon_code, rgn_id) %>% 
+  mutate(cum_value = cumsum(value_w_0)) %>%
+  ungroup() %>%
+  filter(cum_value > 0) %>% # eliminates years before mariculture began
+  mutate(gap_0_fill = ifelse(is.na(value), "NA_to_zero", "0")) %>% # record gapfill
+  mutate(value = ifelse(is.na(value), 0, value)) %>% # finally, convert all NAs in original column to 0
+  select(-cum_value, -value_w_0)
+```
+
+See how may NA values were converted to 0
+
+```{r}
+table(mar_rgn_gf$gap_0_fill)
+## 3790 of these out of 27810+3790 cases had NA values converted to 0
+
+```
+
+Remove species-region-environment time series with less than four years of mariculture production > 0 tonnes (assume these are not established mariculture programs).
+
+```{r}
+
+mar_rgn_gf = mar_rgn_gf %>% 
+  group_by(rgn_id, species, fao, environment) %>%
+  mutate (not_0 = length(value[value>0])) %>% # length of vector of years greater than 0
+  filter (not_0>3) %>% # filter for groups that have at least four years of mariculture production 
+  ungroup() %>% 
+  select(rgn_id, species, fao, environment, year, value, Taxon_code, gap_0_fill) 
+
+```
+
+Add a unique identifier per cultivated stock that describes each species, fao region, and environment grouping.
+
+```{r}
+
+## add a unique identifier per cultivated stock
+identifier = mar_rgn_gf %>% 
+  select(rgn_id, species, fao, environment) %>% 
+  unique() %>% 
+  mutate(species_code = 1:n())
+
+mar_rgn_gf = left_join(mar_rgn_gf, identifier)
+maric <- mar_rgn_gf
+
+```
+
+
+# Save file: 
+
+Used to estimate total mariculture yield per country.
+
+Saves the appropriate Mariculture-FP file depending on whether we are excluding species based on best judgement (exclude), all seaweeds (exclude_no_seaweed), or just seaweeds nei (exclude_no_nei). See method changes above.
+```{r}
+
+if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
+ write.csv(maric, 'output/MAR_FP_data.csv', row.names=FALSE)
+ } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
+   write.csv(maric, 'test/MAR_FP_data_no_seaweed.csv', row.names=FALSE)
+   } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
+     write.csv(maric, 'test/MAR_FP_data_no_nei.csv', row.names=FALSE)
+     }
+
+```
+
+# Import data: Trujillo sustainability scores
+
+These data describe the sustainability and genetic escapes for country/species combinations (and, in a couple cases, environment and fao region combinations). In cases where these data were not available for a specific county/species, we averaged the data across taxonomic groups to gapfill the missing data.
+
+```{r}
+
+## Trujillo sustainability data:
+sus = read.csv('raw/Truj_label_sust.csv', stringsAsFactors = FALSE, na.strings = NA)
+
+```
+
+# Wrangle
+
+```{r}
+
+## these need to be re-added (get cut when associated with region ids)
+sus_no_rgn <- filter(sus, is.na(country))
+
+```
+
+## Convert country names to OHI region names.
+
+```{r}
+
+sus_rgn <- name_2_rgn(df_in = sus, 
+                       fld_name='country', 
+                       flds_unique=c('species_fao', 'fao', 'environment', 'species_Truj'))
+
+sus_rgn <- bind_rows(sus_rgn, sus_no_rgn) %>%
+  unique()
+
+```
+
+**Check that the non-matches between Trujillo sustainability FAO spp (sus_rgn) and the FAO mariculture species in the wrangled FAO Aquaculture Production data table (maric) are not due to spelling errors or slightly different names. We want to include as many species that have sustainability scores as possible**
+
+```{r}
+
+## Make sure same species are spelled the same in the two data tables (e.g. check that there are no extra spaces)
+sort(setdiff(sus_rgn$species_fao, maric$species)) # species that are no longer have mariculture industry or are not included due to being freshwater or non-food
+
+sort(setdiff(maric$species, sus_rgn$species_fao)) # FAO species with no Trujillo data - there will probably be a long list
+
+```
+
+# FAO mariculture and sustainability scores
+
+Append sustainability score to the FAO mariculture data.
+
+The following joins the sustainability scores to regions/species that have Trujillo data.
+```{r}
+
+table(sus_rgn$match_type)
+
+## join taxa specific to country/species/environment
+c_sp_env = sus_rgn %>% 
+  filter(match_type == 'c_sp_env') %>% 
+  select(rgn_id, species=species_fao, environment, Sust_c_sp_env = Maric_sustainability)
+
+mar_sus <- maric %>%
+  left_join(c_sp_env, by= c("species", "environment", "rgn_id"))
+
+## join taxa specific to country/species/fao region
+c_sp_fao = sus_rgn %>% 
+  filter(match_type == 'c_sp_fao') %>% 
+  select(rgn_id, species=species_fao, fao, Sust_c_sp_fao = Maric_sustainability)
+
+mar_sus <- mar_sus %>%
+  left_join(c_sp_fao, by= c("species", "fao", "rgn_id"))
+
+```
+
+**Take a look at the data thus far**
+```{r}
+head(data.frame(filter(mar_sus, rgn_id==218 & species == "Atlantic salmon")))
+head(data.frame(filter(mar_sus, !is.na(Sust_c_sp_fao))))
+```
+
+```{r}
+## join taxa specific to country/species
+c_sp = sus_rgn %>% 
+  filter(match_type == 'c_sp') %>% 
+  select(rgn_id, species=species_fao, Sust_c_sp = Maric_sustainability)
+
+mar_sus <- mar_sus %>%
+  left_join(c_sp, by= c("species", "rgn_id"))
+```
+
+**Now look at a summary after appending all the Trujillo data**
+```{r}
+summary(mar_sus)
+```
+
+Merge the three Trujillo type categories into a single sustainability score column in the following order:
+
+1. Sust_c_sp_env: taxa specific to country/species/environment (smallest taxonomic level)
+2. Sust_c_sp_fao:  taxa specific to country/species/fao region
+3. Sust_c_sp: taxa specific to country/species (highest taxonomic level)
+
+For example, if Sust_c_sp_env is missing, use Sust_c_sp_fao and so on. 
+
+```{r}
+mar_sus = mar_sus %>% 
+  mutate(Sust = ifelse(!is.na(Sust_c_sp_env), Sust_c_sp_env, Sust_c_sp_fao)) %>%
+  mutate(Sust = ifelse(is.na(Sust), Sust_c_sp, Sust)) %>%
+  select(-Sust_c_sp_env, -Sust_c_sp_fao, -Sust_c_sp)
+```
+
+
+This joins the sustainability data that is gapfilled either at the species level (average of specific species/genera across regions) or at a higher course taxonomic levels and documents which data are gapfilled and how.
+
+```{r}
+
+## Select observations gapfilled at the species/genera level:
+gf_sp_sus <- sus_rgn %>% 
+  filter(gapfill != "actuals" & match_type == "species") %>%
+  select(species = species_fao, gapfill, Sust_gf_sp = Maric_sustainability)
+
+## check that there are no duplicated species_fao
+gf_sp_sus[duplicated(gf_sp_sus$species), ]
+
+## Match gapfilling values by species
+mar_sus_gf = mar_sus %>%
+  left_join(gf_sp_sus, by = 'species')
+
+## Select observations gapfilled at the coarse taxon level:
+gf_taxon_sus <- sus_rgn %>% 
+  filter(gapfill != "actuals" & match_type == "taxon") %>%
+  select(Taxon_code=taxon, Sust_gf_taxon = Maric_sustainability)
+
+## Match gapfilling values by species
+mar_sus_gf = mar_sus_gf %>%
+  left_join(gf_taxon_sus, by = c('Taxon_code'))
+```
+
+**Take a look at the wrangled data**
+```{r}
+summary(mar_sus_gf) # should be no NA's in Sust_gf_taxon column
+table(mar_sus_gf$gapfill) 
+```
+
+Obtain a sustainability score for each record, and a book-keeping column of whether it's actual or gap-filled
+
+For missing sustainability scores:
+
+1. Use species-level Sustainability score
+2. If no species-level scores, gapfill with taxon-level sustainability average
+
+```{r}
+
+mar_sus_final = mar_sus_gf %>% 
+  mutate(gapfill = ifelse(!is.na(Sust), "none", gapfill)) %>%
+  mutate(Sust = ifelse(is.na(Sust), Sust_gf_sp, Sust)) %>% # gapfill with species level
+  mutate(gapfill = ifelse(is.na(Sust), "taxon_average", gapfill)) %>% # add in taxon gapfill record
+  mutate(Sust = ifelse(is.na(Sust), Sust_gf_taxon, Sust)) %>% # gapfill with taxon level
+  mutate(taxa_code = paste(species, species_code, sep="_")) %>%
+  select(rgn_id, species, species_code, taxa_code, taxa_group=Taxon_code, year, gapfill_sus = gapfill, gapfill_fao = gap_0_fill, tonnes=value, Sust)
+
+```
+
+# Save Data:
+
+```{r}
+
+## save mariculture harvest data
+mar_harvest_tonnes = mar_sus_final %>%
+  select(rgn_id, taxa_code, taxa_group, year, tonnes)
+
+anyDuplicated(mar_harvest_tonnes) # check for duplications
+
+## Saves the appropriate Mariculture Harvest Tonnes file depending on whether we are excluding species based on best judgement (exclude), all seaweeds (exclude_no_seaweed), or just seaweeds nei (exclude_no_nei). See method changes above.
+if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
+ write.csv(mar_harvest_tonnes, 'output/mar_harvest_tonnes.csv', row.names=F)
+ } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
+   write.csv(mar_harvest_tonnes, 'test/mar_harvest_tonnes_no_seaweed.csv', row.names=F)
+   } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
+     write.csv(mar_harvest_tonnes, 'test/mar_harvest_tonnes_no_nei.csv', row.names=F)
+     }
+
+## save gapfill data for mariculture harvest
+mar_harvest_tonnes_gf = mar_sus_final %>%
+  select(rgn_id, taxa_code, taxa_group, year, tonnes=gapfill_fao)
+
+
+## Saves the appropriate Mariculture Harvest Gapfill file depending on whether we are excluding species based on best judgement (exclude), all seaweeds (exclude_no_seaweed), or just seaweeds nei (exclude_no_nei). See method changes above
+if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
+ write.csv(mar_harvest_tonnes_gf, 'output/mar_harvest_tonnes_gf.csv', row.names=F)
+ } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
+   write.csv(mar_harvest_tonnes_gf, 'test/mar_harvest_tonnes_gf_no_seaweed.csv', row.names=F)
+   } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
+     write.csv(mar_harvest_tonnes_gf, 'test/mar_harvest_tonnes_gf_no_nei.csv', row.names=F)
+     }
+
+
+## save sustainability scores data for 2012
+mar_sustainability_score = mar_sus_final %>% 
+  mutate(year = 2012) %>% # Only 2012 sustainability scores exist (Trujillo)
+  select(rgn_id, year, taxa_code, sust_coeff = Sust) %>% 
+  unique()
+
+anyDuplicated(mar_sustainability_score)
+
+
+## Saves the appropriate Sustainability Score file depending on whether we are excluding species based on best judgement (exclude), all seaweeds (exclude_no_seaweed), or just seaweeds nei (exclude_no_nei). See method changes above
+if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
+ write.csv(mar_sustainability_score, 'output/mar_sustainability.csv', row.names=F)
+ } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
+   write.csv(mar_sustainability_score, 'test/mar_sustainability_no_seaweed.csv', row.names=F)
+   } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
+     write.csv(mar_sustainability_score, 'test/mar_sustainability_no_nei.csv', row.names=F)
+     }
+
+
+## save gapfill data for sustainability scores
+mar_sustainability_score_gf = mar_sus_final %>% 
+  select(rgn_id, taxa_code, sust_coeff = gapfill_sus) %>% 
+  unique()
+
+
+## Saves the appropriate Sustainability Score Gapfill file depending on whether we are excluding species based on best judgement (exclude), all seaweeds (exclude_no_seaweed), or just seaweeds nei (exclude_no_nei). See method changes above
+if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
+ write.csv(mar_sustainability_score_gf, 'output/mar_sustainability_gf.csv', row.names=F)
+ } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
+   write.csv(mar_sustainability_score_gf, 'test/mar_sustainability_gf_no_seaweed.csv', row.names=F)
+   } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
+     write.csv(mar_sustainability_score_gf, 'test/mar_sustainability_gf_no_nei.csv', row.names=F)
+     }
+
+```
+
+# Wrangle: Genetic Escapes Data
+
+Combine genetic escapes data to mariculture data. 
+
+* Data from Trujillo data table. 
+* These data are used as a pressure layer to describe the risk of genetic escapees due to mariculture.
+* First merge with the species data (no gapfilling) for each country/species/fao region combination.
+
+```{r}
+
+## can eliminate the environment category because these have the same scores
+esc = sus_rgn %>% 
+  filter(!is.na(Genetic.escapees)) %>%
+  mutate(match_type = ifelse(match_type == "c_sp_env", "c_sp", match_type)) %>%
+  group_by(rgn_id, species=species_fao, fao, match_type, taxon, gapfill) %>%
+  summarize(Genetic.escapees = mean(Genetic.escapees)) %>%
+  ungroup()
+  
+## join taxa specific to country/species/fao
+c_sp_fao = esc %>% 
+  filter(match_type == 'c_sp_fao') %>% 
+  select(rgn_id, species, fao, Esc_c_sp_fao = Genetic.escapees) 
+
+mar_esc <- maric %>%
+  left_join(c_sp_fao, by= c("species", "fao", "rgn_id"))
+
+head(data.frame(filter(mar_esc, !is.na(Esc_c_sp_fao))))
+
+## join taxa specific to country/species
+c_sp = esc %>% 
+  filter(match_type == 'c_sp') %>% 
+  select(rgn_id, species, Esc_c_sp = Genetic.escapees) # fao is blank
+
+mar_esc <- mar_esc %>%
+  left_join(c_sp, by= c("species", "rgn_id"))
+
+```
+
+**Look at a summary of the wrangled data table**
+```{r}
+summary(mar_esc)
+```
+
+Merge the different match types (esc_c_sp_fao, esc_c_sp) into a single sustainability score
+
+1. First use Esc_c_sp_fao
+2. If no Esc_c_sp_fao value, use Esc_c_sp
+
+```{r}
+
+mar_esc = mar_esc %>% 
+  mutate(Escapees = ifelse(!is.na(Esc_c_sp_fao), Esc_c_sp_fao, Esc_c_sp)) %>%
+  select(-Esc_c_sp_fao, -Esc_c_sp)
+
+```
+
+
+# Gapfill 
+
+Join the sustainability data that is gapfilled either at the species level (average of specific species/genera across regions) or at a higher course taxonomic levels and documents which data are gapfilled and how.
+```{r}
+
+## Select observations gapfilled at the species/genera level:
+gf_species_esc <- esc %>% 
+  filter(gapfill != "actuals" & match_type == "species") %>%
+  select(species, gapfill, Esc_gf_sp = Genetic.escapees)
+
+## check that there are no duplicated species_fao
+gf_species_esc[duplicated(gf_species_esc$species), ]
+
+## Match gapfilling values by species
+mar_esc_gf = mar_esc %>%
+  left_join(gf_species_esc, by = 'species')
+
+## Select observations gapfilled at the coarse taxon level:
+gf_taxon_sus <- esc %>% 
+  filter(gapfill != "actuals" & match_type == "taxon") %>%
+  select(Taxon_code=taxon, Esc_gf_taxon = Genetic.escapees)
+
+## Match gapfilling values by species
+mar_esc_gf = mar_esc_gf %>%
+  left_join(gf_taxon_sus, by = c('Taxon_code'))
+
+```
+
+**Take a look at wrangled data**
+```{r}
+summary(mar_esc_gf)
+table(mar_esc_gf$gapfill)
+```
+
+## Record Gapfilling Methods
+
+Obtain a sustainability score for each record, and a book-keeping column of whether it's actual or gap-filled.
+
+For gapfill column
+
+1. If no missing escapee data, record "none"
+2. If NA, then gapfill with `Esc_gf_sp` (gapfill for species-level already recorded)
+3. If no `Esc_gf_sp` value, then record "taxon_average" as the gapfill method
+4. Fill in missing value with `Esc_gf_taxon` value
+
+```{r}
+
+tonnes_esc = mar_esc_gf %>% 
+  mutate(gapfill = ifelse(!is.na(Escapees), "none", gapfill)) %>% 
+  mutate(Escapees = ifelse(is.na(Escapees), Esc_gf_sp, Escapees)) %>%
+  mutate(gapfill = ifelse(is.na(Escapees), "taxon_average", gapfill)) %>%
+  mutate(Escapees = ifelse(is.na(Escapees), Esc_gf_taxon, Escapees)) %>%
+  select(rgn_id, species, species_code, year, gapfill_escapees = gapfill, tonnes=value, Escapees)
+
+```
+
+**Take a look at the summary
+```{r}
+
+summary(tonnes_esc)
+anyDuplicated(tonnes_esc) # check for duplicates
+
+```
+
+
+Final formatting of the escapee data. This is used as a pressure layer.
+
+For each region/year: take a weighted average of the genetic escape probability for each taxa based on tonnes mariculture
+```{r}
+
+genEscapes <- tonnes_esc %>%
+  group_by(rgn_id, year) %>%
+  summarize(genEscapes = weighted.mean(Escapees, tonnes, na.rm=TRUE))
+
+```
+
+Obtain gapfill information from `genEscapes`
+Gapfill values in output file are the proportion of data that is gapfilled.
+```{r}
+# obtain corresponding gapfilling information for each region (average of gapfilled data, weighted by tonnes of mariculture).
+genEscapes_gf <- tonnes_esc %>%
+  mutate(gapfill = ifelse(gapfill_escapees=="none", 0, 1)) %>%
+  group_by(rgn_id, year) %>%
+  summarize(genEscapes = weighted.mean(gapfill, tonnes, na.rm=TRUE)) %>%
+  ungroup() %>%
+  filter(year==2016) %>%
+  select(rgn_id, pressures.score=genEscapes) %>%
+  mutate(pressures.score=ifelse(pressures.score=="NaN", NA, pressures.score)) %>%
+  data.frame()
+
+```
+
+## Save gapfill data
+```{r}
+
+## Saves the appropriate Genetic Escapes Gapfill file depending on whether we are excluding species based on best judgement (exclude), all seaweeds (exclude_no_seaweed), or just seaweeds nei (exclude_no_nei). See method changes above
+if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
+ write.csv(genEscapes_gf, 'output/GenEsc_gf.csv', row.names=FALSE)
+ } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
+   write.csv(genEscapes_gf, 'test/GenEsc_gf_no_seaweed.csv', row.names=FALSE)
+   } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
+     write.csv(genEscapes_gf, 'test/GenEsc_gf_no_nei.csv', row.names=FALSE)
+     }
+
+```
+
+Obtain escapee data layers from `genEscapes`
+```{r}
+# create the escapee data layers:
+data <- genEscapes %>%
+    select(rgn_id, year, pressure_score = genEscapes)
+```
+
+## Save escapee pressure layer 
+```{r}
+
+## Saves the appropriate Genetic Escapes data file depending on whether we are excluding species based on best judgement (exclude), all seaweeds (exclude_no_seaweed), or just seaweeds nei (exclude_no_nei). See method changes above
+if(sum(str_detect(names(mar_sp), "exclude$"))==1) {
+ write.csv(data, 'output/GenEsc.csv', row.names=FALSE)  
+ } else if (sum(str_detect(names(mar_sp), "exclude_no_seaweed"))==1) {
+   write.csv(data, 'test/GenEsc_no_seaweed.csv', row.names=FALSE) 
+   } else if (sum(str_detect(names(mar_sp), "exclude_no_nei"))==1) {
+    write.csv(data, 'test/GenEsc_no_nei.csv', row.names=FALSE)  
+     }
+
+```
+
+## Data check
+Comparing this year's data to previous year's data. Expect small variation from year to year. Plot to view differences.
+
+```{r}
+
+## Compare genetic escapes pressure scores for Russia; saw large changes between 2018 and 2017 assessment years
+old <- read.csv("../v2017/output/GenEsc.csv") %>%
+  filter(rgn_id == 73) %>% 
+  select(rgn_id, year, prs_score_old=pressure_score)
+
+new <- read.csv("../v2018/output/GenEsc.csv") %>%
+  filter(rgn_id == 73) %>% 
+  select(rgn_id, year, pressure_score)
+
+compare <- full_join(old, new, by=c("rgn_id","year")); View(compare)
+
+plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
+
+
+
+## Compare yield data for Russia
+mar_old <- read.csv("../v2017/output/MAR_FP_data.csv") %>% 
+  filter(rgn_id == 73, year == 2015) %>% 
+  select(rgn_id, species, fao, old_value = value)
+mar_new <- read.csv("test/MAR_FP_data_no_seaweed.csv") %>% 
+  filter(rgn_id == 73, year == 2015) %>% 
+  select(rgn_id, species, fao, value)
+
+yield <- mar_old %>% 
+  full_join(mar_new, by = c("rgn_id","species","fao")); View(yield)
+
+
+
+## Compare genetic escapes pressure scores for Vietnam; no change in pressures
+old <- read.csv("../v2017/output/GenEsc.csv") %>%
+  filter(rgn_id == 207) %>% 
+  select(rgn_id, year, prs_score_old=pressure_score)
+
+new <- read.csv("../v2018/test/GenEsc_no_seaweed.csv") %>%
+  filter(rgn_id == 207) %>% 
+  select(rgn_id, year, pressure_score)
+
+compare <- full_join(old, new, by=c("rgn_id","year")); View(compare)
+
+plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
+
+
+
+## Compare yield data for Vietnam
+mar_old <- read.csv("../v2017/output/MAR_FP_data.csv") %>% 
+  filter(rgn_id == 207, year == 2015) %>% 
+  select(rgn_id, species, fao, environment, old_value = value)
+mar_new <- read.csv("test/MAR_FP_data_no_seaweed.csv") %>% 
+  filter(rgn_id == 207, year == 2015) %>% 
+  select(rgn_id, species, fao, environment, value)
+
+yield <- mar_old %>% 
+  full_join(mar_new, by = c("rgn_id","species","fao", "environment")); View(yield)
+
+
+
+## Compare genetic escapes pressure scores for Iceland; saw large changes between 2018 and 2017 assessment years
+old <- read.csv("../v2017/output/GenEsc.csv") %>%
+  filter(rgn_id == 143) %>% 
+  select(rgn_id, year, prs_score_old=pressure_score)
+
+new <- read.csv("../v2018/test/GenEsc_no_seaweed.csv") %>%
+  filter(rgn_id == 143) %>% 
+  select(rgn_id, year, pressure_score)
+
+compare <- full_join(old, new, by=c("rgn_id","year")); View(compare)
+
+plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
+
+
+
+## Compare yield data for Iceland
+mar_old <- read.csv("../v2017/output/MAR_FP_data.csv") %>% 
+  filter(rgn_id == 143, year %in% c(2011:2016)) %>% 
+  select(rgn_id, species, fao, environment, year, old_value = value)
+mar_new <- read.csv("test/MAR_FP_data_no_seaweed.csv") %>% 
+  filter(rgn_id == 143, year %in% c(2011:2016)) %>% 
+  select(rgn_id, species, fao, environment, year, value)
+
+yield <- mar_old %>% 
+  full_join(mar_new, by = c("rgn_id","species","fao", "environment", "year")); View(yield)
+
+
+
+## Compare genetic escapes pressure scores for Belize; saw large changes between 2018 and 2017 assessment years
+old <- read.csv("../v2017/output/GenEsc.csv") %>%
+  filter(rgn_id == 164) %>% 
+  select(rgn_id, year, prs_score_old=pressure_score)
+
+new <- read.csv("../v2018/output/GenEsc.csv") %>%
+  filter(rgn_id == 164) %>% 
+  select(rgn_id, year, pressure_score)
+
+compare <- full_join(old, new, by=c("rgn_id","year")); View(compare)
+
+plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
+
+## Compare yield data for Belize
+mar_old <- read.csv("../v2017/output/MAR_FP_data.csv") %>% 
+  filter(rgn_id == 164, year == 2015) %>% 
+  select(rgn_id, species, fao, old_value = value)
+mar_new <- read.csv("output/MAR_FP_data.csv") %>% 
+  filter(rgn_id == 164, year == 2015) %>% 
+  select(rgn_id, species, fao, value)
+
+yield <- mar_old %>% 
+  full_join(mar_new, by = c("rgn_id","species","fao")); View(yield)
+
+
+## Compare genetic escapes pressure scores for France; saw large changes between 2018 and 2017 assessment years
+old <- read.csv("../v2017/output/GenEsc.csv") %>%
+  filter(rgn_id == 179) %>% 
+  select(rgn_id, year, prs_score_old=pressure_score)
+
+new <- read.csv("../v2018/output/GenEsc.csv") %>%
+  filter(rgn_id == 179) %>% 
+  select(rgn_id, year, pressure_score)
+
+compare <- full_join(old, new, by=c("rgn_id","year")); View(compare)
+
+plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
+
+
+## Compare yield data for France
+mar_old <- read.csv("../v2017/output/MAR_FP_data.csv") %>% 
+  filter(rgn_id == 179) %>% 
+  select(rgn_id, year, species, fao, old_value = value)
+mar_new <- read.csv("output/MAR_FP_data.csv") %>% 
+  filter(rgn_id == 179) %>% 
+  select(rgn_id, year, species, fao, value)
+
+yield <- mar_old %>% 
+  full_join(mar_new, by = c("rgn_id","species","fao","year")); View(yield)
+
+plot(yield$old_value, yield$value);abline(0,1,col="red")
+
+
+
+## Compare new/old Mariculture sustainability scores
+tmp_old <- read.csv("../v2017/raw/Truj_label_sust.csv") %>% 
+  filter(country == "Russian Federation") %>% 
+  select(country, species_Truj, sust_old = Maric_sustainability, gen_old = Genetic.escapees)
+  
+tmp_new <- read.csv("../v2018/raw/Truj_label_sust.csv") %>% 
+  filter(country == "Russian Federation") %>% 
+  select(country, species_Truj, Maric_sustainability, Genetic.escapees)
+
+test <- tmp_new %>% 
+  full_join(tmp_old, by=c("country", "species_Truj"))
+View(test)
+
+plot(test$sust_old, test$Maric_sustainability);abline(0,1,col="red")
+
+
+## Compare new/old genetic escapees scores
+plot(test$gen_old, test$Genetic.escapees);abline(0,1,col="red")
+
+```
+
+
+## Data Check
+Compare the three exclusion methods for seaweed species.
+
+*Method 1:Exclude some seaweed species (`exclude`)
+*Method 2 (original): Exclude all seaweed species (`exclude_no_sw`)
+*Method 3: Exclude all seaweed nei species (`exclude_no_nei`)
+
+```{r}
+
+## Read in the three different versions of wrangled data
+## Best Professional Judgement (BPJ)
+exclude <- read.csv("../v2018/output/GenEsc.csv") %>%
+  filter(year == 2015) %>% # compare the most recent shared year between old and new
+  select(rgn_id, prs_score_BPJ=pressure_score)
+
+## Exclude all seaweeds (no seaweed)
+exclude_no_sw <- read.csv("../v2018/test/GenEsc_no_seaweed.csv") %>%
+  filter(year == 2015) %>% # compare the most recent shared year between old and new
+  select(rgn_id, prs_score_no_sw=pressure_score)
+
+## Exclude only nei seaweeds (no nei)
+exclude_no_nei <- read.csv("../v2018/test/GenEsc_no_nei.csv") %>%
+  filter(year == 2015) %>% # compare the most recent shared year between old and new
+  select(rgn_id, prs_score_no_nei=pressure_score)
+
+
+## Compare No Seaweed to Best Professional Judgement
+compare <- full_join(exclude, exclude_no_sw, by="rgn_id")
+compare <- na.omit(compare)
+## Compare genetic escapes pressure scores
+plot(compare$prs_score_BPJ, compare$prs_score_no_sw); abline(0,1,col="red")
+
+## Compare No Nei to No Seaweed (not much difference)
+compare <- full_join(exclude_no_nei, exclude_no_sw, by="rgn_id")
+compare <- na.omit(compare)
+## Compare genetic escapes pressure scores
+plot(compare$prs_score_no_nei, compare$prs_score_no_sw); abline(0,1,col="red")
+
+## Compare No Nei to BPJ
+compare <- full_join(exclude_no_nei, exclude, by="rgn_id")
+compare <- na.omit(compare)
+## Compare genetic escapes pressure scores
+plot(compare$prs_score_BPJ, compare$prs_score_no_nei); abline(0,1,col="red")
+
+
+```
+
+
+***
+

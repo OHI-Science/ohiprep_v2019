@@ -1,0 +1,324 @@
+"year","country","multiplier"
+2015,"Algeria",1
+2015,"Cameroon",1
+2015,"Colombia",1
+2015,"Democratic Republic of the Congo",1
+2015,"Djibouti",1
+2015,"El Salvador",1
+2015,"Eritrea",1
+2015,"Haiti",1
+2015,"Honduras",1
+2015,"Iran",1
+2015,"Iraq",0.25
+2015,"Israel",1
+2015,"Kenya",1
+2015,"Lebanon",0
+2015,"Liberia",0.25
+2015,"Libya",0
+2015,"Mauritania",1
+2015,"Mexico",1
+2015,"Nepal",1
+2015,"Nigeria",1
+2015,"North Korea",0
+2015,"Pakistan",0.25
+2015,"Philippines",1
+2015,"Saudi Arabia",1
+2015,"Sierra Leone",0.25
+2015,"Somalia",0
+2015,"Sudan",1
+2015,"Syria",0
+2015,"Ukraine",1
+2015,"Venezuela",1
+2015,"Yemen",0
+2016,"Algeria",1
+2016,"Bangladesh",1
+2016,"Cameroon",1
+2016,"Colombia",1
+2016,"Democratic Republic of the Congo",1
+2016,"El Salvador",1
+2016,"Eritrea",1
+2016,"Haiti",1
+2016,"Honduras",1
+2016,"Iran",1
+2016,"Iraq",0
+2016,"Israel",1
+2016,"Kenya",1
+2016,"Lebanon",0
+2016,"Libya",0
+2016,"Mauritania",1
+2016,"Mexico",1
+2016,"Nicaragua",1
+2016,"Nigeria",1
+2016,"North Korea",0
+2016,"Pakistan",0.25
+2016,"Philippines",1
+2016,"Saudi Arabia",1
+2016,"Somalia",0
+2016,"Sudan",1
+2016,"Syria",0
+2016,"Tunisia",1
+2016,"Turkey",0
+2016,"Ukraine",0
+2016,"Venezuela",1
+2016,"Yemen",0
+2017,"Algeria",1
+2017,"Bangladesh",1
+2017,"Cameroon",1
+2017,"Colombia",1
+2017,"Democratic Republic of the Congo",0.25
+2017,"Egypt",1
+2017,"El Salvador",1
+2017,"Eritrea",1
+2017,"Haiti",1
+2017,"Honduras",1
+2017,"Iran",1
+2017,"Iraq",0
+2017,"Israel",1
+2017,"Jordan",1
+2017,"Kenya",1
+2017,"Lebanon",0
+2017,"Libya",0
+2017,"Mauritania",1
+2017,"Mexico",1
+2017,"Nigeria",1
+2017,"North Korea",0
+2017,"Pakistan",0.25
+2017,"Philippines",1
+2017,"Saudi Arabia",1
+2017,"Somalia",0
+2017,"Sudan",1
+2017,"Syria",0
+2017,"Tunisia",1
+2017,"Turkey",1
+2017,"Ukraine",1
+2017,"Venezuela",0
+2017,"Yemen",0
+2018,"Afghanistan",0
+2018,"Albania",1
+2018,"Algeria",1
+2018,"American Samoa",1
+2018,"Andorra",1
+2018,"Angola",1
+2018,"Anguilla",1
+2018,"Antarctica",1
+2018,"Antigua and Barbuda",1
+2018,"Argentina",1
+2018,"Armenia",1
+2018,"Aruba",1
+2018,"Australia",1
+2018,"Austria",1
+2018,"Azerbaijan",1
+2018,"Azores",1
+2018,"Bahrain",1
+2018,"Bangladesh",1
+2018,"Barbados",1
+2018,"Belarus",1
+2018,"Belgium",1
+2018,"Belize",1
+2018,"Benin",1
+2018,"Bermuda",1
+2018,"Bhutan",1
+2018,"Bolivia",1
+2018,"Bonaire",1
+2018,"Bosnia-Herzegovina",1
+2018,"Botswana",1
+2018,"Brazil",1
+2018,"British Virgin Islands",1
+2018,"Brunei",1
+2018,"Bulgaria",1
+2018,"Burkina Faso",0.25
+2018,"Burma",1
+2018,"Burundi",0.25
+2018,"Cabo Verde",1
+2018,"Cambodia",1
+2018,"Cameroon",1
+2018,"Canada",1
+2018,"Canary Islands",1
+2018,"Cayman Islands",1
+2018,"Central African Republic (CAR)",0
+2018,"Chad",0.25
+2018,"Chile",1
+2018,"China",1
+2018,"Colombia",1
+2018,"Comoros",1
+2018,"Cook Islands",1
+2018,"Costa Rica",1
+2018,"Cote d'Ivoire",1
+2018,"Croatia",1
+2018,"Cuba",0.25
+2018,"Curacao",1
+2018,"Cyprus",1
+2018,"Czech Republic",1
+2018,"Democratic Republic of the Congo",0.25
+2018,"Denmark",1
+2018,"Djibouti",1
+2018,"Dominica",1
+2018,"Dominican Republic",1
+2018,"Ecuador",1
+2018,"Egypt",1
+2018,"El Salvador",0.25
+2018,"Equatorial Guinea",1
+2018,"Eritrea",1
+2018,"Estonia",1
+2018,"Eswatini",1
+2018,"Ethiopia",1
+2018,"Falkland Islands",1
+2018,"Fiji",1
+2018,"Finland",1
+2018,"France",1
+2018,"French Guiana",1
+2018,"French Polynesia",1
+2018,"Gabon",1
+2018,"Georgia",1
+2018,"Germany",1
+2018,"Ghana",1
+2018,"Gibraltar",1
+2018,"Greece",1
+2018,"Greenland",1
+2018,"Grenada",1
+2018,"Guadeloupe and Martinique",1
+2018,"Guatemala",0.25
+2018,"Guinea",1
+2018,"Guinea-Bissau",0.25
+2018,"Guyana",1
+2018,"Haiti",0.25
+2018,"Honduras",0.25
+2018,"Hong Kong",1
+2018,"Hungary",1
+2018,"Iceland",1
+2018,"India",1
+2018,"Indonesia",1
+2018,"Iran",0
+2018,"Iraq",0
+2018,"Ireland",1
+2018,"Israel",1
+2018,"Italy",1
+2018,"Jamaica",1
+2018,"Japan",1
+2018,"Jordan",1
+2018,"Kazakhstan",1
+2018,"Kenya",1
+2018,"Kiribati",1
+2018,"Kosovo",1
+2018,"Kuwait",1
+2018,"Kyrgyzstan",1
+2018,"Laos",1
+2018,"Latvia",1
+2018,"Lebanon",0.25
+2018,"Lesotho",1
+2018,"Liberia",1
+2018,"Libya",0
+2018,"Line Group",1
+2018,"Lithuania",1
+2018,"Luxembourg",1
+2018,"Macau",1
+2018,"Macedonia",1
+2018,"Madagascar",1
+2018,"Malawi",1
+2018,"Malaysia",1
+2018,"Maldives",1
+2018,"Mali",0
+2018,"Malta",1
+2018,"Marshall Islands",1
+2018,"Mauritania",0.25
+2018,"Mauritius",1
+2018,"Mayotte",1
+2018,"Mexico",1
+2018,"Micronesia",1
+2018,"Moldova",1
+2018,"Monaco",1
+2018,"Mongolia",1
+2018,"Montenegro",1
+2018,"Montserrat",1
+2018,"Morocco",1
+2018,"Mozambique",1
+2018,"Namibia",1
+2018,"Nauru",1
+2018,"Nepal",1
+2018,"Netherlands",1
+2018,"New Caledonia",1
+2018,"New Zealand",1
+2018,"Nicaragua",0.25
+2018,"Niger",0.25
+2018,"Nigeria",0.25
+2018,"Niue",1
+2018,"Northern Mariana Islands and Guam",1
+2018,"Northern Saint-Martin",1
+2018,"North Korea",0
+2018,"Norway",1
+2018,"Oman",1
+2018,"Pakistan",0.25
+2018,"Palau",1
+2018,"Panama",1
+2018,"Papua New Guinea",1
+2018,"Paraguay",1
+2018,"Peru",1
+2018,"Philippines",1
+2018,"Phoenix Group",1
+2018,"Poland",1
+2018,"Portugal",1
+2018,"Puerto Rico and Virgin Islands of the United States",1
+2018,"Qatar",1
+2018,"Republique du Congo",1
+2018,"Reunion",1
+2018,"Romania",1
+2018,"Russia",0.25
+2018,"Rwanda",1
+2018,"Saba",1
+2018,"Saint Kitts and Nevis",1
+2018,"Saint Lucia",1
+2018,"Saint Pierre and Miquelon",1
+2018,"Saint Vincent and the Grenadines",1
+2018,"Samoa",1
+2018,"Sao Tome and Principe",1
+2018,"Saudi Arabia",1
+2018,"Senegal",1
+2018,"Serbia",1
+2018,"Seychelles",1
+2018,"Sierra Leone",1
+2018,"Singapore",1
+2018,"Sint Eustatius",1
+2018,"Sint Maarten",1
+2018,"Slovakia",1
+2018,"Slovenia",1
+2018,"Solomon Islands",1
+2018,"Somalia",0
+2018,"South Africa",1
+2018,"South Korea",1
+2018,"South Sudan",0
+2018,"Spain",1
+2018,"Sri Lanka",1
+2018,"Sudan",0.25
+2018,"Suriname",1
+2018,"Sweden",1
+2018,"Switzerland",1
+2018,"Syria",0
+2018,"Taiwan",1
+2018,"Tajikistan",1
+2018,"Tanzania",1
+2018,"Thailand",1
+2018,"The Bahamas",1
+2018,"The Gambia",1
+2018,"Timor-Leste",1
+2018,"Togo",1
+2018,"Tokelau",1
+2018,"Tonga",1
+2018,"Trinidad and Tobago",1
+2018,"Tunisia",1
+2018,"Turkey",0.25
+2018,"Turkmenistan",1
+2018,"Turks and Caicos Islands",1
+2018,"Tuvalu",1
+2018,"Uganda",1
+2018,"Ukraine",1
+2018,"United Arab Emirates",1
+2018,"United Kingdom",1
+2018,"United States",1
+2018,"Uruguay",1
+2018,"Uzbekistan",1
+2018,"Vanuatu",1
+2018,"Venezuela",0.25
+2018,"Vietnam",1
+2018,"Yemen",0
+2018,"Zambia",1
+2018,"Zimbabwe",1

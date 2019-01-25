@@ -1,0 +1,497 @@
+---
+title: 'OHI 2018: Sea Surface Temperature Pressure Layer'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+
+# Summary
+
+This script creates the Sea Surface Temperature (SST) layer for the 2018 global Ocean Health Index assessment.
+
+
+***  
+
+# Updates from previous assessment
+
+Previously, data source only extended from 1982 to 2012. In the 2016 assessment, the data year 2012 was used as a proxy for 2016, data year 2011 was used as a proxy for 2015, and so on. For the 2018 assessment, data year will match the exact year, so data year 2017 represents year 2017, the most recent year of data, and so on. 
+
+***
+
+# Data Source
+
+Data comes from [CoRTAD version 6](http://www.nodc.noaa.gov/sog/cortad/)
+
+See `prs_sst/v2015/dataprep.R` for preparation of the "annual_pos_anomalies" data. 
+
+**Native Data Resolution**: ~4km   
+**Description**: 
+Cortadv5_SSTA.nc = SST anomalies (weekly SST minus weekly climatological SST), weekly data for all years, degrees Kelvin
+Cortadv5_weeklySST.nc =  SST, weekly data for all years, degrees Kelvin  
+**Time Range**: 1982 - 2017 (weekly averages across all years)  
+**Format**: NetCDF
+**Downloaded**: August 21, 2018
+
+***  
+
+# Methods
+
+1. Extreme events per year based calculated as number of times SST anomaly exceeds SST Standard Deviation based on weekly values (annual_pos_anomalies data, see v2015/dataprep.R for analysis).
+2. Sum extreme events for five year periods to control for yearly variation.
+3. Change in extreme events: Subtract number of extreme events for each five year period from control period (1985-1989).
+4. Rescale "Change in extreme events" data to values between 0 and 1 by dividing by the 99.99th quantile among all years of data.
+
+## Setup
+
+```{r setup, message=F,warning=F, eval = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/', message = FALSE, warning = FALSE)
+
+# setwd("globalprep/prs_sst/v2018") # update to reflect current assessment year!
+# source("~/github/ohiprep_v2018/src/R/common.R")
+
+library(raster)
+library(RColorBrewer)
+library(tidyverse)
+library(rgdal)
+library(doParallel)
+library(foreach)
+library(sf)
+library(ncdf4)
+library(httr)
+library(lubridate)
+library(animation)
+library(ggplot2)
+library(plotly)
+library(here)
+
+setwd(here::here("globalprep","prs_sst","v2018"))
+
+# spatial files, directories, etc
+source("~/github/ohiprep_v2018/src/R/spatial_common.R")
+
+dir_data <- file.path(dir_M, "git-annex/globalprep/_raw_data/CoRTAD_sst/d2018")
+dir_int  <- file.path(dir_M, "git-annex/globalprep/prs_sst/v2018/int")
+dir_output  <- file.path(dir_M, "git-annex/globalprep/prs_sst/v2018/output")
+
+yrs <- 1982:2017
+cols <- rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+land <- regions %>% subset(rgn_type %in% c("land", "land-disputed", "land-noeez"))
+```
+
+***
+
+## Get new data if available
+
+```{r get new data, eval = FALSE}
+
+## download URL
+url <- "https://data.nodc.noaa.gov/cortad/Version6"
+
+## retrieve the netcdf data, SSTA (~98GB) and WeeklySST (~28GB)
+## these take like 2 hours, it's a lot of data!!!
+ssta <- sprintf("%s/cortadv6_SSTA.nc", url)
+ssta_filename <- file.path(dir_M, "git-annex/globalprep/_raw_data/CoRTAD_sst/d2018/cortadv6_SSTA.nc")
+ssta_res <- httr::GET(ssta, write_disk(ssta_filename))
+
+weekly_sst <- sprintf("%s/cortadv6_WeeklySST.nc", url)
+weekly_sst_filename <- file.path(dir_M, "git-annex/globalprep/_raw_data/CoRTAD_sst/d2018/cortadv6_WeeklySST.nc")
+weekly_sst_res <- httr::GET(weekly_sst, write_disk(weekly_sst_filename))
+
+closeAllConnections()
+```
+
+***
+
+## Generate annual positive anomalies
+
+We consider anomalies the mean plus one standard deviation; these are the thresholds used to identify 'extreme events'. Since the sea surface temperature anomaly data downloaded from CoRTAD is just the mean, we calculate standard deviation and count cases where the anomaly data exceeds the standard deviation (?)
+
+
+```{r generate annual positive anomalies, eval = FALSE}
+## load netcdf uv radiation data
+ssta         <- stack(list.files(dir_data, pattern = "SSTA.nc",
+                                 full.names = TRUE), varname = "SSTA")
+weekly_sst   <- stack(list.files(dir_data, pattern = "WeeklySST.nc",
+                                 full.names = TRUE), varname = "WeeklySST")
+
+names_ssta   <- names(ssta)
+names_weekly <- names(weekly_sst)
+
+ssta_df <- names_ssta %>% # View(ssta_df)
+  data.frame() %>% 
+  rename(name = ".") %>% 
+  mutate(year = substr(name, 2, 5), 
+         month = substr(name, 7, 8), 
+         day = substr(name, 10, 11)) %>% 
+  mutate(week = week(as.Date(sprintf("%s-%s-%s", year, month, day))))
+
+## the next for-loop takes a long time, ~22min for each of 53 layers
+## create weekly standard deviations across all years
+for(i in 1:53){
+  t0 = Sys.time()
+  print(paste("calculating sd for week", i, "-- started at", t0))
+  s = stack()
+  
+  for (j in yrs){ # FOR APPROACH OF USING REF PERIOD TO CALC EXTREME EVENTS: CHANGE 'YRS' HERE TO INCLUDE JUST REFERENCE YEARS
+    w = which(substr(names_weekly, 2, 5) == j)[i]
+    if(is.na(w)) next() # most yrs don't have 53 weeks; 'next' works in for loop but not foreach+dopar
+    w_week = weekly_sst[[w]]
+    s = stack(s, w_week)
+  }
+  
+  sd_sst = calc(s, fun = function(x){sd(x, na.rm = TRUE)},
+                progress ="text",
+                filename = file.path(dir_int, sprintf("sd_sst_week_%s.tif", i)))
+}
+
+registerDoParallel(5)
+combine_fun = function(x){sum(x, na.rm = TRUE)} # takes raster stack object as x arg
+
+## calculate annual positive anomalies; ~17 minutes per year with 5 cores
+for(j in yrs){
+  t0 = Sys.time()
+  print(paste("calculating anomaly for", j, "-- started at", t0))
+  s = stack()
+  
+  wks = ssta_df %>% 
+    filter(year == j) %>% 
+    select(week)
+  
+  s <- foreach(i = wks$week, .packages = c("raster", "ncdf4", "rgdal"), .combine = "stack") %dopar% {
+    sd_sst = raster::raster(file.path(dir_int, sprintf("sd_sst_week_%s.tif", i))) 
+    w = which(substr(names_ssta, 2, 5) == j)[i]
+    w_ssta = ssta[[w]]
+    raster::overlay(w_ssta, sd_sst, 
+                    fun = function(x, y){ifelse(is.na(x) | is.na(y), 0, ifelse(x > y, 1, 0))})
+  }
+  
+  yr = combine_fun(s)
+  raster::writeRaster(yr, filename = file.path(dir_int, sprintf("annual_pos_anomalies_sd_%s.tif", j)))
+}
+```
+
+
+## Create 5 year cumulative sum of extreme events and calculate difference from historical
+
+```{r cumulative sum of extreme events, eval = FALSE}
+
+anom_files <- list.files(dir_int, pattern = "annual_pos_anomalies", full.names = TRUE)
+
+## time period for historical comparison (1985-1989)
+ref_years <- c()
+for(i in 1985:1989){ref_years = c(ref_years, grep(i, anom_files))}
+ref <- stack(anom_files[ref_years]) %>% sum(.)
+
+## create land mask
+anom_proj = "+proj=longlat +ellps=WGS84 +no_defs"
+land_mask <- land %>% st_geometry %>% st_transform(anom_proj) %>% as("Spatial") # sf multipoly not working for mask...
+
+## calculate difference between recent 5-year cumulative sum and historical 1985-1989
+registerDoParallel(5)
+t0 = Sys.time()
+foreach(i = seq(1986, max(yrs)-4)) %dopar% {
+  years = i:(i + 4)
+  
+  overlay(stack(anom_files[substr(anom_files, 81, 84) %in% years]) %>% sum(.), 
+          ref, 
+          fun = function(x, y){x - y}) %>%
+    mask(land_mask, inverse = TRUE) %>% 
+    writeRaster(filename = sprintf("%s/sst_diff_ocean_%s-%s.tif", 
+                                   dir_int, years[1], years[5]), overwrite = TRUE)
+}
+Sys.time() - t0
+```
+
+## Reference Point
+
+```{r reference point calculation, eval = F}
+
+## get data across all years
+diffs <- list.files(dir_int, pattern = "diff", full.names = TRUE)
+vals <- c()
+
+for(i in 1:length(diffs)){
+  m = diffs[i] %>% raster() %>% getValues()
+  vals = c(vals, m)
+}
+
+## get min, max, and 99.99th quantile
+min_val   <- min(vals, na.rm = TRUE) # -142 in v2018
+max_val   <- max(vals, na.rm = TRUE) # 182 in v2018
+resc_num  <- quantile(vals, prob = 0.9999, na.rm = TRUE) # 128 for v2018
+
+## write the reference point; only if changed since the last assessment
+sup_info <- "~/github/ohiprep_v2018/globalprep/supplementary_information/v2018" # should reflect assessment year
+
+rescale <- read.csv(file.path(sup_info, "reference_points_pressures.csv"))
+# rescale$ref_point[rescale$pressure == "Sea Surface Temperature"] <- resc_num 
+# write.csv(rescale, file.path(sup_info, "reference_points_pressures.csv"), row.names = FALSE)
+```
+
+The minimum value is `min_v`, maximum value is `max_v` and the reference point is `resc_num`.
+
+
+## Rescaling
+
+```{r rescale, eval = F}
+## get diff files to rescale
+diffs <- list.files(dir_int, pattern = "diff.*tif", full.names = TRUE)
+
+## read rescaling number from pressures reference points files
+resc_num <- read.csv(file.path(sup_info, "reference_points_pressures.csv")) %>%
+  filter(pressure == "Sea Surface Temperature") %>%
+  .$ref_point
+resc_num <- as.numeric(as.character(resc_num))
+
+registerDoParallel(6)
+if(!file.exists(dir_output)){dir.create(path = dir_output)} # create directory if doesn't exist
+
+foreach(i = 1:length(diffs)) %dopar% {
+
+  r = raster(diffs[i])
+  y = substr(diffs[i], 72, 80)
+
+  projection(r) = "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  
+  out = projectRaster(r, crs = mollCRS, over = TRUE) %>%
+        calc(., fun = function(x){ifelse(x > 0, ifelse(x > resc_num, 1, x/resc_num), 0)}) %>%
+        resample(., ocean, method = "ngb", 
+                 filename = sprintf("%s/sst_%s_1985-1989.tif", dir_output, y), 
+                 overwrite = TRUE)
+}
+```
+
+```{r compare rescaled diffs between assessments, eval = FALSE}
+## compare 2008-2012 extremes between v2018 and v2016 assessement 
+sst_v2018_test <- raster(file.path(dir_output, "sst_2008-2012_1985-1989.tif"))
+sst_v2016_test <- raster(sprintf("%s/git-annex/globalprep/prs_sst/v2016/output/%s", 
+                                      dir_M, "sst_2008-2012_1985-1989.tif"))
+df_tmp <- data.frame(v2018 = getValues(sst_v2018_test), 
+                     v2016 = getValues(sst_v2016_test))
+df_samp <- df_tmp %>% mutate(rowcol = rownames(.)) %>% 
+  filter(rowcol %in% sample(1:length(rowcol), 70000))
+plot(df_samp$v2016, df_samp$v2018, "n")
+points(cbind(df_samp$v2016, df_samp$v2018), 
+       col = rgb(0, 0, 1, alpha = 0.01), pch = 16, cex = 2)
+```
+
+## Zonal extraction of SST data
+
+```{r load data for zonal extraction, eval = FALSE}
+## load zonal data, load and check relevant rasters
+rast_loc <- file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data/sp_mol_raster_1km")
+rgn_data <- read.csv(file.path(rast_loc, "regionData.csv")) 
+
+# rgns <- zones %>% getValues %>% unique
+# length(rgns[rgns < 300 & is.na(rgns) == FALSE])
+# zones <- raster(file.path(rast_loc, "sp_mol_raster_1km.tif")) # v2018 used zones=regions_eez_with_fao_ant.tif sourced from spatial.common instead
+```
+
+```{r apply ice mask, eval = FALSE}
+## sst rasters
+sst_rasters <- list.files(dir_output, pattern = "sst_.*1985-1989.tif", full.names = TRUE)
+plot(raster(sst_rasters[[length(sst_rasters)]])) # length(sst_rasters) # plot to check
+
+## apply ice mask
+ice_mask <- raster(file.path(dir_M, "git-annex/Global/NCEAS-Pressures-Summaries_frazier2013/ice_mask_resampled"))
+
+registerDoParallel(4)
+foreach(rast = sst_rasters) %dopar% {
+  overlay(raster(rast), ice_mask, 
+          fun = function(x, y) {x * y}, 
+          filename = file.path(sprintf("%s/sst_%s_rescaled_icemask.tif", dir_output, 
+                                       substr(rast, 64, 82))),
+          overwrite = TRUE)
+}
+```
+
+```{r gif of rescaled ice masked sst, eval = FALSE}
+## rescaled and masked sst data
+sst_res_mask <- list.files(dir_output, "sst.*_rescaled_icemask.tif", full.names = TRUE)
+
+## create gif visualizing the rescaled and masked sst
+saveGIF({
+  for(i in 1:length(sst_res_mask)){
+    n = sprintf("SST Pressure %s", 
+                substr(sst_res_mask[i], 64, 72))
+    plot(raster(sst_res_mask[i]), 
+         zlim = c(0, 1), # fix zlimits
+         axes = FALSE, box = FALSE, col = cols,
+         main = n)}}, 
+  ani.width = 750,
+  ani.height = 400,
+  movie.name = sprintf("%s/sst.gif", dir_output))
+
+```
+
+```{r zonal extraction, eval = FALSE}
+## sst pressure, stack rasters
+sst_stack <- stack(list.files(dir_output, 
+                              pattern = "sst_.*_rescaled_icemask.tif", 
+                              full.names = TRUE))
+
+## some exploring
+plot(sst_stack[[nlayers(sst_stack)]], col = cols)
+click(sst_stack[[nlayers(sst_stack)]])
+
+## extract data by region
+regions_stats <- zonal(sst_stack, zones, fun = "mean", na.rm = TRUE,
+                       progress = "text") %>% data.frame
+
+setdiff(regions_stats$zone, rgn_data$sp_id) # check; antarctica high seas (268, 271, 278), 265 NA high seas region, conflict areas 255...  
+setdiff(rgn_data$sp_id, regions_stats$zone)
+
+## wrangle and save
+data <- merge(rgn_data, regions_stats, all.y = TRUE, by.x = "sp_id", by.y = "zone") %>% 
+  write.csv(file.path(dir_output, "rgn_sst_prs.csv"), row.names = FALSE)
+data <- read.csv(file.path(dir_output, "rgn_sst_prs.csv"), stringsAsFactors = FALSE)
+```
+
+
+## Write final pressure layer and gapfilling record
+
+```{r sst pressure layer, eval = FALSE}
+## save data for the toolbox
+for(years in c(2012:max(yrs))){
+  
+  scenario = sprintf("sst_%s.%s_1985.1989_rescaled_icemask", years-4, years)
+
+  eez = data %>% 
+    filter(sp_type == "eez") %>% 
+    select(rgn_id, contains(scenario)) %>% 
+    rename(pressure_score = contains(scenario))
+  
+  write.csv(eez, sprintf("output/sst_eez_%s.csv", years), row.names = FALSE)
+
+  # fao = filter(data, sp_type == "fao")
+  # fao = fao[, c("rgn_id", scenario)]
+  # names(fao)[names(fao) == scenario] = "pressure_score"
+  # write.csv(fao, sprintf("output/sst_fao_%s.csv", years), row.names = FALSE)
+}
+```
+
+```{r gapfilling record for most recent year of data, eval = FALSE}
+## sst has no gapfilling...
+sst <- read.csv("output/sst_eez_2017.csv")
+sst <- mutate(sst, pressure_score_gf = 0)
+write.csv(sst, "output/sst_eez_2017_gf.csv", row.names = FALSE)
+```
+
+# Save altogether
+
+```{r, eval=FALSE}
+
+sst_final <- data.frame()
+
+for (year in 2012:2017){ # year = 2012
+  
+  prs <- read.csv(sprintf("globalprep/prs_sst/v2018/output/sst_eez_%s.csv", year))
+  
+  prs <- prs %>%
+    mutate(year = year) %>%
+    select(rgn_id, year, pressure_score)
+  
+  sst_final <- rbind(sst_final, prs)
+  
+}
+
+
+write.csv(sst_final, "output/sst_updated.csv", row.names=FALSE)
+
+```
+
+
+***
+
+# Results
+
+```{r plot results, eval = FALSE}
+## plot results to check, for most recent year
+res <- list.files(dir_output, pattern = "sst.*icemask.tif", full.names = TRUE)
+
+plot(raster(res[length(res)]), 
+     col = cols, axes = FALSE, 
+     main = "Sea Surface Temperature Pressure Layer \n OHI 2016")
+```
+
+```{r compare results, eval = FALSE}
+## compare with last year's data
+old_sst <- read.csv("../v2016/output/sst_updated.csv")
+compare <- old_sst %>%
+  filter(year == 2016) %>% 
+  dplyr::select(rgn_id, old_pressure_score = pressure_score) %>%
+  left_join(data, by = "rgn_id") %>%
+  filter(!(is.na(rgn_name))) %>%
+  filter(sp_type == "eez") %>%
+  dplyr::select(rgn_id, rgn_name, old_pressure_score, 
+                matches("sst_.*2012_1985.1989.*"), 
+                matches("sst_.*2013_1985.1989.*"),
+                matches("sst_.*2014_1985.1989.*"), 
+                matches("sst_.*2015_1985.1989.*"),
+                matches("sst_.*2016_1985.1989.*")) %>% 
+  rename(sst_2012 = matches("sst_.*2012_1985.1989.*"),
+         sst_2013 = matches("sst_.*2013_1985.1989.*"),
+         sst_2014 = matches("sst_.*2014_1985.1989.*"),
+         sst_2015 = matches("sst_.*2015_1985.1989.*"),
+         sst_2016 = matches("sst_.*2016_1985.1989.*"))
+
+p <- ggplot(compare, aes(x = old_pressure_score, y = sst_2016, label = rgn_name)) +
+  geom_point(shape = 19) + 
+  theme_bw() + 
+  geom_abline(intercept = 0, slope = 1) + 
+  labs(title = "SST comparison")
+ggplotly(p)
+
+ggplot(compare, aes(x = sst_2015)) +
+  geom_histogram(fill = "gray", color = "black") + 
+  theme_bw() + 
+  labs(title = "SST 2015")
+quantile(compare$sst_2015)
+```
+
+## Compare final outputs of v2016 and v2018
+
+After combining sst data into the output table `sst_updated.csv`, compare to last year. Last year, the most recent year of data is 2012. This year it's 2017. In last year's output table, data year 2012 served as a proxy for 2016. Compare scenario years that used data year 2012, the most recent shared year between v2018 and v2016.
+
+```{r, eval=FALSE}
+
+old_sst <- read.csv("../v2016/output/sst_updated.csv") %>% 
+  filter(year == 2016) %>% 
+  select(rgn_id, old_prs_score = pressure_score)
+
+sst <- read.csv("output/sst_updated.csv") %>%
+  filter(year == 2012) %>% 
+  select(rgn_id, prs_score = pressure_score)
+
+combine <- sst %>% 
+  left_join(old_sst, by = "rgn_id")
+
+plot(combine$old_prs_score, combine$prs_score)
+
+p <- ggplot(combine, aes(x = old_prs_score, y = prs_score, label = rgn_id)) +
+  geom_point(shape = 19) + 
+  theme_bw() + 
+  geom_abline(intercept = 0, slope = 1) + 
+  labs(title = "SST comparison v2018 and v2016 \n (data year 2012)")
+ggplotly(p)
+
+```
+
+***
+
+# Citation information  
+
+Selig, E.R., K.S. Casey, and J.F. Bruno (2010), New insights into global patterns of ocean temperature anomalies: implications for coral reef health and management, Global Ecology and Biogeography, DOI: 10.1111/j.1466-8238.2009.00522.x.

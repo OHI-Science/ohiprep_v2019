@@ -1,0 +1,3521 @@
+"rgn_id","rgn_name","year","basic_sani_prop","gapfill","method"
+1,"Cocos Islands",2000,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2001,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2002,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2003,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2004,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2005,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2006,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2007,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2008,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2009,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2010,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2011,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2012,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2013,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2014,1,1,"UN georegion avg. (r2)"
+1,"Cocos Islands",2015,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2000,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2001,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2002,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2003,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2004,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2005,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2006,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2007,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2008,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2009,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2010,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2011,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2012,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2013,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2014,1,1,"UN georegion avg. (r2)"
+2,"Christmas Island",2015,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2000,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2001,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2002,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2003,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2004,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2005,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2006,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2007,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2008,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2009,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2010,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2011,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2012,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2013,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2014,1,1,"UN georegion avg. (r2)"
+3,"Norfolk Island",2015,1,1,"UN georegion avg. (r2)"
+4,"Macquarie Island",2000,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2001,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2002,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2003,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2004,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2005,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2006,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2007,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2008,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2009,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2010,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2011,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2012,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2013,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2014,1,1,"uninhabited, perfect score"
+4,"Macquarie Island",2015,1,1,"uninhabited, perfect score"
+5,"New Caledonia",2000,1,0,NA
+5,"New Caledonia",2001,1,0,NA
+5,"New Caledonia",2002,1,0,NA
+5,"New Caledonia",2003,1,0,NA
+5,"New Caledonia",2004,1,0,NA
+5,"New Caledonia",2005,1,0,NA
+5,"New Caledonia",2006,1,0,NA
+5,"New Caledonia",2007,1,0,NA
+5,"New Caledonia",2008,1,0,NA
+5,"New Caledonia",2009,1,0,NA
+5,"New Caledonia",2010,1,0,NA
+5,"New Caledonia",2011,1,0,NA
+5,"New Caledonia",2012,1,0,NA
+5,"New Caledonia",2013,1,0,NA
+5,"New Caledonia",2014,1,0,NA
+5,"New Caledonia",2015,1,0,NA
+6,"Vanuatu",2000,0.53,0,NA
+6,"Vanuatu",2001,0.53,0,NA
+6,"Vanuatu",2002,0.53,0,NA
+6,"Vanuatu",2003,0.53,0,NA
+6,"Vanuatu",2004,0.53,0,NA
+6,"Vanuatu",2005,0.53,0,NA
+6,"Vanuatu",2006,0.53,0,NA
+6,"Vanuatu",2007,0.53,0,NA
+6,"Vanuatu",2008,0.53,0,NA
+6,"Vanuatu",2009,0.53,0,NA
+6,"Vanuatu",2010,0.53,0,NA
+6,"Vanuatu",2011,0.53,0,NA
+6,"Vanuatu",2012,0.53,0,NA
+6,"Vanuatu",2013,0.53,0,NA
+6,"Vanuatu",2014,0.53,0,NA
+6,"Vanuatu",2015,0.53,0,NA
+7,"Solomon Islands",2000,0.21,0,NA
+7,"Solomon Islands",2001,0.21,0,NA
+7,"Solomon Islands",2002,0.21,0,NA
+7,"Solomon Islands",2003,0.21,0,NA
+7,"Solomon Islands",2004,0.22,0,NA
+7,"Solomon Islands",2005,0.23,0,NA
+7,"Solomon Islands",2006,0.23,0,NA
+7,"Solomon Islands",2007,0.24,0,NA
+7,"Solomon Islands",2008,0.25,0,NA
+7,"Solomon Islands",2009,0.26,0,NA
+7,"Solomon Islands",2010,0.27,0,NA
+7,"Solomon Islands",2011,0.28,0,NA
+7,"Solomon Islands",2012,0.29,0,NA
+7,"Solomon Islands",2013,0.3,0,NA
+7,"Solomon Islands",2014,0.31,0,NA
+7,"Solomon Islands",2015,0.31,0,NA
+8,"Palau",2000,0.85,0,NA
+8,"Palau",2001,0.87,0,NA
+8,"Palau",2002,0.88,0,NA
+8,"Palau",2003,0.9,0,NA
+8,"Palau",2004,0.92,0,NA
+8,"Palau",2005,0.93,0,NA
+8,"Palau",2006,0.95,0,NA
+8,"Palau",2007,0.96,0,NA
+8,"Palau",2008,0.97,0,NA
+8,"Palau",2009,0.98,0,NA
+8,"Palau",2010,1,0,NA
+8,"Palau",2011,1,0,NA
+8,"Palau",2012,1,0,NA
+8,"Palau",2013,1,0,NA
+8,"Palau",2014,1,0,NA
+8,"Palau",2015,1,0,NA
+9,"Micronesia",2000,0.56,1,"lm prediction"
+9,"Micronesia",2001,0.56,1,"lm prediction"
+9,"Micronesia",2002,0.56,1,"lm prediction"
+9,"Micronesia",2003,0.56,1,"lm prediction"
+9,"Micronesia",2004,0.56,1,"lm prediction"
+9,"Micronesia",2005,0.56,1,"lm prediction"
+9,"Micronesia",2006,0.56,0,NA
+9,"Micronesia",2007,0.56,0,NA
+9,"Micronesia",2008,0.56,0,NA
+9,"Micronesia",2009,0.56,0,NA
+9,"Micronesia",2010,0.56,0,NA
+9,"Micronesia",2011,0.56,0,NA
+9,"Micronesia",2012,0.56,0,NA
+9,"Micronesia",2013,0.56,0,NA
+9,"Micronesia",2014,0.56,0,NA
+9,"Micronesia",2015,0.56,1,"lm prediction"
+10,"Nauru",2000,0.66,0,NA
+10,"Nauru",2001,0.66,0,NA
+10,"Nauru",2002,0.66,0,NA
+10,"Nauru",2003,0.66,0,NA
+10,"Nauru",2004,0.66,0,NA
+10,"Nauru",2005,0.66,0,NA
+10,"Nauru",2006,0.66,0,NA
+10,"Nauru",2007,0.66,0,NA
+10,"Nauru",2008,0.66,0,NA
+10,"Nauru",2009,0.66,0,NA
+10,"Nauru",2010,0.66,0,NA
+10,"Nauru",2011,0.66,0,NA
+10,"Nauru",2012,0.66,0,NA
+10,"Nauru",2013,0.66,0,NA
+10,"Nauru",2014,0.66,0,NA
+10,"Nauru",2015,0.66,0,NA
+11,"Marshall Islands",2000,0.856285714285715,1,"lm prediction"
+11,"Marshall Islands",2001,0.86,0,NA
+11,"Marshall Islands",2002,0.86,0,NA
+11,"Marshall Islands",2003,0.86,0,NA
+11,"Marshall Islands",2004,0.86,0,NA
+11,"Marshall Islands",2005,0.86,0,NA
+11,"Marshall Islands",2006,0.86,0,NA
+11,"Marshall Islands",2007,0.86,0,NA
+11,"Marshall Islands",2008,0.86,0,NA
+11,"Marshall Islands",2009,0.86,0,NA
+11,"Marshall Islands",2010,0.87,0,NA
+11,"Marshall Islands",2011,0.87,0,NA
+11,"Marshall Islands",2012,0.87,0,NA
+11,"Marshall Islands",2013,0.87,0,NA
+11,"Marshall Islands",2014,0.87,0,NA
+11,"Marshall Islands",2015,0.87,0,NA
+12,"Wake Island",2000,1,1,"uninhabited, perfect score"
+12,"Wake Island",2001,1,1,"uninhabited, perfect score"
+12,"Wake Island",2002,1,1,"uninhabited, perfect score"
+12,"Wake Island",2003,1,1,"uninhabited, perfect score"
+12,"Wake Island",2004,1,1,"uninhabited, perfect score"
+12,"Wake Island",2005,1,1,"uninhabited, perfect score"
+12,"Wake Island",2006,1,1,"uninhabited, perfect score"
+12,"Wake Island",2007,1,1,"uninhabited, perfect score"
+12,"Wake Island",2008,1,1,"uninhabited, perfect score"
+12,"Wake Island",2009,1,1,"uninhabited, perfect score"
+12,"Wake Island",2010,1,1,"uninhabited, perfect score"
+12,"Wake Island",2011,1,1,"uninhabited, perfect score"
+12,"Wake Island",2012,1,1,"uninhabited, perfect score"
+12,"Wake Island",2013,1,1,"uninhabited, perfect score"
+12,"Wake Island",2014,1,1,"uninhabited, perfect score"
+12,"Wake Island",2015,1,1,"uninhabited, perfect score"
+13,"Northern Mariana Islands and Guam",2000,0.844260089686099,0,NA
+13,"Northern Mariana Islands and Guam",2001,0.844,0,NA
+13,"Northern Mariana Islands and Guam",2002,0.847688888888889,0,NA
+13,"Northern Mariana Islands and Guam",2003,0.84787610619469,0,NA
+13,"Northern Mariana Islands and Guam",2004,0.84875,0,NA
+13,"Northern Mariana Islands and Guam",2005,0.852522522522522,0,NA
+13,"Northern Mariana Islands and Guam",2006,0.860545454545455,0,NA
+13,"Northern Mariana Islands and Guam",2007,0.864220183486239,0,NA
+13,"Northern Mariana Islands and Guam",2008,0.86553488372093,0,NA
+13,"Northern Mariana Islands and Guam",2009,0.869158878504673,0,NA
+13,"Northern Mariana Islands and Guam",2010,0.869577464788732,0,NA
+13,"Northern Mariana Islands and Guam",2011,0.870280373831776,0,NA
+13,"Northern Mariana Islands and Guam",2012,0.873009259259259,0,NA
+13,"Northern Mariana Islands and Guam",2013,0.872876712328767,0,NA
+13,"Northern Mariana Islands and Guam",2014,0.872869955156951,0,NA
+13,"Northern Mariana Islands and Guam",2015,0.873111111111111,0,NA
+14,"Taiwan",2000,0.845478210844803,1,"UN georegion avg. (r2)"
+14,"Taiwan",2001,0.845479219268146,1,"UN georegion avg. (r2)"
+14,"Taiwan",2002,0.847964537002258,1,"UN georegion avg. (r2)"
+14,"Taiwan",2003,0.850448458987858,1,"UN georegion avg. (r2)"
+14,"Taiwan",2004,0.852932402722506,1,"UN georegion avg. (r2)"
+14,"Taiwan",2005,0.855417054302549,1,"UN georegion avg. (r2)"
+14,"Taiwan",2006,0.857902695957504,1,"UN georegion avg. (r2)"
+14,"Taiwan",2007,0.860388935879575,1,"UN georegion avg. (r2)"
+14,"Taiwan",2008,0.862875655837091,1,"UN georegion avg. (r2)"
+14,"Taiwan",2009,0.865362802776941,1,"UN georegion avg. (r2)"
+14,"Taiwan",2010,0.867850228455826,1,"UN georegion avg. (r2)"
+14,"Taiwan",2011,0.870337849703885,1,"UN georegion avg. (r2)"
+14,"Taiwan",2012,0.872812751148817,1,"UN georegion avg. (r2)"
+14,"Taiwan",2013,0.87530074951923,1,"UN georegion avg. (r2)"
+14,"Taiwan",2014,0.87778873079323,1,"UN georegion avg. (r2)"
+14,"Taiwan",2015,0.880276592037949,1,"UN georegion avg. (r2)"
+15,"Philippines",2000,0.67,0,NA
+15,"Philippines",2001,0.67,0,NA
+15,"Philippines",2002,0.68,0,NA
+15,"Philippines",2003,0.68,0,NA
+15,"Philippines",2004,0.69,0,NA
+15,"Philippines",2005,0.7,0,NA
+15,"Philippines",2006,0.7,0,NA
+15,"Philippines",2007,0.71,0,NA
+15,"Philippines",2008,0.71,0,NA
+15,"Philippines",2009,0.72,0,NA
+15,"Philippines",2010,0.72,0,NA
+15,"Philippines",2011,0.73,0,NA
+15,"Philippines",2012,0.73,0,NA
+15,"Philippines",2013,0.74,0,NA
+15,"Philippines",2014,0.74,0,NA
+15,"Philippines",2015,0.75,0,NA
+16,"Australia",2000,1,0,NA
+16,"Australia",2001,1,0,NA
+16,"Australia",2002,1,0,NA
+16,"Australia",2003,1,0,NA
+16,"Australia",2004,1,0,NA
+16,"Australia",2005,1,0,NA
+16,"Australia",2006,1,0,NA
+16,"Australia",2007,1,0,NA
+16,"Australia",2008,1,0,NA
+16,"Australia",2009,1,0,NA
+16,"Australia",2010,1,0,NA
+16,"Australia",2011,1,0,NA
+16,"Australia",2012,1,0,NA
+16,"Australia",2013,1,0,NA
+16,"Australia",2014,1,0,NA
+16,"Australia",2015,1,0,NA
+17,"Papua New Guinea",2000,0.19,0,NA
+17,"Papua New Guinea",2001,0.19,0,NA
+17,"Papua New Guinea",2002,0.19,0,NA
+17,"Papua New Guinea",2003,0.19,0,NA
+17,"Papua New Guinea",2004,0.19,0,NA
+17,"Papua New Guinea",2005,0.19,0,NA
+17,"Papua New Guinea",2006,0.19,0,NA
+17,"Papua New Guinea",2007,0.19,0,NA
+17,"Papua New Guinea",2008,0.19,0,NA
+17,"Papua New Guinea",2009,0.19,0,NA
+17,"Papua New Guinea",2010,0.19,0,NA
+17,"Papua New Guinea",2011,0.19,0,NA
+17,"Papua New Guinea",2012,0.19,0,NA
+17,"Papua New Guinea",2013,0.19,0,NA
+17,"Papua New Guinea",2014,0.19,0,NA
+17,"Papua New Guinea",2015,0.19,0,NA
+18,"Fiji",2000,0.8,0,NA
+18,"Fiji",2001,0.81,0,NA
+18,"Fiji",2002,0.81,0,NA
+18,"Fiji",2003,0.82,0,NA
+18,"Fiji",2004,0.83,0,NA
+18,"Fiji",2005,0.84,0,NA
+18,"Fiji",2006,0.85,0,NA
+18,"Fiji",2007,0.87,0,NA
+18,"Fiji",2008,0.88,0,NA
+18,"Fiji",2009,0.89,0,NA
+18,"Fiji",2010,0.9,0,NA
+18,"Fiji",2011,0.91,0,NA
+18,"Fiji",2012,0.92,0,NA
+18,"Fiji",2013,0.93,0,NA
+18,"Fiji",2014,0.95,0,NA
+18,"Fiji",2015,0.96,0,NA
+19,"Tuvalu",2000,0.850190476190479,1,"lm prediction"
+19,"Tuvalu",2001,0.86,0,NA
+19,"Tuvalu",2002,0.86,0,NA
+19,"Tuvalu",2003,0.86,0,NA
+19,"Tuvalu",2004,0.87,0,NA
+19,"Tuvalu",2005,0.87,0,NA
+19,"Tuvalu",2006,0.87,0,NA
+19,"Tuvalu",2007,0.88,0,NA
+19,"Tuvalu",2008,0.89,0,NA
+19,"Tuvalu",2009,0.89,0,NA
+19,"Tuvalu",2010,0.9,0,NA
+19,"Tuvalu",2011,0.91,0,NA
+19,"Tuvalu",2012,0.91,0,NA
+19,"Tuvalu",2013,0.92,0,NA
+19,"Tuvalu",2014,0.91,0,NA
+19,"Tuvalu",2015,0.91,0,NA
+20,"South Korea",2000,1,0,NA
+20,"South Korea",2001,1,0,NA
+20,"South Korea",2002,1,0,NA
+20,"South Korea",2003,1,0,NA
+20,"South Korea",2004,1,0,NA
+20,"South Korea",2005,1,0,NA
+20,"South Korea",2006,1,0,NA
+20,"South Korea",2007,1,0,NA
+20,"South Korea",2008,1,0,NA
+20,"South Korea",2009,1,0,NA
+20,"South Korea",2010,1,0,NA
+20,"South Korea",2011,1,0,NA
+20,"South Korea",2012,1,0,NA
+20,"South Korea",2013,1,0,NA
+20,"South Korea",2014,1,0,NA
+20,"South Korea",2015,1,0,NA
+21,"North Korea",2000,0.770000000000001,1,"lm prediction"
+21,"North Korea",2001,0.770000000000001,1,"lm prediction"
+21,"North Korea",2002,0.77,0,NA
+21,"North Korea",2003,0.77,0,NA
+21,"North Korea",2004,0.77,0,NA
+21,"North Korea",2005,0.77,0,NA
+21,"North Korea",2006,0.77,0,NA
+21,"North Korea",2007,0.77,0,NA
+21,"North Korea",2008,0.77,0,NA
+21,"North Korea",2009,0.77,0,NA
+21,"North Korea",2010,0.77,0,NA
+21,"North Korea",2011,0.77,0,NA
+21,"North Korea",2012,0.77,0,NA
+21,"North Korea",2013,0.77,0,NA
+21,"North Korea",2014,0.77,0,NA
+21,"North Korea",2015,0.77,0,NA
+24,"Cambodia",2000,0.12,0,NA
+24,"Cambodia",2001,0.15,0,NA
+24,"Cambodia",2002,0.17,0,NA
+24,"Cambodia",2003,0.2,0,NA
+24,"Cambodia",2004,0.22,0,NA
+24,"Cambodia",2005,0.24,0,NA
+24,"Cambodia",2006,0.27,0,NA
+24,"Cambodia",2007,0.29,0,NA
+24,"Cambodia",2008,0.32,0,NA
+24,"Cambodia",2009,0.34,0,NA
+24,"Cambodia",2010,0.37,0,NA
+24,"Cambodia",2011,0.39,0,NA
+24,"Cambodia",2012,0.41,0,NA
+24,"Cambodia",2013,0.44,0,NA
+24,"Cambodia",2014,0.46,0,NA
+24,"Cambodia",2015,0.49,0,NA
+25,"Thailand",2000,0.95,0,NA
+25,"Thailand",2001,0.95,0,NA
+25,"Thailand",2002,0.95,0,NA
+25,"Thailand",2003,0.95,0,NA
+25,"Thailand",2004,0.95,0,NA
+25,"Thailand",2005,0.95,0,NA
+25,"Thailand",2006,0.95,0,NA
+25,"Thailand",2007,0.95,0,NA
+25,"Thailand",2008,0.95,0,NA
+25,"Thailand",2009,0.95,0,NA
+25,"Thailand",2010,0.95,0,NA
+25,"Thailand",2011,0.95,0,NA
+25,"Thailand",2012,0.95,0,NA
+25,"Thailand",2013,0.95,0,NA
+25,"Thailand",2014,0.95,0,NA
+25,"Thailand",2015,0.95,0,NA
+26,"Andaman and Nicobar",2000,0.666250549450549,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2001,0.673010989010989,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2002,0.681,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2003,0.688,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2004,0.694,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2005,0.702,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2006,0.709,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2007,0.714,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2008,0.721,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2009,0.73,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2010,0.735,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2011,0.743,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2012,0.749,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2013,0.755,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2014,0.762,1,"UN georegion avg. (r2)"
+26,"Andaman and Nicobar",2015,0.77,1,"UN georegion avg. (r2)"
+28,"Comoro Islands",2000,0.27,0,NA
+28,"Comoro Islands",2001,0.27,0,NA
+28,"Comoro Islands",2002,0.28,0,NA
+28,"Comoro Islands",2003,0.28,0,NA
+28,"Comoro Islands",2004,0.29,0,NA
+28,"Comoro Islands",2005,0.29,0,NA
+28,"Comoro Islands",2006,0.3,0,NA
+28,"Comoro Islands",2007,0.3,0,NA
+28,"Comoro Islands",2008,0.31,0,NA
+28,"Comoro Islands",2009,0.31,0,NA
+28,"Comoro Islands",2010,0.32,0,NA
+28,"Comoro Islands",2011,0.33,0,NA
+28,"Comoro Islands",2012,0.33,0,NA
+28,"Comoro Islands",2013,0.34,0,NA
+28,"Comoro Islands",2014,0.34,0,NA
+28,"Comoro Islands",2015,0.34,0,NA
+29,"Mayotte",2000,0.77,1,"lm prediction"
+29,"Mayotte",2001,0.77,1,"lm prediction"
+29,"Mayotte",2002,0.77,1,"lm prediction"
+29,"Mayotte",2003,0.77,1,"lm prediction"
+29,"Mayotte",2004,0.77,1,"lm prediction"
+29,"Mayotte",2005,0.77,1,"lm prediction"
+29,"Mayotte",2006,0.77,1,"lm prediction"
+29,"Mayotte",2007,0.77,1,"lm prediction"
+29,"Mayotte",2008,0.77,0,NA
+29,"Mayotte",2009,0.77,0,NA
+29,"Mayotte",2010,0.77,0,NA
+29,"Mayotte",2011,0.77,0,NA
+29,"Mayotte",2012,0.77,0,NA
+29,"Mayotte",2013,0.77,0,NA
+29,"Mayotte",2014,0.77,0,NA
+29,"Mayotte",2015,0.77,0,NA
+30,"Glorioso Islands",2000,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2001,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2002,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2003,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2004,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2005,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2006,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2007,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2008,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2009,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2010,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2011,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2012,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2013,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2014,1,1,"uninhabited, perfect score"
+30,"Glorioso Islands",2015,1,1,"uninhabited, perfect score"
+31,"Seychelles",2000,0.94,0,NA
+31,"Seychelles",2001,0.95,0,NA
+31,"Seychelles",2002,0.95,0,NA
+31,"Seychelles",2003,0.95,0,NA
+31,"Seychelles",2004,0.96,0,NA
+31,"Seychelles",2005,0.96,0,NA
+31,"Seychelles",2006,0.97,0,NA
+31,"Seychelles",2007,0.97,0,NA
+31,"Seychelles",2008,0.98,0,NA
+31,"Seychelles",2009,0.98,0,NA
+31,"Seychelles",2010,0.98,0,NA
+31,"Seychelles",2011,0.99,0,NA
+31,"Seychelles",2012,0.99,0,NA
+31,"Seychelles",2013,1,0,NA
+31,"Seychelles",2014,1,0,NA
+31,"Seychelles",2015,1,0,NA
+32,"R_union",2000,0.99,1,"lm prediction"
+32,"R_union",2001,0.99,1,"lm prediction"
+32,"R_union",2002,0.99,0,NA
+32,"R_union",2003,0.99,0,NA
+32,"R_union",2004,0.99,0,NA
+32,"R_union",2005,0.99,0,NA
+32,"R_union",2006,0.99,0,NA
+32,"R_union",2007,0.99,0,NA
+32,"R_union",2008,0.99,0,NA
+32,"R_union",2009,0.99,0,NA
+32,"R_union",2010,0.99,0,NA
+32,"R_union",2011,0.99,0,NA
+32,"R_union",2012,0.99,0,NA
+32,"R_union",2013,0.99,0,NA
+32,"R_union",2014,0.99,0,NA
+32,"R_union",2015,0.99,0,NA
+33,"Juan de Nova Island",2000,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2001,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2002,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2003,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2004,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2005,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2006,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2007,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2008,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2009,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2010,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2011,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2012,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2013,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2014,1,1,"uninhabited, perfect score"
+33,"Juan de Nova Island",2015,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2000,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2001,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2002,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2003,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2004,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2005,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2006,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2007,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2008,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2009,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2010,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2011,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2012,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2013,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2014,1,1,"uninhabited, perfect score"
+34,"Bassas da India",2015,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2000,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2001,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2002,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2003,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2004,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2005,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2006,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2007,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2008,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2009,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2010,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2011,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2012,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2013,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2014,1,1,"uninhabited, perfect score"
+35,"Ile Europa",2015,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2000,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2001,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2002,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2003,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2004,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2005,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2006,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2007,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2008,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2009,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2010,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2011,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2012,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2013,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2014,1,1,"uninhabited, perfect score"
+36,"Ile Tromelin",2015,1,1,"uninhabited, perfect score"
+37,"Mauritius",2000,0.91,0,NA
+37,"Mauritius",2001,0.91,0,NA
+37,"Mauritius",2002,0.92,0,NA
+37,"Mauritius",2003,0.92,0,NA
+37,"Mauritius",2004,0.92,0,NA
+37,"Mauritius",2005,0.92,0,NA
+37,"Mauritius",2006,0.92,0,NA
+37,"Mauritius",2007,0.92,0,NA
+37,"Mauritius",2008,0.92,0,NA
+37,"Mauritius",2009,0.93,0,NA
+37,"Mauritius",2010,0.93,0,NA
+37,"Mauritius",2011,0.93,0,NA
+37,"Mauritius",2012,0.93,0,NA
+37,"Mauritius",2013,0.93,0,NA
+37,"Mauritius",2014,0.93,0,NA
+37,"Mauritius",2015,0.93,0,NA
+38,"British Indian Ocean Territory",2000,0.548333333333333,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2001,0.56,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2002,0.573333333333333,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2003,0.586666666666667,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2004,0.6,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2005,0.613333333333333,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2006,0.623333333333333,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2007,0.635,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2008,0.645,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2009,0.658333333333333,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2010,0.67,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2011,0.676666666666667,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2012,0.688333333333333,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2013,0.696666666666667,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2014,0.706666666666667,1,"UN georegion avg. (r2)"
+38,"British Indian Ocean Territory",2015,0.711666666666667,1,"UN georegion avg. (r2)"
+39,"Maldives",2000,0.78,0,NA
+39,"Maldives",2001,0.8,0,NA
+39,"Maldives",2002,0.82,0,NA
+39,"Maldives",2003,0.84,0,NA
+39,"Maldives",2004,0.86,0,NA
+39,"Maldives",2005,0.88,0,NA
+39,"Maldives",2006,0.89,0,NA
+39,"Maldives",2007,0.91,0,NA
+39,"Maldives",2008,0.92,0,NA
+39,"Maldives",2009,0.94,0,NA
+39,"Maldives",2010,0.95,0,NA
+39,"Maldives",2011,0.96,0,NA
+39,"Maldives",2012,0.96,0,NA
+39,"Maldives",2013,0.96,0,NA
+39,"Maldives",2014,0.96,0,NA
+39,"Maldives",2015,0.96,0,NA
+40,"Sri Lanka",2000,0.85,0,NA
+40,"Sri Lanka",2001,0.86,0,NA
+40,"Sri Lanka",2002,0.87,0,NA
+40,"Sri Lanka",2003,0.87,0,NA
+40,"Sri Lanka",2004,0.88,0,NA
+40,"Sri Lanka",2005,0.89,0,NA
+40,"Sri Lanka",2006,0.89,0,NA
+40,"Sri Lanka",2007,0.9,0,NA
+40,"Sri Lanka",2008,0.9,0,NA
+40,"Sri Lanka",2009,0.91,0,NA
+40,"Sri Lanka",2010,0.92,0,NA
+40,"Sri Lanka",2011,0.92,0,NA
+40,"Sri Lanka",2012,0.93,0,NA
+40,"Sri Lanka",2013,0.94,0,NA
+40,"Sri Lanka",2014,0.94,0,NA
+40,"Sri Lanka",2015,0.94,0,NA
+41,"Mozambique",2000,0.12,0,NA
+41,"Mozambique",2001,0.13,0,NA
+41,"Mozambique",2002,0.14,0,NA
+41,"Mozambique",2003,0.14,0,NA
+41,"Mozambique",2004,0.15,0,NA
+41,"Mozambique",2005,0.16,0,NA
+41,"Mozambique",2006,0.17,0,NA
+41,"Mozambique",2007,0.17,0,NA
+41,"Mozambique",2008,0.18,0,NA
+41,"Mozambique",2009,0.19,0,NA
+41,"Mozambique",2010,0.2,0,NA
+41,"Mozambique",2011,0.2,0,NA
+41,"Mozambique",2012,0.21,0,NA
+41,"Mozambique",2013,0.22,0,NA
+41,"Mozambique",2014,0.23,0,NA
+41,"Mozambique",2015,0.24,0,NA
+42,"Madagascar",2000,0.05,0,NA
+42,"Madagascar",2001,0.05,0,NA
+42,"Madagascar",2002,0.05,0,NA
+42,"Madagascar",2003,0.06,0,NA
+42,"Madagascar",2004,0.06,0,NA
+42,"Madagascar",2005,0.06,0,NA
+42,"Madagascar",2006,0.07,0,NA
+42,"Madagascar",2007,0.07,0,NA
+42,"Madagascar",2008,0.07,0,NA
+42,"Madagascar",2009,0.08,0,NA
+42,"Madagascar",2010,0.08,0,NA
+42,"Madagascar",2011,0.08,0,NA
+42,"Madagascar",2012,0.09,0,NA
+42,"Madagascar",2013,0.09,0,NA
+42,"Madagascar",2014,0.09,0,NA
+42,"Madagascar",2015,0.1,0,NA
+43,"Kenya",2000,0.31,0,NA
+43,"Kenya",2001,0.31,0,NA
+43,"Kenya",2002,0.31,0,NA
+43,"Kenya",2003,0.31,0,NA
+43,"Kenya",2004,0.31,0,NA
+43,"Kenya",2005,0.31,0,NA
+43,"Kenya",2006,0.3,0,NA
+43,"Kenya",2007,0.3,0,NA
+43,"Kenya",2008,0.3,0,NA
+43,"Kenya",2009,0.3,0,NA
+43,"Kenya",2010,0.3,0,NA
+43,"Kenya",2011,0.3,0,NA
+43,"Kenya",2012,0.3,0,NA
+43,"Kenya",2013,0.3,0,NA
+43,"Kenya",2014,0.3,0,NA
+43,"Kenya",2015,0.3,0,NA
+44,"Somalia",2000,0.22,0,NA
+44,"Somalia",2001,0.22,0,NA
+44,"Somalia",2002,0.22,0,NA
+44,"Somalia",2003,0.21,0,NA
+44,"Somalia",2004,0.21,0,NA
+44,"Somalia",2005,0.21,0,NA
+44,"Somalia",2006,0.2,0,NA
+44,"Somalia",2007,0.2,0,NA
+44,"Somalia",2008,0.19,0,NA
+44,"Somalia",2009,0.19,0,NA
+44,"Somalia",2010,0.19,0,NA
+44,"Somalia",2011,0.18,0,NA
+44,"Somalia",2012,0.18,0,NA
+44,"Somalia",2013,0.17,0,NA
+44,"Somalia",2014,0.17,0,NA
+44,"Somalia",2015,0.16,0,NA
+45,"Eritrea",2000,0.08,0,NA
+45,"Eritrea",2001,0.08,0,NA
+45,"Eritrea",2002,0.08,0,NA
+45,"Eritrea",2003,0.08,0,NA
+45,"Eritrea",2004,0.09,0,NA
+45,"Eritrea",2005,0.09,0,NA
+45,"Eritrea",2006,0.09,0,NA
+45,"Eritrea",2007,0.1,0,NA
+45,"Eritrea",2008,0.1,0,NA
+45,"Eritrea",2009,0.1,0,NA
+45,"Eritrea",2010,0.1,0,NA
+45,"Eritrea",2011,0.11,0,NA
+45,"Eritrea",2012,0.11,0,NA
+45,"Eritrea",2013,0.11,0,NA
+45,"Eritrea",2014,0.11,0,NA
+45,"Eritrea",2015,0.11,0,NA
+46,"Djibouti",2000,0.51,0,NA
+46,"Djibouti",2001,0.51,0,NA
+46,"Djibouti",2002,0.51,0,NA
+46,"Djibouti",2003,0.51,0,NA
+46,"Djibouti",2004,0.51,0,NA
+46,"Djibouti",2005,0.51,0,NA
+46,"Djibouti",2006,0.51,0,NA
+46,"Djibouti",2007,0.51,0,NA
+46,"Djibouti",2008,0.51,0,NA
+46,"Djibouti",2009,0.51,0,NA
+46,"Djibouti",2010,0.51,0,NA
+46,"Djibouti",2011,0.51,0,NA
+46,"Djibouti",2012,0.51,0,NA
+46,"Djibouti",2013,0.51,0,NA
+46,"Djibouti",2014,0.51,0,NA
+46,"Djibouti",2015,0.51,0,NA
+47,"Yemen",2000,0.41,0,NA
+47,"Yemen",2001,0.42,0,NA
+47,"Yemen",2002,0.42,0,NA
+47,"Yemen",2003,0.43,0,NA
+47,"Yemen",2004,0.45,0,NA
+47,"Yemen",2005,0.46,0,NA
+47,"Yemen",2006,0.47,0,NA
+47,"Yemen",2007,0.49,0,NA
+47,"Yemen",2008,0.5,0,NA
+47,"Yemen",2009,0.52,0,NA
+47,"Yemen",2010,0.53,0,NA
+47,"Yemen",2011,0.54,0,NA
+47,"Yemen",2012,0.56,0,NA
+47,"Yemen",2013,0.57,0,NA
+47,"Yemen",2014,0.58,0,NA
+47,"Yemen",2015,0.6,0,NA
+48,"Oman",2000,0.88,0,NA
+48,"Oman",2001,0.88,0,NA
+48,"Oman",2002,0.89,0,NA
+48,"Oman",2003,0.9,0,NA
+48,"Oman",2004,0.91,0,NA
+48,"Oman",2005,0.92,0,NA
+48,"Oman",2006,0.93,0,NA
+48,"Oman",2007,0.94,0,NA
+48,"Oman",2008,0.95,0,NA
+48,"Oman",2009,0.96,0,NA
+48,"Oman",2010,0.96,0,NA
+48,"Oman",2011,0.97,0,NA
+48,"Oman",2012,0.98,0,NA
+48,"Oman",2013,0.99,0,NA
+48,"Oman",2014,0.99,0,NA
+48,"Oman",2015,0.99,0,NA
+49,"Sudan",2000,0.21,0,NA
+49,"Sudan",2001,0.21,0,NA
+49,"Sudan",2002,0.21,0,NA
+49,"Sudan",2003,0.21,0,NA
+49,"Sudan",2004,0.21,0,NA
+49,"Sudan",2005,0.22,0,NA
+49,"Sudan",2006,0.23,0,NA
+49,"Sudan",2007,0.25,0,NA
+49,"Sudan",2008,0.26,0,NA
+49,"Sudan",2009,0.27,0,NA
+49,"Sudan",2010,0.28,0,NA
+49,"Sudan",2011,0.3,0,NA
+49,"Sudan",2012,0.31,0,NA
+49,"Sudan",2013,0.32,0,NA
+49,"Sudan",2014,0.33,0,NA
+49,"Sudan",2015,0.35,0,NA
+50,"Saudi Arabia",2000,0.98,0,NA
+50,"Saudi Arabia",2001,0.98,0,NA
+50,"Saudi Arabia",2002,0.98,0,NA
+50,"Saudi Arabia",2003,0.98,0,NA
+50,"Saudi Arabia",2004,0.99,0,NA
+50,"Saudi Arabia",2005,0.99,0,NA
+50,"Saudi Arabia",2006,0.99,0,NA
+50,"Saudi Arabia",2007,0.99,0,NA
+50,"Saudi Arabia",2008,1,0,NA
+50,"Saudi Arabia",2009,1,0,NA
+50,"Saudi Arabia",2010,1,0,NA
+50,"Saudi Arabia",2011,1,0,NA
+50,"Saudi Arabia",2012,1,0,NA
+50,"Saudi Arabia",2013,1,0,NA
+50,"Saudi Arabia",2014,1,0,NA
+50,"Saudi Arabia",2015,1,0,NA
+51,"Kuwait",2000,1,0,NA
+51,"Kuwait",2001,1,0,NA
+51,"Kuwait",2002,1,0,NA
+51,"Kuwait",2003,1,0,NA
+51,"Kuwait",2004,1,0,NA
+51,"Kuwait",2005,1,0,NA
+51,"Kuwait",2006,1,0,NA
+51,"Kuwait",2007,1,0,NA
+51,"Kuwait",2008,1,0,NA
+51,"Kuwait",2009,1,0,NA
+51,"Kuwait",2010,1,0,NA
+51,"Kuwait",2011,1,0,NA
+51,"Kuwait",2012,1,0,NA
+51,"Kuwait",2013,1,0,NA
+51,"Kuwait",2014,1,0,NA
+51,"Kuwait",2015,1,0,NA
+52,"Bahrain",2000,1,0,NA
+52,"Bahrain",2001,1,0,NA
+52,"Bahrain",2002,1,0,NA
+52,"Bahrain",2003,1,0,NA
+52,"Bahrain",2004,1,0,NA
+52,"Bahrain",2005,1,0,NA
+52,"Bahrain",2006,1,0,NA
+52,"Bahrain",2007,1,0,NA
+52,"Bahrain",2008,1,0,NA
+52,"Bahrain",2009,1,0,NA
+52,"Bahrain",2010,1,0,NA
+52,"Bahrain",2011,1,0,NA
+52,"Bahrain",2012,1,0,NA
+52,"Bahrain",2013,1,0,NA
+52,"Bahrain",2014,1,0,NA
+52,"Bahrain",2015,1,0,NA
+53,"Pakistan",2000,0.32,0,NA
+53,"Pakistan",2001,0.33,0,NA
+53,"Pakistan",2002,0.35,0,NA
+53,"Pakistan",2003,0.37,0,NA
+53,"Pakistan",2004,0.39,0,NA
+53,"Pakistan",2005,0.41,0,NA
+53,"Pakistan",2006,0.43,0,NA
+53,"Pakistan",2007,0.44,0,NA
+53,"Pakistan",2008,0.46,0,NA
+53,"Pakistan",2009,0.48,0,NA
+53,"Pakistan",2010,0.5,0,NA
+53,"Pakistan",2011,0.51,0,NA
+53,"Pakistan",2012,0.53,0,NA
+53,"Pakistan",2013,0.55,0,NA
+53,"Pakistan",2014,0.57,0,NA
+53,"Pakistan",2015,0.58,0,NA
+54,"United Arab Emirates",2000,1,0,NA
+54,"United Arab Emirates",2001,1,0,NA
+54,"United Arab Emirates",2002,1,0,NA
+54,"United Arab Emirates",2003,1,0,NA
+54,"United Arab Emirates",2004,1,0,NA
+54,"United Arab Emirates",2005,1,0,NA
+54,"United Arab Emirates",2006,1,0,NA
+54,"United Arab Emirates",2007,1,0,NA
+54,"United Arab Emirates",2008,1,0,NA
+54,"United Arab Emirates",2009,1,0,NA
+54,"United Arab Emirates",2010,1,0,NA
+54,"United Arab Emirates",2011,1,0,NA
+54,"United Arab Emirates",2012,1,0,NA
+54,"United Arab Emirates",2013,1,0,NA
+54,"United Arab Emirates",2014,1,0,NA
+54,"United Arab Emirates",2015,1,0,NA
+55,"Azores",2000,0.959818181818182,1,"UN georegion avg. (r2)"
+55,"Azores",2001,0.961387878787879,1,"UN georegion avg. (r2)"
+55,"Azores",2002,0.963957575757576,1,"UN georegion avg. (r2)"
+55,"Azores",2003,0.965527272727273,1,"UN georegion avg. (r2)"
+55,"Azores",2004,0.96609696969697,1,"UN georegion avg. (r2)"
+55,"Azores",2005,0.967666666666667,1,"UN georegion avg. (r2)"
+55,"Azores",2006,0.97,1,"UN georegion avg. (r2)"
+55,"Azores",2007,0.972,1,"UN georegion avg. (r2)"
+55,"Azores",2008,0.973,1,"UN georegion avg. (r2)"
+55,"Azores",2009,0.975,1,"UN georegion avg. (r2)"
+55,"Azores",2010,0.977,1,"UN georegion avg. (r2)"
+55,"Azores",2011,0.977,1,"UN georegion avg. (r2)"
+55,"Azores",2012,0.979,1,"UN georegion avg. (r2)"
+55,"Azores",2013,0.979,1,"UN georegion avg. (r2)"
+55,"Azores",2014,0.982,1,"UN georegion avg. (r2)"
+55,"Azores",2015,0.982,1,"UN georegion avg. (r2)"
+56,"Cape Verde",2000,0.37,0,NA
+56,"Cape Verde",2001,0.4,0,NA
+56,"Cape Verde",2002,0.42,0,NA
+56,"Cape Verde",2003,0.44,0,NA
+56,"Cape Verde",2004,0.46,0,NA
+56,"Cape Verde",2005,0.48,0,NA
+56,"Cape Verde",2006,0.5,0,NA
+56,"Cape Verde",2007,0.52,0,NA
+56,"Cape Verde",2008,0.55,0,NA
+56,"Cape Verde",2009,0.57,0,NA
+56,"Cape Verde",2010,0.59,0,NA
+56,"Cape Verde",2011,0.61,0,NA
+56,"Cape Verde",2012,0.63,0,NA
+56,"Cape Verde",2013,0.64,0,NA
+56,"Cape Verde",2014,0.65,0,NA
+56,"Cape Verde",2015,0.65,0,NA
+57,"Madeira",2000,0.959818181818182,1,"UN georegion avg. (r2)"
+57,"Madeira",2001,0.961387878787879,1,"UN georegion avg. (r2)"
+57,"Madeira",2002,0.963957575757576,1,"UN georegion avg. (r2)"
+57,"Madeira",2003,0.965527272727273,1,"UN georegion avg. (r2)"
+57,"Madeira",2004,0.96609696969697,1,"UN georegion avg. (r2)"
+57,"Madeira",2005,0.967666666666667,1,"UN georegion avg. (r2)"
+57,"Madeira",2006,0.97,1,"UN georegion avg. (r2)"
+57,"Madeira",2007,0.972,1,"UN georegion avg. (r2)"
+57,"Madeira",2008,0.973,1,"UN georegion avg. (r2)"
+57,"Madeira",2009,0.975,1,"UN georegion avg. (r2)"
+57,"Madeira",2010,0.977,1,"UN georegion avg. (r2)"
+57,"Madeira",2011,0.977,1,"UN georegion avg. (r2)"
+57,"Madeira",2012,0.979,1,"UN georegion avg. (r2)"
+57,"Madeira",2013,0.979,1,"UN georegion avg. (r2)"
+57,"Madeira",2014,0.982,1,"UN georegion avg. (r2)"
+57,"Madeira",2015,0.982,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2000,0.959818181818182,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2001,0.961387878787879,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2002,0.963957575757576,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2003,0.965527272727273,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2004,0.96609696969697,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2005,0.967666666666667,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2006,0.97,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2007,0.972,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2008,0.973,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2009,0.975,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2010,0.977,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2011,0.977,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2012,0.979,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2013,0.979,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2014,0.982,1,"UN georegion avg. (r2)"
+58,"Canary Islands",2015,0.982,1,"UN georegion avg. (r2)"
+59,"Belgium",2000,0.99,0,NA
+59,"Belgium",2001,0.99,0,NA
+59,"Belgium",2002,0.99,0,NA
+59,"Belgium",2003,0.99,0,NA
+59,"Belgium",2004,0.99,0,NA
+59,"Belgium",2005,0.99,0,NA
+59,"Belgium",2006,0.99,0,NA
+59,"Belgium",2007,0.99,0,NA
+59,"Belgium",2008,0.99,0,NA
+59,"Belgium",2009,0.99,0,NA
+59,"Belgium",2010,0.99,0,NA
+59,"Belgium",2011,0.99,0,NA
+59,"Belgium",2012,0.99,0,NA
+59,"Belgium",2013,0.99,0,NA
+59,"Belgium",2014,0.99,0,NA
+59,"Belgium",2015,0.99,0,NA
+60,"Gibraltar",2000,0.959818181818182,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2001,0.961387878787879,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2002,0.963957575757576,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2003,0.965527272727273,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2004,0.96609696969697,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2005,0.967666666666667,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2006,0.97,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2007,0.972,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2008,0.973,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2009,0.975,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2010,0.977,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2011,0.977,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2012,0.979,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2013,0.979,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2014,0.982,1,"UN georegion avg. (r2)"
+60,"Gibraltar",2015,0.982,1,"UN georegion avg. (r2)"
+61,"Tunisia",2000,0.8,0,NA
+61,"Tunisia",2001,0.81,0,NA
+61,"Tunisia",2002,0.82,0,NA
+61,"Tunisia",2003,0.83,0,NA
+61,"Tunisia",2004,0.84,0,NA
+61,"Tunisia",2005,0.85,0,NA
+61,"Tunisia",2006,0.86,0,NA
+61,"Tunisia",2007,0.87,0,NA
+61,"Tunisia",2008,0.88,0,NA
+61,"Tunisia",2009,0.88,0,NA
+61,"Tunisia",2010,0.89,0,NA
+61,"Tunisia",2011,0.9,0,NA
+61,"Tunisia",2012,0.91,0,NA
+61,"Tunisia",2013,0.92,0,NA
+61,"Tunisia",2014,0.93,0,NA
+61,"Tunisia",2015,0.93,0,NA
+62,"Morocco",2000,0.69,0,NA
+62,"Morocco",2001,0.7,0,NA
+62,"Morocco",2002,0.71,0,NA
+62,"Morocco",2003,0.72,0,NA
+62,"Morocco",2004,0.73,0,NA
+62,"Morocco",2005,0.74,0,NA
+62,"Morocco",2006,0.75,0,NA
+62,"Morocco",2007,0.76,0,NA
+62,"Morocco",2008,0.77,0,NA
+62,"Morocco",2009,0.78,0,NA
+62,"Morocco",2010,0.79,0,NA
+62,"Morocco",2011,0.8,0,NA
+62,"Morocco",2012,0.81,0,NA
+62,"Morocco",2013,0.82,0,NA
+62,"Morocco",2014,0.83,0,NA
+62,"Morocco",2015,0.83,0,NA
+63,"Western Sahara",2000,0.743333333333333,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2001,0.746666666666667,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2002,0.751666666666667,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2003,0.756666666666667,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2004,0.76,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2005,0.765,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2006,0.771666666666667,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2007,0.778333333333333,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2008,0.783333333333333,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2009,0.786666666666667,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2010,0.793333333333333,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2011,0.8,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2012,0.805,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2013,0.81,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2014,0.815,1,"UN georegion avg. (r2)"
+63,"Western Sahara",2015,0.818333333333333,1,"UN georegion avg. (r2)"
+64,"Mauritania",2000,0.23,0,NA
+64,"Mauritania",2001,0.25,0,NA
+64,"Mauritania",2002,0.26,0,NA
+64,"Mauritania",2003,0.27,0,NA
+64,"Mauritania",2004,0.29,0,NA
+64,"Mauritania",2005,0.3,0,NA
+64,"Mauritania",2006,0.32,0,NA
+64,"Mauritania",2007,0.33,0,NA
+64,"Mauritania",2008,0.34,0,NA
+64,"Mauritania",2009,0.36,0,NA
+64,"Mauritania",2010,0.37,0,NA
+64,"Mauritania",2011,0.39,0,NA
+64,"Mauritania",2012,0.4,0,NA
+64,"Mauritania",2013,0.42,0,NA
+64,"Mauritania",2014,0.43,0,NA
+64,"Mauritania",2015,0.45,0,NA
+65,"Gambia",2000,0.55,0,NA
+65,"Gambia",2001,0.54,0,NA
+65,"Gambia",2002,0.53,0,NA
+65,"Gambia",2003,0.52,0,NA
+65,"Gambia",2004,0.51,0,NA
+65,"Gambia",2005,0.5,0,NA
+65,"Gambia",2006,0.49,0,NA
+65,"Gambia",2007,0.48,0,NA
+65,"Gambia",2008,0.47,0,NA
+65,"Gambia",2009,0.47,0,NA
+65,"Gambia",2010,0.46,0,NA
+65,"Gambia",2011,0.45,0,NA
+65,"Gambia",2012,0.44,0,NA
+65,"Gambia",2013,0.43,0,NA
+65,"Gambia",2014,0.42,0,NA
+65,"Gambia",2015,0.42,0,NA
+66,"Senegal",2000,0.39,0,NA
+66,"Senegal",2001,0.39,0,NA
+66,"Senegal",2002,0.4,0,NA
+66,"Senegal",2003,0.4,0,NA
+66,"Senegal",2004,0.41,0,NA
+66,"Senegal",2005,0.42,0,NA
+66,"Senegal",2006,0.42,0,NA
+66,"Senegal",2007,0.43,0,NA
+66,"Senegal",2008,0.44,0,NA
+66,"Senegal",2009,0.44,0,NA
+66,"Senegal",2010,0.45,0,NA
+66,"Senegal",2011,0.46,0,NA
+66,"Senegal",2012,0.46,0,NA
+66,"Senegal",2013,0.47,0,NA
+66,"Senegal",2014,0.48,0,NA
+66,"Senegal",2015,0.48,0,NA
+67,"Libya",2000,1,0,NA
+67,"Libya",2001,1,0,NA
+67,"Libya",2002,1,0,NA
+67,"Libya",2003,1,0,NA
+67,"Libya",2004,1,0,NA
+67,"Libya",2005,1,0,NA
+67,"Libya",2006,1,0,NA
+67,"Libya",2007,1,0,NA
+67,"Libya",2008,1,0,NA
+67,"Libya",2009,1,0,NA
+67,"Libya",2010,1,0,NA
+67,"Libya",2011,1,0,NA
+67,"Libya",2012,1,0,NA
+67,"Libya",2013,1,0,NA
+67,"Libya",2014,1,0,NA
+67,"Libya",2015,1,0,NA
+68,"Malta",2000,1,0,NA
+68,"Malta",2001,1,0,NA
+68,"Malta",2002,1,0,NA
+68,"Malta",2003,1,0,NA
+68,"Malta",2004,1,0,NA
+68,"Malta",2005,1,0,NA
+68,"Malta",2006,1,0,NA
+68,"Malta",2007,1,0,NA
+68,"Malta",2008,1,0,NA
+68,"Malta",2009,1,0,NA
+68,"Malta",2010,1,0,NA
+68,"Malta",2011,1,0,NA
+68,"Malta",2012,1,0,NA
+68,"Malta",2013,1,0,NA
+68,"Malta",2014,1,0,NA
+68,"Malta",2015,1,0,NA
+69,"Latvia",2000,0.87,0,NA
+69,"Latvia",2001,0.86,0,NA
+69,"Latvia",2002,0.87,0,NA
+69,"Latvia",2003,0.87,0,NA
+69,"Latvia",2004,0.88,0,NA
+69,"Latvia",2005,0.88,0,NA
+69,"Latvia",2006,0.89,0,NA
+69,"Latvia",2007,0.89,0,NA
+69,"Latvia",2008,0.9,0,NA
+69,"Latvia",2009,0.9,0,NA
+69,"Latvia",2010,0.91,0,NA
+69,"Latvia",2011,0.91,0,NA
+69,"Latvia",2012,0.91,0,NA
+69,"Latvia",2013,0.92,0,NA
+69,"Latvia",2014,0.92,0,NA
+69,"Latvia",2015,0.93,0,NA
+70,"Estonia",2000,0.99,0,NA
+70,"Estonia",2001,0.99,0,NA
+70,"Estonia",2002,0.99,0,NA
+70,"Estonia",2003,0.99,0,NA
+70,"Estonia",2004,0.99,0,NA
+70,"Estonia",2005,0.99,0,NA
+70,"Estonia",2006,0.99,0,NA
+70,"Estonia",2007,0.99,0,NA
+70,"Estonia",2008,0.99,0,NA
+70,"Estonia",2009,0.99,0,NA
+70,"Estonia",2010,0.99,0,NA
+70,"Estonia",2011,0.99,0,NA
+70,"Estonia",2012,1,0,NA
+70,"Estonia",2013,1,0,NA
+70,"Estonia",2014,1,0,NA
+70,"Estonia",2015,1,0,NA
+71,"Bulgaria",2000,0.86,0,NA
+71,"Bulgaria",2001,0.86,0,NA
+71,"Bulgaria",2002,0.86,0,NA
+71,"Bulgaria",2003,0.86,0,NA
+71,"Bulgaria",2004,0.86,0,NA
+71,"Bulgaria",2005,0.86,0,NA
+71,"Bulgaria",2006,0.86,0,NA
+71,"Bulgaria",2007,0.86,0,NA
+71,"Bulgaria",2008,0.86,0,NA
+71,"Bulgaria",2009,0.86,0,NA
+71,"Bulgaria",2010,0.86,0,NA
+71,"Bulgaria",2011,0.86,0,NA
+71,"Bulgaria",2012,0.86,0,NA
+71,"Bulgaria",2013,0.86,0,NA
+71,"Bulgaria",2014,0.86,0,NA
+71,"Bulgaria",2015,0.86,0,NA
+72,"Romania",2000,0.813272727272728,1,"lm prediction"
+72,"Romania",2001,0.813818181818182,1,"lm prediction"
+72,"Romania",2002,0.814363636363637,1,"lm prediction"
+72,"Romania",2003,0.814909090909091,1,"lm prediction"
+72,"Romania",2004,0.815454545454546,1,"lm prediction"
+72,"Romania",2005,0.816,1,"lm prediction"
+72,"Romania",2006,0.81,0,NA
+72,"Romania",2007,0.82,0,NA
+72,"Romania",2008,0.82,0,NA
+72,"Romania",2009,0.82,0,NA
+72,"Romania",2010,0.82,0,NA
+72,"Romania",2011,0.82,0,NA
+72,"Romania",2012,0.82,0,NA
+72,"Romania",2013,0.82,0,NA
+72,"Romania",2014,0.82,0,NA
+72,"Romania",2015,0.82,0,NA
+73,"Russia",2000,0.84,0,NA
+73,"Russia",2001,0.84,0,NA
+73,"Russia",2002,0.84,0,NA
+73,"Russia",2003,0.85,0,NA
+73,"Russia",2004,0.85,0,NA
+73,"Russia",2005,0.85,0,NA
+73,"Russia",2006,0.86,0,NA
+73,"Russia",2007,0.86,0,NA
+73,"Russia",2008,0.86,0,NA
+73,"Russia",2009,0.87,0,NA
+73,"Russia",2010,0.87,0,NA
+73,"Russia",2011,0.87,0,NA
+73,"Russia",2012,0.88,0,NA
+73,"Russia",2013,0.88,0,NA
+73,"Russia",2014,0.88,0,NA
+73,"Russia",2015,0.89,0,NA
+74,"Georgia",2000,0.97,0,NA
+74,"Georgia",2001,0.96,0,NA
+74,"Georgia",2002,0.95,0,NA
+74,"Georgia",2003,0.95,0,NA
+74,"Georgia",2004,0.94,0,NA
+74,"Georgia",2005,0.93,0,NA
+74,"Georgia",2006,0.92,0,NA
+74,"Georgia",2007,0.91,0,NA
+74,"Georgia",2008,0.9,0,NA
+74,"Georgia",2009,0.9,0,NA
+74,"Georgia",2010,0.89,0,NA
+74,"Georgia",2011,0.88,0,NA
+74,"Georgia",2012,0.87,0,NA
+74,"Georgia",2013,0.86,0,NA
+74,"Georgia",2014,0.86,0,NA
+74,"Georgia",2015,0.85,0,NA
+75,"Ukraine",2000,0.95,0,NA
+75,"Ukraine",2001,0.95,0,NA
+75,"Ukraine",2002,0.95,0,NA
+75,"Ukraine",2003,0.95,0,NA
+75,"Ukraine",2004,0.95,0,NA
+75,"Ukraine",2005,0.95,0,NA
+75,"Ukraine",2006,0.95,0,NA
+75,"Ukraine",2007,0.95,0,NA
+75,"Ukraine",2008,0.95,0,NA
+75,"Ukraine",2009,0.95,0,NA
+75,"Ukraine",2010,0.96,0,NA
+75,"Ukraine",2011,0.96,0,NA
+75,"Ukraine",2012,0.96,0,NA
+75,"Ukraine",2013,0.96,0,NA
+75,"Ukraine",2014,0.96,0,NA
+75,"Ukraine",2015,0.96,0,NA
+76,"Turkey",2000,0.83,0,NA
+76,"Turkey",2001,0.83,0,NA
+76,"Turkey",2002,0.84,0,NA
+76,"Turkey",2003,0.85,0,NA
+76,"Turkey",2004,0.86,0,NA
+76,"Turkey",2005,0.87,0,NA
+76,"Turkey",2006,0.88,0,NA
+76,"Turkey",2007,0.89,0,NA
+76,"Turkey",2008,0.9,0,NA
+76,"Turkey",2009,0.91,0,NA
+76,"Turkey",2010,0.92,0,NA
+76,"Turkey",2011,0.93,0,NA
+76,"Turkey",2012,0.94,0,NA
+76,"Turkey",2013,0.95,0,NA
+76,"Turkey",2014,0.96,0,NA
+76,"Turkey",2015,0.96,0,NA
+77,"Syria",2000,0.93,0,NA
+77,"Syria",2001,0.93,0,NA
+77,"Syria",2002,0.93,0,NA
+77,"Syria",2003,0.93,0,NA
+77,"Syria",2004,0.93,0,NA
+77,"Syria",2005,0.93,0,NA
+77,"Syria",2006,0.93,0,NA
+77,"Syria",2007,0.93,0,NA
+77,"Syria",2008,0.93,0,NA
+77,"Syria",2009,0.93,0,NA
+77,"Syria",2010,0.93,0,NA
+77,"Syria",2011,0.93,0,NA
+77,"Syria",2012,0.93,0,NA
+77,"Syria",2013,0.93,0,NA
+77,"Syria",2014,0.93,0,NA
+77,"Syria",2015,0.93,0,NA
+78,"Lebanon",2000,0.75,0,NA
+78,"Lebanon",2001,0.75,0,NA
+78,"Lebanon",2002,0.75,0,NA
+78,"Lebanon",2003,0.77,0,NA
+78,"Lebanon",2004,0.78,0,NA
+78,"Lebanon",2005,0.8,0,NA
+78,"Lebanon",2006,0.81,0,NA
+78,"Lebanon",2007,0.83,0,NA
+78,"Lebanon",2008,0.84,0,NA
+78,"Lebanon",2009,0.86,0,NA
+78,"Lebanon",2010,0.88,0,NA
+78,"Lebanon",2011,0.89,0,NA
+78,"Lebanon",2012,0.91,0,NA
+78,"Lebanon",2013,0.92,0,NA
+78,"Lebanon",2014,0.94,0,NA
+78,"Lebanon",2015,0.95,0,NA
+79,"Israel",2000,1,0,NA
+79,"Israel",2001,1,0,NA
+79,"Israel",2002,1,0,NA
+79,"Israel",2003,1,0,NA
+79,"Israel",2004,1,0,NA
+79,"Israel",2005,1,0,NA
+79,"Israel",2006,1,0,NA
+79,"Israel",2007,1,0,NA
+79,"Israel",2008,1,0,NA
+79,"Israel",2009,1,0,NA
+79,"Israel",2010,1,0,NA
+79,"Israel",2011,1,0,NA
+79,"Israel",2012,1,0,NA
+79,"Israel",2013,1,0,NA
+79,"Israel",2014,1,0,NA
+79,"Israel",2015,1,0,NA
+80,"Greece",2000,0.97,0,NA
+80,"Greece",2001,0.97,0,NA
+80,"Greece",2002,0.97,0,NA
+80,"Greece",2003,0.97,0,NA
+80,"Greece",2004,0.97,0,NA
+80,"Greece",2005,0.97,0,NA
+80,"Greece",2006,0.98,0,NA
+80,"Greece",2007,0.98,0,NA
+80,"Greece",2008,0.98,0,NA
+80,"Greece",2009,0.98,0,NA
+80,"Greece",2010,0.98,0,NA
+80,"Greece",2011,0.98,0,NA
+80,"Greece",2012,0.98,0,NA
+80,"Greece",2013,0.98,0,NA
+80,"Greece",2014,0.99,0,NA
+80,"Greece",2015,0.99,0,NA
+81,"Cyprus",2000,1,0,NA
+81,"Cyprus",2001,1,0,NA
+81,"Cyprus",2002,1,0,NA
+81,"Cyprus",2003,1,0,NA
+81,"Cyprus",2004,1,0,NA
+81,"Cyprus",2005,1,0,NA
+81,"Cyprus",2006,1,0,NA
+81,"Cyprus",2007,1,0,NA
+81,"Cyprus",2008,1,0,NA
+81,"Cyprus",2009,1,0,NA
+81,"Cyprus",2010,1,0,NA
+81,"Cyprus",2011,1,0,NA
+81,"Cyprus",2012,1,0,NA
+81,"Cyprus",2013,0.99,0,NA
+81,"Cyprus",2014,0.99,0,NA
+81,"Cyprus",2015,0.99,0,NA
+82,"Albania",2000,0.88,0,NA
+82,"Albania",2001,0.89,0,NA
+82,"Albania",2002,0.9,0,NA
+82,"Albania",2003,0.91,0,NA
+82,"Albania",2004,0.91,0,NA
+82,"Albania",2005,0.92,0,NA
+82,"Albania",2006,0.93,0,NA
+82,"Albania",2007,0.94,0,NA
+82,"Albania",2008,0.94,0,NA
+82,"Albania",2009,0.95,0,NA
+82,"Albania",2010,0.96,0,NA
+82,"Albania",2011,0.96,0,NA
+82,"Albania",2012,0.97,0,NA
+82,"Albania",2013,0.97,0,NA
+82,"Albania",2014,0.98,0,NA
+82,"Albania",2015,0.98,0,NA
+84,"Algeria",2000,0.84,0,NA
+84,"Algeria",2001,0.84,0,NA
+84,"Algeria",2002,0.84,0,NA
+84,"Algeria",2003,0.85,0,NA
+84,"Algeria",2004,0.85,0,NA
+84,"Algeria",2005,0.85,0,NA
+84,"Algeria",2006,0.86,0,NA
+84,"Algeria",2007,0.86,0,NA
+84,"Algeria",2008,0.86,0,NA
+84,"Algeria",2009,0.86,0,NA
+84,"Algeria",2010,0.87,0,NA
+84,"Algeria",2011,0.87,0,NA
+84,"Algeria",2012,0.87,0,NA
+84,"Algeria",2013,0.87,0,NA
+84,"Algeria",2014,0.87,0,NA
+84,"Algeria",2015,0.87,0,NA
+85,"Ascension",2000,0.963461538461538,1,"UN georegion avg. (r2)"
+85,"Ascension",2001,0.962891483516483,1,"UN georegion avg. (r2)"
+85,"Ascension",2002,0.964375,1,"UN georegion avg. (r2)"
+85,"Ascension",2003,0.965,1,"UN georegion avg. (r2)"
+85,"Ascension",2004,0.96625,1,"UN georegion avg. (r2)"
+85,"Ascension",2005,0.966875,1,"UN georegion avg. (r2)"
+85,"Ascension",2006,0.9675,1,"UN georegion avg. (r2)"
+85,"Ascension",2007,0.968125,1,"UN georegion avg. (r2)"
+85,"Ascension",2008,0.969375,1,"UN georegion avg. (r2)"
+85,"Ascension",2009,0.97,1,"UN georegion avg. (r2)"
+85,"Ascension",2010,0.970625,1,"UN georegion avg. (r2)"
+85,"Ascension",2011,0.970625,1,"UN georegion avg. (r2)"
+85,"Ascension",2012,0.9725,1,"UN georegion avg. (r2)"
+85,"Ascension",2013,0.97375,1,"UN georegion avg. (r2)"
+85,"Ascension",2014,0.974375,1,"UN georegion avg. (r2)"
+85,"Ascension",2015,0.975625,1,"UN georegion avg. (r2)"
+86,"Saint Helena",2000,0.985384615384615,1,"lm prediction"
+86,"Saint Helena",2001,0.986263736263736,1,"lm prediction"
+86,"Saint Helena",2002,0.99,0,NA
+86,"Saint Helena",2003,0.99,0,NA
+86,"Saint Helena",2004,0.99,0,NA
+86,"Saint Helena",2005,0.99,0,NA
+86,"Saint Helena",2006,0.99,0,NA
+86,"Saint Helena",2007,0.99,0,NA
+86,"Saint Helena",2008,0.99,0,NA
+86,"Saint Helena",2009,0.99,0,NA
+86,"Saint Helena",2010,0.99,0,NA
+86,"Saint Helena",2011,0.99,0,NA
+86,"Saint Helena",2012,1,0,NA
+86,"Saint Helena",2013,1,0,NA
+86,"Saint Helena",2014,1,0,NA
+86,"Saint Helena",2015,1,0,NA
+88,"Tristan da Cunha",2000,0.963461538461538,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2001,0.962891483516483,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2002,0.964375,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2003,0.965,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2004,0.96625,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2005,0.966875,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2006,0.9675,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2007,0.968125,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2008,0.969375,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2009,0.97,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2010,0.970625,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2011,0.970625,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2012,0.9725,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2013,0.97375,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2014,0.974375,1,"UN georegion avg. (r2)"
+88,"Tristan da Cunha",2015,0.975625,1,"UN georegion avg. (r2)"
+89,"South Georgia and the South Sandwich Islands",2000,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2001,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2002,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2003,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2004,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2005,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2006,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2007,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2008,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2009,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2010,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2011,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2012,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2013,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2014,1,1,"uninhabited, perfect score"
+89,"South Georgia and the South Sandwich Islands",2015,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2000,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2001,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2002,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2003,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2004,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2005,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2006,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2007,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2008,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2009,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2010,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2011,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2012,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2013,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2014,1,1,"uninhabited, perfect score"
+90,"Prince Edward Islands",2015,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2000,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2001,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2002,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2003,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2004,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2005,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2006,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2007,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2008,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2009,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2010,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2011,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2012,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2013,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2014,1,1,"uninhabited, perfect score"
+91,"Crozet Islands",2015,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2000,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2001,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2002,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2003,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2004,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2005,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2006,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2007,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2008,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2009,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2010,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2011,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2012,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2013,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2014,1,1,"uninhabited, perfect score"
+92,"Amsterdam Island and Saint Paul Island",2015,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2000,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2001,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2002,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2003,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2004,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2005,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2006,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2007,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2008,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2009,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2010,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2011,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2012,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2013,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2014,1,1,"uninhabited, perfect score"
+93,"Kerguelen Islands",2015,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2000,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2001,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2002,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2003,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2004,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2005,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2006,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2007,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2008,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2009,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2010,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2011,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2012,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2013,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2014,1,1,"uninhabited, perfect score"
+94,"Heard and McDonald Islands",2015,1,1,"uninhabited, perfect score"
+95,"Falkland Islands",2000,1,0,NA
+95,"Falkland Islands",2001,1,0,NA
+95,"Falkland Islands",2002,1,0,NA
+95,"Falkland Islands",2003,1,0,NA
+95,"Falkland Islands",2004,1,0,NA
+95,"Falkland Islands",2005,1,0,NA
+95,"Falkland Islands",2006,1,0,NA
+95,"Falkland Islands",2007,1,0,NA
+95,"Falkland Islands",2008,1,0,NA
+95,"Falkland Islands",2009,1,0,NA
+95,"Falkland Islands",2010,1,0,NA
+95,"Falkland Islands",2011,1,0,NA
+95,"Falkland Islands",2012,1,0,NA
+95,"Falkland Islands",2013,1,0,NA
+95,"Falkland Islands",2014,1,0,NA
+95,"Falkland Islands",2015,1,0,NA
+96,"Sierra Leone",2000,0.1,0,NA
+96,"Sierra Leone",2001,0.1,0,NA
+96,"Sierra Leone",2002,0.11,0,NA
+96,"Sierra Leone",2003,0.11,0,NA
+96,"Sierra Leone",2004,0.11,0,NA
+96,"Sierra Leone",2005,0.12,0,NA
+96,"Sierra Leone",2006,0.12,0,NA
+96,"Sierra Leone",2007,0.12,0,NA
+96,"Sierra Leone",2008,0.12,0,NA
+96,"Sierra Leone",2009,0.13,0,NA
+96,"Sierra Leone",2010,0.13,0,NA
+96,"Sierra Leone",2011,0.13,0,NA
+96,"Sierra Leone",2012,0.14,0,NA
+96,"Sierra Leone",2013,0.14,0,NA
+96,"Sierra Leone",2014,0.14,0,NA
+96,"Sierra Leone",2015,0.15,0,NA
+97,"Liberia",2000,0.13,0,NA
+97,"Liberia",2001,0.13,0,NA
+97,"Liberia",2002,0.14,0,NA
+97,"Liberia",2003,0.14,0,NA
+97,"Liberia",2004,0.14,0,NA
+97,"Liberia",2005,0.14,0,NA
+97,"Liberia",2006,0.15,0,NA
+97,"Liberia",2007,0.15,0,NA
+97,"Liberia",2008,0.15,0,NA
+97,"Liberia",2009,0.15,0,NA
+97,"Liberia",2010,0.16,0,NA
+97,"Liberia",2011,0.16,0,NA
+97,"Liberia",2012,0.16,0,NA
+97,"Liberia",2013,0.16,0,NA
+97,"Liberia",2014,0.17,0,NA
+97,"Liberia",2015,0.17,0,NA
+98,"Togo",2000,0.11,0,NA
+98,"Togo",2001,0.11,0,NA
+98,"Togo",2002,0.11,0,NA
+98,"Togo",2003,0.12,0,NA
+98,"Togo",2004,0.12,0,NA
+98,"Togo",2005,0.12,0,NA
+98,"Togo",2006,0.12,0,NA
+98,"Togo",2007,0.12,0,NA
+98,"Togo",2008,0.12,0,NA
+98,"Togo",2009,0.13,0,NA
+98,"Togo",2010,0.13,0,NA
+98,"Togo",2011,0.13,0,NA
+98,"Togo",2012,0.13,0,NA
+98,"Togo",2013,0.14,0,NA
+98,"Togo",2014,0.14,0,NA
+98,"Togo",2015,0.14,0,NA
+99,"Benin",2000,0.1,0,NA
+99,"Benin",2001,0.1,0,NA
+99,"Benin",2002,0.1,0,NA
+99,"Benin",2003,0.11,0,NA
+99,"Benin",2004,0.11,0,NA
+99,"Benin",2005,0.11,0,NA
+99,"Benin",2006,0.11,0,NA
+99,"Benin",2007,0.12,0,NA
+99,"Benin",2008,0.12,0,NA
+99,"Benin",2009,0.12,0,NA
+99,"Benin",2010,0.13,0,NA
+99,"Benin",2011,0.13,0,NA
+99,"Benin",2012,0.13,0,NA
+99,"Benin",2013,0.13,0,NA
+99,"Benin",2014,0.14,0,NA
+99,"Benin",2015,0.14,0,NA
+100,"Republique du Congo",2000,0.13,0,NA
+100,"Republique du Congo",2001,0.13,0,NA
+100,"Republique du Congo",2002,0.13,0,NA
+100,"Republique du Congo",2003,0.13,0,NA
+100,"Republique du Congo",2004,0.13,0,NA
+100,"Republique du Congo",2005,0.13,0,NA
+100,"Republique du Congo",2006,0.14,0,NA
+100,"Republique du Congo",2007,0.14,0,NA
+100,"Republique du Congo",2008,0.14,0,NA
+100,"Republique du Congo",2009,0.14,0,NA
+100,"Republique du Congo",2010,0.14,0,NA
+100,"Republique du Congo",2011,0.14,0,NA
+100,"Republique du Congo",2012,0.15,0,NA
+100,"Republique du Congo",2013,0.15,0,NA
+100,"Republique du Congo",2014,0.15,0,NA
+100,"Republique du Congo",2015,0.15,0,NA
+101,"Namibia",2000,0.28,0,NA
+101,"Namibia",2001,0.29,0,NA
+101,"Namibia",2002,0.29,0,NA
+101,"Namibia",2003,0.29,0,NA
+101,"Namibia",2004,0.3,0,NA
+101,"Namibia",2005,0.3,0,NA
+101,"Namibia",2006,0.3,0,NA
+101,"Namibia",2007,0.31,0,NA
+101,"Namibia",2008,0.31,0,NA
+101,"Namibia",2009,0.32,0,NA
+101,"Namibia",2010,0.32,0,NA
+101,"Namibia",2011,0.32,0,NA
+101,"Namibia",2012,0.33,0,NA
+101,"Namibia",2013,0.33,0,NA
+101,"Namibia",2014,0.33,0,NA
+101,"Namibia",2015,0.34,0,NA
+102,"South Africa",2000,0.59,0,NA
+102,"South Africa",2001,0.6,0,NA
+102,"South Africa",2002,0.61,0,NA
+102,"South Africa",2003,0.62,0,NA
+102,"South Africa",2004,0.63,0,NA
+102,"South Africa",2005,0.64,0,NA
+102,"South Africa",2006,0.65,0,NA
+102,"South Africa",2007,0.66,0,NA
+102,"South Africa",2008,0.67,0,NA
+102,"South Africa",2009,0.68,0,NA
+102,"South Africa",2010,0.69,0,NA
+102,"South Africa",2011,0.7,0,NA
+102,"South Africa",2012,0.71,0,NA
+102,"South Africa",2013,0.71,0,NA
+102,"South Africa",2014,0.72,0,NA
+102,"South Africa",2015,0.73,0,NA
+103,"Sao Tome and Principe",2000,0.21,0,NA
+103,"Sao Tome and Principe",2001,0.22,0,NA
+103,"Sao Tome and Principe",2002,0.23,0,NA
+103,"Sao Tome and Principe",2003,0.25,0,NA
+103,"Sao Tome and Principe",2004,0.26,0,NA
+103,"Sao Tome and Principe",2005,0.27,0,NA
+103,"Sao Tome and Principe",2006,0.28,0,NA
+103,"Sao Tome and Principe",2007,0.3,0,NA
+103,"Sao Tome and Principe",2008,0.31,0,NA
+103,"Sao Tome and Principe",2009,0.32,0,NA
+103,"Sao Tome and Principe",2010,0.34,0,NA
+103,"Sao Tome and Principe",2011,0.35,0,NA
+103,"Sao Tome and Principe",2012,0.36,0,NA
+103,"Sao Tome and Principe",2013,0.38,0,NA
+103,"Sao Tome and Principe",2014,0.39,0,NA
+103,"Sao Tome and Principe",2015,0.4,0,NA
+104,"Equatorial Guinea",2000,0.8,0,NA
+104,"Equatorial Guinea",2001,0.8,0,NA
+104,"Equatorial Guinea",2002,0.79,0,NA
+104,"Equatorial Guinea",2003,0.79,0,NA
+104,"Equatorial Guinea",2004,0.78,0,NA
+104,"Equatorial Guinea",2005,0.78,0,NA
+104,"Equatorial Guinea",2006,0.78,0,NA
+104,"Equatorial Guinea",2007,0.77,0,NA
+104,"Equatorial Guinea",2008,0.77,0,NA
+104,"Equatorial Guinea",2009,0.76,0,NA
+104,"Equatorial Guinea",2010,0.76,0,NA
+104,"Equatorial Guinea",2011,0.75,0,NA
+104,"Equatorial Guinea",2012,0.75,0,NA
+104,"Equatorial Guinea",2013,0.75,0,NA
+104,"Equatorial Guinea",2014,0.75,0,NA
+104,"Equatorial Guinea",2015,0.75,0,NA
+105,"Bouvet Island",2000,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2001,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2002,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2003,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2004,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2005,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2006,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2007,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2008,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2009,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2010,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2011,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2012,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2013,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2014,1,1,"uninhabited, perfect score"
+105,"Bouvet Island",2015,1,1,"uninhabited, perfect score"
+106,"Ghana",2000,0.11,0,NA
+106,"Ghana",2001,0.11,0,NA
+106,"Ghana",2002,0.12,0,NA
+106,"Ghana",2003,0.12,0,NA
+106,"Ghana",2004,0.12,0,NA
+106,"Ghana",2005,0.12,0,NA
+106,"Ghana",2006,0.12,0,NA
+106,"Ghana",2007,0.13,0,NA
+106,"Ghana",2008,0.13,0,NA
+106,"Ghana",2009,0.13,0,NA
+106,"Ghana",2010,0.13,0,NA
+106,"Ghana",2011,0.13,0,NA
+106,"Ghana",2012,0.14,0,NA
+106,"Ghana",2013,0.14,0,NA
+106,"Ghana",2014,0.14,0,NA
+106,"Ghana",2015,0.14,0,NA
+107,"Clipperton Island",2000,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2001,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2002,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2003,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2004,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2005,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2006,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2007,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2008,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2009,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2010,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2011,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2012,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2013,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2014,1,1,"uninhabited, perfect score"
+107,"Clipperton Island",2015,1,1,"uninhabited, perfect score"
+108,"Bermuda",2000,1,0,NA
+108,"Bermuda",2001,1,0,NA
+108,"Bermuda",2002,1,0,NA
+108,"Bermuda",2003,1,0,NA
+108,"Bermuda",2004,1,0,NA
+108,"Bermuda",2005,1,0,NA
+108,"Bermuda",2006,1,0,NA
+108,"Bermuda",2007,1,0,NA
+108,"Bermuda",2008,1,0,NA
+108,"Bermuda",2009,1,0,NA
+108,"Bermuda",2010,1,0,NA
+108,"Bermuda",2011,1,0,NA
+108,"Bermuda",2012,1,0,NA
+108,"Bermuda",2013,1,0,NA
+108,"Bermuda",2014,1,0,NA
+108,"Bermuda",2015,1,0,NA
+110,"Bahamas",2000,0.89,0,NA
+110,"Bahamas",2001,0.89,0,NA
+110,"Bahamas",2002,0.89,0,NA
+110,"Bahamas",2003,0.89,0,NA
+110,"Bahamas",2004,0.9,0,NA
+110,"Bahamas",2005,0.9,0,NA
+110,"Bahamas",2006,0.9,0,NA
+110,"Bahamas",2007,0.91,0,NA
+110,"Bahamas",2008,0.91,0,NA
+110,"Bahamas",2009,0.91,0,NA
+110,"Bahamas",2010,0.91,0,NA
+110,"Bahamas",2011,0.92,0,NA
+110,"Bahamas",2012,0.92,0,NA
+110,"Bahamas",2013,0.92,0,NA
+110,"Bahamas",2014,0.92,0,NA
+110,"Bahamas",2015,0.92,0,NA
+111,"Turks and Caicos Islands",2000,0.81,0,NA
+111,"Turks and Caicos Islands",2001,0.81,0,NA
+111,"Turks and Caicos Islands",2002,0.82,0,NA
+111,"Turks and Caicos Islands",2003,0.82,0,NA
+111,"Turks and Caicos Islands",2004,0.83,0,NA
+111,"Turks and Caicos Islands",2005,0.83,0,NA
+111,"Turks and Caicos Islands",2006,0.84,0,NA
+111,"Turks and Caicos Islands",2007,0.84,0,NA
+111,"Turks and Caicos Islands",2008,0.85,0,NA
+111,"Turks and Caicos Islands",2009,0.85,0,NA
+111,"Turks and Caicos Islands",2010,0.86,0,NA
+111,"Turks and Caicos Islands",2011,0.86,0,NA
+111,"Turks and Caicos Islands",2012,0.87,0,NA
+111,"Turks and Caicos Islands",2013,0.87,0,NA
+111,"Turks and Caicos Islands",2014,0.88,0,NA
+111,"Turks and Caicos Islands",2015,0.88,0,NA
+112,"Cuba",2000,0.89,0,NA
+112,"Cuba",2001,0.89,0,NA
+112,"Cuba",2002,0.89,0,NA
+112,"Cuba",2003,0.9,0,NA
+112,"Cuba",2004,0.9,0,NA
+112,"Cuba",2005,0.9,0,NA
+112,"Cuba",2006,0.9,0,NA
+112,"Cuba",2007,0.9,0,NA
+112,"Cuba",2008,0.9,0,NA
+112,"Cuba",2009,0.9,0,NA
+112,"Cuba",2010,0.9,0,NA
+112,"Cuba",2011,0.9,0,NA
+112,"Cuba",2012,0.91,0,NA
+112,"Cuba",2013,0.91,0,NA
+112,"Cuba",2014,0.91,0,NA
+112,"Cuba",2015,0.91,0,NA
+113,"Cayman Islands",2000,0.959999999999999,1,"lm prediction"
+113,"Cayman Islands",2001,0.96,0,NA
+113,"Cayman Islands",2002,0.96,0,NA
+113,"Cayman Islands",2003,0.96,0,NA
+113,"Cayman Islands",2004,0.96,0,NA
+113,"Cayman Islands",2005,0.96,0,NA
+113,"Cayman Islands",2006,0.96,0,NA
+113,"Cayman Islands",2007,0.96,0,NA
+113,"Cayman Islands",2008,0.96,0,NA
+113,"Cayman Islands",2009,0.96,0,NA
+113,"Cayman Islands",2010,0.96,0,NA
+113,"Cayman Islands",2011,0.96,0,NA
+113,"Cayman Islands",2012,0.96,0,NA
+113,"Cayman Islands",2013,0.96,0,NA
+113,"Cayman Islands",2014,0.96,0,NA
+113,"Cayman Islands",2015,0.96,0,NA
+114,"Haiti",2000,0.17,0,NA
+114,"Haiti",2001,0.18,0,NA
+114,"Haiti",2002,0.19,0,NA
+114,"Haiti",2003,0.2,0,NA
+114,"Haiti",2004,0.21,0,NA
+114,"Haiti",2005,0.22,0,NA
+114,"Haiti",2006,0.23,0,NA
+114,"Haiti",2007,0.24,0,NA
+114,"Haiti",2008,0.25,0,NA
+114,"Haiti",2009,0.26,0,NA
+114,"Haiti",2010,0.27,0,NA
+114,"Haiti",2011,0.28,0,NA
+114,"Haiti",2012,0.29,0,NA
+114,"Haiti",2013,0.29,0,NA
+114,"Haiti",2014,0.3,0,NA
+114,"Haiti",2015,0.31,0,NA
+115,"Dominican Republic",2000,0.79,0,NA
+115,"Dominican Republic",2001,0.8,0,NA
+115,"Dominican Republic",2002,0.8,0,NA
+115,"Dominican Republic",2003,0.8,0,NA
+115,"Dominican Republic",2004,0.8,0,NA
+115,"Dominican Republic",2005,0.81,0,NA
+115,"Dominican Republic",2006,0.81,0,NA
+115,"Dominican Republic",2007,0.81,0,NA
+115,"Dominican Republic",2008,0.81,0,NA
+115,"Dominican Republic",2009,0.82,0,NA
+115,"Dominican Republic",2010,0.82,0,NA
+115,"Dominican Republic",2011,0.82,0,NA
+115,"Dominican Republic",2012,0.82,0,NA
+115,"Dominican Republic",2013,0.82,0,NA
+115,"Dominican Republic",2014,0.83,0,NA
+115,"Dominican Republic",2015,0.83,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2000,0.969720942140297,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2001,0.969721084953941,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2002,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2003,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2004,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2005,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2006,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2007,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2008,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2009,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2010,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2011,0.97,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2012,0.970278800631247,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2013,0.970279167764024,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2014,0.97027946216715,0,NA
+116,"Puerto Rico and Virgin Islands of the United States",2015,0.970279757191871,0,NA
+117,"British Virgin Islands",2000,0.97,0,NA
+117,"British Virgin Islands",2001,0.97,0,NA
+117,"British Virgin Islands",2002,0.97,0,NA
+117,"British Virgin Islands",2003,0.97,0,NA
+117,"British Virgin Islands",2004,0.97,0,NA
+117,"British Virgin Islands",2005,0.97,0,NA
+117,"British Virgin Islands",2006,0.97,0,NA
+117,"British Virgin Islands",2007,0.97,0,NA
+117,"British Virgin Islands",2008,0.97,0,NA
+117,"British Virgin Islands",2009,0.97,0,NA
+117,"British Virgin Islands",2010,0.97,0,NA
+117,"British Virgin Islands",2011,0.97,0,NA
+117,"British Virgin Islands",2012,0.97,0,NA
+117,"British Virgin Islands",2013,0.97,0,NA
+117,"British Virgin Islands",2014,0.97,0,NA
+117,"British Virgin Islands",2015,0.97,0,NA
+118,"Anguilla",2000,0.9,0,NA
+118,"Anguilla",2001,0.9,0,NA
+118,"Anguilla",2002,0.91,0,NA
+118,"Anguilla",2003,0.91,0,NA
+118,"Anguilla",2004,0.92,0,NA
+118,"Anguilla",2005,0.92,0,NA
+118,"Anguilla",2006,0.93,0,NA
+118,"Anguilla",2007,0.94,0,NA
+118,"Anguilla",2008,0.94,0,NA
+118,"Anguilla",2009,0.95,0,NA
+118,"Anguilla",2010,0.95,0,NA
+118,"Anguilla",2011,0.96,0,NA
+118,"Anguilla",2012,0.96,0,NA
+118,"Anguilla",2013,0.97,0,NA
+118,"Anguilla",2014,0.97,0,NA
+118,"Anguilla",2015,0.97,0,NA
+119,"Saint Kitts and Nevis",2000,0.85,0,NA
+119,"Saint Kitts and Nevis",2001,0.86,0,NA
+119,"Saint Kitts and Nevis",2002,0.87,0,NA
+119,"Saint Kitts and Nevis",2003,0.87,0,NA
+119,"Saint Kitts and Nevis",2004,0.88,0,NA
+119,"Saint Kitts and Nevis",2005,0.89,0,NA
+119,"Saint Kitts and Nevis",2006,0.9,0,NA
+119,"Saint Kitts and Nevis",2007,0.9,0,NA
+119,"Saint Kitts and Nevis",2008,0.91,0,NA
+119,"Saint Kitts and Nevis",2009,0.92,0,NA
+119,"Saint Kitts and Nevis",2010,0.92,0,NA
+119,"Saint Kitts and Nevis",2011,0.92,0,NA
+119,"Saint Kitts and Nevis",2012,0.92,0,NA
+119,"Saint Kitts and Nevis",2013,0.92,0,NA
+119,"Saint Kitts and Nevis",2014,0.938351648351649,1,"lm prediction"
+119,"Saint Kitts and Nevis",2015,0.944131868131867,1,"lm prediction"
+120,"Antigua and Barbuda",2000,0.82,0,NA
+120,"Antigua and Barbuda",2001,0.83,0,NA
+120,"Antigua and Barbuda",2002,0.83,0,NA
+120,"Antigua and Barbuda",2003,0.84,0,NA
+120,"Antigua and Barbuda",2004,0.84,0,NA
+120,"Antigua and Barbuda",2005,0.84,0,NA
+120,"Antigua and Barbuda",2006,0.85,0,NA
+120,"Antigua and Barbuda",2007,0.85,0,NA
+120,"Antigua and Barbuda",2008,0.86,0,NA
+120,"Antigua and Barbuda",2009,0.86,0,NA
+120,"Antigua and Barbuda",2010,0.86,0,NA
+120,"Antigua and Barbuda",2011,0.87,0,NA
+120,"Antigua and Barbuda",2012,0.87,0,NA
+120,"Antigua and Barbuda",2013,0.88,0,NA
+120,"Antigua and Barbuda",2014,0.88,0,NA
+120,"Antigua and Barbuda",2015,0.88,0,NA
+121,"Montserrat",2000,0.8,0,NA
+121,"Montserrat",2001,0.81,0,NA
+121,"Montserrat",2002,0.82,0,NA
+121,"Montserrat",2003,0.82,0,NA
+121,"Montserrat",2004,0.83,0,NA
+121,"Montserrat",2005,0.84,0,NA
+121,"Montserrat",2006,0.85,0,NA
+121,"Montserrat",2007,0.86,0,NA
+121,"Montserrat",2008,0.86,0,NA
+121,"Montserrat",2009,0.87,0,NA
+121,"Montserrat",2010,0.88,0,NA
+121,"Montserrat",2011,0.89,0,NA
+121,"Montserrat",2012,0.89,0,NA
+121,"Montserrat",2013,0.89,0,NA
+121,"Montserrat",2014,0.89,0,NA
+121,"Montserrat",2015,0.89,0,NA
+122,"Saint Lucia",2000,0.79,0,NA
+122,"Saint Lucia",2001,0.79,0,NA
+122,"Saint Lucia",2002,0.79,0,NA
+122,"Saint Lucia",2003,0.79,0,NA
+122,"Saint Lucia",2004,0.8,0,NA
+122,"Saint Lucia",2005,0.81,0,NA
+122,"Saint Lucia",2006,0.82,0,NA
+122,"Saint Lucia",2007,0.84,0,NA
+122,"Saint Lucia",2008,0.85,0,NA
+122,"Saint Lucia",2009,0.86,0,NA
+122,"Saint Lucia",2010,0.87,0,NA
+122,"Saint Lucia",2011,0.89,0,NA
+122,"Saint Lucia",2012,0.9,0,NA
+122,"Saint Lucia",2013,0.91,0,NA
+122,"Saint Lucia",2014,0.91,0,NA
+122,"Saint Lucia",2015,0.91,0,NA
+123,"Dominica",2000,0.64,0,NA
+123,"Dominica",2001,0.65,0,NA
+123,"Dominica",2002,0.67,0,NA
+123,"Dominica",2003,0.68,0,NA
+123,"Dominica",2004,0.69,0,NA
+123,"Dominica",2005,0.7,0,NA
+123,"Dominica",2006,0.72,0,NA
+123,"Dominica",2007,0.73,0,NA
+123,"Dominica",2008,0.74,0,NA
+123,"Dominica",2009,0.75,0,NA
+123,"Dominica",2010,0.77,0,NA
+123,"Dominica",2011,0.78,0,NA
+123,"Dominica",2012,0.78,0,NA
+123,"Dominica",2013,0.78,0,NA
+123,"Dominica",2014,0.78,0,NA
+123,"Dominica",2015,0.78,0,NA
+124,"Barbados",2000,0.88,0,NA
+124,"Barbados",2001,0.88,0,NA
+124,"Barbados",2002,0.89,0,NA
+124,"Barbados",2003,0.9,0,NA
+124,"Barbados",2004,0.9,0,NA
+124,"Barbados",2005,0.91,0,NA
+124,"Barbados",2006,0.92,0,NA
+124,"Barbados",2007,0.92,0,NA
+124,"Barbados",2008,0.93,0,NA
+124,"Barbados",2009,0.93,0,NA
+124,"Barbados",2010,0.94,0,NA
+124,"Barbados",2011,0.95,0,NA
+124,"Barbados",2012,0.95,0,NA
+124,"Barbados",2013,0.96,0,NA
+124,"Barbados",2014,0.96,0,NA
+124,"Barbados",2015,0.96,0,NA
+125,"Grenada",2000,0.94,0,NA
+125,"Grenada",2001,0.94,0,NA
+125,"Grenada",2002,0.92,0,NA
+125,"Grenada",2003,0.92,0,NA
+125,"Grenada",2004,0.91,0,NA
+125,"Grenada",2005,0.89,0,NA
+125,"Grenada",2006,0.88,0,NA
+125,"Grenada",2007,0.86,0,NA
+125,"Grenada",2008,0.85,0,NA
+125,"Grenada",2009,0.84,0,NA
+125,"Grenada",2010,0.82,0,NA
+125,"Grenada",2011,0.81,0,NA
+125,"Grenada",2012,0.8,0,NA
+125,"Grenada",2013,0.78,0,NA
+125,"Grenada",2014,0.78,0,NA
+125,"Grenada",2015,0.78,0,NA
+126,"Trinidad and Tobago",2000,0.91,0,NA
+126,"Trinidad and Tobago",2001,0.91,0,NA
+126,"Trinidad and Tobago",2002,0.91,0,NA
+126,"Trinidad and Tobago",2003,0.91,0,NA
+126,"Trinidad and Tobago",2004,0.91,0,NA
+126,"Trinidad and Tobago",2005,0.91,0,NA
+126,"Trinidad and Tobago",2006,0.91,0,NA
+126,"Trinidad and Tobago",2007,0.92,0,NA
+126,"Trinidad and Tobago",2008,0.92,0,NA
+126,"Trinidad and Tobago",2009,0.92,0,NA
+126,"Trinidad and Tobago",2010,0.92,0,NA
+126,"Trinidad and Tobago",2011,0.92,0,NA
+126,"Trinidad and Tobago",2012,0.92,0,NA
+126,"Trinidad and Tobago",2013,0.92,0,NA
+126,"Trinidad and Tobago",2014,0.92,0,NA
+126,"Trinidad and Tobago",2015,0.92,0,NA
+127,"Saint Vincent and the Grenadines",2000,0.71,0,NA
+127,"Saint Vincent and the Grenadines",2001,0.72,0,NA
+127,"Saint Vincent and the Grenadines",2002,0.73,0,NA
+127,"Saint Vincent and the Grenadines",2003,0.74,0,NA
+127,"Saint Vincent and the Grenadines",2004,0.76,0,NA
+127,"Saint Vincent and the Grenadines",2005,0.77,0,NA
+127,"Saint Vincent and the Grenadines",2006,0.78,0,NA
+127,"Saint Vincent and the Grenadines",2007,0.79,0,NA
+127,"Saint Vincent and the Grenadines",2008,0.8,0,NA
+127,"Saint Vincent and the Grenadines",2009,0.81,0,NA
+127,"Saint Vincent and the Grenadines",2010,0.83,0,NA
+127,"Saint Vincent and the Grenadines",2011,0.84,0,NA
+127,"Saint Vincent and the Grenadines",2012,0.85,0,NA
+127,"Saint Vincent and the Grenadines",2013,0.86,0,NA
+127,"Saint Vincent and the Grenadines",2014,0.87,0,NA
+127,"Saint Vincent and the Grenadines",2015,0.87,0,NA
+129,"Panama",2000,0.64,0,NA
+129,"Panama",2001,0.65,0,NA
+129,"Panama",2002,0.66,0,NA
+129,"Panama",2003,0.67,0,NA
+129,"Panama",2004,0.68,0,NA
+129,"Panama",2005,0.68,0,NA
+129,"Panama",2006,0.69,0,NA
+129,"Panama",2007,0.7,0,NA
+129,"Panama",2008,0.71,0,NA
+129,"Panama",2009,0.72,0,NA
+129,"Panama",2010,0.73,0,NA
+129,"Panama",2011,0.74,0,NA
+129,"Panama",2012,0.74,0,NA
+129,"Panama",2013,0.75,0,NA
+129,"Panama",2014,0.76,0,NA
+129,"Panama",2015,0.77,0,NA
+130,"Costa Rica",2000,0.94,0,NA
+130,"Costa Rica",2001,0.94,0,NA
+130,"Costa Rica",2002,0.95,0,NA
+130,"Costa Rica",2003,0.95,0,NA
+130,"Costa Rica",2004,0.95,0,NA
+130,"Costa Rica",2005,0.95,0,NA
+130,"Costa Rica",2006,0.96,0,NA
+130,"Costa Rica",2007,0.96,0,NA
+130,"Costa Rica",2008,0.96,0,NA
+130,"Costa Rica",2009,0.96,0,NA
+130,"Costa Rica",2010,0.96,0,NA
+130,"Costa Rica",2011,0.97,0,NA
+130,"Costa Rica",2012,0.97,0,NA
+130,"Costa Rica",2013,0.97,0,NA
+130,"Costa Rica",2014,0.97,0,NA
+130,"Costa Rica",2015,0.97,0,NA
+131,"Nicaragua",2000,0.6,0,NA
+131,"Nicaragua",2001,0.61,0,NA
+131,"Nicaragua",2002,0.63,0,NA
+131,"Nicaragua",2003,0.64,0,NA
+131,"Nicaragua",2004,0.65,0,NA
+131,"Nicaragua",2005,0.66,0,NA
+131,"Nicaragua",2006,0.67,0,NA
+131,"Nicaragua",2007,0.68,0,NA
+131,"Nicaragua",2008,0.69,0,NA
+131,"Nicaragua",2009,0.7,0,NA
+131,"Nicaragua",2010,0.71,0,NA
+131,"Nicaragua",2011,0.72,0,NA
+131,"Nicaragua",2012,0.73,0,NA
+131,"Nicaragua",2013,0.74,0,NA
+131,"Nicaragua",2014,0.75,0,NA
+131,"Nicaragua",2015,0.76,0,NA
+132,"Colombia",2000,0.76,0,NA
+132,"Colombia",2001,0.76,0,NA
+132,"Colombia",2002,0.77,0,NA
+132,"Colombia",2003,0.78,0,NA
+132,"Colombia",2004,0.78,0,NA
+132,"Colombia",2005,0.79,0,NA
+132,"Colombia",2006,0.79,0,NA
+132,"Colombia",2007,0.8,0,NA
+132,"Colombia",2008,0.81,0,NA
+132,"Colombia",2009,0.81,0,NA
+132,"Colombia",2010,0.82,0,NA
+132,"Colombia",2011,0.82,0,NA
+132,"Colombia",2012,0.83,0,NA
+132,"Colombia",2013,0.83,0,NA
+132,"Colombia",2014,0.84,0,NA
+132,"Colombia",2015,0.84,0,NA
+133,"Honduras",2000,0.62,0,NA
+133,"Honduras",2001,0.63,0,NA
+133,"Honduras",2002,0.64,0,NA
+133,"Honduras",2003,0.66,0,NA
+133,"Honduras",2004,0.67,0,NA
+133,"Honduras",2005,0.68,0,NA
+133,"Honduras",2006,0.69,0,NA
+133,"Honduras",2007,0.71,0,NA
+133,"Honduras",2008,0.72,0,NA
+133,"Honduras",2009,0.73,0,NA
+133,"Honduras",2010,0.74,0,NA
+133,"Honduras",2011,0.75,0,NA
+133,"Honduras",2012,0.76,0,NA
+133,"Honduras",2013,0.78,0,NA
+133,"Honduras",2014,0.79,0,NA
+133,"Honduras",2015,0.8,0,NA
+134,"El Salvador",2000,0.82,0,NA
+134,"El Salvador",2001,0.82,0,NA
+134,"El Salvador",2002,0.82,0,NA
+134,"El Salvador",2003,0.83,0,NA
+134,"El Salvador",2004,0.84,0,NA
+134,"El Salvador",2005,0.84,0,NA
+134,"El Salvador",2006,0.85,0,NA
+134,"El Salvador",2007,0.86,0,NA
+134,"El Salvador",2008,0.86,0,NA
+134,"El Salvador",2009,0.87,0,NA
+134,"El Salvador",2010,0.88,0,NA
+134,"El Salvador",2011,0.89,0,NA
+134,"El Salvador",2012,0.89,0,NA
+134,"El Salvador",2013,0.9,0,NA
+134,"El Salvador",2014,0.9,0,NA
+134,"El Salvador",2015,0.91,0,NA
+135,"Mexico",2000,0.76,0,NA
+135,"Mexico",2001,0.77,0,NA
+135,"Mexico",2002,0.78,0,NA
+135,"Mexico",2003,0.79,0,NA
+135,"Mexico",2004,0.8,0,NA
+135,"Mexico",2005,0.81,0,NA
+135,"Mexico",2006,0.82,0,NA
+135,"Mexico",2007,0.83,0,NA
+135,"Mexico",2008,0.83,0,NA
+135,"Mexico",2009,0.84,0,NA
+135,"Mexico",2010,0.85,0,NA
+135,"Mexico",2011,0.86,0,NA
+135,"Mexico",2012,0.87,0,NA
+135,"Mexico",2013,0.88,0,NA
+135,"Mexico",2014,0.88,0,NA
+135,"Mexico",2015,0.89,0,NA
+136,"Guatemala",2000,0.59,0,NA
+136,"Guatemala",2001,0.6,0,NA
+136,"Guatemala",2002,0.6,0,NA
+136,"Guatemala",2003,0.61,0,NA
+136,"Guatemala",2004,0.61,0,NA
+136,"Guatemala",2005,0.62,0,NA
+136,"Guatemala",2006,0.63,0,NA
+136,"Guatemala",2007,0.63,0,NA
+136,"Guatemala",2008,0.64,0,NA
+136,"Guatemala",2009,0.64,0,NA
+136,"Guatemala",2010,0.65,0,NA
+136,"Guatemala",2011,0.65,0,NA
+136,"Guatemala",2012,0.66,0,NA
+136,"Guatemala",2013,0.66,0,NA
+136,"Guatemala",2014,0.67,0,NA
+136,"Guatemala",2015,0.67,0,NA
+137,"Ecuador",2000,0.71,0,NA
+137,"Ecuador",2001,0.72,0,NA
+137,"Ecuador",2002,0.73,0,NA
+137,"Ecuador",2003,0.74,0,NA
+137,"Ecuador",2004,0.75,0,NA
+137,"Ecuador",2005,0.76,0,NA
+137,"Ecuador",2006,0.77,0,NA
+137,"Ecuador",2007,0.78,0,NA
+137,"Ecuador",2008,0.79,0,NA
+137,"Ecuador",2009,0.8,0,NA
+137,"Ecuador",2010,0.81,0,NA
+137,"Ecuador",2011,0.82,0,NA
+137,"Ecuador",2012,0.83,0,NA
+137,"Ecuador",2013,0.84,0,NA
+137,"Ecuador",2014,0.85,0,NA
+137,"Ecuador",2015,0.86,0,NA
+138,"Peru",2000,0.63,0,NA
+138,"Peru",2001,0.64,0,NA
+138,"Peru",2002,0.65,0,NA
+138,"Peru",2003,0.66,0,NA
+138,"Peru",2004,0.67,0,NA
+138,"Peru",2005,0.68,0,NA
+138,"Peru",2006,0.69,0,NA
+138,"Peru",2007,0.7,0,NA
+138,"Peru",2008,0.71,0,NA
+138,"Peru",2009,0.72,0,NA
+138,"Peru",2010,0.72,0,NA
+138,"Peru",2011,0.73,0,NA
+138,"Peru",2012,0.74,0,NA
+138,"Peru",2013,0.75,0,NA
+138,"Peru",2014,0.76,0,NA
+138,"Peru",2015,0.77,0,NA
+139,"Venezuela",2000,0.87,0,NA
+139,"Venezuela",2001,0.88,0,NA
+139,"Venezuela",2002,0.89,0,NA
+139,"Venezuela",2003,0.89,0,NA
+139,"Venezuela",2004,0.9,0,NA
+139,"Venezuela",2005,0.9,0,NA
+139,"Venezuela",2006,0.91,0,NA
+139,"Venezuela",2007,0.91,0,NA
+139,"Venezuela",2008,0.92,0,NA
+139,"Venezuela",2009,0.93,0,NA
+139,"Venezuela",2010,0.93,0,NA
+139,"Venezuela",2011,0.94,0,NA
+139,"Venezuela",2012,0.94,0,NA
+139,"Venezuela",2013,0.95,0,NA
+139,"Venezuela",2014,0.95,0,NA
+139,"Venezuela",2015,0.95,0,NA
+140,"Guadeloupe and Martinique",2000,0.965334193912298,1,"lm prediction"
+140,"Guadeloupe and Martinique",2001,0.97,0,NA
+140,"Guadeloupe and Martinique",2002,0.97,0,NA
+140,"Guadeloupe and Martinique",2003,0.97,0,NA
+140,"Guadeloupe and Martinique",2004,0.97,0,NA
+140,"Guadeloupe and Martinique",2005,0.97,0,NA
+140,"Guadeloupe and Martinique",2006,0.97,0,NA
+140,"Guadeloupe and Martinique",2007,0.98,0,NA
+140,"Guadeloupe and Martinique",2008,0.98,0,NA
+140,"Guadeloupe and Martinique",2009,0.98,0,NA
+140,"Guadeloupe and Martinique",2010,0.98,0,NA
+140,"Guadeloupe and Martinique",2011,0.98,0,NA
+140,"Guadeloupe and Martinique",2012,0.984614485981308,0,NA
+140,"Guadeloupe and Martinique",2013,0.984604651162791,0,NA
+140,"Guadeloupe and Martinique",2014,0.99,0,NA
+140,"Guadeloupe and Martinique",2015,0.99,0,NA
+141,"Faeroe Islands",2000,0.909999999999999,1,"lm prediction"
+141,"Faeroe Islands",2001,0.909999999999999,1,"lm prediction"
+141,"Faeroe Islands",2002,0.909999999999999,1,"lm prediction"
+141,"Faeroe Islands",2003,0.909999999999999,1,"lm prediction"
+141,"Faeroe Islands",2004,0.909999999999999,1,"lm prediction"
+141,"Faeroe Islands",2005,0.909999999999999,1,"lm prediction"
+141,"Faeroe Islands",2006,0.909999999999999,1,"lm prediction"
+141,"Faeroe Islands",2007,0.91,0,NA
+141,"Faeroe Islands",2008,0.91,0,NA
+141,"Faeroe Islands",2009,0.91,0,NA
+141,"Faeroe Islands",2010,0.91,0,NA
+141,"Faeroe Islands",2011,0.91,0,NA
+141,"Faeroe Islands",2012,0.91,0,NA
+141,"Faeroe Islands",2013,0.91,0,NA
+141,"Faeroe Islands",2014,0.91,0,NA
+141,"Faeroe Islands",2015,0.91,0,NA
+143,"Iceland",2000,0.99,0,NA
+143,"Iceland",2001,0.99,0,NA
+143,"Iceland",2002,0.99,0,NA
+143,"Iceland",2003,0.99,0,NA
+143,"Iceland",2004,0.99,0,NA
+143,"Iceland",2005,0.99,0,NA
+143,"Iceland",2006,0.99,0,NA
+143,"Iceland",2007,0.99,0,NA
+143,"Iceland",2008,0.99,0,NA
+143,"Iceland",2009,0.99,0,NA
+143,"Iceland",2010,0.99,0,NA
+143,"Iceland",2011,0.99,0,NA
+143,"Iceland",2012,0.99,0,NA
+143,"Iceland",2013,0.99,0,NA
+143,"Iceland",2014,0.99,0,NA
+143,"Iceland",2015,0.99,0,NA
+144,"Jan Mayen",2000,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2001,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2002,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2003,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2004,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2005,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2006,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2007,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2008,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2009,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2010,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2011,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2012,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2013,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2014,1,1,"uninhabited, perfect score"
+144,"Jan Mayen",2015,1,1,"uninhabited, perfect score"
+145,"Greenland",2000,1,0,NA
+145,"Greenland",2001,1,0,NA
+145,"Greenland",2002,1,0,NA
+145,"Greenland",2003,1,0,NA
+145,"Greenland",2004,1,0,NA
+145,"Greenland",2005,1,0,NA
+145,"Greenland",2006,1,0,NA
+145,"Greenland",2007,1,0,NA
+145,"Greenland",2008,1,0,NA
+145,"Greenland",2009,1,0,NA
+145,"Greenland",2010,0.99,0,NA
+145,"Greenland",2011,0.99,0,NA
+145,"Greenland",2012,0.99,0,NA
+145,"Greenland",2013,0.99,0,NA
+145,"Greenland",2014,0.99,0,NA
+145,"Greenland",2015,0.99,0,NA
+146,"Pitcairn",2000,0.884954008954009,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2001,0.887545787545788,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2002,0.888888888888889,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2003,0.888888888888889,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2004,0.891111111111111,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2005,0.891111111111111,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2006,0.894444444444444,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2007,0.896666666666667,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2008,0.902222222222222,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2009,0.902222222222222,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2010,0.906666666666667,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2011,0.908888888888889,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2012,0.912222222222222,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2013,0.915555555555556,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2014,0.917777777777778,1,"UN georegion avg. (r2)"
+146,"Pitcairn",2015,0.918888888888889,1,"UN georegion avg. (r2)"
+147,"French Polynesia",2000,0.98,0,NA
+147,"French Polynesia",2001,0.98,0,NA
+147,"French Polynesia",2002,0.98,0,NA
+147,"French Polynesia",2003,0.98,0,NA
+147,"French Polynesia",2004,0.98,0,NA
+147,"French Polynesia",2005,0.98,0,NA
+147,"French Polynesia",2006,0.98,0,NA
+147,"French Polynesia",2007,0.98,0,NA
+147,"French Polynesia",2008,0.98,0,NA
+147,"French Polynesia",2009,0.97,0,NA
+147,"French Polynesia",2010,0.97,0,NA
+147,"French Polynesia",2011,0.97,0,NA
+147,"French Polynesia",2012,0.97,0,NA
+147,"French Polynesia",2013,0.97,0,NA
+147,"French Polynesia",2014,0.97,0,NA
+147,"French Polynesia",2015,0.97,0,NA
+148,"Line Group",2000,0.678424300661969,1,"UN georegion avg. (r2)"
+148,"Line Group",2001,0.684,1,"UN georegion avg. (r2)"
+148,"Line Group",2002,0.687948148148148,1,"UN georegion avg. (r2)"
+148,"Line Group",2003,0.692979351032448,1,"UN georegion avg. (r2)"
+148,"Line Group",2004,0.696458333333333,1,"UN georegion avg. (r2)"
+148,"Line Group",2005,0.70042042042042,1,"UN georegion avg. (r2)"
+148,"Line Group",2006,0.706757575757576,1,"UN georegion avg. (r2)"
+148,"Line Group",2007,0.710703363914373,1,"UN georegion avg. (r2)"
+148,"Line Group",2008,0.714255813953488,1,"UN georegion avg. (r2)"
+148,"Line Group",2009,0.716526479750779,1,"UN georegion avg. (r2)"
+148,"Line Group",2010,0.723262910798122,1,"UN georegion avg. (r2)"
+148,"Line Group",2011,0.725046728971963,1,"UN georegion avg. (r2)"
+148,"Line Group",2012,0.727168209876543,1,"UN georegion avg. (r2)"
+148,"Line Group",2013,0.727146118721461,1,"UN georegion avg. (r2)"
+148,"Line Group",2014,0.727144992526158,1,"UN georegion avg. (r2)"
+148,"Line Group",2015,0.727185185185185,1,"UN georegion avg. (r2)"
+149,"Jarvis Island",2000,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2001,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2002,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2003,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2004,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2005,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2006,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2007,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2008,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2009,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2010,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2011,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2012,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2013,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2014,1,1,"uninhabited, perfect score"
+149,"Jarvis Island",2015,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2000,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2001,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2002,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2003,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2004,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2005,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2006,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2007,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2008,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2009,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2010,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2011,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2012,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2013,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2014,1,1,"uninhabited, perfect score"
+150,"Palmyra Atoll",2015,1,1,"uninhabited, perfect score"
+151,"American Samoa",2000,0.63,0,NA
+151,"American Samoa",2001,0.63,0,NA
+151,"American Samoa",2002,0.63,0,NA
+151,"American Samoa",2003,0.63,0,NA
+151,"American Samoa",2004,0.63,0,NA
+151,"American Samoa",2005,0.62,0,NA
+151,"American Samoa",2006,0.62,0,NA
+151,"American Samoa",2007,0.62,0,NA
+151,"American Samoa",2008,0.62,0,NA
+151,"American Samoa",2009,0.62,0,NA
+151,"American Samoa",2010,0.62,0,NA
+151,"American Samoa",2011,0.62,0,NA
+151,"American Samoa",2012,0.62,0,NA
+151,"American Samoa",2013,0.62,0,NA
+151,"American Samoa",2014,0.62,0,NA
+151,"American Samoa",2015,0.62,0,NA
+152,"Samoa",2000,0.99,0,NA
+152,"Samoa",2001,0.99,0,NA
+152,"Samoa",2002,0.99,0,NA
+152,"Samoa",2003,0.99,0,NA
+152,"Samoa",2004,0.99,0,NA
+152,"Samoa",2005,0.98,0,NA
+152,"Samoa",2006,0.98,0,NA
+152,"Samoa",2007,0.98,0,NA
+152,"Samoa",2008,0.98,0,NA
+152,"Samoa",2009,0.98,0,NA
+152,"Samoa",2010,0.98,0,NA
+152,"Samoa",2011,0.97,0,NA
+152,"Samoa",2012,0.97,0,NA
+152,"Samoa",2013,0.97,0,NA
+152,"Samoa",2014,0.97,0,NA
+152,"Samoa",2015,0.97,0,NA
+153,"Cook Islands",2000,0.92,0,NA
+153,"Cook Islands",2001,0.93,0,NA
+153,"Cook Islands",2002,0.93,0,NA
+153,"Cook Islands",2003,0.93,0,NA
+153,"Cook Islands",2004,0.94,0,NA
+153,"Cook Islands",2005,0.94,0,NA
+153,"Cook Islands",2006,0.95,0,NA
+153,"Cook Islands",2007,0.95,0,NA
+153,"Cook Islands",2008,0.96,0,NA
+153,"Cook Islands",2009,0.96,0,NA
+153,"Cook Islands",2010,0.96,0,NA
+153,"Cook Islands",2011,0.97,0,NA
+153,"Cook Islands",2012,0.97,0,NA
+153,"Cook Islands",2013,0.98,0,NA
+153,"Cook Islands",2014,0.98,0,NA
+153,"Cook Islands",2015,0.98,0,NA
+154,"Niue",2000,1,0,NA
+154,"Niue",2001,1,0,NA
+154,"Niue",2002,1,0,NA
+154,"Niue",2003,1,0,NA
+154,"Niue",2004,1,0,NA
+154,"Niue",2005,1,0,NA
+154,"Niue",2006,1,0,NA
+154,"Niue",2007,1,0,NA
+154,"Niue",2008,0.99,0,NA
+154,"Niue",2009,0.99,0,NA
+154,"Niue",2010,0.98,0,NA
+154,"Niue",2011,0.98,0,NA
+154,"Niue",2012,0.97,0,NA
+154,"Niue",2013,0.97,0,NA
+154,"Niue",2014,0.97,0,NA
+154,"Niue",2015,0.97,0,NA
+155,"Tonga",2000,0.89,0,NA
+155,"Tonga",2001,0.89,0,NA
+155,"Tonga",2002,0.89,0,NA
+155,"Tonga",2003,0.89,0,NA
+155,"Tonga",2004,0.89,0,NA
+155,"Tonga",2005,0.89,0,NA
+155,"Tonga",2006,0.9,0,NA
+155,"Tonga",2007,0.9,0,NA
+155,"Tonga",2008,0.91,0,NA
+155,"Tonga",2009,0.91,0,NA
+155,"Tonga",2010,0.92,0,NA
+155,"Tonga",2011,0.92,0,NA
+155,"Tonga",2012,0.93,0,NA
+155,"Tonga",2013,0.93,0,NA
+155,"Tonga",2014,0.93,0,NA
+155,"Tonga",2015,0.93,0,NA
+156,"Tokelau",2000,0.77,0,NA
+156,"Tokelau",2001,0.77,0,NA
+156,"Tokelau",2002,0.77,0,NA
+156,"Tokelau",2003,0.77,0,NA
+156,"Tokelau",2004,0.77,0,NA
+156,"Tokelau",2005,0.79,0,NA
+156,"Tokelau",2006,0.8,0,NA
+156,"Tokelau",2007,0.81,0,NA
+156,"Tokelau",2008,0.83,0,NA
+156,"Tokelau",2009,0.84,0,NA
+156,"Tokelau",2010,0.86,0,NA
+156,"Tokelau",2011,0.87,0,NA
+156,"Tokelau",2012,0.89,0,NA
+156,"Tokelau",2013,0.9,0,NA
+156,"Tokelau",2014,0.92,0,NA
+156,"Tokelau",2015,0.93,0,NA
+157,"Phoenix Group",2000,0.678424300661969,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2001,0.684,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2002,0.687948148148148,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2003,0.692979351032448,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2004,0.696458333333333,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2005,0.70042042042042,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2006,0.706757575757576,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2007,0.710703363914373,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2008,0.714255813953488,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2009,0.716526479750779,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2010,0.723262910798122,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2011,0.725046728971963,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2012,0.727168209876543,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2013,0.727146118721461,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2014,0.727144992526158,1,"UN georegion avg. (r2)"
+157,"Phoenix Group",2015,0.727185185185185,1,"UN georegion avg. (r2)"
+158,"Howland Island and Baker Island",2000,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2001,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2002,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2003,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2004,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2005,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2006,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2007,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2008,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2009,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2010,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2011,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2012,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2013,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2014,1,1,"uninhabited, perfect score"
+158,"Howland Island and Baker Island",2015,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2000,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2001,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2002,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2003,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2004,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2005,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2006,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2007,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2008,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2009,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2010,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2011,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2012,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2013,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2014,1,1,"uninhabited, perfect score"
+159,"Johnston Atoll",2015,1,1,"uninhabited, perfect score"
+161,"Wallis and Futuna",2000,0.934395604395604,1,"lm prediction"
+161,"Wallis and Futuna",2001,0.937912087912087,1,"lm prediction"
+161,"Wallis and Futuna",2002,0.95,0,NA
+161,"Wallis and Futuna",2003,0.95,0,NA
+161,"Wallis and Futuna",2004,0.95,0,NA
+161,"Wallis and Futuna",2005,0.95,0,NA
+161,"Wallis and Futuna",2006,0.95,0,NA
+161,"Wallis and Futuna",2007,0.95,0,NA
+161,"Wallis and Futuna",2008,0.96,0,NA
+161,"Wallis and Futuna",2009,0.96,0,NA
+161,"Wallis and Futuna",2010,0.97,0,NA
+161,"Wallis and Futuna",2011,0.97,0,NA
+161,"Wallis and Futuna",2012,0.98,0,NA
+161,"Wallis and Futuna",2013,0.98,0,NA
+161,"Wallis and Futuna",2014,0.99,0,NA
+161,"Wallis and Futuna",2015,0.99,0,NA
+162,"New Zealand",2000,1,0,NA
+162,"New Zealand",2001,1,0,NA
+162,"New Zealand",2002,1,0,NA
+162,"New Zealand",2003,1,0,NA
+162,"New Zealand",2004,1,0,NA
+162,"New Zealand",2005,1,0,NA
+162,"New Zealand",2006,1,0,NA
+162,"New Zealand",2007,1,0,NA
+162,"New Zealand",2008,1,0,NA
+162,"New Zealand",2009,1,0,NA
+162,"New Zealand",2010,1,0,NA
+162,"New Zealand",2011,1,0,NA
+162,"New Zealand",2012,1,0,NA
+162,"New Zealand",2013,1,0,NA
+162,"New Zealand",2014,1,0,NA
+162,"New Zealand",2015,1,0,NA
+163,"United States",2000,1,0,NA
+163,"United States",2001,1,0,NA
+163,"United States",2002,1,0,NA
+163,"United States",2003,1,0,NA
+163,"United States",2004,1,0,NA
+163,"United States",2005,1,0,NA
+163,"United States",2006,1,0,NA
+163,"United States",2007,1,0,NA
+163,"United States",2008,1,0,NA
+163,"United States",2009,1,0,NA
+163,"United States",2010,1,0,NA
+163,"United States",2011,1,0,NA
+163,"United States",2012,1,0,NA
+163,"United States",2013,1,0,NA
+163,"United States",2014,1,0,NA
+163,"United States",2015,1,0,NA
+164,"Belize",2000,0.83,0,NA
+164,"Belize",2001,0.83,0,NA
+164,"Belize",2002,0.83,0,NA
+164,"Belize",2003,0.83,0,NA
+164,"Belize",2004,0.84,0,NA
+164,"Belize",2005,0.84,0,NA
+164,"Belize",2006,0.84,0,NA
+164,"Belize",2007,0.85,0,NA
+164,"Belize",2008,0.85,0,NA
+164,"Belize",2009,0.85,0,NA
+164,"Belize",2010,0.86,0,NA
+164,"Belize",2011,0.86,0,NA
+164,"Belize",2012,0.86,0,NA
+164,"Belize",2013,0.87,0,NA
+164,"Belize",2014,0.87,0,NA
+164,"Belize",2015,0.87,0,NA
+166,"Jamaica",2000,0.84,0,NA
+166,"Jamaica",2001,0.84,0,NA
+166,"Jamaica",2002,0.84,0,NA
+166,"Jamaica",2003,0.84,0,NA
+166,"Jamaica",2004,0.84,0,NA
+166,"Jamaica",2005,0.84,0,NA
+166,"Jamaica",2006,0.84,0,NA
+166,"Jamaica",2007,0.85,0,NA
+166,"Jamaica",2008,0.85,0,NA
+166,"Jamaica",2009,0.85,0,NA
+166,"Jamaica",2010,0.85,0,NA
+166,"Jamaica",2011,0.85,0,NA
+166,"Jamaica",2012,0.85,0,NA
+166,"Jamaica",2013,0.85,0,NA
+166,"Jamaica",2014,0.85,0,NA
+166,"Jamaica",2015,0.85,0,NA
+167,"Guyana",2000,0.78,0,NA
+167,"Guyana",2001,0.79,0,NA
+167,"Guyana",2002,0.79,0,NA
+167,"Guyana",2003,0.8,0,NA
+167,"Guyana",2004,0.8,0,NA
+167,"Guyana",2005,0.81,0,NA
+167,"Guyana",2006,0.81,0,NA
+167,"Guyana",2007,0.82,0,NA
+167,"Guyana",2008,0.82,0,NA
+167,"Guyana",2009,0.83,0,NA
+167,"Guyana",2010,0.84,0,NA
+167,"Guyana",2011,0.84,0,NA
+167,"Guyana",2012,0.85,0,NA
+167,"Guyana",2013,0.85,0,NA
+167,"Guyana",2014,0.86,0,NA
+167,"Guyana",2015,0.86,0,NA
+168,"Suriname",2000,0.81,0,NA
+168,"Suriname",2001,0.81,0,NA
+168,"Suriname",2002,0.81,0,NA
+168,"Suriname",2003,0.81,0,NA
+168,"Suriname",2004,0.8,0,NA
+168,"Suriname",2005,0.8,0,NA
+168,"Suriname",2006,0.8,0,NA
+168,"Suriname",2007,0.8,0,NA
+168,"Suriname",2008,0.8,0,NA
+168,"Suriname",2009,0.8,0,NA
+168,"Suriname",2010,0.8,0,NA
+168,"Suriname",2011,0.79,0,NA
+168,"Suriname",2012,0.79,0,NA
+168,"Suriname",2013,0.79,0,NA
+168,"Suriname",2014,0.79,0,NA
+168,"Suriname",2015,0.79,0,NA
+169,"French Guiana",2000,0.948761904761903,1,"lm prediction"
+169,"French Guiana",2001,0.94,0,NA
+169,"French Guiana",2002,0.94,0,NA
+169,"French Guiana",2003,0.94,0,NA
+169,"French Guiana",2004,0.94,0,NA
+169,"French Guiana",2005,0.94,0,NA
+169,"French Guiana",2006,0.93,0,NA
+169,"French Guiana",2007,0.93,0,NA
+169,"French Guiana",2008,0.93,0,NA
+169,"French Guiana",2009,0.92,0,NA
+169,"French Guiana",2010,0.92,0,NA
+169,"French Guiana",2011,0.92,0,NA
+169,"French Guiana",2012,0.91,0,NA
+169,"French Guiana",2013,0.91,0,NA
+169,"French Guiana",2014,0.91,0,NA
+169,"French Guiana",2015,0.9,0,NA
+171,"Brazil",2000,0.73,0,NA
+171,"Brazil",2001,0.74,0,NA
+171,"Brazil",2002,0.75,0,NA
+171,"Brazil",2003,0.76,0,NA
+171,"Brazil",2004,0.77,0,NA
+171,"Brazil",2005,0.78,0,NA
+171,"Brazil",2006,0.79,0,NA
+171,"Brazil",2007,0.79,0,NA
+171,"Brazil",2008,0.8,0,NA
+171,"Brazil",2009,0.81,0,NA
+171,"Brazil",2010,0.82,0,NA
+171,"Brazil",2011,0.83,0,NA
+171,"Brazil",2012,0.84,0,NA
+171,"Brazil",2013,0.85,0,NA
+171,"Brazil",2014,0.85,0,NA
+171,"Brazil",2015,0.86,0,NA
+172,"Argentina",2000,0.95,0,NA
+172,"Argentina",2001,0.95,0,NA
+172,"Argentina",2002,0.95,0,NA
+172,"Argentina",2003,0.95,0,NA
+172,"Argentina",2004,0.95,0,NA
+172,"Argentina",2005,0.95,0,NA
+172,"Argentina",2006,0.95,0,NA
+172,"Argentina",2007,0.95,0,NA
+172,"Argentina",2008,0.95,0,NA
+172,"Argentina",2009,0.95,0,NA
+172,"Argentina",2010,0.95,0,NA
+172,"Argentina",2011,0.95,0,NA
+172,"Argentina",2012,0.95,0,NA
+172,"Argentina",2013,0.95,0,NA
+172,"Argentina",2014,0.95,0,NA
+172,"Argentina",2015,0.95,0,NA
+173,"Uruguay",2000,0.94,0,NA
+173,"Uruguay",2001,0.94,0,NA
+173,"Uruguay",2002,0.94,0,NA
+173,"Uruguay",2003,0.94,0,NA
+173,"Uruguay",2004,0.94,0,NA
+173,"Uruguay",2005,0.94,0,NA
+173,"Uruguay",2006,0.95,0,NA
+173,"Uruguay",2007,0.95,0,NA
+173,"Uruguay",2008,0.95,0,NA
+173,"Uruguay",2009,0.95,0,NA
+173,"Uruguay",2010,0.95,0,NA
+173,"Uruguay",2011,0.95,0,NA
+173,"Uruguay",2012,0.95,0,NA
+173,"Uruguay",2013,0.95,0,NA
+173,"Uruguay",2014,0.96,0,NA
+173,"Uruguay",2015,0.96,0,NA
+174,"Finland",2000,0.99,0,NA
+174,"Finland",2001,0.99,0,NA
+174,"Finland",2002,0.99,0,NA
+174,"Finland",2003,0.99,0,NA
+174,"Finland",2004,0.99,0,NA
+174,"Finland",2005,0.99,0,NA
+174,"Finland",2006,0.99,0,NA
+174,"Finland",2007,0.99,0,NA
+174,"Finland",2008,0.99,0,NA
+174,"Finland",2009,0.99,0,NA
+174,"Finland",2010,0.99,0,NA
+174,"Finland",2011,0.99,0,NA
+174,"Finland",2012,0.99,0,NA
+174,"Finland",2013,0.99,0,NA
+174,"Finland",2014,0.99,0,NA
+174,"Finland",2015,0.99,0,NA
+175,"Denmark",2000,1,0,NA
+175,"Denmark",2001,1,0,NA
+175,"Denmark",2002,1,0,NA
+175,"Denmark",2003,1,0,NA
+175,"Denmark",2004,1,0,NA
+175,"Denmark",2005,1,0,NA
+175,"Denmark",2006,1,0,NA
+175,"Denmark",2007,1,0,NA
+175,"Denmark",2008,1,0,NA
+175,"Denmark",2009,1,0,NA
+175,"Denmark",2010,1,0,NA
+175,"Denmark",2011,1,0,NA
+175,"Denmark",2012,1,0,NA
+175,"Denmark",2013,1,0,NA
+175,"Denmark",2014,1,0,NA
+175,"Denmark",2015,1,0,NA
+176,"Germany",2000,0.99,0,NA
+176,"Germany",2001,0.99,0,NA
+176,"Germany",2002,0.99,0,NA
+176,"Germany",2003,0.99,0,NA
+176,"Germany",2004,0.99,0,NA
+176,"Germany",2005,0.99,0,NA
+176,"Germany",2006,0.99,0,NA
+176,"Germany",2007,0.99,0,NA
+176,"Germany",2008,0.99,0,NA
+176,"Germany",2009,0.99,0,NA
+176,"Germany",2010,0.99,0,NA
+176,"Germany",2011,0.99,0,NA
+176,"Germany",2012,0.99,0,NA
+176,"Germany",2013,0.99,0,NA
+176,"Germany",2014,0.99,0,NA
+176,"Germany",2015,0.99,0,NA
+177,"Netherlands",2000,0.98,0,NA
+177,"Netherlands",2001,0.98,0,NA
+177,"Netherlands",2002,0.98,0,NA
+177,"Netherlands",2003,0.98,0,NA
+177,"Netherlands",2004,0.98,0,NA
+177,"Netherlands",2005,0.98,0,NA
+177,"Netherlands",2006,0.98,0,NA
+177,"Netherlands",2007,0.98,0,NA
+177,"Netherlands",2008,0.98,0,NA
+177,"Netherlands",2009,0.98,0,NA
+177,"Netherlands",2010,0.98,0,NA
+177,"Netherlands",2011,0.98,0,NA
+177,"Netherlands",2012,0.98,0,NA
+177,"Netherlands",2013,0.98,0,NA
+177,"Netherlands",2014,0.98,0,NA
+177,"Netherlands",2015,0.98,0,NA
+178,"Poland",2000,0.87,0,NA
+178,"Poland",2001,0.88,0,NA
+178,"Poland",2002,0.89,0,NA
+178,"Poland",2003,0.89,0,NA
+178,"Poland",2004,0.9,0,NA
+178,"Poland",2005,0.91,0,NA
+178,"Poland",2006,0.91,0,NA
+178,"Poland",2007,0.92,0,NA
+178,"Poland",2008,0.93,0,NA
+178,"Poland",2009,0.94,0,NA
+178,"Poland",2010,0.94,0,NA
+178,"Poland",2011,0.95,0,NA
+178,"Poland",2012,0.96,0,NA
+178,"Poland",2013,0.97,0,NA
+178,"Poland",2014,0.97,0,NA
+178,"Poland",2015,0.98,0,NA
+179,"France",2000,0.99,0,NA
+179,"France",2001,0.99,0,NA
+179,"France",2002,0.99,0,NA
+179,"France",2003,0.99,0,NA
+179,"France",2004,0.99,0,NA
+179,"France",2005,0.99,0,NA
+179,"France",2006,0.99,0,NA
+179,"France",2007,0.99,0,NA
+179,"France",2008,0.99,0,NA
+179,"France",2009,0.99,0,NA
+179,"France",2010,0.99,0,NA
+179,"France",2011,0.99,0,NA
+179,"France",2012,0.99,0,NA
+179,"France",2013,0.99,0,NA
+179,"France",2014,0.99,0,NA
+179,"France",2015,0.99,0,NA
+180,"United Kingdom",2000,0.99,0,NA
+180,"United Kingdom",2001,0.99,0,NA
+180,"United Kingdom",2002,0.99,0,NA
+180,"United Kingdom",2003,0.99,0,NA
+180,"United Kingdom",2004,0.99,0,NA
+180,"United Kingdom",2005,0.99,0,NA
+180,"United Kingdom",2006,0.99,0,NA
+180,"United Kingdom",2007,0.99,0,NA
+180,"United Kingdom",2008,0.99,0,NA
+180,"United Kingdom",2009,0.99,0,NA
+180,"United Kingdom",2010,0.99,0,NA
+180,"United Kingdom",2011,0.99,0,NA
+180,"United Kingdom",2012,0.99,0,NA
+180,"United Kingdom",2013,0.99,0,NA
+180,"United Kingdom",2014,0.99,0,NA
+180,"United Kingdom",2015,0.99,0,NA
+181,"Ireland",2000,0.89,0,NA
+181,"Ireland",2001,0.89,0,NA
+181,"Ireland",2002,0.89,0,NA
+181,"Ireland",2003,0.89,0,NA
+181,"Ireland",2004,0.9,0,NA
+181,"Ireland",2005,0.9,0,NA
+181,"Ireland",2006,0.9,0,NA
+181,"Ireland",2007,0.9,0,NA
+181,"Ireland",2008,0.9,0,NA
+181,"Ireland",2009,0.91,0,NA
+181,"Ireland",2010,0.91,0,NA
+181,"Ireland",2011,0.91,0,NA
+181,"Ireland",2012,0.91,0,NA
+181,"Ireland",2013,0.92,0,NA
+181,"Ireland",2014,0.92,0,NA
+181,"Ireland",2015,0.92,0,NA
+182,"Spain",2000,1,0,NA
+182,"Spain",2001,1,0,NA
+182,"Spain",2002,1,0,NA
+182,"Spain",2003,1,0,NA
+182,"Spain",2004,1,0,NA
+182,"Spain",2005,1,0,NA
+182,"Spain",2006,1,0,NA
+182,"Spain",2007,1,0,NA
+182,"Spain",2008,1,0,NA
+182,"Spain",2009,1,0,NA
+182,"Spain",2010,1,0,NA
+182,"Spain",2011,1,0,NA
+182,"Spain",2012,1,0,NA
+182,"Spain",2013,1,0,NA
+182,"Spain",2014,1,0,NA
+182,"Spain",2015,1,0,NA
+183,"Portugal",2000,0.97,0,NA
+183,"Portugal",2001,0.97,0,NA
+183,"Portugal",2002,0.98,0,NA
+183,"Portugal",2003,0.98,0,NA
+183,"Portugal",2004,0.98,0,NA
+183,"Portugal",2005,0.98,0,NA
+183,"Portugal",2006,0.98,0,NA
+183,"Portugal",2007,0.98,0,NA
+183,"Portugal",2008,0.99,0,NA
+183,"Portugal",2009,0.99,0,NA
+183,"Portugal",2010,0.99,0,NA
+183,"Portugal",2011,0.99,0,NA
+183,"Portugal",2012,0.99,0,NA
+183,"Portugal",2013,0.99,0,NA
+183,"Portugal",2014,0.99,0,NA
+183,"Portugal",2015,0.99,0,NA
+184,"Italy",2000,0.99,1,"lm prediction"
+184,"Italy",2001,0.99,1,"lm prediction"
+184,"Italy",2002,0.99,1,"lm prediction"
+184,"Italy",2003,0.99,1,"lm prediction"
+184,"Italy",2004,0.99,1,"lm prediction"
+184,"Italy",2005,0.99,1,"lm prediction"
+184,"Italy",2006,0.99,0,NA
+184,"Italy",2007,0.99,0,NA
+184,"Italy",2008,0.99,0,NA
+184,"Italy",2009,0.99,0,NA
+184,"Italy",2010,0.99,0,NA
+184,"Italy",2011,0.99,0,NA
+184,"Italy",2012,0.99,0,NA
+184,"Italy",2013,0.99,0,NA
+184,"Italy",2014,0.99,0,NA
+184,"Italy",2015,0.99,0,NA
+185,"Monaco",2000,1,0,NA
+185,"Monaco",2001,1,0,NA
+185,"Monaco",2002,1,0,NA
+185,"Monaco",2003,1,0,NA
+185,"Monaco",2004,1,0,NA
+185,"Monaco",2005,1,0,NA
+185,"Monaco",2006,1,0,NA
+185,"Monaco",2007,1,0,NA
+185,"Monaco",2008,1,0,NA
+185,"Monaco",2009,1,0,NA
+185,"Monaco",2010,1,0,NA
+185,"Monaco",2011,1,0,NA
+185,"Monaco",2012,1,0,NA
+185,"Monaco",2013,1,0,NA
+185,"Monaco",2014,1,0,NA
+185,"Monaco",2015,1,0,NA
+186,"Montenegro",2000,0.878181818181822,1,"lm prediction"
+186,"Montenegro",2001,0.883878787878791,1,"lm prediction"
+186,"Montenegro",2002,0.889575757575761,1,"lm prediction"
+186,"Montenegro",2003,0.895272727272729,1,"lm prediction"
+186,"Montenegro",2004,0.9009696969697,1,"lm prediction"
+186,"Montenegro",2005,0.906666666666668,1,"lm prediction"
+186,"Montenegro",2006,0.91,0,NA
+186,"Montenegro",2007,0.92,0,NA
+186,"Montenegro",2008,0.92,0,NA
+186,"Montenegro",2009,0.93,0,NA
+186,"Montenegro",2010,0.94,0,NA
+186,"Montenegro",2011,0.94,0,NA
+186,"Montenegro",2012,0.95,0,NA
+186,"Montenegro",2013,0.95,0,NA
+186,"Montenegro",2014,0.96,0,NA
+186,"Montenegro",2015,0.96,0,NA
+187,"Croatia",2000,0.97,0,NA
+187,"Croatia",2001,0.97,0,NA
+187,"Croatia",2002,0.97,0,NA
+187,"Croatia",2003,0.97,0,NA
+187,"Croatia",2004,0.97,0,NA
+187,"Croatia",2005,0.97,0,NA
+187,"Croatia",2006,0.97,0,NA
+187,"Croatia",2007,0.97,0,NA
+187,"Croatia",2008,0.97,0,NA
+187,"Croatia",2009,0.97,0,NA
+187,"Croatia",2010,0.97,0,NA
+187,"Croatia",2011,0.97,0,NA
+187,"Croatia",2012,0.97,0,NA
+187,"Croatia",2013,0.97,0,NA
+187,"Croatia",2014,0.97,0,NA
+187,"Croatia",2015,0.97,0,NA
+188,"Slovenia",2000,0.99,0,NA
+188,"Slovenia",2001,0.99,0,NA
+188,"Slovenia",2002,0.99,0,NA
+188,"Slovenia",2003,0.99,0,NA
+188,"Slovenia",2004,0.99,0,NA
+188,"Slovenia",2005,0.99,0,NA
+188,"Slovenia",2006,0.99,0,NA
+188,"Slovenia",2007,0.99,0,NA
+188,"Slovenia",2008,0.99,0,NA
+188,"Slovenia",2009,0.99,0,NA
+188,"Slovenia",2010,0.99,0,NA
+188,"Slovenia",2011,0.99,0,NA
+188,"Slovenia",2012,0.99,0,NA
+188,"Slovenia",2013,0.99,0,NA
+188,"Slovenia",2014,0.99,0,NA
+188,"Slovenia",2015,0.99,0,NA
+189,"Lithuania",2000,0.85,0,NA
+189,"Lithuania",2001,0.85,0,NA
+189,"Lithuania",2002,0.86,0,NA
+189,"Lithuania",2003,0.87,0,NA
+189,"Lithuania",2004,0.87,0,NA
+189,"Lithuania",2005,0.88,0,NA
+189,"Lithuania",2006,0.88,0,NA
+189,"Lithuania",2007,0.89,0,NA
+189,"Lithuania",2008,0.9,0,NA
+189,"Lithuania",2009,0.9,0,NA
+189,"Lithuania",2010,0.91,0,NA
+189,"Lithuania",2011,0.91,0,NA
+189,"Lithuania",2012,0.92,0,NA
+189,"Lithuania",2013,0.92,0,NA
+189,"Lithuania",2014,0.93,0,NA
+189,"Lithuania",2015,0.94,0,NA
+190,"Qatar",2000,0.986747252747253,1,"lm prediction"
+190,"Qatar",2001,0.987802197802198,1,"lm prediction"
+190,"Qatar",2002,0.99,0,NA
+190,"Qatar",2003,0.99,0,NA
+190,"Qatar",2004,0.99,0,NA
+190,"Qatar",2005,0.99,0,NA
+190,"Qatar",2006,0.99,0,NA
+190,"Qatar",2007,0.99,0,NA
+190,"Qatar",2008,1,0,NA
+190,"Qatar",2009,1,0,NA
+190,"Qatar",2010,1,0,NA
+190,"Qatar",2011,1,0,NA
+190,"Qatar",2012,1,0,NA
+190,"Qatar",2013,1,0,NA
+190,"Qatar",2014,1,0,NA
+190,"Qatar",2015,1,0,NA
+191,"Iran",2000,0.87,0,NA
+191,"Iran",2001,0.87,0,NA
+191,"Iran",2002,0.87,0,NA
+191,"Iran",2003,0.88,0,NA
+191,"Iran",2004,0.88,0,NA
+191,"Iran",2005,0.88,0,NA
+191,"Iran",2006,0.88,0,NA
+191,"Iran",2007,0.88,0,NA
+191,"Iran",2008,0.88,0,NA
+191,"Iran",2009,0.88,0,NA
+191,"Iran",2010,0.88,0,NA
+191,"Iran",2011,0.88,0,NA
+191,"Iran",2012,0.88,0,NA
+191,"Iran",2013,0.88,0,NA
+191,"Iran",2014,0.88,0,NA
+191,"Iran",2015,0.88,0,NA
+192,"Iraq",2000,0.75,0,NA
+192,"Iraq",2001,0.76,0,NA
+192,"Iraq",2002,0.77,0,NA
+192,"Iraq",2003,0.78,0,NA
+192,"Iraq",2004,0.78,0,NA
+192,"Iraq",2005,0.79,0,NA
+192,"Iraq",2006,0.8,0,NA
+192,"Iraq",2007,0.81,0,NA
+192,"Iraq",2008,0.82,0,NA
+192,"Iraq",2009,0.82,0,NA
+192,"Iraq",2010,0.83,0,NA
+192,"Iraq",2011,0.84,0,NA
+192,"Iraq",2012,0.85,0,NA
+192,"Iraq",2013,0.86,0,NA
+192,"Iraq",2014,0.86,0,NA
+192,"Iraq",2015,0.86,0,NA
+193,"Guinea Bissau",2000,0.12,0,NA
+193,"Guinea Bissau",2001,0.13,0,NA
+193,"Guinea Bissau",2002,0.13,0,NA
+193,"Guinea Bissau",2003,0.14,0,NA
+193,"Guinea Bissau",2004,0.14,0,NA
+193,"Guinea Bissau",2005,0.15,0,NA
+193,"Guinea Bissau",2006,0.16,0,NA
+193,"Guinea Bissau",2007,0.16,0,NA
+193,"Guinea Bissau",2008,0.17,0,NA
+193,"Guinea Bissau",2009,0.18,0,NA
+193,"Guinea Bissau",2010,0.18,0,NA
+193,"Guinea Bissau",2011,0.19,0,NA
+193,"Guinea Bissau",2012,0.2,0,NA
+193,"Guinea Bissau",2013,0.2,0,NA
+193,"Guinea Bissau",2014,0.21,0,NA
+193,"Guinea Bissau",2015,0.21,0,NA
+194,"Guinea",2000,0.09,0,NA
+194,"Guinea",2001,0.1,0,NA
+194,"Guinea",2002,0.11,0,NA
+194,"Guinea",2003,0.12,0,NA
+194,"Guinea",2004,0.12,0,NA
+194,"Guinea",2005,0.13,0,NA
+194,"Guinea",2006,0.14,0,NA
+194,"Guinea",2007,0.15,0,NA
+194,"Guinea",2008,0.16,0,NA
+194,"Guinea",2009,0.17,0,NA
+194,"Guinea",2010,0.18,0,NA
+194,"Guinea",2011,0.18,0,NA
+194,"Guinea",2012,0.19,0,NA
+194,"Guinea",2013,0.2,0,NA
+194,"Guinea",2014,0.21,0,NA
+194,"Guinea",2015,0.22,0,NA
+195,"Ivory Coast",2000,0.22,0,NA
+195,"Ivory Coast",2001,0.23,0,NA
+195,"Ivory Coast",2002,0.23,0,NA
+195,"Ivory Coast",2003,0.24,0,NA
+195,"Ivory Coast",2004,0.24,0,NA
+195,"Ivory Coast",2005,0.25,0,NA
+195,"Ivory Coast",2006,0.25,0,NA
+195,"Ivory Coast",2007,0.26,0,NA
+195,"Ivory Coast",2008,0.26,0,NA
+195,"Ivory Coast",2009,0.27,0,NA
+195,"Ivory Coast",2010,0.27,0,NA
+195,"Ivory Coast",2011,0.28,0,NA
+195,"Ivory Coast",2012,0.28,0,NA
+195,"Ivory Coast",2013,0.29,0,NA
+195,"Ivory Coast",2014,0.29,0,NA
+195,"Ivory Coast",2015,0.3,0,NA
+196,"Nigeria",2000,0.36,0,NA
+196,"Nigeria",2001,0.36,0,NA
+196,"Nigeria",2002,0.36,0,NA
+196,"Nigeria",2003,0.36,0,NA
+196,"Nigeria",2004,0.35,0,NA
+196,"Nigeria",2005,0.35,0,NA
+196,"Nigeria",2006,0.35,0,NA
+196,"Nigeria",2007,0.34,0,NA
+196,"Nigeria",2008,0.34,0,NA
+196,"Nigeria",2009,0.34,0,NA
+196,"Nigeria",2010,0.34,0,NA
+196,"Nigeria",2011,0.33,0,NA
+196,"Nigeria",2012,0.33,0,NA
+196,"Nigeria",2013,0.33,0,NA
+196,"Nigeria",2014,0.33,0,NA
+196,"Nigeria",2015,0.33,0,NA
+197,"Cameroon",2000,0.4,0,NA
+197,"Cameroon",2001,0.4,0,NA
+197,"Cameroon",2002,0.4,0,NA
+197,"Cameroon",2003,0.39,0,NA
+197,"Cameroon",2004,0.39,0,NA
+197,"Cameroon",2005,0.39,0,NA
+197,"Cameroon",2006,0.39,0,NA
+197,"Cameroon",2007,0.39,0,NA
+197,"Cameroon",2008,0.39,0,NA
+197,"Cameroon",2009,0.39,0,NA
+197,"Cameroon",2010,0.39,0,NA
+197,"Cameroon",2011,0.39,0,NA
+197,"Cameroon",2012,0.39,0,NA
+197,"Cameroon",2013,0.39,0,NA
+197,"Cameroon",2014,0.39,0,NA
+197,"Cameroon",2015,0.39,0,NA
+198,"Gabon",2000,0.39,0,NA
+198,"Gabon",2001,0.39,0,NA
+198,"Gabon",2002,0.39,0,NA
+198,"Gabon",2003,0.39,0,NA
+198,"Gabon",2004,0.4,0,NA
+198,"Gabon",2005,0.4,0,NA
+198,"Gabon",2006,0.4,0,NA
+198,"Gabon",2007,0.4,0,NA
+198,"Gabon",2008,0.4,0,NA
+198,"Gabon",2009,0.4,0,NA
+198,"Gabon",2010,0.4,0,NA
+198,"Gabon",2011,0.4,0,NA
+198,"Gabon",2012,0.41,0,NA
+198,"Gabon",2013,0.41,0,NA
+198,"Gabon",2014,0.41,0,NA
+198,"Gabon",2015,0.41,0,NA
+199,"Democratic Republic of the Congo",2000,0.22,0,NA
+199,"Democratic Republic of the Congo",2001,0.22,0,NA
+199,"Democratic Republic of the Congo",2002,0.22,0,NA
+199,"Democratic Republic of the Congo",2003,0.22,0,NA
+199,"Democratic Republic of the Congo",2004,0.22,0,NA
+199,"Democratic Republic of the Congo",2005,0.21,0,NA
+199,"Democratic Republic of the Congo",2006,0.21,0,NA
+199,"Democratic Republic of the Congo",2007,0.21,0,NA
+199,"Democratic Republic of the Congo",2008,0.21,0,NA
+199,"Democratic Republic of the Congo",2009,0.21,0,NA
+199,"Democratic Republic of the Congo",2010,0.21,0,NA
+199,"Democratic Republic of the Congo",2011,0.2,0,NA
+199,"Democratic Republic of the Congo",2012,0.2,0,NA
+199,"Democratic Republic of the Congo",2013,0.2,0,NA
+199,"Democratic Republic of the Congo",2014,0.2,0,NA
+199,"Democratic Republic of the Congo",2015,0.2,0,NA
+200,"Angola",2000,0.2,0,NA
+200,"Angola",2001,0.22,0,NA
+200,"Angola",2002,0.23,0,NA
+200,"Angola",2003,0.24,0,NA
+200,"Angola",2004,0.25,0,NA
+200,"Angola",2005,0.27,0,NA
+200,"Angola",2006,0.28,0,NA
+200,"Angola",2007,0.29,0,NA
+200,"Angola",2008,0.31,0,NA
+200,"Angola",2009,0.32,0,NA
+200,"Angola",2010,0.33,0,NA
+200,"Angola",2011,0.34,0,NA
+200,"Angola",2012,0.36,0,NA
+200,"Angola",2013,0.37,0,NA
+200,"Angola",2014,0.38,0,NA
+200,"Angola",2015,0.39,0,NA
+202,"Tanzania",2000,0.07,0,NA
+202,"Tanzania",2001,0.08,0,NA
+202,"Tanzania",2002,0.09,0,NA
+202,"Tanzania",2003,0.1,0,NA
+202,"Tanzania",2004,0.11,0,NA
+202,"Tanzania",2005,0.12,0,NA
+202,"Tanzania",2006,0.13,0,NA
+202,"Tanzania",2007,0.14,0,NA
+202,"Tanzania",2008,0.15,0,NA
+202,"Tanzania",2009,0.16,0,NA
+202,"Tanzania",2010,0.18,0,NA
+202,"Tanzania",2011,0.19,0,NA
+202,"Tanzania",2012,0.2,0,NA
+202,"Tanzania",2013,0.21,0,NA
+202,"Tanzania",2014,0.22,0,NA
+202,"Tanzania",2015,0.24,0,NA
+203,"India",2000,0.22,0,NA
+203,"India",2001,0.23,0,NA
+203,"India",2002,0.25,0,NA
+203,"India",2003,0.26,0,NA
+203,"India",2004,0.28,0,NA
+203,"India",2005,0.29,0,NA
+203,"India",2006,0.31,0,NA
+203,"India",2007,0.32,0,NA
+203,"India",2008,0.34,0,NA
+203,"India",2009,0.35,0,NA
+203,"India",2010,0.37,0,NA
+203,"India",2011,0.38,0,NA
+203,"India",2012,0.4,0,NA
+203,"India",2013,0.41,0,NA
+203,"India",2014,0.43,0,NA
+203,"India",2015,0.44,0,NA
+204,"Bangladesh",2000,0.25,0,NA
+204,"Bangladesh",2001,0.27,0,NA
+204,"Bangladesh",2002,0.28,0,NA
+204,"Bangladesh",2003,0.3,0,NA
+204,"Bangladesh",2004,0.31,0,NA
+204,"Bangladesh",2005,0.33,0,NA
+204,"Bangladesh",2006,0.34,0,NA
+204,"Bangladesh",2007,0.36,0,NA
+204,"Bangladesh",2008,0.37,0,NA
+204,"Bangladesh",2009,0.39,0,NA
+204,"Bangladesh",2010,0.4,0,NA
+204,"Bangladesh",2011,0.41,0,NA
+204,"Bangladesh",2012,0.43,0,NA
+204,"Bangladesh",2013,0.44,0,NA
+204,"Bangladesh",2014,0.46,0,NA
+204,"Bangladesh",2015,0.47,0,NA
+205,"Myanmar",2000,0.7,0,NA
+205,"Myanmar",2001,0.69,0,NA
+205,"Myanmar",2002,0.69,0,NA
+205,"Myanmar",2003,0.69,0,NA
+205,"Myanmar",2004,0.68,0,NA
+205,"Myanmar",2005,0.68,0,NA
+205,"Myanmar",2006,0.68,0,NA
+205,"Myanmar",2007,0.67,0,NA
+205,"Myanmar",2008,0.67,0,NA
+205,"Myanmar",2009,0.67,0,NA
+205,"Myanmar",2010,0.66,0,NA
+205,"Myanmar",2011,0.66,0,NA
+205,"Myanmar",2012,0.66,0,NA
+205,"Myanmar",2013,0.65,0,NA
+205,"Myanmar",2014,0.65,0,NA
+205,"Myanmar",2015,0.65,0,NA
+206,"Malaysia",2000,0.97,0,NA
+206,"Malaysia",2001,0.97,0,NA
+206,"Malaysia",2002,0.97,0,NA
+206,"Malaysia",2003,0.97,0,NA
+206,"Malaysia",2004,0.98,0,NA
+206,"Malaysia",2005,0.98,0,NA
+206,"Malaysia",2006,0.98,0,NA
+206,"Malaysia",2007,0.98,0,NA
+206,"Malaysia",2008,0.98,0,NA
+206,"Malaysia",2009,0.99,0,NA
+206,"Malaysia",2010,0.99,0,NA
+206,"Malaysia",2011,0.99,0,NA
+206,"Malaysia",2012,0.99,0,NA
+206,"Malaysia",2013,0.99,0,NA
+206,"Malaysia",2014,1,0,NA
+206,"Malaysia",2015,1,0,NA
+207,"Vietnam",2000,0.53,0,NA
+207,"Vietnam",2001,0.55,0,NA
+207,"Vietnam",2002,0.57,0,NA
+207,"Vietnam",2003,0.59,0,NA
+207,"Vietnam",2004,0.6,0,NA
+207,"Vietnam",2005,0.62,0,NA
+207,"Vietnam",2006,0.64,0,NA
+207,"Vietnam",2007,0.65,0,NA
+207,"Vietnam",2008,0.67,0,NA
+207,"Vietnam",2009,0.69,0,NA
+207,"Vietnam",2010,0.7,0,NA
+207,"Vietnam",2011,0.72,0,NA
+207,"Vietnam",2012,0.74,0,NA
+207,"Vietnam",2013,0.75,0,NA
+207,"Vietnam",2014,0.77,0,NA
+207,"Vietnam",2015,0.78,0,NA
+208,"Singapore",2000,1,0,NA
+208,"Singapore",2001,1,0,NA
+208,"Singapore",2002,1,0,NA
+208,"Singapore",2003,1,0,NA
+208,"Singapore",2004,1,0,NA
+208,"Singapore",2005,1,0,NA
+208,"Singapore",2006,1,0,NA
+208,"Singapore",2007,1,0,NA
+208,"Singapore",2008,1,0,NA
+208,"Singapore",2009,1,0,NA
+208,"Singapore",2010,1,0,NA
+208,"Singapore",2011,1,0,NA
+208,"Singapore",2012,1,0,NA
+208,"Singapore",2013,1,0,NA
+208,"Singapore",2014,1,0,NA
+208,"Singapore",2015,1,0,NA
+209,"China",2000,0.611912843379212,0,NA
+209,"China",2001,0.611916877072583,0,NA
+209,"China",2002,0.62185814800903,0,NA
+209,"China",2003,0.63179383595143,0,NA
+209,"China",2004,0.641729610890023,0,NA
+209,"China",2005,0.651668217210195,0,NA
+209,"China",2006,0.661610783830015,0,NA
+209,"China",2007,0.671555743518301,0,NA
+209,"China",2008,0.681502623348363,0,NA
+209,"China",2009,0.691451211107763,0,NA
+209,"China",2010,0.701400913823302,0,NA
+209,"China",2011,0.711351398815541,0,NA
+209,"China",2012,0.721251004595266,0,NA
+209,"China",2013,0.73120299807692,0,NA
+209,"China",2014,0.741154923172919,0,NA
+209,"China",2015,0.751106368151795,0,NA
+210,"Japan",2000,1,0,NA
+210,"Japan",2001,1,0,NA
+210,"Japan",2002,1,0,NA
+210,"Japan",2003,1,0,NA
+210,"Japan",2004,1,0,NA
+210,"Japan",2005,1,0,NA
+210,"Japan",2006,1,0,NA
+210,"Japan",2007,1,0,NA
+210,"Japan",2008,1,0,NA
+210,"Japan",2009,1,0,NA
+210,"Japan",2010,1,0,NA
+210,"Japan",2011,1,0,NA
+210,"Japan",2012,1,0,NA
+210,"Japan",2013,1,0,NA
+210,"Japan",2014,1,0,NA
+210,"Japan",2015,1,0,NA
+212,"Kiribati",2000,0.3,0,NA
+212,"Kiribati",2001,0.31,0,NA
+212,"Kiribati",2002,0.32,0,NA
+212,"Kiribati",2003,0.33,0,NA
+212,"Kiribati",2004,0.33,0,NA
+212,"Kiribati",2005,0.34,0,NA
+212,"Kiribati",2006,0.35,0,NA
+212,"Kiribati",2007,0.36,0,NA
+212,"Kiribati",2008,0.37,0,NA
+212,"Kiribati",2009,0.37,0,NA
+212,"Kiribati",2010,0.38,0,NA
+212,"Kiribati",2011,0.39,0,NA
+212,"Kiribati",2012,0.4,0,NA
+212,"Kiribati",2013,0.4,0,NA
+212,"Kiribati",2014,0.4,0,NA
+212,"Kiribati",2015,0.4,0,NA
+214,"Egypt",2000,0.92,0,NA
+214,"Egypt",2001,0.92,0,NA
+214,"Egypt",2002,0.93,0,NA
+214,"Egypt",2003,0.93,0,NA
+214,"Egypt",2004,0.93,0,NA
+214,"Egypt",2005,0.93,0,NA
+214,"Egypt",2006,0.93,0,NA
+214,"Egypt",2007,0.93,0,NA
+214,"Egypt",2008,0.93,0,NA
+214,"Egypt",2009,0.93,0,NA
+214,"Egypt",2010,0.93,0,NA
+214,"Egypt",2011,0.93,0,NA
+214,"Egypt",2012,0.93,0,NA
+214,"Egypt",2013,0.93,0,NA
+214,"Egypt",2014,0.93,0,NA
+214,"Egypt",2015,0.93,0,NA
+215,"Jordan",2000,0.99,0,NA
+215,"Jordan",2001,0.99,0,NA
+215,"Jordan",2002,0.99,0,NA
+215,"Jordan",2003,0.99,0,NA
+215,"Jordan",2004,0.98,0,NA
+215,"Jordan",2005,0.98,0,NA
+215,"Jordan",2006,0.98,0,NA
+215,"Jordan",2007,0.98,0,NA
+215,"Jordan",2008,0.98,0,NA
+215,"Jordan",2009,0.98,0,NA
+215,"Jordan",2010,0.97,0,NA
+215,"Jordan",2011,0.97,0,NA
+215,"Jordan",2012,0.97,0,NA
+215,"Jordan",2013,0.97,0,NA
+215,"Jordan",2014,0.97,0,NA
+215,"Jordan",2015,0.97,0,NA
+216,"Indonesia",2000,0.44,0,NA
+216,"Indonesia",2001,0.46,0,NA
+216,"Indonesia",2002,0.48,0,NA
+216,"Indonesia",2003,0.49,0,NA
+216,"Indonesia",2004,0.51,0,NA
+216,"Indonesia",2005,0.53,0,NA
+216,"Indonesia",2006,0.54,0,NA
+216,"Indonesia",2007,0.56,0,NA
+216,"Indonesia",2008,0.57,0,NA
+216,"Indonesia",2009,0.59,0,NA
+216,"Indonesia",2010,0.6,0,NA
+216,"Indonesia",2011,0.62,0,NA
+216,"Indonesia",2012,0.64,0,NA
+216,"Indonesia",2013,0.65,0,NA
+216,"Indonesia",2014,0.66,0,NA
+216,"Indonesia",2015,0.68,0,NA
+218,"Canada",2000,0.99,0,NA
+218,"Canada",2001,0.99,0,NA
+218,"Canada",2002,0.99,0,NA
+218,"Canada",2003,0.99,0,NA
+218,"Canada",2004,0.99,0,NA
+218,"Canada",2005,0.99,0,NA
+218,"Canada",2006,0.99,0,NA
+218,"Canada",2007,0.99,0,NA
+218,"Canada",2008,0.99,0,NA
+218,"Canada",2009,0.99,0,NA
+218,"Canada",2010,0.99,0,NA
+218,"Canada",2011,0.99,0,NA
+218,"Canada",2012,0.99,0,NA
+218,"Canada",2013,0.99,0,NA
+218,"Canada",2014,0.99,0,NA
+218,"Canada",2015,0.99,0,NA
+219,"Saint Pierre and Miquelon",2000,0.990000000000001,1,"lm prediction"
+219,"Saint Pierre and Miquelon",2001,0.990000000000001,1,"lm prediction"
+219,"Saint Pierre and Miquelon",2002,0.990000000000001,1,"lm prediction"
+219,"Saint Pierre and Miquelon",2003,0.990000000000001,1,"lm prediction"
+219,"Saint Pierre and Miquelon",2004,0.99,1,"lm prediction"
+219,"Saint Pierre and Miquelon",2005,0.99,1,"lm prediction"
+219,"Saint Pierre and Miquelon",2006,0.99,0,NA
+219,"Saint Pierre and Miquelon",2007,0.99,0,NA
+219,"Saint Pierre and Miquelon",2008,0.99,0,NA
+219,"Saint Pierre and Miquelon",2009,0.99,0,NA
+219,"Saint Pierre and Miquelon",2010,0.99,0,NA
+219,"Saint Pierre and Miquelon",2011,0.99,0,NA
+219,"Saint Pierre and Miquelon",2012,0.99,0,NA
+219,"Saint Pierre and Miquelon",2013,0.99,0,NA
+219,"Saint Pierre and Miquelon",2014,0.99,0,NA
+219,"Saint Pierre and Miquelon",2015,0.99,1,"lm prediction"
+220,"Sint Maarten",2000,0.990000000000001,1,"lm prediction"
+220,"Sint Maarten",2001,0.990000000000001,1,"lm prediction"
+220,"Sint Maarten",2002,0.990000000000001,1,"lm prediction"
+220,"Sint Maarten",2003,0.990000000000001,1,"lm prediction"
+220,"Sint Maarten",2004,0.99,1,"lm prediction"
+220,"Sint Maarten",2005,0.99,1,"lm prediction"
+220,"Sint Maarten",2006,0.99,1,"lm prediction"
+220,"Sint Maarten",2007,0.99,0,NA
+220,"Sint Maarten",2008,0.99,0,NA
+220,"Sint Maarten",2009,0.99,0,NA
+220,"Sint Maarten",2010,0.99,0,NA
+220,"Sint Maarten",2011,0.99,0,NA
+220,"Sint Maarten",2012,0.99,0,NA
+220,"Sint Maarten",2013,0.99,0,NA
+220,"Sint Maarten",2014,0.99,0,NA
+220,"Sint Maarten",2015,0.99,0,NA
+221,"Northern Saint-Martin",2000,0.852293964002191,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2001,0.855405045206414,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2002,0.858333333333333,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2003,0.860833333333333,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2004,0.864583333333333,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2005,0.867083333333333,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2006,0.87125,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2007,0.875,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2008,0.877916666666667,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2009,0.880833333333333,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2010,0.88375,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2011,0.8875,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2012,0.889370553608856,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2013,0.890620159121951,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2014,0.893276296271617,1,"UN georegion avg. (r2)"
+221,"Northern Saint-Martin",2015,0.893933817721822,1,"UN georegion avg. (r2)"
+222,"Sweden",2000,0.99,0,NA
+222,"Sweden",2001,0.99,0,NA
+222,"Sweden",2002,0.99,0,NA
+222,"Sweden",2003,0.99,0,NA
+222,"Sweden",2004,0.99,0,NA
+222,"Sweden",2005,0.99,0,NA
+222,"Sweden",2006,0.99,0,NA
+222,"Sweden",2007,0.99,0,NA
+222,"Sweden",2008,0.99,0,NA
+222,"Sweden",2009,0.99,0,NA
+222,"Sweden",2010,0.99,0,NA
+222,"Sweden",2011,0.99,0,NA
+222,"Sweden",2012,0.99,0,NA
+222,"Sweden",2013,0.99,0,NA
+222,"Sweden",2014,0.99,0,NA
+222,"Sweden",2015,0.99,0,NA
+223,"Norway",2000,0.98,0,NA
+223,"Norway",2001,0.98,0,NA
+223,"Norway",2002,0.98,0,NA
+223,"Norway",2003,0.98,0,NA
+223,"Norway",2004,0.98,0,NA
+223,"Norway",2005,0.98,0,NA
+223,"Norway",2006,0.98,0,NA
+223,"Norway",2007,0.98,0,NA
+223,"Norway",2008,0.98,0,NA
+223,"Norway",2009,0.98,0,NA
+223,"Norway",2010,0.98,0,NA
+223,"Norway",2011,0.98,0,NA
+223,"Norway",2012,0.98,0,NA
+223,"Norway",2013,0.98,0,NA
+223,"Norway",2014,0.98,0,NA
+223,"Norway",2015,0.98,0,NA
+224,"Chile",2000,0.92,0,NA
+224,"Chile",2001,0.92,0,NA
+224,"Chile",2002,0.93,0,NA
+224,"Chile",2003,0.94,0,NA
+224,"Chile",2004,0.94,0,NA
+224,"Chile",2005,0.95,0,NA
+224,"Chile",2006,0.96,0,NA
+224,"Chile",2007,0.96,0,NA
+224,"Chile",2008,0.97,0,NA
+224,"Chile",2009,0.97,0,NA
+224,"Chile",2010,0.98,0,NA
+224,"Chile",2011,0.98,0,NA
+224,"Chile",2012,0.99,0,NA
+224,"Chile",2013,0.99,0,NA
+224,"Chile",2014,1,0,NA
+224,"Chile",2015,1,0,NA
+227,"Jersey",2000,0.989999999999999,1,"lm prediction"
+227,"Jersey",2001,0.989999999999999,1,"lm prediction"
+227,"Jersey",2002,0.989999999999999,1,"lm prediction"
+227,"Jersey",2003,0.989999999999999,1,"lm prediction"
+227,"Jersey",2004,0.989999999999999,1,"lm prediction"
+227,"Jersey",2005,0.989999999999999,1,"lm prediction"
+227,"Jersey",2006,0.989999999999999,1,"lm prediction"
+227,"Jersey",2007,0.989999999999999,1,"lm prediction"
+227,"Jersey",2008,0.99,1,"lm prediction"
+227,"Jersey",2009,0.99,0,NA
+227,"Jersey",2010,0.99,0,NA
+227,"Jersey",2011,0.99,0,NA
+227,"Jersey",2012,0.99,0,NA
+227,"Jersey",2013,0.99,0,NA
+227,"Jersey",2014,0.99,0,NA
+227,"Jersey",2015,0.99,0,NA
+228,"Guernsey",2000,0.989999999999999,1,"lm prediction"
+228,"Guernsey",2001,0.989999999999999,1,"lm prediction"
+228,"Guernsey",2002,0.989999999999999,1,"lm prediction"
+228,"Guernsey",2003,0.989999999999999,1,"lm prediction"
+228,"Guernsey",2004,0.989999999999999,1,"lm prediction"
+228,"Guernsey",2005,0.989999999999999,1,"lm prediction"
+228,"Guernsey",2006,0.989999999999999,1,"lm prediction"
+228,"Guernsey",2007,0.989999999999999,1,"lm prediction"
+228,"Guernsey",2008,0.99,1,"lm prediction"
+228,"Guernsey",2009,0.99,0,NA
+228,"Guernsey",2010,0.99,0,NA
+228,"Guernsey",2011,0.99,0,NA
+228,"Guernsey",2012,0.99,0,NA
+228,"Guernsey",2013,0.99,0,NA
+228,"Guernsey",2014,0.99,0,NA
+228,"Guernsey",2015,0.99,0,NA
+231,"East Timor",2000,0.322505494505494,1,"lm prediction"
+231,"East Timor",2001,0.330109890109888,1,"lm prediction"
+231,"East Timor",2002,0.34,0,NA
+231,"East Timor",2003,0.35,0,NA
+231,"East Timor",2004,0.35,0,NA
+231,"East Timor",2005,0.36,0,NA
+231,"East Timor",2006,0.37,0,NA
+231,"East Timor",2007,0.37,0,NA
+231,"East Timor",2008,0.38,0,NA
+231,"East Timor",2009,0.39,0,NA
+231,"East Timor",2010,0.4,0,NA
+231,"East Timor",2011,0.41,0,NA
+231,"East Timor",2012,0.41,0,NA
+231,"East Timor",2013,0.42,0,NA
+231,"East Timor",2014,0.43,0,NA
+231,"East Timor",2015,0.44,0,NA
+232,"Bosnia and Herzegovina",2000,0.95,0,NA
+232,"Bosnia and Herzegovina",2001,0.95,0,NA
+232,"Bosnia and Herzegovina",2002,0.95,0,NA
+232,"Bosnia and Herzegovina",2003,0.95,0,NA
+232,"Bosnia and Herzegovina",2004,0.95,0,NA
+232,"Bosnia and Herzegovina",2005,0.95,0,NA
+232,"Bosnia and Herzegovina",2006,0.95,0,NA
+232,"Bosnia and Herzegovina",2007,0.95,0,NA
+232,"Bosnia and Herzegovina",2008,0.95,0,NA
+232,"Bosnia and Herzegovina",2009,0.95,0,NA
+232,"Bosnia and Herzegovina",2010,0.95,0,NA
+232,"Bosnia and Herzegovina",2011,0.95,0,NA
+232,"Bosnia and Herzegovina",2012,0.95,0,NA
+232,"Bosnia and Herzegovina",2013,0.95,0,NA
+232,"Bosnia and Herzegovina",2014,0.95,0,NA
+232,"Bosnia and Herzegovina",2015,0.95,0,NA
+237,"Oecussi Ambeno",2000,0.666250549450549,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2001,0.673010989010989,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2002,0.681,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2003,0.688,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2004,0.694,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2005,0.702,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2006,0.709,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2007,0.714,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2008,0.721,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2009,0.73,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2010,0.735,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2011,0.743,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2012,0.749,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2013,0.755,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2014,0.762,1,"UN georegion avg. (r2)"
+237,"Oecussi Ambeno",2015,0.77,1,"UN georegion avg. (r2)"
+244,"Curacao",2000,0.990000000000001,1,"lm prediction"
+244,"Curacao",2001,0.990000000000001,1,"lm prediction"
+244,"Curacao",2002,0.990000000000001,1,"lm prediction"
+244,"Curacao",2003,0.990000000000001,1,"lm prediction"
+244,"Curacao",2004,0.99,1,"lm prediction"
+244,"Curacao",2005,0.99,1,"lm prediction"
+244,"Curacao",2006,0.99,1,"lm prediction"
+244,"Curacao",2007,0.99,0,NA
+244,"Curacao",2008,0.99,0,NA
+244,"Curacao",2009,0.99,0,NA
+244,"Curacao",2010,0.99,0,NA
+244,"Curacao",2011,0.99,0,NA
+244,"Curacao",2012,0.99,0,NA
+244,"Curacao",2013,0.99,0,NA
+244,"Curacao",2014,0.99,0,NA
+244,"Curacao",2015,0.99,0,NA
+245,"Bonaire",2000,0.852293964002191,1,"UN georegion avg. (r2)"
+245,"Bonaire",2001,0.855405045206414,1,"UN georegion avg. (r2)"
+245,"Bonaire",2002,0.858333333333333,1,"UN georegion avg. (r2)"
+245,"Bonaire",2003,0.860833333333333,1,"UN georegion avg. (r2)"
+245,"Bonaire",2004,0.864583333333333,1,"UN georegion avg. (r2)"
+245,"Bonaire",2005,0.867083333333333,1,"UN georegion avg. (r2)"
+245,"Bonaire",2006,0.87125,1,"UN georegion avg. (r2)"
+245,"Bonaire",2007,0.875,1,"UN georegion avg. (r2)"
+245,"Bonaire",2008,0.877916666666667,1,"UN georegion avg. (r2)"
+245,"Bonaire",2009,0.880833333333333,1,"UN georegion avg. (r2)"
+245,"Bonaire",2010,0.88375,1,"UN georegion avg. (r2)"
+245,"Bonaire",2011,0.8875,1,"UN georegion avg. (r2)"
+245,"Bonaire",2012,0.889370553608856,1,"UN georegion avg. (r2)"
+245,"Bonaire",2013,0.890620159121951,1,"UN georegion avg. (r2)"
+245,"Bonaire",2014,0.893276296271617,1,"UN georegion avg. (r2)"
+245,"Bonaire",2015,0.893933817721822,1,"UN georegion avg. (r2)"
+247,"Brunei",2000,0.959999999999999,1,"lm prediction"
+247,"Brunei",2001,0.959999999999999,1,"lm prediction"
+247,"Brunei",2002,0.959999999999999,1,"lm prediction"
+247,"Brunei",2003,0.959999999999999,1,"lm prediction"
+247,"Brunei",2004,0.959999999999999,1,"lm prediction"
+247,"Brunei",2005,0.959999999999999,1,"lm prediction"
+247,"Brunei",2006,0.959999999999999,1,"lm prediction"
+247,"Brunei",2007,0.96,0,NA
+247,"Brunei",2008,0.96,0,NA
+247,"Brunei",2009,0.96,0,NA
+247,"Brunei",2010,0.96,0,NA
+247,"Brunei",2011,0.96,0,NA
+247,"Brunei",2012,0.96,0,NA
+247,"Brunei",2013,0.96,0,NA
+247,"Brunei",2014,0.96,0,NA
+247,"Brunei",2015,0.96,0,NA
+248,"Saba",2000,0.852293964002191,1,"UN georegion avg. (r2)"
+248,"Saba",2001,0.855405045206414,1,"UN georegion avg. (r2)"
+248,"Saba",2002,0.858333333333333,1,"UN georegion avg. (r2)"
+248,"Saba",2003,0.860833333333333,1,"UN georegion avg. (r2)"
+248,"Saba",2004,0.864583333333333,1,"UN georegion avg. (r2)"
+248,"Saba",2005,0.867083333333333,1,"UN georegion avg. (r2)"
+248,"Saba",2006,0.87125,1,"UN georegion avg. (r2)"
+248,"Saba",2007,0.875,1,"UN georegion avg. (r2)"
+248,"Saba",2008,0.877916666666667,1,"UN georegion avg. (r2)"
+248,"Saba",2009,0.880833333333333,1,"UN georegion avg. (r2)"
+248,"Saba",2010,0.88375,1,"UN georegion avg. (r2)"
+248,"Saba",2011,0.8875,1,"UN georegion avg. (r2)"
+248,"Saba",2012,0.889370553608856,1,"UN georegion avg. (r2)"
+248,"Saba",2013,0.890620159121951,1,"UN georegion avg. (r2)"
+248,"Saba",2014,0.893276296271617,1,"UN georegion avg. (r2)"
+248,"Saba",2015,0.893933817721822,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2000,0.852293964002191,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2001,0.855405045206414,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2002,0.858333333333333,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2003,0.860833333333333,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2004,0.864583333333333,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2005,0.867083333333333,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2006,0.87125,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2007,0.875,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2008,0.877916666666667,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2009,0.880833333333333,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2010,0.88375,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2011,0.8875,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2012,0.889370553608856,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2013,0.890620159121951,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2014,0.893276296271617,1,"UN georegion avg. (r2)"
+249,"Sint Eustatius",2015,0.893933817721822,1,"UN georegion avg. (r2)"
+250,"Aruba",2000,0.98,0,NA
+250,"Aruba",2001,0.98,0,NA
+250,"Aruba",2002,0.98,0,NA
+250,"Aruba",2003,0.98,0,NA
+250,"Aruba",2004,0.98,0,NA
+250,"Aruba",2005,0.98,0,NA
+250,"Aruba",2006,0.98,0,NA
+250,"Aruba",2007,0.98,0,NA
+250,"Aruba",2008,0.98,0,NA
+250,"Aruba",2009,0.98,0,NA
+250,"Aruba",2010,0.98,0,NA
+250,"Aruba",2011,0.98,0,NA
+250,"Aruba",2012,0.98,0,NA
+250,"Aruba",2013,0.98,0,NA
+250,"Aruba",2014,0.98,0,NA
+250,"Aruba",2015,0.98,0,NA
