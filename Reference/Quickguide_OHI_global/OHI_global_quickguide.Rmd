@@ -1,0 +1,112 @@
+---
+title: "Starting the new year's assessment"
+output: html_document
+---
+
+There are several steps to beginning a year's assessment.  Instructions provided below.
+
+### Review and organize relevant issues
+Review the github::issues and create a list linking to the particular issues that might be useful in the year to come.  This can include: 
+
+* references/discussion that may lead to improvements to goal models, pressures or resilience
+* new datasets that are worth exploring
+* potential newimprovements to ohicore
+* ideas for reorganizing/cleaning repos
+* etc.  
+
+Create a new issue that organizes and links to these issues.  This officially marks the start of the OHI assessment!
+
+<br>
+<br>
+
+### Prepare the ohiprep repository
+Create a copy of the most recent ohiprep repository and rename with the new assessment year.  I use the following steps to do this:
+
+
+1. If you don't have the most recent year's repository, clone it to your local machine.  For example, if the last completed assessment was in 2018, you would clone the https://github.com/OHI-Science/ohiprep_v2018.  Here is one approach using RStudio:
+<br>
+![](images/clone_repo_1.png)
+<br>
+<br>
+![](images/clone_repo_2.png)
+<br>
+<br>
+![](images/clone_repo_3.png)
+<br>
+<br>
+![](images/clone_repo_4.png)
+
+<br>
+<br>
+2. Navigate to https://github.com/OHI-Science and create a new repository: 
+
+![](images/new_ohiprep_repo.png)
+
+<br>
+<br>
+Use the following parameters (but change the year in the repository name to match the current assessment year):
+<br>
+<br>
+![](images/new_ohiprep_repo.png)
+<br>
+<br>
+3. Copy the contents of the old ohiprep repository into the newly created repository.  Open the ohiprep_v20?? project in RStudio, and navigate to the Shell:
+<br>
+<br>
+![](images/shell.png)
+<br>
+<br>
+Make sure that you are in the old ohiprep working directory. This is indicated by the:
+`C:\Users\Melanie\github\ohiprep_v2018` 
+
+If you are not in the correct working directory use the `cd` command to navigate there.  Type in the mirror command:
+
+![](images/mirror_repo.png)
+<br>
+<br>
+4. Navigate to the new repository on Github.com, https://github.com/OHI-Science/ohiprep_v20??.git and make sure the folders/files are there.  Check that the default branch is "gh-pages" (and not the "master" branch).
+
+<br>
+<br>
+5. Clone the new repo to your local system (instructions in step 1)
+
+<br>
+<br>
+6. Delete the commit history of the new repository.  This gives us a clean slate to work from and keeps the repository from getting quite as big. I follow the general instructions from [here](https://gist.github.com/heiswayi/350e2afda8cece810c0f6116dadbe651).  Make sure you are in the working directory of the new repository, and in the shell type the following:
+
+
+```
+
+# Check out to a temporary branch:
+git checkout --orphan TEMP_BRANCH
+
+# Add all the files:
+git add -A
+
+# Commit the changes:
+git commit -am "Initial commit"
+
+# Delete the old branch:
+git branch -D gh-pages
+
+# Rename the temporary branch to master:
+git branch -m gh-pages
+
+# Finally, force update to our repository:
+git push -f origin gh-pages
+
+```
+<br>
+
+7. Navigate to the new repository on Github.com, https://github.com/OHI-Science/ohiprep_v20??.git and check whether there is only one commit. 
+<br>
+
+![](images/new_repo.png)
+
+<br>
+<br>
+8. Update README.md and delete unnecessary .Rproj files with the wrong year, commit, push.
+
+<br>
+<br>
+9. You are done....go have a cup of tea!
