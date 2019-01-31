@@ -1,11 +1,16 @@
 ---
-title: "Starting the new year's assessment"
+title: "Starting a new assessment year"
 output: html_document
 ---
 
-There are several steps to beginning a year's assessment.  Instructions provided below.
+There are several steps to beginning a year's assessment.  This guide walks through the steps you will want to take.  Each of the following steps is described in detail:
 
-### Review and organize relevant issues
+1. Review and organize relevant github issues
+2. Prepare the repositories
+    - ohiprep
+    - ohi-global
+
+## Review and organize relevant issues
 Review the github::issues and create a list linking to the particular issues that might be useful in the year to come.  This can include: 
 
 * references/discussion that may lead to improvements to goal models, pressures or resilience
@@ -19,7 +24,15 @@ Create a new issue that organizes and links to these issues.  This officially ma
 <br>
 <br>
 
-### Prepare the ohiprep repository
+
+## Prepare the repositories!
+In preparation for the new assessment, you will need to prepare the repositories we use for the global assessment.  For the ohiprep repository, you will actually copy the previous year's assessment into a new repository with an updated name and delete the history.  This helps to keep the size of the repository under control.  For the ohi-global repository, you will update a couple files and perform a couple checks to make sure the scores do not change.
+
+ohicore will probably not need any changes.  However, now is a good time to improve warning messages or add functions to improve analysis and visualization.
+
+This is also a good time to think about making organizational changes to the repositories.  Sometimes an organizational scheme that worked well in the past doesn't work as well over time.
+
+### ohiprep repository
 Create a copy of the most recent ohiprep repository and rename with the new assessment year.  I use the following steps to do this:
 
 

@@ -1,0 +1,92 @@
+---
+title: "Finalizing the global assessment"
+output: html_document
+---
+
+There are several steps after getting the scores to finalizing an assessment.  This guide walks your through these steps.  Each of the following steps is described in detail:
+
+1. Review the scores and make final changes
+2. Update methods and finalize document
+3. Create a results document
+4. Update the website
+5. Finalize and create a "release" for repositories
+6. Upload results to KNB to get a doi
+
+
+## Getting a DOI
+One of the final steps of an assessment is submitting the final data (and related files) to KNB (https://knb.ecoinformatics.org/).  This makes the files publicly available and provides a DOI (digital object identifier, https://www.doi.org/) used to officially cite the data. An example of our data on KNB is here: https://knb.ecoinformatics.org/view/doi:10.5063/F12Z13R6   
+
+
+Signing into KNB requires an ORCID account. An ORCID account is obtained here: https://orcid.org/register.  You will then make your way to https://knb.ecoinformatics.org/. Select the SIGN IN tab, and then "Sign in with ORCID":
+
+<br>
+
+![](images/KNB_sign_in_ORCID.png)
+<br>
+<br>
+
+Select the "Upload data", and start adding files and information:
+<br>
+![](images/KNB_upload_data.png)
+
+
+The following is the information we used for the 2018 assessment, but please modify and improve as desired!
+
+#### Overview
+
+Title: Global Ocean Health Index 2018 assessment
+
+Abstract: Scores from the 2018 global Ocean Health Index (OHI) assessment and accompanying data and models. The global Ocean Health Index assesses ocean health for 220 coastal countries and territories and has been conducted yearly since 2012.  The Index describes how well we are sustainably managing 10 goals which represent the full suite of benefits that people want and need from the ocean.  These goals include: artisanal fishing opportunity, biodiversity, carbon storage, clean waters, coastal livelihoods and economies, coastal protection, food provision, natural products, sense of place, and tourism and recreation.  Each goal is given a score ranging from 0 to 100, and the full suite of goal scores are then averaged to obtain an overall index score for each region.  Please see http://ohi-science.org/ for additional resources and information.
+
+Keywords: OHI, index, ocean 
+
+#### People
+OHI team (including the OHI Fellows)
+Contacts: If in doubt, put Benjamin Halpern
+
+#### Dates 
+First data is 2012.  The later date is the year of the assessment.
+
+#### Locations
+Short geographic description: Global country and territorial EEZ regions (N=220)
+
+Northwest coordinates: 90 -180
+Southeast coordinates: -90 180 
+
+#### Taxa
+NA
+
+#### Methods
+Step 1: See Methods.html file
+
+#### Add Files
+Please use your judgment, but we included the following files in the global 2018 assessment:
+
+* scores.csv: scores file that is created secondarily to include region names and expanded goal names. 
+* Methods.html: methods used to calculate the global OHI scores (this is created in the global_supplement folder in the ohi-global repository).
+* Global_OHI_Results: Figures and tables of global results.  This is currently an informal document, but I would like to improve this in future years.  
+* Zip files of the 3 repositories used to calculate the global OHI assessment: ohiprep, ohi-global, and ohicore.  These files are downloaded from the "release" version of repository (this assumes you have already created the release).  You navigate to the release by first going to the repository of interest and selecting "releases": 
+
+<br>
+![](images/release_navigate.png)
+
+<br>
+<br>
+Then download the .zip option: 
+<br>
+![](images/release_download.png)
+<br>
+<br>
+
+Once all the information has been entered and the files uploaded to the KNB site you can obtain a link for your data.  Navigate to "My data sets" and select the one you are working on from the list and copy the web address.  Create an issue and provide the link so anyone who wants to review the information can do so.  You can easily edit everything at this point! NOTE: At this point the data does not have an official DOI.  
+
+![](images/KNB_link_to_data.png)
+
+Once everyone is satisfied with the content, you can officially "Publish with DOI":
+
+![](images/KNB_publishDOI.png)
+
+
+<br>
+The data now officially has a DOI, and you can mark this off your list of things to do!
+
