@@ -21,6 +21,8 @@ Review the github::issues and create a list linking to the particular issues tha
 
 Create a new issue that organizes and links to these issues.  This officially marks the start of the OHI assessment!
 
+(This is also a good time to close issues that are completed or no longer relevant)
+
 <br>
 <br>
 
@@ -123,3 +125,46 @@ git push -f origin gh-pages
 <br>
 <br>
 9. You are done....go have a cup of tea!
+
+
+### ohi-global
+The main files that get updated are:
+ 
+* eez/conf/scenario_data_years.csv
+* eez/calculate_scores.R
+
+#### scenario_data_years.csv
+For each data layer, the scenario_data_years.csv associates the year the source data was collected or reported  with the OHI assessment year.  The data looks like this:
+
+![](images/scenario_data_years.png)
+
+In this case, the data layer for ao_access (access to artisanal fishing opportunities data used to calculate the score for the artisanal opportunities goal) goes from 2008 to the most current assessment year (not shown).  The first OHI global assessment was in 2012 but the data goes to 2008 because five years of data are typically required to calculate trend.  In this case, the 2012 trend was calculated using data from 2008 to 2012.  The data year is 2013 for all assessment years because these particular data have never been updated.  
+
+There is a helper script (eez_layers_meta_data/new_year_prep.R) that updates this file when embarking on a new assessment year.  This script adds an additional assessment year to the eez/conf/scenario_data_years.csv.  The data year is the same as the previous assessment year.  As each data layer is added to update scores, the data year must be manually updated directly within the eez/conf/scenario_data_years.csv.
+
+![](images/update_script_scenario_data_years.png)
+
+
+#### calculate_all.R
+The calculate_all.R script, located in the eez folder, is the main script used to calculate scores.  This script creates objects used by ohicore functions, calls ohicore functions that calculate scores, and includes code to check results.  
+
+This script needs to be updated for a new assessment year.  Specfically, links to the ohiprep repository (step 2) and the most recent assessment year (step 3) must be updated.
+
+Once this script is updated, it is critical to walk through the entire script to make sure all the steps are working and there are no changes to the previous year's scores.  Once the scores are generated, it is important to run the score_check function (step 10).  For the scenario_year argument, be sure to provide the year of the most recent completed assessment:
+
+![](images/data_check_code.png)
+
+Once, this is run, check the html file that is created.  This file will be in the eez/score_check folder with the name provided in the function (in the above example file_name = "check_2019_assess") with the date it was generated. Ideally, this will be a very boring plot comprised of a series of yellow bars, indicating that nothing changed.  Sadly, you may actually see something like this:
+
+![](images/data_check_plot.png)
+
+At first glance, the changes to mariculture (and the corresponding food provision goal) and natural products and tourism is worrisome.  If there have been no changes to models or data, these should be the same.  However, I am somewhat reassured that all the changes are fairly small (<1 point change in score).  Regardless, these changes must be explained to convince ourselves that nothing is wrong.
+
+In the Git window, I notice that there were some changes to some reference point files.  Further exploration reveals that adding an additional year changed the reference points of the mariculture and tourism and recreation goals.  This change is fine because the reference points are calculated using all years of data.  The small natural product goal changed for the similar reasons.
+
+![](images/change_in_ref_points.png)
+
+I have now convinced myself that all is well.
+
+The final step of this process is to delete the eez/data_check folder.  This will be created again at the start of the new assessment!  Even though this folder is deleted, the files are preserved in the Git history.  We don't really want this, because these files will not be useful in the future and they are fairly large.  This makes the ohi-global more bulky than it needs to be.  Eventually, we will want to figure out how to delete these large files from Git history.  But I wouldn't bother until it becomes a problem (i.e., when the ohi-global repository starts taking a crazy long time to clone locally).
+
