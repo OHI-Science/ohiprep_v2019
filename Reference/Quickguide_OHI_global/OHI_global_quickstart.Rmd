@@ -150,7 +150,11 @@ The calculate_all.R script, located in the eez folder, is the main script used t
 
 This script needs to be updated for a new assessment year.  Specfically, links to the ohiprep repository (step 2) and the most recent assessment year (step 3) must be updated.
 
-Once this script is updated, it is critical to walk through the entire script to make sure all the steps are working and there are no changes to the previous year's scores.  Once the scores are generated, it is important to run the score_check function (step 10).  For the scenario_year argument, be sure to provide the year of the most recent completed assessment:
+Once this script is updated, it is critical to walk through the entire script to make sure all the steps are working and there are no changes to the previous year's scores.  The ```ohicore::CheckLayers``` function will likely generate some warnings.  The following warnings are expected and do not indicate a problem:
+
+![](images/CheckLayers_errors.png)
+
+Once the scores are generated, it is important to run the score_check function (step 10).  For the scenario_year argument, be sure to provide the year of the most recent completed assessment:
 
 ![](images/data_check_code.png)
 
