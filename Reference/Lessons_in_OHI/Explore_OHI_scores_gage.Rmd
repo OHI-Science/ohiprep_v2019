@@ -110,8 +110,8 @@ index_df <- scores %>%
 ### Dimension explore
 
 *Question* There are 6 dimensions reported in this dataset (future, pressures, resilience, score, status, and trend).  When I look at the number of records in each of these categories, I notice that there are more "score" values reported than "status" values (see working space below). Given that scores are calculated using status, it seems like these should have the same number of records. Can you figure out what is going on here. Is something going wrong?  
-
-*Answer* Write your answer here!
+ 
+*Answer* It looks like the "Index" goal is influencing the number of "score" values. There are values in any of the other dimensions for goal "Index". 
 
 ```{r, include=FALSE}
 ## Working space
@@ -120,12 +120,14 @@ unique(scores$dimension)
 table(scores$dimension)
 
 table(scores$goal)
-table(scores$goal, scores$dimension)
+table(scores$goal, scores$dimension)  #index is influencing. There are no status values for Index. 
 
 # ok...but why are the different values for pressures/resilience/trend and future?
 # addition of region 0!
 ao <- filter(scores, goal=="AO")
 table(scores$region_id, scores$dimension)
+
+# all of these are the same except for region 0. 
 ```
 
 
@@ -135,7 +137,7 @@ table(scores$region_id, scores$dimension)
 
 *Hint* Include only dimension = score, and year = 2018, and cut region_id = 0.
 
-*Answer* Write your answer here!
+*Answer* Natural Products (NP) has the most NA values for 2018 with 83. Carbon Storage (CS) has the second most NA values, with 73. AO, BD, CW, FIS, ICO, Index, LSP, SP, and SPP all have 1 NA values for 2018. The reason for NP having so many NA values could be tha t some regions do not harvest any of the 6 natural product categories included in the score calculation. The goals with the most NA values could be harder to measure than the goals with the least NA values. 
 
 ```{r, include=FALSE}
 ## Working space
@@ -143,7 +145,11 @@ table(scores$region_id, scores$dimension)
 na_data <- scores %>% 
   filter(dimension == "score") %>%
   filter(region_id != 0) %>%
-  filter(year == 2018)
+  filter(year == 2018) %>%
+  group_by(goal) %>%
+  summarise(n = length(score[is.na(score)]))
+
+
 
 ```
 
