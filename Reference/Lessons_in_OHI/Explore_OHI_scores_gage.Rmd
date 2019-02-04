@@ -90,12 +90,19 @@ df_0 <- scores %>%
 
 *Hint 1* Review the methods doc here: https://raw.githack.com/OHI-Science/ohi-global/published/global2018/Results/Supplement_Results.html
 
-*Answer* Write your answer here!
+*Answer* The United States region_id is 163. It includes sub goals. 2 Letters are full goals, while 3 letters are sub goals. Not sure what goal == "Index" is. 
 
 ```{r, include=FALSE}
 ## Working space
 
 unique(scores$goal)
+
+#what is index?
+
+index_df <- scores %>%
+  filter(goal == "Index")
+#what is the index 
+
 
 ```
 
