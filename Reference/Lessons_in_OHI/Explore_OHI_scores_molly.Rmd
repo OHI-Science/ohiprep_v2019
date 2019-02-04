@@ -9,6 +9,7 @@ library(tidyverse)
 library(dplyr)
 library(tidyr)
 
+filter <- dplyr::filter
 ```
 
 
@@ -45,7 +46,7 @@ https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csv
 ```{r, include=FALSE}
 ## Working space
 
-
+# Before even starting, we needed to make sure we were invited to the repository and that we were logged into Github through the RStudio server. My username is "mollywillams", not mollywilliams >.< Now that I'm able 
 
 scores <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csv")
 
@@ -59,12 +60,25 @@ scores <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/dra
 
 *Hint 2* Which region has all NA values for scores?
 
-*Answer* Write your answer here!
+*Answer* Antarctica (Region 213) does not have score data associated with it, and there are data for region_id=0, which is not included in the list of regions linked above (maybe this is the average?)
 
 ```{r, include=FALSE}
 ## Working space
 
 length(unique(scores$region_id))
+
+# Create a data frame that just filters the regions that have NA in the score category
+scores_na <- scores %>%
+  filter(is.na(score)) %>% 
+  group_by(region_id) %>% 
+  tally()
+
+# When organized by "n" (the number of total NA observations for that region), the data frame shows that Region 213 had 880 NA values, almost twice as high as any other region. This led us to believe that this was the region with all NA values for scores. Filtering just this region confirmed this guess:
+
+all_na <- scores %>% 
+  filter(region_id == "213")
+
+# Region 213 is Antarctica, and is not included in the assessment. 
 
 ```
 
