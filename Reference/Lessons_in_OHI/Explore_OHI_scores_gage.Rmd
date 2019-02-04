@@ -56,13 +56,30 @@ scores <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/dra
 
 *Hint 2* Which region has all NA values for scores?
 
-*Answer* Write your answer here!
+*Answer* region_id 213 has all NA values for its score. This is because region_id 213 is Antarctica which is not included in the global assessment. region_id 0 is not in the official region list. It has scores for every observation. Is this the global averages? 
 
 ```{r, include=FALSE}
 ## Working space
 
 length(unique(scores$region_id))
 
+
+na_df <- scores %>% 
+  group_by(region_id) %>%
+  filter(is.na(score)) %>%
+  summarize(n = length(score))
+##^^ Wrong bc it eliminated all region ids without any NAs 
+
+na_df1 <- scores %>% 
+  group_by(region_id) %>%
+  summarize(n = length(score[is.na(score)]))
+## ^^ this gives all region ids with NAs counted. i.e. region 0 
+
+df_213 <- scores %>%
+  filter(region_id == 213)  # this one is all NAs
+
+df_0 <- scores %>%
+  filter(region_id == 0) #this one has a score for everything
 ```
 
 *Question* Which region id corresponds to the United States?
