@@ -55,7 +55,7 @@ scores <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/dra
 *Hint 1* Here is a link to the official region list: https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv
 
 *Hint 2* Which region has all NA values for scores?
-
+ 
 *Answer* region_id 213 has all NA values for its score. This is because region_id 213 is Antarctica which is not included in the global assessment. region_id 0 is not in the official region list. It has scores for every observation. Is this the global averages? 
 
 ```{r, include=FALSE}
