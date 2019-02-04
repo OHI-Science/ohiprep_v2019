@@ -5,6 +5,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 ## loading packages
+library(tidyverse)
 library(dplyr)
 library(tidyr)
 
@@ -43,6 +44,8 @@ https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csv
 
 ```{r, include=FALSE}
 ## Working space
+
+
 
 scores <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csv")
 
