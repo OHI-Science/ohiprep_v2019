@@ -63,7 +63,7 @@ length(unique(scores$region_id))
 
 ```
 
-*Question* Which region id corresponds to the United State?
+*Question* Which region id corresponds to the United States?
 
 ### Goal explore
 
