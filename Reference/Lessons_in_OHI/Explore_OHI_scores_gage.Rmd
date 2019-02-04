@@ -30,7 +30,7 @@ You will work together to check answers, discuss code, troubleshoot.  But write 
 
 You can also ask us any questions along the way (slack or issues)!
 
-Good luck!
+Good luck! 
 
 ## Questions
 
