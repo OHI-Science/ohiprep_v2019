@@ -1,0 +1,180 @@
+---
+title: "Learning about OHI scores"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+## loading packages
+library(dplyr)
+library(tidyr)
+
+```
+
+
+## OH NO!
+While you are working at your computer at NCEAS, you receive a frantic call from someone working on an OHI project:
+
+THEY NEED HELP!
+
+"No problem" you say, "I'll get Julie or Melanie"...but they are no where to be found!
+
+"Hold on, I'll get Jamie or Casey or Courtney"...but they are also gone.
+
+It is clearly going to be up to you to save the day!!
+
+## You've got this!
+
+Please help them answer the following questions.  You will work from this document, using the code chunks as a work space to work explore the data and obtain your answers. Do NOT bother keeping the code chunks neat and organized, we want to see your work process in all its messy glory.  However, I DO recommend including plenty of comments, mostly because I think this helps organize the mental process.   
+
+We want each of you to write your own code, but we would like you to work together to check answers and discuss code, etc.
+
+Good luck!
+
+## Questions
+
+### Getting the data
+
+*Goal* Find and read the latest OHI global data into the R working space (call the data object "scores").
+
+*Hint* Here is a link to the data: 
+https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csvhttps://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csv
+
+```{r, include=FALSE}
+## Working space
+
+scores <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csv")
+
+```
+
+### Region explore
+
+*Goal* Why are there N=222 regions (see code below)...aren't there supposed to be 220?
+
+*Hint 1* Here is a link to the official region list: https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv
+
+*Hint 2* Which region has all NA values for scores?
+
+*Explanation* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+length(unique(scores$region_id))
+
+```
+
+*Question* Which region id corresponds to the United State?
+
+### Goal explore
+
+*Goal* When I look at the number of goals, N=19 show up....I thought there were supposed to be 10 goals!!! Can you explain what all these are? Also, why do some of the goal abbreviations have 2 letters and others 3 letters?  
+
+*Hint 1* Review the methods doc here: https://raw.githack.com/OHI-Science/ohi-global/published/global2018/Results/Supplement_Results.html
+
+*Explanation* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+unique(scores$goal)
+
+```
+
+
+### Dimension explore
+
+*Goal* There are 6 dimensions reported in this dataset (future, pressures, resilience, score, status, and trend).  When I look at the number of records in each of these categories, I notice that there are more "score" values reported than "status" values (see working space below).  Given that scores are calculated using status, it seems like these should have the same number of records.  Can you figure out what is going on here...and does this suggest something is wrong?  
+
+*Explanation* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+unique(scores$dimension)
+table(scores$dimension)
+
+table(scores$goal)
+table(scores$goal, scores$dimension)
+
+# ok...but why are the different values for pressures/resilience/trend and future?
+# addition of region 0!
+ao <- filter(scores, goal=="AO")
+table(scores$region_id, scores$dimension)
+```
+
+
+### Missing data
+
+*Goal* Figure out which goals/subgoals have the most NA values for scores in 2018.  Which ones have the least?  How many missing values do they have?
+
+*Hint* Include only dimension = score, and year = 2018, and cut region_id = 0.
+
+*Explanation* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+na_data <- scores %>% 
+  filter(dimension == "score") %>%
+  filter(region_id != 0) %>%
+  filter(year == 2018)
+
+na_data %>%
+  group_by(goal) %>%
+  summarize(total_NA = sum(is.na(score))) %>%
+  arrange(total_NA)
+
+```
+
+*Question* Artisanal opportunities has no missing data (except for region 213, which is Antarctica).  Look over the description of the artisanal opportunities goal (http://ohi-science.org/ohi-global/goals#artisanal_fishing_opportunity).  Based on this description, in your opinion, should uninhabited islands be given an NA value? 
+
+
+### Metadata
+
+*Goal* Based on your data exploration and other resources, provide some metadata that describes each variable.  Write it so it would be useful to you in the future as you are looking through these data.
+
+Write it in the following table.  NOTE: Knit the document to see if the table is formatting correctly.
+
+Variable   | Description                  | Values
+---------- | ---------------------------- | ------------------------------
+goal       |                              |
+dimension  |                              | 
+region_id  |                              | 
+score      |                              |          
+year       |  Scenario year               | 2012 to 2019 
+
+
+```{r, include=FALSE}
+## Working space
+
+summary(scores)
+
+```
+
+
+### Plot
+
+*Goal* Create a scatterplot that compares 2012 and 2018 *scores* for each region for the artisanal opportunities goal. Based on this, do scores for the artisanal opportunities goal appear to have increased or decreased over time? 
+
+*Answer* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+
+
+```
+
+### Relationship between dimensions
+
+*Goal* Explore the data (and/or other information) to determine how score, status, and future dimensions are related to one another? 
+*Answer* Write your answer here!
+
+
+```{r, include=FALSE}
+## Working space
+
+
+
+```
+

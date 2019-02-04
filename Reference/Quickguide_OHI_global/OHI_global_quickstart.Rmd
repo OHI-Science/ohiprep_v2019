@@ -82,10 +82,10 @@ If you are not in the correct working directory use the `cd` command to navigate
 4. Navigate to the new repository on Github.com, https://github.com/OHI-Science/ohiprep_v20??.git and make sure the folders/files are there.  Check that the default branch is "gh-pages" (and not the "master" branch).
 
 <br>
-<br>
+
 5. Clone the new repo to your local system (instructions in step 1)
 
-<br>
+
 <br>
 6. Delete the commit history of the new repository.  This gives us a clean slate to work from and keeps the repository from getting quite as big. I follow the general instructions from [here](https://gist.github.com/heiswayi/350e2afda8cece810c0f6116dadbe651).  Make sure you are in the working directory of the new repository, and in the shell type the following:
 
@@ -123,7 +123,7 @@ git push -f origin gh-pages
 8. Update README.md and delete unnecessary .Rproj files with the wrong year, commit, push.
 
 <br>
-<br>
+
 9. You are done....go have a cup of tea!
 
 
