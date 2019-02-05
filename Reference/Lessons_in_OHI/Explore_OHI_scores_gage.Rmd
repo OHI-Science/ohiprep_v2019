@@ -7,6 +7,7 @@ output: html_document
 ## loading packages
 library(dplyr)
 library(tidyr)
+library(tidyverse)
 
 ```
 
@@ -147,7 +148,7 @@ na_data <- scores %>%
   filter(region_id != 0) %>%
   filter(year == 2018) %>%
   group_by(goal) %>%
-  summarise(n = length(score[is.na(score)]))
+  summarise(n = length(score[is.na(score)])) #count all of the NA values 
 
 
 
@@ -155,7 +156,7 @@ na_data <- scores %>%
 
 *Question* Artisanal opportunities has no missing data (except for region 213, which is Antarctica).  Look over the description of the artisanal opportunities goal (http://ohi-science.org/ohi-global/goals#artisanal_fishing_opportunity).  Based on this description, in your opinion, should uninhabited islands be given an NA value? 
 
-*Answer* Write your answer here!
+*Answer* Yes, uninhabited islands should be given an NA value. This goal is calculated using variables like per capita gross domestic product and average annual income. Since these islands are uninhabited, there can be no data to input for them for Artisanal Opportunities. 
 
 ### Scores
 
@@ -163,11 +164,13 @@ na_data <- scores %>%
 
 *Hint* Isolate the future, status, and score values for one region and one goal and see if you can identify a pattern.
 
-*Answer* Write your answer here!
+*Answer* Future and status are averaged to get a score, so the score would be 85. 
 
 ```{r, include=FALSE}
 ## Working space
 
+df_future_status <- scores %>%
+  filter(dimension %in% c("future", "status", "score"), region_id == 131) #filter for dimension in future, status, score and region_id = mexico. Looks like the future and status scores are just averaged.  
 
 ```
 
@@ -180,10 +183,10 @@ Write it in the following table.  NOTE: Knit the document to see if the table is
 
 Variable   | Description                  | Values
 ---------- | ---------------------------- | ------------------------------
-goal       |                              |
-dimension  |                              | 
-region_id  |                              | 
-score      |                              |          
+goal       | The category of ocean-derived benefit. Abbreviations with 2 letters are goals, while abbreviations with 3 letters are subgoals, which are used to calculate the goals.                              | AO, BD, CP, CS, CW, ECO, FIS, FP, HAB, ICO, Index, LE, LIV, LSP, MAR, NP, SP, SPP, TR
+dimension  | Variables influencing goal calculation.                             | future, pressures, resilience, score, status, trend
+region_id  | Numerical value which identifies the region or country in the assessment. | 0 to 250 
+score      | The OHI score associated with an observation.                             |    0 to 100      
 year       |  Scenario year               | 2012 to 2019 
 
 
@@ -191,7 +194,8 @@ year       |  Scenario year               | 2012 to 2019
 ## Working space
 
 summary(scores)
-
+unique(scores$goal) # get all goal values
+unique(scores$dimension)
 ```
 
 
@@ -199,12 +203,59 @@ summary(scores)
 
 *Project* Create a scatterplot that compares 2012 and 2018 *scores* for each region for the artisanal opportunities goal. Based on this, do scores for the artisanal opportunities goal appear to have increased or decreased over time? 
 
-*Answer* Write your answer here!
+*Answer* 
 
 ```{r, include=FALSE}
 ## Working space
 
+scores_12_18 <- scores %>%
+  filter(year %in% c(2012, 2018), goal == "AO", dimension == "score")
 
+ggplot(scores_12_18, aes(x = region_id, y = score)) +
+  geom_point(aes(color = factor(year))) #<< this one seems to be the most inciteful graph among the three. 
 
+ggplot(scores_12_18, aes(x = year, y = score)) +
+  geom_point(aes(color = factor(region_id))) + 
+  theme(legend.position = "none") #doesnt tell us anything at all 
+
+scores_2012 <- scores %>%
+  filter(year == 2012, goal == "AO", dimension == "score")
+
+scores_2018 <- scores %>%
+  filter(year == 2018, goal == "AO", dimension == "score")
+
+plot(scores_2012$score, scores_2018$score) #doesnt tell us much 
+
+# make two new columns for the scores corresponding to 2012 and 2018
+new_scores_df <- scores_12_18 %>%
+  spread(year, score) %>%
+  mutate(difference = `2018` - `2012`)  
+
+ggplot(new_scores_df, aes(x = `2012`, y = `2018`, size = difference)) +
+  geom_point() +
+  theme()
 ```
 
+```{r, echo = FALSE, warning = FALSE}
+ggplot(new_scores_df, aes(x = region_id, y = difference)) +
+  geom_point() +
+  geom_line() +
+  geom_hline(yintercept = 0, color = "red")+
+  theme_bw() +
+  coord_flip() + 
+  labs(y = "Score Difference between 2018 and 2012", x = "Region")
+
+ggplot(new_scores_df, aes(x = region_id, y = difference, color = case_when(
+  difference > 0 ~ "green",
+  difference < 0 ~ "red",
+  difference == 0 ~ "blue"
+))) +
+  geom_point() +
+  geom_hline(yintercept = 0, color = "black")+
+  theme_bw() +
+  coord_flip() + 
+  labs(y = "Score Difference between 2018 and 2012", x = "Region") +
+  theme(legend.position = "none")
+```
+
+**Figure 1.** The majority of the scores in 2018 are greater than the scores in 2012 for each region. This is seen in the plot, which shows the difference between the scores for each score. The two charts above display the same information. 
