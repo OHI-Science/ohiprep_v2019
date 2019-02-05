@@ -35,6 +35,7 @@ Good luck!
 
 ## Questions
 
+## {.tabset .tabset-fade .tabset-pills}
 ### Getting the data
 
 *Goal* Read the latest OHI global data into the R working space (call the data object "scores").
