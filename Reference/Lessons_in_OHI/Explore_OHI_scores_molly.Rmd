@@ -90,12 +90,13 @@ all_na <- scores %>%
 
 *Hint 1* Review the methods doc here: https://raw.githack.com/OHI-Science/ohi-global/published/global2018/Results/Supplement_Results.html
 
-*Answer* Write your answer here!
+*Answer* The US is Region ID 163. The 10 main goals have two-letter abbreviations, and the 8 subgoals (not every goal has a subgoal) have three-letter abbreviations. Each regigon also has an associated "Index" score.
 
 ```{r, include=FALSE}
 ## Working space
 
-unique(scores$goal)
+unique(scores$goal) # N = 19
+
 
 ```
 
@@ -104,7 +105,7 @@ unique(scores$goal)
 
 *Question* There are 6 dimensions reported in this dataset (future, pressures, resilience, score, status, and trend).  When I look at the number of records in each of these categories, I notice that there are more "score" values reported than "status" values (see working space below). Given that scores are calculated using status, it seems like these should have the same number of records. Can you figure out what is going on here. Is something going wrong?  
 
-*Answer* Write your answer here!
+*Answer* There are more score values than status values, because of the "Index" scores. The Index score for each region does not have a corresponding status value, only a score. This makes there appear to be more score values. 
 
 ```{r, include=FALSE}
 ## Working space
@@ -119,6 +120,8 @@ table(scores$goal, scores$dimension)
 # addition of region 0!
 ao <- filter(scores, goal=="AO")
 table(scores$region_id, scores$dimension)
+
+# All of these are the same except for region zero - which is the average for future and score dimensions across regions (?)
 ```
 
 
@@ -128,7 +131,7 @@ table(scores$region_id, scores$dimension)
 
 *Hint* Include only dimension = score, and year = 2018, and cut region_id = 0.
 
-*Answer* Write your answer here!
+*Answer* With 83, the natural products goal had the most NA values in the 2018 scores. The following goals/subgoals all had just one NA value: artisanal fishing, biodiversity, clean waters, fishing, iconic species (sense of place subgoal), lasting special places (sense of place subgoals), and species condition (biodiversity subgoal). Along with natural products, carbon storage and coastal protection had high numbers of NA values. These metrics may be difficult to measure, and analogs may not readily exist for gap-filling the data. 
 
 ```{r, include=FALSE}
 ## Working space
@@ -136,7 +139,11 @@ table(scores$region_id, scores$dimension)
 na_data <- scores %>% 
   filter(dimension == "score") %>%
   filter(region_id != 0) %>%
-  filter(year == 2018)
+  filter(year == 2018) %>% 
+  filter(is.na(score)) %>% 
+  group_by(goal) %>% 
+  tally()
+  
 
 ```
 
