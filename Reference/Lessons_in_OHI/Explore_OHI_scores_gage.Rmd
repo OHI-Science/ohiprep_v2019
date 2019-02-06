@@ -191,6 +191,33 @@ score      | The OHI score associated with an observation.                      
 year       |  Scenario year               | 2012 to 2019 
 
 
+Abbreviation   | Name                  |    Type 
+---------- | ----------------------------| ---------------------------- 
+ AO        |  Artisanal Fishing Opportunity    | Goal
+ BD        |          Biodiversity              | Goal
+  CP       |           Coastal Protection                       |  Goal
+  CS       |    Carbon Storage                          |     Goal      
+   CW      |       Clean Waters                      |   Goal 
+ ECO       |         Economies                       | Subgoal
+ FIS       |           Fisheries                       | Subgoal
+  FP       |          Food Provision                        |  Goal
+  HAB      |       Habitat                       |  Subgoal      
+   ICO     |     Iconic Species                        |   Goal 
+ Index     |      Index                   | Global Average
+ LE        |          Coastal Livelihoods and Economies                        | Goal
+    LIV    |       Livelihoods                           |  Subgoal
+  LSP      |      Lasting Special Places                        |  Subgoal      
+   MAR     |     Mariculture                        |   Subgoal
+    NP     |        Natural Products                          | Goal
+    SP     |        Sense of Place                          |  Goal
+  SPP      |        Species Condition                      |  Subgoal      
+   TR      |       Tourism and Recreation                      |   Goal
+   
+   
+   
+   
+   
+   
 ```{r, include=FALSE}
 ## Working space
 
@@ -237,6 +264,8 @@ ggplot(new_scores_df, aes(x = `2012`, y = `2018`, size = difference)) +
   theme()
 ```
 
+
+
 ```{r, echo = FALSE, warning = FALSE}
 ggplot(new_scores_df, aes(x = region_id, y = difference)) +
   geom_point() +
@@ -247,16 +276,15 @@ ggplot(new_scores_df, aes(x = region_id, y = difference)) +
   labs(y = "Score Difference between 2018 and 2012", x = "Region")
 
 ggplot(new_scores_df, aes(x = region_id, y = difference, color = case_when(
-  difference > 0 ~ "green",
-  difference < 0 ~ "red",
-  difference == 0 ~ "blue"
+  difference > 0 ~ "red",
+  difference < 0 ~ "blue"
 ))) +
   geom_point() +
   geom_hline(yintercept = 0, color = "black")+
   theme_bw() +
   coord_flip() + 
   labs(y = "Score Difference between 2018 and 2012", x = "Region") +
-  theme(legend.position = "none")
+  theme(legend.position = "none") 
 ```
 
 **Figure 1.** The majority of the scores in 2018 are greater than the scores in 2012 for each region. This is seen in the plot, which shows the difference between the scores for each score. The two charts above display the same information. 
