@@ -5,9 +5,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 ## loading packages
+library(tidyverse)
 library(dplyr)
 library(tidyr)
 
+filter <- dplyr::filter
 ```
 
 
@@ -44,6 +46,8 @@ https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csv
 ```{r, include=FALSE}
 ## Working space
 
+# Before even starting, we needed to make sure we were invited to the repository and that we were logged into Github through the RStudio server. My username is "mollywillams", not mollywilliams >.<
+
 scores <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csv")
 
 ```
@@ -56,12 +60,25 @@ scores <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/dra
 
 *Hint 2* Which region has all NA values for scores?
 
-*Answer* Write your answer here!
+*Answer* Antarctica (Region 213) does not have score data associated with it, and there are data for region_id=0, which is not included in the list of regions linked above (maybe this is the average?)
 
 ```{r, include=FALSE}
 ## Working space
 
 length(unique(scores$region_id))
+
+# Create a data frame that just filters the regions that have NA in the score category
+scores_na <- scores %>%
+  filter(is.na(score)) %>% 
+  group_by(region_id) %>% 
+  tally()
+
+# When organized by "n" (the number of total NA observations for that region), the data frame shows that Region 213 had 880 NA values, almost twice as high as any other region. This led us to believe that this was the region with all NA values for scores. Filtering just this region confirmed this guess:
+
+all_na <- scores %>% 
+  filter(region_id == "213")
+
+# Region 213 is Antarctica, and is not included in the assessment. 
 
 ```
 
@@ -73,12 +90,13 @@ length(unique(scores$region_id))
 
 *Hint 1* Review the methods doc here: https://raw.githack.com/OHI-Science/ohi-global/published/global2018/Results/Supplement_Results.html
 
-*Answer* Write your answer here!
+*Answer* The US is Region ID 163. The 10 main goals have two-letter abbreviations, and the 8 subgoals (not every goal has a subgoal) have three-letter abbreviations. Each regigon also has an associated "Index" score.
 
 ```{r, include=FALSE}
 ## Working space
 
-unique(scores$goal)
+unique(scores$goal) # N = 19
+
 
 ```
 
@@ -87,7 +105,7 @@ unique(scores$goal)
 
 *Question* There are 6 dimensions reported in this dataset (future, pressures, resilience, score, status, and trend).  When I look at the number of records in each of these categories, I notice that there are more "score" values reported than "status" values (see working space below). Given that scores are calculated using status, it seems like these should have the same number of records. Can you figure out what is going on here. Is something going wrong?  
 
-*Answer* Write your answer here!
+*Answer* There are more score values than status values, because of the "Index" scores. The Index score for each region does not have a corresponding status value, only a score. This makes there appear to be more score values. 
 
 ```{r, include=FALSE}
 ## Working space
@@ -102,6 +120,8 @@ table(scores$goal, scores$dimension)
 # addition of region 0!
 ao <- filter(scores, goal=="AO")
 table(scores$region_id, scores$dimension)
+
+# All of these are the same except for region zero - which is the average for future and score dimensions across regions (?)
 ```
 
 
@@ -111,7 +131,7 @@ table(scores$region_id, scores$dimension)
 
 *Hint* Include only dimension = score, and year = 2018, and cut region_id = 0.
 
-*Answer* Write your answer here!
+*Answer* With 83, the natural products goal had the most NA values in the 2018 scores. The following goals/subgoals all had just one NA value: artisanal fishing, biodiversity, clean waters, fishing, iconic species (sense of place subgoal), lasting special places (sense of place subgoals), and species condition (biodiversity subgoal). Along with natural products, carbon storage and coastal protection had high numbers of NA values. These metrics may be difficult to measure, and analogs may not readily exist for gap-filling the data. 
 
 ```{r, include=FALSE}
 ## Working space
@@ -119,24 +139,58 @@ table(scores$region_id, scores$dimension)
 na_data <- scores %>% 
   filter(dimension == "score") %>%
   filter(region_id != 0) %>%
-  filter(year == 2018)
+  filter(year == 2018) %>%  # added the following commands to see NA counts by goal:
+  filter(is.na(score)) %>% 
+  group_by(goal) %>% 
+  tally()
+  
 
 ```
 
 *Question* Artisanal opportunities has no missing data (except for region 213, which is Antarctica).  Look over the description of the artisanal opportunities goal (http://ohi-science.org/ohi-global/goals#artisanal_fishing_opportunity).  Based on this description, in your opinion, should uninhabited islands be given an NA value? 
 
-*Answer* Write your answer here!
+*Answer* Yes - the score directly assesses the needs of the inhabitants, so if there are no inhabitants, the score should be NA. Further, the values that are incorporated into this score are not relevant for an uninhabited region (economic need, social progress, governance, etc)
 
 ### Scores
 
 *Question* If we have a goal with a future status of 80 and status of 90...what is the score?  
 
-*Hint* Isolate the future, status, and score values for one region and one goal and see if you can identify a pattern.
+*Hint* Isolate the future, status, and score values for one region and one goal and see if you can identify a pattern. *see comments in code chunk below!*
 
-*Answer* Write your answer here!
-
+*Answer* Current and future status are averaged to get the score, so a goal with a future status of 80 and a status of 90 would have a score of 85.
 ```{r, include=FALSE}
 ## Working space
+
+
+iran_future <- scores %>% 
+  filter(region_id == 191) %>% 
+  filter(dimension == "future")
+
+ggplot(iran_future, aes(x = year, y = score)) +
+  geom_line(aes(color = goal)) +
+  theme_minimal()
+
+# For Iran (region 191) the scores under the future dimension have remained consistent over time for most goals. Natural products declined sharply between 2016 and 2017 (from 100 to <25), while scores for mariculture have risen gradually (from ~10 to . Tourism and recreation also declined beween 2017 and 2018. These trends are also visible when looking at scores over time: 
+
+
+iran_status <- scores %>% 
+  filter(region_id == 191) %>% 
+  filter(dimension == "status")
+
+ggplot(iran_status, aes(x = year, y = score)) +
+  geom_line(aes(color = goal)) +
+  theme_minimal()
+
+# Same trends are visible when looking at the score dimension over time (makes sense): 
+
+iran_score <- scores %>% 
+  filter(region_id == 191) %>% 
+  filter(dimension == "score")
+
+ggplot(iran_score, aes(x = year, y = score)) +
+  geom_line(aes(color = goal)) +
+  theme_minimal()
+
 
 
 ```
@@ -150,11 +204,33 @@ Write it in the following table.  NOTE: Knit the document to see if the table is
 
 Variable   | Description                  | Values
 ---------- | ---------------------------- | ------------------------------
-goal       |                              |
-dimension  |                              | 
-region_id  |                              | 
-score      |                              |          
+goal       | Category of ocean-derived benefit  | AO, BD, CP, CS, CW, ECO, FIS, FP, HAB, ICO, LE, LIV, LSP, MAR, NP, SP, SPP, TR (see table below for abbreviation classification)
+dimension  |  Variables influencing goal calculation  | future, pressures, resilience, score, status, trend
+region_id  |  Numerical value assigned to each country included in the assessment          | 1-250, with 30 IDs eliminated throughout for disputed and landlocked regions
+score      |  Final value for each region, averaged between current and future status | 0-100         
 year       |  Scenario year               | 2012 to 2019 
+
+
+Goal/Subgoal   | Abbreviation                  | Classification
+---------- | ---------------------------- | ------------------------------
+Artisanal Fishing Opportunities | AO  | Goal
+Biodiversity    | BD   | Goal 
+Carbon storage  | CS | Goal
+Coastal livelihoods and economies | LE | Goa
+Coastal protection    | CP   | Goal 
+Clean waters  | CW | Goal
+Economies    | ECO   | Subgoal, LE 
+Fisheries | FIS | Subgoal, FP
+Food provision | FP | Goal
+Habitat | HAB | Subgoal, BD
+Iconic species | ICO | Subgoal, SP
+Lasting special places | LSP | Subgoal, SP
+Livelihoods | LIV | Subgoal, LE
+Mariculture | MAR | Subgoal, FP
+Natural products | NP | Goal
+Sense of place | SP | Goal
+Species condition | SPP | Subgoal, BD
+Tourism and recreation | TR | Goal
 
 
 ```{r, include=FALSE}
@@ -169,12 +245,37 @@ summary(scores)
 
 *Project* Create a scatterplot that compares 2012 and 2018 *scores* for each region for the artisanal opportunities goal. Based on this, do scores for the artisanal opportunities goal appear to have increased or decreased over time? 
 
-*Answer* Write your answer here!
+*Answer* See plot below:
 
 ```{r, include=FALSE}
 ## Working space
 
+# Create a new dataframe that just has AO scores for 2012 and 2018, reorganized into columnns by year:
+ao_12_18 <- scores %>% 
+  filter(year == "2012" | year == "2018") %>% 
+  filter(goal == "AO") %>% 
+  filter(dimension == "score") %>% 
+  spread(year, score)
+
+# Eliminate unnecessary columns, add new column for score change between years:
+
+ao_12_18_reorg <- ao_12_18 %>%
+  select(region_id, "2012", "2018") %>% 
+  mutate(difference = `2018`-`2012`)
+  
 
 
 ```
+
+
+```{r, echo=FALSE}
+
+ggplot(ao_12_18_reorg, aes(x = difference, y = region_id, color = case_when(difference < 0 ~"green", difference > 0 ~"red"))) +
+  geom_point() +
+  geom_vline(xintercept = 0) + 
+  theme_minimal() +
+  theme(legend.position="none")
+```
+
+Scatter plot showing change in overall OHI score between 2012 and 2018 for all regions. The majority of the values are positive (in red), indicating that most regions experienced a positive change in scores over this time period.
 
