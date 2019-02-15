@@ -10,6 +10,7 @@ There are several steps to beginning a year's assessment.  This guide walks thro
     - ohiprep
     - ohi-global
 
+
 ## Review and organize relevant issues
 Review the github::issues and create a list linking to the particular issues that might be useful in the year to come.  This can include: 
 
@@ -28,7 +29,9 @@ Create a new issue that organizes and links to these issues.  This officially ma
 
 
 ## Prepare the repositories!
-In preparation for the new assessment, you will need to prepare the repositories we use for the global assessment.  For the ohiprep repository, you will actually copy the previous year's assessment into a new repository with an updated name and delete the history.  This helps to keep the size of the repository under control.  For the ohi-global repository, you will update a couple files and perform a couple checks to make sure the scores do not change.
+In preparation for the new assessment, you will need to prepare the repositories we use for the global assessment.  
+
+For the ohiprep repository, you will actually copy the previous year's assessment into a new repository with an updated name and delete the history.  This helps to keep the size of the repository under control.  For the ohi-global repository, you will update a couple files and perform a couple checks to make sure the scores do not change.
 
 ohicore will probably not need any changes.  However, now is a good time to improve warning messages or add functions to improve analysis and visualization.
 
