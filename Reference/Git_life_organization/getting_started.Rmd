@@ -10,7 +10,7 @@ The first step is to sign up for a GitHub account.
 
 Navigate to [Githubs website](https://github.com) and enter your information in the "Sign up for GitHub" area:
 
-![](images/step1.png)
+<img src="images/step1.png" width="600" height="500">
 
 <br>
 
@@ -20,13 +20,13 @@ Go through the remaining steps of the sign up process.
 
 You should be signed into your GitHub account. Navigate to the "Settings" and explore the changes you can make to your account:
 
-![](images/settings.png)
+<img src="images/settings.png" width="600" height="500">
 
 <br>
 
 You should receive an email to verify your address.  If you don't receive the email, you can check the "Emails" tab in your Settings to make sure everything is correct:
 
-![](images/Settings_email.png)
+<img src="images/Settings_email.png" width="600" height="500">
 
 
 
