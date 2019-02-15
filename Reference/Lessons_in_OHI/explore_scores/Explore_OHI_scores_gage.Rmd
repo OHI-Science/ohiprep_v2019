@@ -139,7 +139,7 @@ table(scores$region_id, scores$dimension)
 
 *Hint* Include only dimension = score, and year = 2018, and cut region_id = 0.
 
-*Answer* Natural Products (NP) has the most NA values for 2018 with 83. Carbon Storage (CS) has the second most NA values, with 73. AO, BD, CW, FIS, ICO, Index, LSP, SP, and SPP all have 1 NA values for 2018. The reason for NP having so many NA values could be tha t some regions do not harvest any of the 6 natural product categories included in the score calculation. The goals with the most NA values could be harder to measure than the goals with the least NA values. 
+*Answer* Natural Products (NP) has the most NA values for 2018 with 83. Carbon Storage (CS) has the second most NA values, with 73. AO, BD, CW, FIS, ICO, Index, LSP, SP, and SPP all have 1 NA values for 2018. The reason for NP having so many NA values could be that some regions do not harvest any of the 6 natural product categories included in the score calculation. The goals with the most NA values could be harder to measure than the goals with the least NA values. 
 
 ```{r, include=FALSE}
 ## Working space
@@ -275,16 +275,19 @@ ggplot(new_scores_df, aes(x = region_id, y = difference)) +
   coord_flip() + 
   labs(y = "Score Difference between 2018 and 2012", x = "Region")
 
-ggplot(new_scores_df, aes(x = region_id, y = difference, color = case_when(
+scatter <- ggplot(new_scores_df, aes(x = difference, y = region_id, color = case_when(
   difference > 0 ~ "red",
   difference < 0 ~ "blue"
 ))) +
   geom_point() +
-  geom_hline(yintercept = 0, color = "black")+
+  geom_vline(xintercept = 0) +
   theme_bw() +
-  coord_flip() + 
   labs(y = "Score Difference between 2018 and 2012", x = "Region") +
   theme(legend.position = "none") 
+
+library(plotly)
+
+ggplotly(scatter)
 ```
 
 **Figure 1.** The majority of the scores in 2018 are greater than the scores in 2012 for each region. This is seen in the plot, which shows the difference between the scores for each score. The two charts above display the same information. 
