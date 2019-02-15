@@ -1,6 +1,8 @@
 ---
 title: "Using GitHub to organize our blogpost ideas"
-output: html_document
+output: 
+  html_document:
+    theme: flatly
 ---
 
 We will be using Github's "issues" feature to keep track of our blogpost ideas and coordinate together. 
