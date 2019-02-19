@@ -1,0 +1,118 @@
+---
+title: "OHI_prepare_data"
+output: html_document
+---
+
+All data layers are prepared in the ohiprep_v20?? repository.  
+
+The best workflow is to prepare the layer or layers within a single Rmd script and then update the scores with these layers from the ohi-global repository.  If only one layer is updated at a time it is much easier to identify and track potential errors.
+
+This section will discuss:
+1. File organization of the ohiprep_v20?? repository and the internal server, Mazu.
+2. Preparing data for a new assessment year
+3. A typical data prep script
+4. Gapfilling datasets
+5. Checking data layers
+
+## File organization
+
+### Saving external data
+In almost all cases, OHI data comes from other institutions. We save these data to   
+the NCEAS private server (Mazu) because we do not want to be responsible for serving other people's data.
+
+These data are saved to Mazu: git-annex/globalprep/_raw_data in a folder that is labeled with an abbreviated version of the datasource (Figure 1). The data is saved to a folder describing the year the data was downloaded (e.g., d2015, d2016).  
+
+Figure 1: Location of raw data saved to Mazu.
+
+![](images/_raw_data_org.png)
+
+
+Every raw data folder should have a README.md (keep the caps so it is consistent and easy to see). *Note we are using .md rather than .txt even for READMEs on Mazu. 
+
+Each README should include the following ([template](https://github.com/OHI-Science/ohiprep/blob/master/src/templates/generic_raw_data_README.md)):
+
+* Detailed source information. For example:
+    + full paper citation and link for publication
+    + Link to online data source
+    + Full email history with data provider 
+* If it was downloaded online, provided written and visual instructions so that the reader can mimic your same steps to get the same data. Include screenshots if possible!
+* Version information for data
+* Years included in the datatset
+* Year the data was published
+* Type of data included in the dataset (e.g., catch per species (tons) per country)
+* Any other information that could possibly be useful to anyone
+  
+
+***
+
+### Preparing the data 
+
+All of the R scripts and metadata used to prepare the data, as well as the final data layers are saved in the Github ohiprep_v???? repository in the globalprep folder.  
+
+The only data that will not be saved on Github are files that are too large or incompatible with Github (see below).
+
+**Primary goal/component folder** The folder should be named according to the OHI target (the goal or dimension that the data is used to calculate). For example the folder for the tourism and recreation goal would be called: globalprep/tr (see table below). These recommendations are flexible and should be modified as needed, for example goals can be combined in a single folder (e.g., spp_ico) or, there may be several folders for different components of a single goal (e.g. tr_sustainability and tr_tourists).
+
+target      |   suggested folder name
+----------- | ------------------
+Artisanal Fishing Opportunity | ao
+Carbon Storage | cs
+Clean Waters | cw
+Coastal Protection | cp
+Coastal Livelihoods | liv
+Coastal Economies |eco
+Fisheries   | fis
+Habitats | hab
+Iconic Species | ico
+Lasting Special Places | lsp
+Mariculture | mar
+Natural Products | np
+Species    | spp
+Tourism and Recreation | tr
+Pressure | prs_*additional_pressure_id*
+Resilience | res_*additional_resilience_id*
+
+
+This folder will contain:
+
+* a *README.md* that will link to the appropriate information pages on ohi-science.org  The README.md should follow this  [template](https://github.com/OHI-Science/ohiprep/blob/master/src/templates/generic_readme.md).
+    
+* **Year-specific folders** within the goal/component folder organize output by assessment year (v2015, v2016).  Each of the assessment year folders should have:
+      * a README.md (see [this template](https://github.com/OHI-Science/ohiprep/blob/master/src/templates/generic_readme_year.md)) 
+      * a data_prep.R, or .Rmd that is well-documented. [Here is the dataprep template](https://github.com/OHI-Science/ohiprep/blob/master/src/templates/generic_data_prep.Rmd). 
+      * a series of folders to organize data that include:
+        + `raw` for 'raw-ish' type files that would not be on the server. This is typically for piecemeal raw data that we compile (e.g., U.S. State Department travel warnings), and not data we have downloaded from a single source (which would go on Mazu).  In most cases, this folder will not be used.
+        + `int` for intermediate files (previously we’ve used tmp, working, or other naming conventions so this might not be entirely consistent).
+        + `output` for the final data layer that is used in the OHI toolbox.
+
+The final datasets (the ones stored in the `output` folder) will be preceeded by the target abbreviation followed by an underscore that provides a brief description of the data, e.g., tr_sustainability.csv).
+
+![](images/globalprepExample.png)
+
+***
+
+### Dealing with intermediate files that are too large for Github
+
+These files will be saved on Mazu, the internal server's, globalprep folder.
+
+Our goal is to have everything (except for data obtained from other sources) stored on GitHub, but some files are too large or inappropriate for GitHub and must be stored on Mazu. Each of these files should be stored in a way that mirrors that on Github. If there is a need to make a duplicate folder on `git-annex`, it should have the same name as the folder used in GitHub.
+
+![](images/mazufolders.png)
+
+Store any intermediate or final output files that are too large for github in these folders. Keep the same subfolder structure. If you are working in `spp_ico` and have temporary rasters to store on Mazu, save them in a folder named `int`. 
+
+**Raw data should not be stored here. This should be stored in Mazu's `_raw_data` folder**
+
+## Beginning a new assessment year
+
+In ohiprep_v20??/globalprep navigate to the folder that contains the files you will need to prepare the data.  Select the most recent assessment year of data and copy to the folder, changing the name to the current assessment year.
+
+For example, if we are preparing data layers for the 2019 assessment for the artisanal opportunities goal, ao, we would copy the v2018 folder and name it v2019.
+
+![](images/global_prep_new_assessment.png)
+
+IMPORTANT: Delete the files in the raw, intermediate, and output files!  These data will be created in the updated data_prep script.
+
+You will then walk through the data_prep script and update it as necessary.  
+
+## A typical data prep script

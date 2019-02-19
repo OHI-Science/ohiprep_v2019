@@ -3,16 +3,17 @@ title: "Overview"
 output: html_document
 ---
 
-The repositories used to calculate the global assessment include:
+The repositories used to calculate the global assessment are:
 
 *ohiprep_v20??* Scripts and intermediate files used to prepare the data layers used by the OHI model.
 
 *ohi-global* Data layers, supplementary information, models, and scripts used to calculate the global scores.
 
-*ohicore* An R package that includes the core functions used in all assessments.
+*ohicore* An R package that includes the core functions used in all assessments. See [package description](http://ohi-science.org/ohicore/) for more information.
 
 
-Table describing ohiprep_v20?? contents
+*Table describing ohiprep_vYEAR contents*
+(NOTE: suffix of repo name is the year of the assessment)
 
 folder      |      description
 ------------| ------------------------------
@@ -20,4 +21,19 @@ globalprep  | scripts used to prepare all goal, pressure, and resilience data la
 Reference   | handy reference materials used throughout the global assessmeent
 workflow    | Rmd templates, sourced files, and functions used throughout data preparation
 
+
+*Table describing ohi-global contents*
+(NOTE: this describes only the most relevant folders/files)
+
+folder      |     description
+------------| ------------------------------
+eez  |   global models and data
+     layers | data layers used in the models (data are copied from ohiprep using paths from eez_layers_meta_data/layers_eez_base.csv)
+     conf   | models and supplementary data used to calculate scores
+     calculate_scores.R | master script used to calculate scores
+     scores.csv | score output from calculate_scores.R (includes all score dimensions for each goal and country)
+       
+eez_layers_meta_data | csv files describing data layers
+global_supplement | files used to create OHI methods document
+yearly_results | reporting on results of each year's OHI assessment
 
