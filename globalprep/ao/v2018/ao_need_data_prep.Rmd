@@ -66,7 +66,7 @@ library(readr)
 # comment out when knitting:
 # setwd("globalprep/ao/v2018")
 
-# directory paths
+# directory paths and relevant files
 source('https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
 
 ```

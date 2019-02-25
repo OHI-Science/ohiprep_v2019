@@ -12,10 +12,10 @@ cat("This file makes it easier to process data for the OHI global assessment\n",
     "* mollCRS = the crs code for the mollweide coordinate reference system we use in the global assessment\n",
     "* regions_shape() = function to load global shapefile for land/eez/high seas/antarctica regions\n",
     "* ohi_rasters() = function to load two rasters: global eez regions and ocean region\n",
-    "* region_data() = function to load 2 datatables describing global regions \n",
-    "* rgn_syns() = function to load datatable of region synonyms (used to convert country names to OHI regions)\n",
-    "* low_pop() = function to load datatable of regions with low and no human population\n",
-    "* UNgeorgn = function to load UN geopolitical designations used to gapfill missing data")
+    "* region_data() = function to load 2 dataframes describing global regions \n",
+    "* rgn_syns() = function to load dataframe of region synonyms (used to convert country names to OHI regions)\n",
+    "* low_pop() = function to load dataframe of regions with low and no human population\n",
+    "* UNgeorgn = function to load dataframe of UN geopolitical designations used to gapfill missing data")
 
 
 ## set the mazu and neptune data_edit share based on operating system
@@ -75,7 +75,7 @@ ocean <<- raster::raster(file.path(dir_M, 'model/GL-NCEAS-Halpern2008/tmp/ocean.
 # includes eez, high seas, antarctica (ccamlr)
 region_data <- function(){
 
-cat("loads 2 datatables: rgns_all and rgns_eez \n",
+cat("loads 2 dataframes: rgns_all and rgns_eez \n",
     "rgns_all = includes eez/high seas/antarctica regions, IDs correspond with region shapefile and raster\n",
     "rgns_eez = includes only eez regions")
 
@@ -96,7 +96,7 @@ low_pop <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/mast
 
 UNgeorgn <- function(){
 # typically used for gapfilling
-cat("loads a datatable identifying UN geogregions based on geopolitical data. Typically used for gapfilling")
+cat("loads a dataframe identifying UN geogregions based on geopolitical data. Typically used for gapfilling")
 
   UNgeorgn <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/georegion_labels.csv") 
 

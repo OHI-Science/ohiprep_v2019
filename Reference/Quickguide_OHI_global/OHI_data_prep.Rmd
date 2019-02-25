@@ -1,5 +1,5 @@
 ---
-title: "OHI_prepare_data"
+title: "OHI data preparation"
 output: html_document
 ---
 
@@ -105,7 +105,7 @@ Store any intermediate or final output files that are too large for github in th
 
 ## Beginning a new assessment year
 
-In ohiprep_v20??/globalprep navigate to the folder that contains the files you will need to prepare the data.  Select the most recent assessment year of data and copy to the folder, changing the name to the current assessment year.
+In ohiprep_v20??/globalprep navigate to the folder that contains the files you will need to prepare the data.  Select the most recent assessment year of data and copy the folder and paste to the same location, changing the name to reflect the current assessment year.
 
 For example, if we are preparing data layers for the 2019 assessment for the artisanal opportunities goal, ao, we would copy the v2018 folder and name it v2019.
 
@@ -116,3 +116,302 @@ IMPORTANT: Delete the files in the raw, intermediate, and output files!  These d
 You will then walk through the data_prep script and update it as necessary.  
 
 ## A typical data prep script
+
+All data prep is performed in R or, preferrably, Rmd documents. Rmd is an ideal format because it seemlessly integrates code and documentation, can display figures, and the output provides a clean methods document.
+
+We have several shared practices for preparing data:
+
+* Ideally Rmd/R files are used to download and save source datafiles, but this isn't possible in most cases due to the format of the data.
+* We put a large premium on documenting the steps used to prepare data! 
+* In many cases, the data preparation for a goal is performed in a single file.  But, for more complex goals it is better to break the data preparation into multiple Rmd documents.  If multiple Rmd documents are used, a README must describe what each Rmd document does, the input/outputs, and the order of processing.  
+* If a process is run multiple times, the code should be converted to a function and placed in folder labeled R or src. 
+* The `here` package, and `here()` function should be used control file paths.
+* We use the tidyverse for tidying data
+
+A typical data prep script (or series of scripts) will include the following sections, which are described in more detail below:
+
+1. Script summary: general description of what the script does
+2. Updates: updates to source data and/or methods from previous year
+3. Data sources: description of source data
+4. Set up code: code chunk that loads relevant R packages and functions
+5. Data prep: code chunks used to prepare the data, this is typically the bulk of the Rmd file
+6. Gapfilling: code chunks used to estimate and document missing data
+7. Data check: code used to check data
+8. Saving final data layers and gapfilling data
+
+A generic data prep Rmd file is located on Github: github.com/OHI-Science/ohiprep_v2019/workflow/templates/generic_data_prep.Rmd
+
+
+## prep Rmd: 1. Script summary
+This section describes the purpose of the script and the data layers that are generated.
+
+## prep Rmd: 2. Updates
+This sections describes all the updates to source data and/or methods since the previous year's assessment.
+
+## prep Rmd: 3. Data sources
+This sections describes the datasources and may include:
+
+**Reference**: [citation for source data; website, literature, contact information. Version of data (if relevant).]
+
+**Downloaded**: [date downloaded or received]
+
+**Description**:  [e.g., surface aragonite state]
+
+**Native data resolution**: [e.g., 1 degree, 30 m, country, etc.]   
+
+**Time range**: [e.g., 1880-1899, monthly data provided for each year] 
+
+**Format**:  [e.g., NetCDF, Excel file]
+
+## prep Rmd: 4. Set up code
+This code chunk is used to load packages, source functions, and set variables that are used throughout the analyses.  
+
+### Packages
+The packages we load depend on the analyses, but we always use:
+* dplyr and tidyr: data wrangling tools (a cheatsheet: https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+* here: controlling file paths (https://github.com/jennybc/here_here)
+
+We often use the following for spatial analyses:
+* sp: classes and methods for spatial data
+* rgdal: tools for dealing with coordinate reference systems
+* raster: reading, writing, manipulating, analyzing and modeling of gridded spatial data
+* fasterize: a better way to convert a shapefile to a raster file
+* sf: a standardized way to encode spatial vector data
+
+We often use the zoo package for time-series data. 
+
+And, if we do parallel processing we use:
+* doParallel
+* foreach
+
+### common.R
+Nearly all scripts will source a common.R file.  This file creates several objects that make it easier to conduct an OHI assessment.  This includes:
+
+object   | description  
+--------- | ---------------------------------
+dir_M   |  file path to Mazu
+mollCRS |  crs code for the mollweide coordinate refernce system we use in the global assessment 
+regions_shape() | A function to load a simple feature object called "regions" with polygons for land/eez/highseas/antarctica regions. The "regions" object uses the Mollweide coordinate reference system.  
+ohi_rasters() |  function to load two rasters: global eez regions and ocean region
+rgn_data() | function to load 2 dataframes describing global regions
+rgn_syns() | function to load dataframe of region synonyms (used to convert country names to OHI regions)
+low_pop() | function to load dataframe of regions with low and no human population
+UNgeorgn() | function to load dataframe of UN sociopolitical regions, typically used to gapfill missing data
+
+To load the data in a data function: 
+
+```{r}
+
+source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
+
+# call the function to load the data, the message describes the available data: 
+region_data()
+
+head(rgns_all)
+head(rgns_eez)
+
+```
+
+#### metadata for common.R
+
+*dir_M and mollCRS*
+
+The following are the dir_M and mollCRS objects:
+
+```{r}
+## dir_M describes the path to our internal server based on your computer's operating system
+## NOTE: The following may be different on your operating system
+dir_M
+
+## mollCRS is the code for the Mollweide coordinate reference system
+mollCRS
+
+
+```
+
+
+*regions_shape*
+The regions_shape function returns a simple feature object called "regions". Regions is the master global shapefile that includes polygons for land, eez, high seas, and antarctica regions in the Mollweide coordinate reference system.
+
+Sometimes it is necessary to convert from a simple feature object to a shapefile object because some functions do not work with simple feature objects.  This is accomplished like this:
+
+`regions_shape <- as(regions, "Spatial")`
+
+```{r, eval=FALSE, echo=FALSE}
+
+library(sf)
+library(here)
+
+regions_shape()
+head(regions)
+
+table(regions$type_w_ant)
+
+png(here("Reference/Quickguide_OHI_global/images/regions.png"), width=4, height=2, units="in", res=300)
+ par(mar=c(1,1,1,1))
+land <- dplyr::filter(regions, type_w_ant %in% c("land", "land-ccamlr", "land-disputed", "land-noeez"))
+plot(st_geometry(land), col="gray80", border="gray85", main=NA, key.pos=NULL, lwd=.2)
+ocean <- dplyr::filter(regions, type_w_ant == "fao")
+plot(st_geometry(ocean), border="gray97", col="lightblue", main=NA, key.pos=NULL, add=TRUE, lwd=.2)
+eez <- dplyr::filter(regions, type_w_ant %in% c("eez", "eez-disputed", "eez-inland"))
+plot(st_geometry(eez), col="#0F79AB", border="gray97", main=NA, key.pos=NULL, add=TRUE, lwd=.2)
+ant <- dplyr::filter(regions, type_w_ant %in% c("eez-ccamlr"))
+plot(st_geometry(ant), col="#6FCAC6", border="gray97", main=NA, key.pos=NULL, add=TRUE, lwd=.2)
+
+dev.off()
+
+```
+
+
+The regions file with eez (dark blue), fao or high seas (light blue), and antarctica or CCAMLR (green) regions.
+
+![](images/regions.png)
+
+The regions object is a simple feature multipolygon spatial object in the Mollweide coordinate reference system. There are 7 fields described in the table
+
+field    |  data type | description    | examples
+--------- |---------------- | --------------- | ----------------------------
+type_w_ant | factor | identifies all polygons as eez, fao (high seas), ccamlr (antarctica), or land               | eez (n=220), fao (15), eez-ccamlr (19), land (220), land-ccamlr (9), eez-disputed (1), land-disputed (1), eez-inland (3), land-noeez (38)
+rgn_type   | factor | similar to type_w_ant, but does not specify eez/ccamlr and land/land-ccamlr regions                | eez (n=239), fao (15), land (229), eez-disputed (1), land-disputed (1), eez-inland (3), land-noeez (38)
+rgn_ant_id | numeric  | region ids     | 1-250 country land and eez (these are the official global regions; some numbers are skipped); 255 disputed land and eez; 260-277 fao high seas; 301-337 (country land, no eez); 248100-288300 CCAMLR regions 
+rgn_id     | numeric | region ids; similar to rgn_ant_id, but Antartica/CCAMLR regions lumped as region 213               | 1-250 country land and eez (these are the official global regions; some numbers are skipped); 255 disputed land and eez; 260-277 fao high seas; 301-337 (country land, no eez)
+rgn_name   | character | country/territory name  | e.g., Afghanistan, Belize, Prince Edward Islands
+rgn_key    | factor | 3 letter identification code  | e.g., AFG, BEL
+area_km2   | numeric | area of region, km2  | range of 1-30604795
+
+*ohi_rasters*
+The ohi_rasters function returns two rasters, "zones" and "ocean", both with ~1 km resolution and the mollweide coordinate reference system.
+
+The "zones" raster cell values are the OHI region ID.  The raster cell values can be linked to the region names using the region_data() function, and the rgn_ant_id variable from rgns_all.csv.  This raster is typically used to extract pressure data for the eez regions.
+
+```{r, eval=FALSE, echo=FALSE}
+
+library(sf)
+library(here)
+library(raster)
+library(beyonce)
+
+region_data()
+
+pal <- sample(beyonce_palette(74, length(rgns_all$rgn_ant_id), type = "continuous"))
+
+png(here("Reference/Quickguide_OHI_global/images/regions_raster.png"), width=4, height=2, units="in", res=300)
+ par(mar=c(0,1,0,0))
+plot(zones, breaks=sort(rgns_all$rgn_ant_id), col=pal, legend=FALSE, axes=FALSE, box=FALSE)
+dev.off()
+
+```
+
+![](images/regions_raster.png)
+
+The "ocean" raster identifies ocean cells with a value of 1, and other cells are NA [NOTE: There is something weird about this raster in that it lists the values as 0, 255 (min, max), when in fact there are only 1 and NA values! If you need to convince yourself of this, you can use the `freq(ocean)` function to identify all cell values.].  This raster file is typically used to mask the ocean regions for pressure data.  
+
+```{r, eval=FALSE, echo=FALSE}
+
+library(here)
+library(raster)
+
+
+png(here("Reference/Quickguide_OHI_global/images/ocean_raster.png"), width=4, height=2, units="in", res=300)
+ par(mar=c(0,1,0,0))
+plot(ocean,  col="lightblue", legend=FALSE, axes=FALSE, box=FALSE)
+dev.off()
+
+freq(ocean)
+#      value     count
+# [1,]     1 416190801
+# [2,]    NA 329175249
+     
+```
+
+![](images/ocean_raster.png)
+
+*region_data()*
+The region_data function returns two dataframes, "rgns_all" and "rgns_eez".
+
+The "rgns_all" dataframe includes data for the eez, fao, and ccamlr ocean regions.  The IDs in rgn_ant_id correspond to the IDs in the zones raster. Once raster data are extracted for each region, the output is often aligned with the data in this dataframe. 
+
+*Metadata for rgns_all dataframe*
+field    |  data type | description    | examples
+--------- | ---------------- | --------------- | ----------------------------
+rgn_type   | factor | similar to type_w_ant, but does not specify eez/ccamlr and types  | eez (n=239), fao (15)
+type_w_ant | factor | identifies all ocean polygons as eez, fao (high seas), ccamlr (antarctica)  | eez (n=220), fao (15), eez-ccamlr (19)
+rgn_id     | numeric | region ids; similar to rgn_ant_id, but Antartica/CCAMLR regions lumped as region 213               | 1-250 country eez (these are the official global regions; some numbers are skipped); 255 disputed eez; 260-277 fao high seas
+rgn_ant_id | numeric | region ids     | 1-250 country eez (these are the official global regions; some numbers are skipped); 255 disputed eez; 260-277 fao high seas; 248100-288300 CCAMLR regions 
+rgn_name   |  character | country/territory name  | e.g., Afghanistan, Belize, Prince Edward Islands
+
+The "rgns_eez" dataframe includes data for the 220 OHI regions plus Antarctica (rgn_id 213).  This file is used to make sure that all regions are included in dataprep files.  It also includes data to indicate whether regions are territories.  This can also be used for gapfilling (in some cases, it makes sense to assign territories the same value as their administrative country).  
+
+*Metadata for rgns_eez dataframe*
+field    |  data type | description    | examples
+--------- | --------------- | --------------- | ----------------------------
+rgn_id   | numeric | official global regions (except Antarctica, 213) | 1-250
+rgn_name   |  character | country/territory name  | e.g., Afghanistan, Belize, Prince Edward Islands
+eez_iso3    | factor | 3 letter identification code  | e.g., AFG, BEL
+territory   | boolean | identifies whether the region is a territory | yes/no
+admin_rgn_id | numeric | administrative country rgn_id if a territory, otherwise the rgn_id | 1-250
+admin_country_name | character | administrative country name if a territory, otherwise the country name | e.g., Afghanistan, Belize, Canada
+
+*region_syns()*
+Observed synonyms for each region, such that each region may have multiple synonyms.  These data are used to convert outside data to the OHI region name and ID.  This list is updated nearly everytime we run an assessment!
+
+
+*Metadata for region_syns dataframe*
+field    |  data type | description    | examples
+--------- | ---------------- | --------------- | ----------------------------
+rgn_id     | numeric | region ids               | 1-250 
+rgn_name   |  character | country/territory name  | e.g., Federated State of Micronesia; Micronesia, FS; Micronesia (Federated States of)
+rgn_key    | factor | 2-letter code for countries | e.g., FM
+eez_iso3   | factor | 3-letter code for countries | e.g., FSM
+rgn_typ    | factor | status of region            | disputed, landlocked, largescale (global, world); ohi_region
+
+*low_pop()*
+Includes data for 21 regions with 0 and low populations.  These data are used to identify regions that should have NA values because the goal does not apply to regions with no/low populations (e.g., livelihoods and economies).
+
+*Metadata for low_pop dataframe*
+field    |  data type | description    | examples
+--------- | --------------- | --------------- | ----------------------------
+rgn_id     | numeric | region ids               | 1-250 
+rgn_nam   |  character| country/territory name  | e.g., Macquarie Island, Wake Island
+Southern_Island    | boolean | indicates if region is a southern island | 1/0
+Inhabited   | boolean | indicates if region is uninhabited | boolean, 1/0
+est_population    | numeric | number of established people in region  | 0-3000
+
+*UNgeorgn()*
+Each global regions UN georegion based on social and geopolitical considerations. 
+
+*Metadata for UNgeorgn dataframe*
+field    |  data type | description    | examples
+--------- | --------------- | --------------- | ----------------------------
+rgn_id     | numeric | region ids               | 1-250 
+r0_label   |  factor | most inclusive category | World
+r1_label    | factor | 7 classes | Africa (N=46), Americas (3), Asia (39), Europe (43), Latin America and the Caribbean (48), Oceana (34) Southern Islands (7)
+r2_label  | factor | 22 classes | e.g., New Zealand, Melanesia
+rgn_label | character | global region name | e.g., Cocos Islands, Christmas Island
+Inhabited   | boolean | indicates if region is uninhabited | boolean, 1/0
+est_population    | numeric | number of established people in region  | 0-3000
+
+## prep Rmd: 5. Data prep
+There are usually many code chunks used to prepare the data.  There should be an introduction proceeding each code chunk describing what the code chunk accomplishes. 
+
+Within the code chunk: please spend time documenting the code to make it easier to follow and to help prevent errors.  Describe what each section is doing. Document expected values and results (e.g., check to see all values between 0-1, length should be 0, etc.). Avoid run-on dplyr chains, these are impossible to follow and very prone to error!
+
+The final output should be a dataframe that includes:
+
+* *rgn_id* All 220 regions should be included in the final file!
+* *year* This should include all years of data necessary to calculate scores for all scenario years, including trend. For some data layers the data has never been updated, in these cases, there is still a year column but it may only contain a single year.
+* *value* This column will contain the calculated value for the data, and the column name will vary across datasets. In general, naming conventions should be consistently used every year, but feel free to modify the column name if you feel it could be improved.  Just be sure to make the corresponding change to the "name_data_fld" in this file: https://github.com/OHI-Science/ohi-global/blob/draft/eez_layers_meta_data/layers_eez_base.csv.
+
+This file should be saved as a .csv file in an "output" folder.
+ 
+## prep Rmd: 5.  Gapfilling
+
+We make every effort to gapfill missing data.  The only legitimate reason for a region to have an NA value is if the goal is not relevant to the region.  For example, the livelihoods and economies goal is not relevant for an uninhabited island.
+
+We have published an entire paper describing why and how we estimate missing data: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0160377. But I'll give you the short version.
+
+The first step to gapfilling missing data is to identify datasets that are predictive of the variable you are attempting to estimate and is also more complete.  Here are some of the general approaches we use to estimate missing global data:
+
+* We gapfill some mising data using data from the original source, for example, if there are missing years we might estimate missing values using a linear model with years of data that are available.  For spatial raster data, we often estimate missing values using nearby raster cells.  
+* We gapfill some missing Social Progress Index values using World Governance Index values.
+* We often use the UN geopolitical data which classifies countries based on geopolitical and social variables ().
