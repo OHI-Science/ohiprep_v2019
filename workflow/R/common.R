@@ -6,16 +6,16 @@
 #library(sf)
 #library(raster)
 
-cat("This file accesses a series of objects that make it easier to process data for the OHI global assessment\n",
-    "Including the following objects:\n\n",
-    "* dir_M = identifies correct file path to Mazu (internal server) given your operating system\n",
-    "* mollCRS = the crs code for the mollweide coordinate reference system used for the global assessment\n",
+cat("This file makes it easier to process data for the OHI global assessment\n",
+    "by creating the following objects:\n\n",
+    "* dir_M = identifies correct file path to Mazu (internal server) based on your operating system\n",
+    "* mollCRS = the crs code for the mollweide coordinate reference system we use in the global assessment\n",
     "* regions_shape() = function to load global shapefile for land/eez/high seas/antarctica regions\n",
     "* ohi_rasters() = function to load two rasters: global eez regions and ocean region\n",
-    "* rgn_data() = function to load 2 datatable describing global regions \n",
+    "* region_data() = function to load 2 datatables describing global regions \n",
     "* rgn_syns() = function to load datatable of region synonyms (used to convert country names to OHI regions)\n",
     "* low_pop() = function to load datatable of regions with low and no human population\n",
-    "* gapfill_data() = function to load 3 datatables used to gapfill missing data")
+    "* UNgeorgn = function to load UN geopolitical designations used to gapfill missing data")
 
 
 ## set the mazu and neptune data_edit share based on operating system
@@ -85,7 +85,7 @@ rgns_eez <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/
 
 rgn_syns <- function(){
 cat("region synonyms used to translate country names to OHI regions")
-rgn_syns <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/globalprep/spatial/v2017/output/rgn_synonyms.csv") 
+rgn_syns <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/globalprep/spatial/v2019/output/rgn_synonyms.csv") 
 }
 
 low_pop <- function(){
@@ -94,17 +94,12 @@ low_pop <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/mast
 }
 
 
-gapfill_data <- function(){
+UNgeorgn <- function(){
 # typically used for gapfilling
-cat("loads 3 datatables typically used for gapfilling: UNgeorgn_id, UNgeorgn_nm, territory \n",
-    "UNgeorgn_id = groups regions according to geopolitical variables\n",   
-        "(note: probably better to use the UNgeorgn_nm data because numeric IDs can lead to analysis issues) \n",
-    "UNgeorgn_nm = groups regions according to geopolitical variables, regions are identified by name\n",
-    "territory = identifies admininistrative countries of territories")
+cat("loads a datatable identifying UN geogregions based on geopolitical data. Typically used for gapfilling")
 
-UNgeorgn_id <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/georegions.csv") 
-UNgeorgn_nm <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/georegion_labels.csv") 
-territory <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv")
+  UNgeorgn <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/georegion_labels.csv") 
+
 }
 
 
