@@ -8,11 +8,10 @@ All data layers are prepared in the ohiprep_v20?? repository.
 The best workflow is to prepare the layer or layers within a single Rmd script and then update the scores with these layers from the ohi-global repository.  If only one layer is updated at a time it is much easier to identify and track potential errors.
 
 This section will discuss:
-1. File organization of the ohiprep_v20?? repository and the internal server, Mazu.
-2. Preparing data for a new assessment year
+1. File organization
+2. Starting a new data prep folder
 3. A typical data prep script
-4. Gapfilling datasets
-5. Checking data layers
+4. Notes on parallel processing
 
 ## File organization
 
@@ -45,7 +44,7 @@ Each README should include the following ([template](https://github.com/OHI-Scie
 
 ***
 
-### Preparing the data 
+### globalprep files 
 
 All of the R scripts and metadata used to prepare the data, as well as the final data layers are saved in the Github ohiprep_v???? repository in the globalprep folder.  
 
@@ -91,7 +90,7 @@ The final datasets (the ones stored in the `output` folder) will be preceeded by
 
 ***
 
-### Dealing with intermediate files that are too large for Github
+### Intermediate files that are too large for Github
 
 These files will be saved on Mazu, the internal server's, globalprep folder.
 
@@ -103,7 +102,7 @@ Store any intermediate or final output files that are too large for github in th
 
 **Raw data should not be stored here. This should be stored in Mazu's `_raw_data` folder**
 
-## Beginning a new assessment year
+## Starting a new data prep folder
 
 In ohiprep_v20??/globalprep navigate to the folder that contains the files you will need to prepare the data.  Select the most recent assessment year of data and copy the folder and paste to the same location, changing the name to reflect the current assessment year.
 
@@ -130,26 +129,27 @@ We have several shared practices for preparing data:
 
 A typical data prep script (or series of scripts) will include the following sections, which are described in more detail below:
 
-1. Script summary: general description of what the script does
+1. Summary: general description of the data prepared by the script
 2. Updates: updates to source data and/or methods from previous year
 3. Data sources: description of source data
-4. Set up code: code chunk that loads relevant R packages and functions
-5. Data prep: code chunks used to prepare the data, this is typically the bulk of the Rmd file
-6. Gapfilling: code chunks used to estimate and document missing data
-7. Data check: code used to check data
-8. Saving final data layers and gapfilling data
+4. Set up: code chunk that loads relevant R packages and functions
+5. Data prep: code chunks for preparing the data, this is typically the bulk of the Rmd file
+6. Gapfilling: code chunks for estimating and documenting missing data
+7. Results check: code used to check results
+8. Final run: a final run of all the code after restarting R
+
 
 A generic data prep Rmd file is located on Github: github.com/OHI-Science/ohiprep_v2019/workflow/templates/generic_data_prep.Rmd
 
 
-## prep Rmd: 1. Script summary
+## prep Rmd: 1. Summary
 This section describes the purpose of the script and the data layers that are generated.
 
 ## prep Rmd: 2. Updates
 This sections describes all the updates to source data and/or methods since the previous year's assessment.
 
 ## prep Rmd: 3. Data sources
-This sections describes the datasources and may include:
+This sections describes all data sources and may include:
 
 **Reference**: [citation for source data; website, literature, contact information. Version of data (if relevant).]
 
@@ -163,24 +163,24 @@ This sections describes the datasources and may include:
 
 **Format**:  [e.g., NetCDF, Excel file]
 
-## prep Rmd: 4. Set up code
-This code chunk is used to load packages, source functions, and set variables that are used throughout the analyses.  
+## prep Rmd: 4. Set up 
+This code chunk is used to load packages, source functions, and set variables used throughout the analyses.  
 
 ### Packages
 The packages we load depend on the analyses, but we always use:
 * dplyr and tidyr: data wrangling tools (a cheatsheet: https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
-* here: controlling file paths (https://github.com/jennybc/here_here)
+* here: controls file paths (https://github.com/jennybc/here_here)
 
 We often use the following for spatial analyses:
-* sp: classes and methods for spatial data
 * rgdal: tools for dealing with coordinate reference systems
+* sp: classes and methods for spatial data
+* sf: a new version of sp, providing a standardized way to encode spatial vector data
 * raster: reading, writing, manipulating, analyzing and modeling of gridded spatial data
 * fasterize: a better way to convert a shapefile to a raster file
-* sf: a standardized way to encode spatial vector data
 
 We often use the zoo package for time-series data. 
 
-And, if we do parallel processing we use:
+And, for parallel processing, typically used to perform spatial analyses, we use:
 * doParallel
 * foreach
 
@@ -233,7 +233,7 @@ mollCRS
 *regions_shape*
 The regions_shape function returns a simple feature object called "regions". Regions is the master global shapefile that includes polygons for land, eez, high seas, and antarctica regions in the Mollweide coordinate reference system.
 
-Sometimes it is necessary to convert from a simple feature object to a shapefile object because some functions do not work with simple feature objects.  This is accomplished like this:
+Sometimes it is necessary to convert from a simple feature object to a shapefile object because some functions still do not work with simple feature objects, or, if the spatial file is modified, a saved shapefile may be desired.  This is accomplished like this:
 
 `regions_shape <- as(regions, "Spatial")`
 
@@ -392,9 +392,21 @@ Inhabited   | boolean | indicates if region is uninhabited | boolean, 1/0
 est_population    | numeric | number of established people in region  | 0-3000
 
 ## prep Rmd: 5. Data prep
-There are usually many code chunks used to prepare the data.  There should be an introduction proceeding each code chunk describing what the code chunk accomplishes. 
 
-Within the code chunk: please spend time documenting the code to make it easier to follow and to help prevent errors.  Describe what each section is doing. Document expected values and results (e.g., check to see all values between 0-1, length should be 0, etc.). Avoid run-on dplyr chains, these are impossible to follow and very prone to error!
+We follow several coding practices when preparing our data:   
+
+* Code chunks are broken into manageable pieces and are proceeded by a description of what is being accomplished 
+
+* The code within a chunk is documented to make it easier to follow and to help prevent errors.  For example, expected values and results are described to help prevent potential errors (e.g., check to see all values between 0-1, length should be 0, etc.). 
+
+* Run-on dplyr chains are avoided because they are impossible to follow and prone to error!
+
+* Data is checked throughout the dataprep process (checking dimensions of data after joins, special attention to missing data, etc.)
+
+* Intermediate data files are saved if they computationally take a long time to create or have information that could be useful in other aspects of the analysis. 
+
+* The here package is used to standardize file paths.
+
 
 The final output should be a dataframe that includes:
 
@@ -402,16 +414,125 @@ The final output should be a dataframe that includes:
 * *year* This should include all years of data necessary to calculate scores for all scenario years, including trend. For some data layers the data has never been updated, in these cases, there is still a year column but it may only contain a single year.
 * *value* This column will contain the calculated value for the data, and the column name will vary across datasets. In general, naming conventions should be consistently used every year, but feel free to modify the column name if you feel it could be improved.  Just be sure to make the corresponding change to the "name_data_fld" in this file: https://github.com/OHI-Science/ohi-global/blob/draft/eez_layers_meta_data/layers_eez_base.csv.
 
-This file should be saved as a .csv file in an "output" folder.
+This file should be saved as a .csv file in an "output" folder. In general, the name of the file should be the same as the previous year.  However, if you feel the file name can be improved, you will need to update the fn variable in this data file:
+
+https://github.com/OHI-Science/ohi-global/blob/draft/eez_layers_meta_data/layers_eez_base.csv
+
  
-## prep Rmd: 5.  Gapfilling
+## prep Rmd: 6.  Gapfilling
 
 We make every effort to gapfill missing data.  The only legitimate reason for a region to have an NA value is if the goal is not relevant to the region.  For example, the livelihoods and economies goal is not relevant for an uninhabited island.
 
-We have published an entire paper describing why and how we estimate missing data: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0160377. But I'll give you the short version.
+We have a paper describing why and how we estimate missing data: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0160377. But the following is the short version.
 
 The first step to gapfilling missing data is to identify datasets that are predictive of the variable you are attempting to estimate and is also more complete.  Here are some of the general approaches we use to estimate missing global data:
 
-* We gapfill some mising data using data from the original source, for example, if there are missing years we might estimate missing values using a linear model with years of data that are available.  For spatial raster data, we often estimate missing values using nearby raster cells.  
-* We gapfill some missing Social Progress Index values using World Governance Index values.
-* We often use the UN geopolitical data which classifies countries based on geopolitical and social variables ().
+* Some mising data can be estimated from the original source.  For example, if there are some missing years within a dataset, we can often estimate these values using a linear model of available data.  For spatial raster data, we often estimate missing values using nearby raster cells.  
+* Secondary datasets can also be used to estimate mising values. For example, we gapfill some missing Social Progress Index values using World Governance Index data as a predictor.  And, in many cases we use [UN geopolitical data](https://github.com/OHI-Science/ohiprep_v2019/blob/gh-pages/globalprep/spatial/v2017/output/georegion_labels.csv) that classifies countries based on geopolitical and social variables to predict missing data.
+* And, we often use multiple approaches to estimate missing values within a dataset.
+
+Our goal is to estimate missing data using the simplest model that best predicts the data. Given this, it is necessary to determine whether datasets and model terms actually predict missing data and to compare the performance of multiple models. Ideally cross-validation methods are used to evaluate how well the models predict missing data, otherwise models will appear to perform much better than they actually do.   
+
+*There is no point in having a model with many predictive variables and complex non-linear fits if it performs no better than using a simple mean of the existing data!*
+
+Gapfilling steps are often mixed with the dataprep code.  Once the gapfilling is done, we will save a dataset describing which data were gapfilled and the method.  Every dataset should have a corresponding gapfilling dataset...*even if there was no gapfilling*.  
+
+The gapfilling record is saved with the same name as the corresponding output data, but with a "_gf" extension.
+
+![](images/gapfilling_file_naming.png)
+
+The gapfilling dataset should mirror the corresponding dataset in regard to the number of rows and identifying columns (e.g., rgn_id, commodity, year, etc.). The gapfilling datset should include three additional columns that indicate the following:
+
+* gapfilled: a zero or one value (or, NA if the value in the original data is NA) indicating whether the data was gapfilled or not.
+* method: a short descriptor of the method that was used (this should be described more fully somewhere in the documentation).
+* error: a numeric value describing the error around the estimate.  This should be left blank if this was not determined (most of the time this will not be estimated).
+
+![](images/gapfilling_dataset_example.png)
+
+## prep Rmd: 7. Results check
+
+It is critical to check the final output data!
+
+Here are some of the ways we check data:
+
+* Is each region included in the final data?
+* Does the number of values for each region/year make sense (in most cases there should only be one value for each region/year)
+* Does the ranking of the values make sense? Do the high and low performing regions seem reasonable?
+* Do the number of NA values seem reasonable (ideally there will be none, unless the goal does not apply to that region)
+* Does the range/distribution of values seem reasonable, for example, some outputs should range from 0-1.
+
+The functions I use most commonly to check data are:
+`hist()`, `summary()`, `dim()`, `table()`
+
+Because we calculate the global index every year, the most powerful way of checking our data is to compare the current data with last year's data.  In most cases, source data will remain the same from year to year (although some agencies will update previous data). Consequently, any changes will often reflect changes to the model and/or mistakes.  
+
+For this comparison we typically compare the most recent shared year of data between the two assessments.  The following code walks through this process using data calculated for the lasting special places goal.  In this case, we will pretend we have just completed preparing the data for the 2018 assessment and we want to compare the results to the 2017 assessment. Here we focus on the data for the 3nm offshore region.  
+
+```{r}
+
+library(dplyr)
+library(here)
+library(ggplot2)
+library(plotly)
+
+# want the region data from here:
+source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
+
+new <- read.csv(here("globalprep/lsp/v2018/output/lsp_prot_area_offshore3nm.csv"))
+summary(new)
+
+old <- read.csv(here("globalprep/lsp/v2017/output/lsp_prot_area_offshore3nm.csv"))
+summary(old)
+
+```
+
+The most recent shared year between the two datasets is 2017, so this is the year that will be compared.  The old and new values are plotted as a scatterplot, with a point for each region.  We create an interactive plot and add a one-to-one line to make it easier to determine which regions have changed.  Any changes in values will reflect either changes to the source data or changes to the data prep script.
+
+*It is important to explore the reasons for these changes because it could reflect errors!*
+
+```{r}
+
+# get region names
+region_data()
+head(rgns_eez)
+
+compare <- new %>%
+  rename(a_prot_3nm_new = a_prot_3nm) %>%
+  left_join(old, by=c("rgn_id", "year")) %>%
+  filter(year == 2017) %>%
+  left_join(rgns_eez, by="rgn_id") %>%
+  select(rgn_id, rgn_name, year, a_prot_3nm, a_prot_3nm_new) %>%
+  mutate(region=paste(rgn_id, rgn_name, sep = "-"))
+
+summary(compare)
+
+compare_plot <- ggplot(compare, aes(x=a_prot_3nm, y=a_prot_3nm_new, label=region)) +
+  geom_point() +
+  geom_abline(slope=1, intercept=0, color="red")
+  
+ggplotly(compare_plot)
+
+```
+
+In this case, the values for most regions remain the same from the 2017 to 2018 assessment, however, there are some changes.  The biggest change was for Antarctica, which we can ignore because we do not calculate scores for Antarctica for the global assessment.  However, there is also a fairly large change in the Greece data, and some smaller changes for some other regions.
+
+By carefully exploring the source data we found that these differences reflect updates to the source data.  For example, a marine reserve may have been established in 2017, but weren't yet incorporated into the World Database on Protected Areas. 
+
+
+## prep Rmd: 8. Final run
+The final step is to commit and push all files.  Then, close R and do NOT save the workspace image. The purpose of closing everything is to clear the memory of all data objects to make sure that the code still runs.  This may be a problem if we change object names but fail to make necessary corresponding throughout the code. 
+
+![](images/Workspace.jpg)
+
+I typically close everything by opening another repository.  
+
+Restart R and return to the ohiprep repo and rerun everything (except any really long processes). 
+
+Check the following:
+
+* Does all the code still run?
+* Do you get the same results (check to see if output csv files are loaded to the Git window, this indicates that the data probably changed)?
+* Review warnings
+* Identify parts of the code you are unsure of, and have someone review
+
+
