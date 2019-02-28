@@ -23,7 +23,7 @@ This script generates the "need" layer for the artisanal opportunities goal.  Th
 
 
 ## Updates from previous assessment
-
+Uninhabited and low population regions now given an NA value (vs. a gapfilled value).
 
 ***
 ## Data Source 
@@ -37,7 +37,7 @@ Reported at country scale.
 
 GDP per capita based on purchasing power parity (PPP). PPP GDP is gross domestic product converted to international dollars using purchasing power parity rates. An international dollar has the same purchasing power over GDP as the U.S. dollar has in the United States. GDP at purchaser's prices is the sum of gross value added by all resident producers in the economy plus any product taxes and minus any subsidies not included in the value of the products. It is calculated without making deductions for depreciation of fabricated assets or for depletion and degradation of natural resources. Data are in constant international dollars based on the 2011 ICP round.
 
-Data is available directly to R throught the WDI package.
+Data is available directly to R through the WDI package.
 
 **Time range**: 1990-2017
 
@@ -56,22 +56,25 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/', message
 # library(provRmd)
 # prov_setup()
 
-library(ohicore) # devtools::install_github('ohi-science/ohicore@dev')
+library(ohicore) # devtools::install_github('ohi-science/ohicore@dev'), check whether this is still needed
 library(dplyr)
 library(tidyr)
 library(WDI) # install.packages('WDI')
 library(stringr)
 library(readr)
+library(here)
 
+# Delete after moving to here package
 # comment out when knitting:
-# setwd("globalprep/ao/v2018")
+# setwd("globalprep/ao/v2019")
 
 # directory paths and relevant files
-source('https://rawgit.com/OHI-Science/ohiprep_v2018/master/src/R/common.R')
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R')
 
 ```
 
 ## Download and save data
+(skip for now)
 
 ```{r load_data,eval=F}
 
@@ -110,7 +113,7 @@ if (!file.exists("output")){
 } 
 
 #Save the file into the raw folder
-write.csv(gdppcppp_raw, 'raw/raw_gdppcppp.csv', row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
+write.csv(gdppcppp_raw, here('globalprep/ao/v2019/raw/raw_gdppcppp.csv')), row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
 
 ```
 
@@ -122,7 +125,7 @@ When a country has some values (but not a complete series), a within country reg
 ```{r, eval=F}
 
 # Reorganize to create cells for countries that have missing values for some years
-d <- read.csv('raw/raw_gdppcppp.csv') %>%
+d <- read.csv(here('globalprep/ao/v2019/raw/raw_gdppcppp.csv')) %>%
   dplyr::select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   dplyr::filter(year >= 2005) %>%
   tidyr::spread(year, value) %>%
