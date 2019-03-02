@@ -113,7 +113,7 @@ if (!file.exists("output")){
 } 
 
 #Save the file into the raw folder
-write.csv(gdppcppp_raw, here('globalprep/ao/v2019/raw/raw_gdppcppp.csv')), row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
+write.csv(gdppcppp_raw, here('globalprep/ao/v2019/raw/raw_gdppcppp.csv'), row.names=FALSE) # once you've made sure the 'raw' folder exists, you can save your file
 
 ```
 
@@ -204,6 +204,23 @@ d_rescale <- d_gf %>%
 ## Convert country names to ohi regions
 
 ```{r, eval=F}
+
+
+low_pop <- function(){
+cat("uninhabited and low population regions")
+low_pop <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/rgn_uninhabited_islands.csv")
+}
+
+low_pop <- low_pop() %>%
+  filter(rgn_id != 38)
+
+low_pop_vector <- c(low_pop$rgn_id)
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+ #mutate(score = case_when(
+  #                rgn_id %in% low_pop_vector ~  "NA",
+   #             rgn_id %!in% low_pop_vector ~  score
+    #            ))
 
 # Function to add OHI region ID based on country name
 d_stand_rgn <- name_2_rgn(df_in = d_rescale, 
