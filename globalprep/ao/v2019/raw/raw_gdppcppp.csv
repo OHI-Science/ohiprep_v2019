@@ -1,4 +1,5 @@
 "iso2c","country","NY.GDP.PCAP.PP.KD","year"
+"1A","Arab World",NA,2018
 "1A","Arab World",15444.1527744757,2017
 "1A","Arab World",15570.9167401797,2016
 "1A","Arab World",15365.834880181,2015
@@ -27,6 +28,7 @@
 "1A","Arab World",10470.8274955897,1992
 "1A","Arab World",10141.8008468636,1991
 "1A","Arab World",10385.2157567722,1990
+"S3","Caribbean small states",NA,2018
 "S3","Caribbean small states",14369.4998614268,2017
 "S3","Caribbean small states",14446.3044018523,2016
 "S3","Caribbean small states",14847.3885438882,2015
@@ -55,6 +57,7 @@
 "S3","Caribbean small states",9413.46636900337,1992
 "S3","Caribbean small states",9484.58442197328,1991
 "S3","Caribbean small states",9365.91697730517,1990
+"B8","Central Europe and the Baltics",NA,2018
 "B8","Central Europe and the Baltics",26591.2632019953,2017
 "B8","Central Europe and the Baltics",25298.8740343624,2016
 "B8","Central Europe and the Baltics",24445.6248324494,2015
@@ -83,6 +86,7 @@
 "B8","Central Europe and the Baltics",10876.5185558748,1992
 "B8","Central Europe and the Baltics",11091.7698205075,1991
 "B8","Central Europe and the Baltics",12245.9664755086,1990
+"V2","Early-demographic dividend",NA,2018
 "V2","Early-demographic dividend",8870.21694021373,2017
 "V2","Early-demographic dividend",8572.06226165554,2016
 "V2","Early-demographic dividend",8269.3609564917,2015
@@ -111,6 +115,7 @@
 "V2","Early-demographic dividend",4575.4139939272,1992
 "V2","Early-demographic dividend",4484.86003929383,1991
 "V2","Early-demographic dividend",4374.28107846881,1990
+"Z4","East Asia & Pacific",NA,2018
 "Z4","East Asia & Pacific",16526.0810503936,2017
 "Z4","East Asia & Pacific",15788.3753858401,2016
 "Z4","East Asia & Pacific",15143.3061594946,2015
@@ -139,6 +144,7 @@
 "Z4","East Asia & Pacific",5371.67440725334,1992
 "Z4","East Asia & Pacific",5163.72449694144,1991
 "Z4","East Asia & Pacific",4964.74035114839,1990
+"4E","East Asia & Pacific (excluding high income)",NA,2018
 "4E","East Asia & Pacific (excluding high income)",13577.0590627633,2017
 "4E","East Asia & Pacific (excluding high income)",12838.2476041393,2016
 "4E","East Asia & Pacific (excluding high income)",12169.4081250104,2015
@@ -167,6 +173,7 @@
 "4E","East Asia & Pacific (excluding high income)",2568.84911769745,1992
 "4E","East Asia & Pacific (excluding high income)",2362.18647397129,1991
 "4E","East Asia & Pacific (excluding high income)",2226.47405972878,1990
+"T4","East Asia & Pacific (IDA & IBRD countries)",NA,2018
 "T4","East Asia & Pacific (IDA & IBRD countries)",13720.4801146462,2017
 "T4","East Asia & Pacific (IDA & IBRD countries)",12974.2819396414,2016
 "T4","East Asia & Pacific (IDA & IBRD countries)",12298.727903697,2015
@@ -195,6 +202,7 @@
 "T4","East Asia & Pacific (IDA & IBRD countries)",2596.97002095844,1992
 "T4","East Asia & Pacific (IDA & IBRD countries)",2387.98875695193,1991
 "T4","East Asia & Pacific (IDA & IBRD countries)",2250.78413416037,1990
+"XC","Euro area",NA,2018
 "XC","Euro area",39176.9641857571,2017
 "XC","Euro area",38361.0919687963,2016
 "XC","Euro area",37795.5885054624,2015
@@ -223,6 +231,7 @@
 "XC","Euro area",29033.3650695835,1992
 "XC","Euro area",28764.1518199808,1991
 "XC","Euro area",28114.338609932,1990
+"Z7","Europe & Central Asia",NA,2018
 "Z7","Europe & Central Asia",29879.4894325828,2017
 "Z7","Europe & Central Asia",29182.8568677067,2016
 "Z7","Europe & Central Asia",28804.7522642508,2015
@@ -251,6 +260,7 @@
 "Z7","Europe & Central Asia",19778.2316616106,1992
 "Z7","Europe & Central Asia",20337.2188132003,1991
 "Z7","Europe & Central Asia",20559.242352124,1990
+"7E","Europe & Central Asia (excluding high income)",NA,2018
 "7E","Europe & Central Asia (excluding high income)",19254.7537473076,2017
 "7E","Europe & Central Asia (excluding high income)",18661.0326205525,2016
 "7E","Europe & Central Asia (excluding high income)",18510.66894507,2015
@@ -279,6 +289,7 @@
 "7E","Europe & Central Asia (excluding high income)",11372.0557363935,1992
 "7E","Europe & Central Asia (excluding high income)",12835.4801022803,1991
 "7E","Europe & Central Asia (excluding high income)",13647.928935124,1990
+"T7","Europe & Central Asia (IDA & IBRD countries)",NA,2018
 "T7","Europe & Central Asia (IDA & IBRD countries)",19958.16692671,2017
 "T7","Europe & Central Asia (IDA & IBRD countries)",19310.6540229261,2016
 "T7","Europe & Central Asia (IDA & IBRD countries)",19103.988102783,2015
@@ -307,6 +318,7 @@
 "T7","Europe & Central Asia (IDA & IBRD countries)",11261.4937832382,1992
 "T7","Europe & Central Asia (IDA & IBRD countries)",12574.1447890077,1991
 "T7","Europe & Central Asia (IDA & IBRD countries)",13374.5339893589,1990
+"EU","European Union",NA,2018
 "EU","European Union",37224.2266746811,2017
 "EU","European Union",36367.5430561541,2016
 "EU","European Union",35742.9616063842,2015
@@ -335,6 +347,7 @@
 "EU","European Union",25236.7288621726,1992
 "EU","European Union",25083.9316808001,1991
 "EU","European Union",24871.3238449079,1990
+"F1","Fragile and conflict affected situations",NA,2018
 "F1","Fragile and conflict affected situations",4050.92078510011,2017
 "F1","Fragile and conflict affected situations",4034.88300647473,2016
 "F1","Fragile and conflict affected situations",3926.0337494616,2015
@@ -363,6 +376,7 @@
 "F1","Fragile and conflict affected situations",2238.35301980872,1992
 "F1","Fragile and conflict affected situations",2145.9137410613,1991
 "F1","Fragile and conflict affected situations",2812.98280164053,1990
+"XE","Heavily indebted poor countries (HIPC)",NA,2018
 "XE","Heavily indebted poor countries (HIPC)",2181.0770527068,2017
 "XE","Heavily indebted poor countries (HIPC)",2126.23991500739,2016
 "XE","Heavily indebted poor countries (HIPC)",2088.25736837976,2015
@@ -391,6 +405,7 @@
 "XE","Heavily indebted poor countries (HIPC)",1416.54639143479,1992
 "XE","Heavily indebted poor countries (HIPC)",1469.87002212009,1991
 "XE","Heavily indebted poor countries (HIPC)",1502.86733117389,1990
+"XD","High income",NA,2018
 "XD","High income",43054.7743083886,2017
 "XD","High income",42355.7043739428,2016
 "XD","High income",41902.6366424749,2015
@@ -419,6 +434,7 @@
 "XD","High income",29238.7960914005,1992
 "XD","High income",28748.6328294728,1991
 "XD","High income",28464.4234044271,1990
+"XF","IBRD only",NA,2018
 "XF","IBRD only",12595.9002248848,2017
 "XF","IBRD only",12099.2131423441,2016
 "XF","IBRD only",11671.7222563409,2015
@@ -447,6 +463,7 @@
 "XF","IBRD only",4823.42610668896,1992
 "XF","IBRD only",4852.67851855631,1991
 "XF","IBRD only",4896.42499008731,1990
+"ZT","IDA & IBRD total",NA,2018
 "ZT","IDA & IBRD total",10272.3598123807,2017
 "ZT","IDA & IBRD total",9903.07801559641,2016
 "ZT","IDA & IBRD total",9593.06253782152,2015
@@ -475,6 +492,7 @@
 "ZT","IDA & IBRD total",4261.4431869669,1992
 "ZT","IDA & IBRD total",4292.12588497271,1991
 "ZT","IDA & IBRD total",4336.0067316702,1990
+"XH","IDA blend",NA,2018
 "XH","IDA blend",4901.05648441487,2017
 "XH","IDA blend",4849.05387848165,2016
 "XH","IDA blend",4844.65766412732,2015
@@ -503,6 +521,7 @@
 "XH","IDA blend",3126.13455908646,1992
 "XH","IDA blend",3099.03840017129,1991
 "XH","IDA blend",3114.46100356956,1990
+"XI","IDA only",NA,2018
 "XI","IDA only",2744.06159251132,2017
 "XI","IDA only",2648.74319035362,2016
 "XI","IDA only",2589.47450860784,2015
@@ -531,6 +550,7 @@
 "XI","IDA only",1455.46781778932,1992
 "XI","IDA only",1484.36889692275,1991
 "XI","IDA only",1504.12836655215,1990
+"XG","IDA total",NA,2018
 "XG","IDA total",3466.08087849732,2017
 "XG","IDA total",3386.80787880905,2016
 "XG","IDA total",3346.91273714316,2015
@@ -559,6 +579,7 @@
 "XG","IDA total",2033.95656018828,1992
 "XG","IDA total",2042.62640479079,1991
 "XG","IDA total",2060.80645112453,1990
+"V3","Late-demographic dividend",NA,2018
 "V3","Late-demographic dividend",16282.7710887713,2017
 "V3","Late-demographic dividend",15598.80241296,2016
 "V3","Late-demographic dividend",15074.7073945438,2015
@@ -587,6 +608,7 @@
 "V3","Late-demographic dividend",4999.87160709939,1992
 "V3","Late-demographic dividend",5106.89112361577,1991
 "V3","Late-demographic dividend",5155.92520086153,1990
+"ZJ","Latin America & Caribbean",NA,2018
 "ZJ","Latin America & Caribbean",14550.4899576171,2017
 "ZJ","Latin America & Caribbean",14434.9222568772,2016
 "ZJ","Latin America & Caribbean",14587.1980016679,2015
@@ -615,6 +637,7 @@
 "ZJ","Latin America & Caribbean",10195.5234329363,1992
 "ZJ","Latin America & Caribbean",10084.3290683559,1991
 "ZJ","Latin America & Caribbean",9894.09441685313,1990
+"XJ","Latin America & Caribbean (excluding high income)",NA,2018
 "XJ","Latin America & Caribbean (excluding high income)",13649.9657996188,2017
 "XJ","Latin America & Caribbean (excluding high income)",13553.0124072563,2016
 "XJ","Latin America & Caribbean (excluding high income)",13683.2710614801,2015
@@ -643,6 +666,7 @@
 "XJ","Latin America & Caribbean (excluding high income)",9792.25567517114,1992
 "XJ","Latin America & Caribbean (excluding high income)",9774.88802610101,1991
 "XJ","Latin America & Caribbean (excluding high income)",9655.64080588043,1990
+"T2","Latin America & the Caribbean (IDA & IBRD countries)",NA,2018
 "T2","Latin America & the Caribbean (IDA & IBRD countries)",14473.5330305956,2017
 "T2","Latin America & the Caribbean (IDA & IBRD countries)",14354.8468361912,2016
 "T2","Latin America & the Caribbean (IDA & IBRD countries)",14508.4375588142,2015
@@ -671,6 +695,7 @@
 "T2","Latin America & the Caribbean (IDA & IBRD countries)",10160.498702774,1992
 "T2","Latin America & the Caribbean (IDA & IBRD countries)",10054.6272197676,1991
 "T2","Latin America & the Caribbean (IDA & IBRD countries)",9864.04095817294,1990
+"XL","Least developed countries: UN classification",NA,2018
 "XL","Least developed countries: UN classification",2541.23177342447,2017
 "XL","Least developed countries: UN classification",2470.14118397341,2016
 "XL","Least developed countries: UN classification",2432.9582046221,2015
@@ -699,6 +724,7 @@
 "XL","Least developed countries: UN classification",1316.61106649447,1992
 "XL","Least developed countries: UN classification",1338.58862646023,1991
 "XL","Least developed countries: UN classification",1350.01649068674,1990
+"XO","Low & middle income",NA,2018
 "XO","Low & middle income",10023.3336251199,2017
 "XO","Low & middle income",9657.73606210675,2016
 "XO","Low & middle income",9342.38620198326,2015
@@ -727,6 +753,7 @@
 "XO","Low & middle income",4095.72993702377,1992
 "XO","Low & middle income",4137.51960680661,1991
 "XO","Low & middle income",4183.52142521275,1990
+"XM","Low income",NA,2018
 "XM","Low income",1962.05141857766,2017
 "XM","Low income",1913.40167185133,2016
 "XM","Low income",1910.62947812874,2015
@@ -755,6 +782,7 @@
 "XM","Low income",1366.5670406799,1992
 "XM","Low income",1451.36668554114,1991
 "XM","Low income",1480.737032799,1990
+"XN","Lower middle income",NA,2018
 "XN","Lower middle income",6554.88868856915,2017
 "XN","Lower middle income",6298.39713905245,2016
 "XN","Lower middle income",6057.88148558525,2015
@@ -783,6 +811,7 @@
 "XN","Lower middle income",2755.33429656856,1992
 "XN","Lower middle income",2730.55458986187,1991
 "XN","Lower middle income",2752.48285648885,1990
+"ZQ","Middle East & North Africa",NA,2018
 "ZQ","Middle East & North Africa",18093.4325513394,2017
 "ZQ","Middle East & North Africa",18106.6208726655,2016
 "ZQ","Middle East & North Africa",17524.9298311262,2015
@@ -811,6 +840,7 @@
 "ZQ","Middle East & North Africa",12225.564291828,1992
 "ZQ","Middle East & North Africa",11879.8253871225,1991
 "ZQ","Middle East & North Africa",11802.4731198699,1990
+"XQ","Middle East & North Africa (excluding high income)",NA,2018
 "XQ","Middle East & North Africa (excluding high income)",12370.12469463,2017
 "XQ","Middle East & North Africa (excluding high income)",12215.0451488684,2016
 "XQ","Middle East & North Africa (excluding high income)",11575.0660928142,2015
@@ -839,6 +869,7 @@
 "XQ","Middle East & North Africa (excluding high income)",7879.70324945912,1992
 "XQ","Middle East & North Africa (excluding high income)",7701.86440941461,1991
 "XQ","Middle East & North Africa (excluding high income)",8036.43540334777,1990
+"T3","Middle East & North Africa (IDA & IBRD countries)",NA,2018
 "T3","Middle East & North Africa (IDA & IBRD countries)",12470.3108445091,2017
 "T3","Middle East & North Africa (IDA & IBRD countries)",12308.3481125645,2016
 "T3","Middle East & North Africa (IDA & IBRD countries)",11659.6110690942,2015
@@ -867,6 +898,7 @@
 "T3","Middle East & North Africa (IDA & IBRD countries)",7927.78739264401,1992
 "T3","Middle East & North Africa (IDA & IBRD countries)",7747.35224279262,1991
 "T3","Middle East & North Africa (IDA & IBRD countries)",8082.45715666286,1990
+"XP","Middle income",NA,2018
 "XP","Middle income",11094.2897614422,2017
 "XP","Middle income",10671.8884121289,2016
 "XP","Middle income",10302.8370959041,2015
@@ -895,6 +927,7 @@
 "XP","Middle income",4357.18794124647,1992
 "XP","Middle income",4393.32222808767,1991
 "XP","Middle income",4438.16515384444,1990
+"XU","North America",NA,2018
 "XU","North America",53191.8932916198,2017
 "XU","North America",52375.1195431934,2016
 "XU","North America",52016.2231575916,2015
@@ -923,6 +956,7 @@
 "XU","North America",36600.7471084312,1992
 "XU","North America",35910.2600752991,1991
 "XU","North America",36485.7222511282,1990
+"XY","Not classified",NA,2018
 "XY","Not classified",NA,2017
 "XY","Not classified",NA,2016
 "XY","Not classified",NA,2015
@@ -951,6 +985,7 @@
 "XY","Not classified",NA,1992
 "XY","Not classified",NA,1991
 "XY","Not classified",NA,1990
+"OE","OECD members",NA,2018
 "OE","OECD members",39589.2148433073,2017
 "OE","OECD members",38859.0842947986,2016
 "OE","OECD members",38413.7622273422,2015
@@ -979,6 +1014,7 @@
 "OE","OECD members",27417.8135397139,1992
 "OE","OECD members",27071.4312941835,1991
 "OE","OECD members",26951.3685251041,1990
+"S4","Other small states",NA,2018
 "S4","Other small states",23489.4017385269,2017
 "S4","Other small states",23511.7588769234,2016
 "S4","Other small states",23522.9544629093,2015
@@ -1007,6 +1043,7 @@
 "S4","Other small states",NA,1992
 "S4","Other small states",NA,1991
 "S4","Other small states",NA,1990
+"S2","Pacific island small states",NA,2018
 "S2","Pacific island small states",5418.66231982447,2017
 "S2","Pacific island small states",5308.04588158881,2016
 "S2","Pacific island small states",5276.18097760249,2015
@@ -1035,6 +1072,7 @@
 "S2","Pacific island small states",4168.57123001546,1992
 "S2","Pacific island small states",4020.72671626188,1991
 "S2","Pacific island small states",4109.04595230826,1990
+"V4","Post-demographic dividend",NA,2018
 "V4","Post-demographic dividend",42190.7915556845,2017
 "V4","Post-demographic dividend",41423.2608772485,2016
 "V4","Post-demographic dividend",40937.3433119535,2015
@@ -1063,6 +1101,7 @@
 "V4","Post-demographic dividend",28918.86168625,1992
 "V4","Post-demographic dividend",28612.6893743078,1991
 "V4","Post-demographic dividend",28478.3234446831,1990
+"V1","Pre-demographic dividend",NA,2018
 "V1","Pre-demographic dividend",3500.46734658383,2017
 "V1","Pre-demographic dividend",3541.75701502701,2016
 "V1","Pre-demographic dividend",3529.94224528125,2015
@@ -1091,6 +1130,7 @@
 "V1","Pre-demographic dividend",2153.96924441376,1992
 "V1","Pre-demographic dividend",2142.59271345137,1991
 "V1","Pre-demographic dividend",2512.20216912831,1990
+"S1","Small states",NA,2018
 "S1","Small states",20756.5580882264,2017
 "S1","Small states",20757.0618835401,2016
 "S1","Small states",20813.0178305597,2015
@@ -1119,6 +1159,7 @@
 "S1","Small states",NA,1992
 "S1","Small states",NA,1991
 "S1","Small states",NA,1990
+"8S","South Asia",NA,2018
 "8S","South Asia",5917.79159012356,2017
 "8S","South Asia",5624.69904863285,2016
 "8S","South Asia",5332.7096532232,2015
@@ -1147,6 +1188,7 @@
 "8S","South Asia",1909.23492655467,1992
 "8S","South Asia",1843.95946344016,1991
 "8S","South Asia",1847.39671412946,1990
+"T5","South Asia (IDA & IBRD)",NA,2018
 "T5","South Asia (IDA & IBRD)",5917.79159012356,2017
 "T5","South Asia (IDA & IBRD)",5624.69904863285,2016
 "T5","South Asia (IDA & IBRD)",5332.7096532232,2015
@@ -1175,6 +1217,7 @@
 "T5","South Asia (IDA & IBRD)",1909.23492655467,1992
 "T5","South Asia (IDA & IBRD)",1843.95946344016,1991
 "T5","South Asia (IDA & IBRD)",1847.39671412946,1990
+"ZG","Sub-Saharan Africa",NA,2018
 "ZG","Sub-Saharan Africa",3488.65873848896,2017
 "ZG","Sub-Saharan Africa",3482.87302305784,2016
 "ZG","Sub-Saharan Africa",3526.99809356958,2015
@@ -1203,6 +1246,7 @@
 "ZG","Sub-Saharan Africa",2484.27283928875,1992
 "ZG","Sub-Saharan Africa",2557.87563273645,1991
 "ZG","Sub-Saharan Africa",2617.22203599863,1990
+"ZF","Sub-Saharan Africa (excluding high income)",NA,2018
 "ZF","Sub-Saharan Africa (excluding high income)",3486.56576977076,2017
 "ZF","Sub-Saharan Africa (excluding high income)",3480.84368727292,2016
 "ZF","Sub-Saharan Africa (excluding high income)",3525.01747505009,2015
@@ -1231,6 +1275,7 @@
 "ZF","Sub-Saharan Africa (excluding high income)",2482.58809264049,1992
 "ZF","Sub-Saharan Africa (excluding high income)",2556.29228811331,1991
 "ZF","Sub-Saharan Africa (excluding high income)",2615.65144039748,1990
+"T6","Sub-Saharan Africa (IDA & IBRD countries)",NA,2018
 "T6","Sub-Saharan Africa (IDA & IBRD countries)",3488.65873848896,2017
 "T6","Sub-Saharan Africa (IDA & IBRD countries)",3482.87302305784,2016
 "T6","Sub-Saharan Africa (IDA & IBRD countries)",3526.99809356958,2015
@@ -1259,6 +1304,7 @@
 "T6","Sub-Saharan Africa (IDA & IBRD countries)",2484.27283928875,1992
 "T6","Sub-Saharan Africa (IDA & IBRD countries)",2557.87563273645,1991
 "T6","Sub-Saharan Africa (IDA & IBRD countries)",2617.22203599863,1990
+"XT","Upper middle income",NA,2018
 "XT","Upper middle income",16319.7087171379,2017
 "XT","Upper middle income",15673.8970095993,2016
 "XT","Upper middle income",15126.3791805635,2015
@@ -1287,6 +1333,7 @@
 "XT","Upper middle income",5872.23477724404,1992
 "XT","Upper middle income",5954.04047890903,1991
 "XT","Upper middle income",6009.16360873149,1990
+"1W","World",NA,2018
 "1W","World",15476.2996396724,2017
 "1W","World",15090.0686065715,2016
 "1W","World",14784.9876620907,2015
@@ -1315,6 +1362,7 @@
 "1W","World",8939.10713433909,1992
 "1W","World",8921.10950984037,1991
 "1W","World",8942.02056668796,1990
+"AF","Afghanistan",NA,2018
 "AF","Afghanistan",1796.39253055946,2017
 "AF","Afghanistan",1793.88647411753,2016
 "AF","Afghanistan",1802.04951972054,2015
@@ -1343,6 +1391,7 @@
 "AF","Afghanistan",NA,1992
 "AF","Afghanistan",NA,1991
 "AF","Afghanistan",NA,1990
+"AL","Albania",NA,2018
 "AL","Albania",11802.0225726936,2017
 "AL","Albania",11355.6230702122,2016
 "AL","Albania",10969.9875752239,2015
@@ -1371,6 +1420,7 @@
 "AL","Albania",3014.71488631264,1992
 "AL","Albania",3228.97406363259,1991
 "AL","Albania",4558.33312989531,1990
+"DZ","Algeria",NA,2018
 "DZ","Algeria",13900.1581055712,2017
 "DZ","Algeria",13921.1800218255,2016
 "DZ","Algeria",13724.723852895,2015
@@ -1399,6 +1449,7 @@
 "DZ","Algeria",9815.46382267098,1992
 "DZ","Algeria",9869.48837022995,1991
 "DZ","Algeria",10236.840658348,1990
+"AS","American Samoa",NA,2018
 "AS","American Samoa",NA,2017
 "AS","American Samoa",NA,2016
 "AS","American Samoa",NA,2015
@@ -1427,6 +1478,7 @@
 "AS","American Samoa",NA,1992
 "AS","American Samoa",NA,1991
 "AS","American Samoa",NA,1990
+"AD","Andorra",NA,2018
 "AD","Andorra",NA,2017
 "AD","Andorra",NA,2016
 "AD","Andorra",NA,2015
@@ -1455,6 +1507,7 @@
 "AD","Andorra",NA,1992
 "AD","Andorra",NA,1991
 "AD","Andorra",NA,1990
+"AO","Angola",NA,2018
 "AO","Angola",6051.57936786843,2017
 "AO","Angola",6264.68008157535,2016
 "AO","Angola",6650.8382526537,2015
@@ -1483,6 +1536,7 @@
 "AO","Angola",4136.68416818956,1992
 "AO","Angola",4538.36667449539,1991
 "AO","Angola",4634.8568409843,1990
+"AG","Antigua and Barbuda",NA,2018
 "AG","Antigua and Barbuda",21380.1574008495,2017
 "AG","Antigua and Barbuda",20966.4657353875,2016
 "AG","Antigua and Barbuda",20063.2042293396,2015
@@ -1511,6 +1565,7 @@
 "AG","Antigua and Barbuda",16503.1721291013,1992
 "AG","Antigua and Barbuda",16585.6712434924,1991
 "AG","Antigua and Barbuda",16381.0183664456,1990
+"AR","Argentina",NA,2018
 "AR","Argentina",18932.166465082,2017
 "AR","Argentina",18584.580004917,2016
 "AR","Argentina",19116.9079145132,2015
@@ -1539,6 +1594,7 @@
 "AR","Argentina",12984.0681681207,1992
 "AR","Argentina",12196.4179184174,1991
 "AR","Argentina",11334.2226112136,1990
+"AM","Armenia",NA,2018
 "AM","Armenia",8787.57993957654,2017
 "AM","Armenia",8190.23928865463,2016
 "AM","Armenia",8195.93364917799,2015
@@ -1567,6 +1623,7 @@
 "AM","Armenia",1976.52923651447,1992
 "AM","Armenia",3335.60189918844,1991
 "AM","Armenia",3742.43737068264,1990
+"AW","Aruba",NA,2018
 "AW","Aruba",35896.5779516164,2017
 "AW","Aruba",35574.6178326658,2016
 "AW","Aruba",35814.2614376623,2015
@@ -1595,6 +1652,7 @@
 "AW","Aruba",38669.3749013174,1992
 "AW","Aruba",38562.9606176892,1991
 "AW","Aruba",37140.0246568536,1990
+"AU","Australia",NA,2018
 "AU","Australia",44648.7099113362,2017
 "AU","Australia",44493.4808943831,2016
 "AU","Australia",43923.2582693466,2015
@@ -1623,6 +1681,7 @@
 "AU","Australia",27969.0661165142,1992
 "AU","Australia",28185.7529003265,1991
 "AU","Australia",28658.3658903333,1990
+"AT","Austria",NA,2018
 "AT","Austria",45436.6858219914,2017
 "AT","Austria",44464.3502683082,2016
 "AT","Austria",44304.967756787,2015
@@ -1651,6 +1710,7 @@
 "AT","Austria",32411.8024585346,1992
 "AT","Austria",32098.4915397552,1991
 "AT","Austria",31341.9023811581,1990
+"AZ","Azerbaijan",NA,2018
 "AZ","Azerbaijan",15847.4188327529,2017
 "AZ","Azerbaijan",16001.3233967209,2016
 "AZ","Azerbaijan",16698.8636532538,2015
@@ -1679,6 +1739,7 @@
 "AZ","Azerbaijan",6345.5169997564,1992
 "AZ","Azerbaijan",8323.49934468511,1991
 "AZ","Azerbaijan",8513.31069277994,1990
+"BS","Bahamas, The",NA,2018
 "BS","Bahamas, The",27717.8472975209,2017
 "BS","Bahamas, The",27613.5179396955,2016
 "BS","Bahamas, The",28407.1258158807,2015
@@ -1707,6 +1768,7 @@
 "BS","Bahamas, The",27508.4452673376,1992
 "BS","Bahamas, The",29152.3356552967,1991
 "BS","Bahamas, The",30991.9683431978,1990
+"BH","Bahrain",NA,2018
 "BH","Bahrain",43290.7045180745,2017
 "BH","Bahrain",43642.9725745003,2016
 "BH","Bahrain",43926.474036316,2015
@@ -1735,6 +1797,7 @@
 "BH","Bahrain",39506.1787854484,1992
 "BH","Bahrain",37996.6430763657,1991
 "BH","Bahrain",35113.3329386605,1990
+"BD","Bangladesh",NA,2018
 "BD","Bangladesh",3523.98385062592,2017
 "BD","Bangladesh",3319.35355606232,2016
 "BD","Bangladesh",3132.56754015214,2015
@@ -1763,6 +1826,7 @@
 "BD","Bangladesh",1341.76334138033,1992
 "BD","Bangladesh",1301.69965941864,1991
 "BD","Bangladesh",1287.93366418737,1990
+"BB","Barbados",NA,2018
 "BB","Barbados",16869.2934448586,2017
 "BB","Barbados",16744.6423558335,2016
 "BB","Barbados",16460.1541131793,2015
@@ -1791,6 +1855,7 @@
 "BB","Barbados",12562.3335865951,1992
 "BB","Barbados",13552.6552604877,1991
 "BB","Barbados",14153.3881967077,1990
+"BY","Belarus",NA,2018
 "BY","Belarus",17157.5704331121,2017
 "BY","Belarus",16763.0361063249,2016
 "BY","Belarus",17219.1206477761,2015
@@ -1819,6 +1884,7 @@
 "BY","Belarus",7452.9248685908,1992
 "BY","Belarus",8262.17850653382,1991
 "BY","Belarus",8366.63218540654,1990
+"BE","Belgium",NA,2018
 "BE","Belgium",42658.57617009,2017
 "BE","Belgium",42083.6443038217,2016
 "BE","Belgium",41708.2123401731,2015
@@ -1847,6 +1913,7 @@
 "BE","Belgium",31441.977285362,1992
 "BE","Belgium",31093.8610724912,1991
 "BE","Belgium",30647.8213478709,1990
+"BZ","Belize",NA,2018
 "BZ","Belize",7748.81658836051,2017
 "BZ","Belize",7799.87768728321,2016
 "BZ","Belize",8013.42171231653,2015
@@ -1875,6 +1942,7 @@
 "BZ","Belize",6167.53163803386,1992
 "BZ","Belize",5595.69382600049,1991
 "BZ","Belize",5115.84347903983,1990
+"BJ","Benin",NA,2018
 "BJ","Benin",2069.19492266158,2017
 "BJ","Benin",2009.61832073663,2016
 "BJ","Benin",1987.14191963108,2015
@@ -1903,6 +1971,7 @@
 "BJ","Benin",1465.57057864765,1992
 "BJ","Benin",1473.86252559355,1991
 "BJ","Benin",1462.67742107927,1990
+"BM","Bermuda",NA,2018
 "BM","Bermuda",NA,2017
 "BM","Bermuda",NA,2016
 "BM","Bermuda",NA,2015
@@ -1931,6 +2000,7 @@
 "BM","Bermuda",39584.3298590314,1992
 "BM","Bermuda",39322.1091825364,1991
 "BM","Bermuda",40553.2585214927,1990
+"BT","Bhutan",NA,2018
 "BT","Bhutan",8536.33102736862,2017
 "BT","Bhutan",8259.34223126236,2016
 "BT","Bhutan",7746.76052928639,2015
@@ -1959,6 +2029,7 @@
 "BT","Bhutan",2448.53037239605,1992
 "BT","Bhutan",2315.74053813835,1991
 "BT","Bhutan",2325.24188426706,1990
+"BO","Bolivia",NA,2018
 "BO","Bolivia",6885.82857742035,2017
 "BO","Bolivia",6707.95618414272,2016
 "BO","Bolivia",6531.51939817124,2015
@@ -1987,6 +2058,7 @@
 "BO","Bolivia",3813.52647052397,1992
 "BO","Bolivia",3826.43254919418,1991
 "BO","Bolivia",3707.24493024301,1990
+"BA","Bosnia and Herzegovina",NA,2018
 "BA","Bosnia and Herzegovina",11731.4374311463,2017
 "BA","Bosnia and Herzegovina",11337.5136576373,2016
 "BA","Bosnia and Herzegovina",10932.4056805132,2015
@@ -2015,6 +2087,7 @@
 "BA","Bosnia and Herzegovina",NA,1992
 "BA","Bosnia and Herzegovina",NA,1991
 "BA","Bosnia and Herzegovina",NA,1990
+"BW","Botswana",NA,2018
 "BW","Botswana",15473.9226231674,2017
 "BW","Botswana",15395.2758379765,2016
 "BW","Botswana",15032.6983293659,2015
@@ -2043,6 +2116,7 @@
 "BW","Botswana",8310.3718246528,1992
 "BW","Botswana",8297.68995352143,1991
 "BW","Botswana",7939.28694504176,1990
+"BR","Brazil",NA,2018
 "BR","Brazil",14103.4515313404,2017
 "BR","Brazil",14077.1214085544,2016
 "BR","Brazil",14702.5912680316,2015
@@ -2071,6 +2145,7 @@
 "BR","Brazil",10099.7756199842,1992
 "BR","Brazil",10319.9293352146,1991
 "BR","Brazil",10344.8643896104,1990
+"VG","British Virgin Islands",NA,2018
 "VG","British Virgin Islands",NA,2017
 "VG","British Virgin Islands",NA,2016
 "VG","British Virgin Islands",NA,2015
@@ -2099,6 +2174,7 @@
 "VG","British Virgin Islands",NA,1992
 "VG","British Virgin Islands",NA,1991
 "VG","British Virgin Islands",NA,1990
+"BN","Brunei Darussalam",NA,2018
 "BN","Brunei Darussalam",71809.250580867,2017
 "BN","Brunei Darussalam",71788.7832343468,2016
 "BN","Brunei Darussalam",74600.1642971982,2015
@@ -2127,6 +2203,7 @@
 "BN","Brunei Darussalam",86423.2835638991,1992
 "BN","Brunei Darussalam",84879.7921309364,1991
 "BN","Brunei Darussalam",84672.3914994667,1990
+"BG","Bulgaria",NA,2018
 "BG","Bulgaria",18606.0321094819,2017
 "BG","Bulgaria",17792.6149177782,2016
 "BG","Bulgaria",16999.0459943312,2015
@@ -2155,6 +2232,7 @@
 "BG","Bulgaria",8057.36591486513,1992
 "BG","Bulgaria",8596.47344229234,1991
 "BG","Bulgaria",9296.90896876333,1990
+"BF","Burkina Faso",NA,2018
 "BF","Burkina Faso",1696.22547690272,2017
 "BF","Burkina Faso",1642.47018941385,2016
 "BF","Burkina Faso",1596.33458051647,2015
@@ -2183,6 +2261,7 @@
 "BF","Burkina Faso",874.806444566451,1992
 "BF","Burkina Faso",896.598477820563,1991
 "BF","Burkina Faso",844.342167576777,1990
+"BI","Burundi",NA,2018
 "BI","Burundi",668.478984270799,2017
 "BI","Burundi",686.650177473812,2016
 "BI","Burundi",712.796926609705,2015
@@ -2211,6 +2290,7 @@
 "BI","Burundi",1046.86464882016,1992
 "BI","Burundi",1058.66780481738,1991
 "BI","Burundi",1031.86297921739,1990
+"CV","Cabo Verde",NA,2018
 "CV","Cabo Verde",6283.16284557894,2017
 "CV","Cabo Verde",6117.17669954766,2016
 "CV","Cabo Verde",5915.1226321764,2015
@@ -2239,6 +2319,7 @@
 "CV","Cabo Verde",1774.6271706324,1992
 "CV","Cabo Verde",1641.51685078283,1991
 "CV","Cabo Verde",1656.90750326105,1990
+"KH","Cambodia",NA,2018
 "KH","Cambodia",3651.72449065776,2017
 "KH","Cambodia",3462.20962062717,2016
 "KH","Cambodia",3290.95245385442,2015
@@ -2267,6 +2348,7 @@
 "KH","Cambodia",NA,1992
 "KH","Cambodia",NA,1991
 "KH","Cambodia",NA,1990
+"CM","Cameroon",NA,2018
 "CM","Cameroon",3383.46080641795,2017
 "CM","Cameroon",3353.1630460525,2016
 "CM","Cameroon",3289.06454559229,2015
@@ -2295,6 +2377,7 @@
 "CM","Cameroon",2657.9921440285,1992
 "CM","Cameroon",2822.21919198485,1991
 "CM","Cameroon",3020.49191137826,1990
+"CA","Canada",NA,2018
 "CA","Canada",44017.5909063335,2017
 "CA","Canada",43238.2596047198,2016
 "CA","Canada",43149.4758370305,2015
@@ -2323,6 +2406,7 @@
 "CA","Canada",30115.2812355584,1992
 "CA","Canada",30220.3607817756,1991
 "CA","Canada",31299.6545691346,1990
+"KY","Cayman Islands",NA,2018
 "KY","Cayman Islands",52993.3968323477,2017
 "KY","Cayman Islands",52172.8351532616,2016
 "KY","Cayman Islands",51065.1527217268,2015
@@ -2351,6 +2435,7 @@
 "KY","Cayman Islands",NA,1992
 "KY","Cayman Islands",NA,1991
 "KY","Cayman Islands",NA,1990
+"CF","Central African Republic",NA,2018
 "CF","Central African Republic",661.239967689311,2017
 "CF","Central African Republic",642.873494030895,2016
 "CF","Central African Republic",621.56984291697,2015
@@ -2379,6 +2464,7 @@
 "CF","Central African Republic",817.458596882107,1992
 "CF","Central African Republic",897.103140655484,1991
 "CF","Central African Republic",925.053852892466,1990
+"TD","Chad",NA,2018
 "TD","Chad",1768.15341090621,2017
 "TD","Chad",1878.37848258326,2016
 "TD","Chad",2067.10132178618,2015
@@ -2407,6 +2493,7 @@
 "TD","Chad",1221.23750025815,1992
 "TD","Chad",1167.35017123585,1991
 "TD","Chad",1110.43797952483,1990
+"JG","Channel Islands",NA,2018
 "JG","Channel Islands",NA,2017
 "JG","Channel Islands",NA,2016
 "JG","Channel Islands",NA,2015
@@ -2435,6 +2522,7 @@
 "JG","Channel Islands",NA,1992
 "JG","Channel Islands",NA,1991
 "JG","Channel Islands",NA,1990
+"CL","Chile",NA,2018
 "CL","Chile",22767.0371912423,2017
 "CL","Chile",22614.3936667162,2016
 "CL","Chile",22516.6078575125,2015
@@ -2463,6 +2551,7 @@
 "CL","Chile",10437.9848863787,1992
 "CL","Chile",9538.65463138555,1991
 "CL","Chile",8991.84647717044,1990
+"CN","China",NA,2018
 "CN","China",15308.712122905,2017
 "CN","China",14400.8850630561,2016
 "CN","China",13569.8915267324,2015
@@ -2491,6 +2580,7 @@
 "CN","China",1856.72218055136,1992
 "CN","China",1645.66636638566,1991
 "CN","China",1526.40869902494,1990
+"CO","Colombia",NA,2018
 "CO","Colombia",13182.6307627304,2017
 "CO","Colombia",13060.6352455154,2016
 "CO","Colombia",12922.0427857851,2015
@@ -2519,6 +2609,7 @@
 "CO","Colombia",7636.02724523255,1992
 "CO","Colombia",7474.08774488793,1991
 "CO","Colombia",7465.36852245426,1990
+"KM","Comoros",NA,2018
 "KM","Comoros",2500.50799766547,2017
 "KM","Comoros",2490.62044844066,2016
 "KM","Comoros",2494.27415988142,2015
@@ -2547,6 +2638,7 @@
 "KM","Comoros",2498.64974008635,1992
 "KM","Comoros",2370.5516818711,1991
 "KM","Comoros",2580.50055464827,1990
+"CD","Congo, Dem. Rep.",NA,2018
 "CD","Congo, Dem. Rep.",808.133213372096,2017
 "CD","Congo, Dem. Rep.",805.06426411103,2016
 "CD","Congo, Dem. Rep.",812.403370093225,2015
@@ -2575,6 +2667,7 @@
 "CD","Congo, Dem. Rep.",1053.55056684937,1992
 "CD","Congo, Dem. Rep.",1224.06488398194,1991
 "CD","Congo, Dem. Rep.",1386.8307479809,1990
+"CG","Congo, Rep.",NA,2018
 "CG","Congo, Rep.",4957.5901199438,2017
 "CG","Congo, Rep.",5250.86760824979,2016
 "CG","Congo, Rep.",5542.89298198573,2015
@@ -2603,6 +2696,7 @@
 "CG","Congo, Rep.",5114.784771474,1992
 "CG","Congo, Rep.",5122.26094091054,1991
 "CG","Congo, Rep.",5140.41614581672,1990
+"CR","Costa Rica",NA,2018
 "CR","Costa Rica",15551.7104768722,2017
 "CR","Costa Rica",15208.0829132587,2016
 "CR","Costa Rica",14738.6133742569,2015
@@ -2631,6 +2725,7 @@
 "CR","Costa Rica",8281.79082897222,1992
 "CR","Costa Rica",7779.69719387516,1991
 "CR","Costa Rica",7803.06335372588,1990
+"CI","Cote d'Ivoire",NA,2018
 "CI","Cote d'Ivoire",3585.53598955241,2017
 "CI","Cote d'Ivoire",3413.25578634301,2016
 "CI","Cote d'Ivoire",3241.61205578936,2015
@@ -2659,6 +2754,7 @@
 "CI","Cote d'Ivoire",2970.47508007571,1992
 "CI","Cote d'Ivoire",3083.89094459281,1991
 "CI","Cote d'Ivoire",3193.75853118149,1990
+"HR","Croatia",NA,2018
 "HR","Croatia",22828.3721501565,2017
 "HR","Croatia",21921.9055625487,2016
 "HR","Croatia",21025.8390591459,2015
@@ -2687,6 +2783,7 @@
 "HR","Croatia",NA,1992
 "HR","Croatia",NA,1991
 "HR","Croatia",NA,1990
+"CU","Cuba",NA,2018
 "CU","Cuba",NA,2017
 "CU","Cuba",NA,2016
 "CU","Cuba",NA,2015
@@ -2715,6 +2812,7 @@
 "CU","Cuba",NA,1992
 "CU","Cuba",NA,1991
 "CU","Cuba",NA,1990
+"CW","Curacao",NA,2018
 "CW","Curacao",NA,2017
 "CW","Curacao",NA,2016
 "CW","Curacao",NA,2015
@@ -2743,6 +2841,7 @@
 "CW","Curacao",NA,1992
 "CW","Curacao",NA,1991
 "CW","Curacao",NA,1990
+"CY","Cyprus",NA,2018
 "CY","Cyprus",32415.1322300794,2017
 "CY","Cyprus",31442.4402927264,2016
 "CY","Cyprus",30549.2971275221,2015
@@ -2771,6 +2870,7 @@
 "CY","Cyprus",24366.4463863902,1992
 "CY","Cyprus",22873.3141973317,1991
 "CY","Cyprus",23300.8243854487,1990
+"CZ","Czech Republic",NA,2018
 "CZ","Czech Republic",32605.9063265661,2017
 "CZ","Czech Republic",31338.8752118175,2016
 "CZ","Czech Republic",30605.4205211471,2015
@@ -2799,6 +2899,7 @@
 "CZ","Czech Republic",17632.0996214391,1992
 "CZ","Czech Republic",17739.9967006919,1991
 "CZ","Czech Republic",20023.1359867147,1990
+"DK","Denmark",NA,2018
 "DK","Denmark",46682.5147204669,2017
 "DK","Denmark",45991.2247756847,2016
 "DK","Denmark",45458.697148831,2015
@@ -2827,6 +2928,7 @@
 "DK","Denmark",34721.3817813856,1992
 "DK","Denmark",34167.7192804575,1991
 "DK","Denmark",33785.6501434745,1990
+"DJ","Djibouti",NA,2018
 "DJ","Djibouti",NA,2017
 "DJ","Djibouti",NA,2016
 "DJ","Djibouti",NA,2015
@@ -2855,6 +2957,7 @@
 "DJ","Djibouti",NA,1992
 "DJ","Djibouti",NA,1991
 "DJ","Djibouti",NA,1990
+"DM","Dominica",NA,2018
 "DM","Dominica",9123.40226418501,2017
 "DM","Dominica",10136.8615812913,2016
 "DM","Dominica",9938.98477743611,2015
@@ -2883,6 +2986,7 @@
 "DM","Dominica",6831.4359529578,1992
 "DM","Dominica",6707.61560399685,1991
 "DM","Dominica",6610.66085355459,1990
+"DO","Dominican Republic",NA,2018
 "DO","Dominican Republic",14600.8605841474,2017
 "DO","Dominican Republic",14120.2116371665,2016
 "DO","Dominican Republic",13395.916802055,2015
@@ -2911,6 +3015,7 @@
 "DO","Dominican Republic",5914.57968793689,1992
 "DO","Dominican Republic",5421.62156536968,1991
 "DO","Dominican Republic",5477.0614649721,1990
+"EC","Ecuador",NA,2018
 "EC","Ecuador",10554.6341742156,2017
 "EC","Ecuador",10461.3329222683,2016
 "EC","Ecuador",10749.1288738874,2015
@@ -2939,6 +3044,7 @@
 "EC","Ecuador",7595.02533464365,1992
 "EC","Ecuador",7611.73325454516,1991
 "EC","Ecuador",7472.02512840139,1990
+"EG","Egypt, Arab Rep.",NA,2018
 "EG","Egypt, Arab Rep.",10551.2996496835,2017
 "EG","Egypt, Arab Rep.",10325.1708698521,2016
 "EG","Egypt, Arab Rep.",10096.6562189749,2015
@@ -2967,6 +3073,7 @@
 "EG","Egypt, Arab Rep.",5826.12958564488,1992
 "EG","Egypt, Arab Rep.",5698.48637035809,1991
 "EG","Egypt, Arab Rep.",5766.60862469059,1990
+"SV","El Salvador",NA,2018
 "SV","El Salvador",7292.45780880206,2017
 "SV","El Salvador",7164.14351458183,2016
 "SV","El Salvador",7019.59179902723,2015
@@ -2995,6 +3102,7 @@
 "SV","El Salvador",4803.34974879476,1992
 "SV","El Salvador",4550.43420890663,1991
 "SV","El Salvador",4544.58540805616,1990
+"GQ","Equatorial Guinea",NA,2018
 "GQ","Equatorial Guinea",22213.7430557227,2017
 "GQ","Equatorial Guinea",24245.9590153184,2016
 "GQ","Equatorial Guinea",27547.8398239782,2015
@@ -3023,6 +3131,7 @@
 "GQ","Equatorial Guinea",1250.12851704464,1992
 "GQ","Equatorial Guinea",958.352901146251,1991
 "GQ","Equatorial Guinea",999.504534579949,1990
+"ER","Eritrea",NA,2018
 "ER","Eritrea",NA,2017
 "ER","Eritrea",NA,2016
 "ER","Eritrea",NA,2015
@@ -3051,6 +3160,7 @@
 "ER","Eritrea",1110.99052630474,1992
 "ER","Eritrea",NA,1991
 "ER","Eritrea",NA,1990
+"EE","Estonia",NA,2018
 "EE","Estonia",29481.2518067978,2017
 "EE","Estonia",28109.81704489,2016
 "EE","Estonia",27549.5813697378,2015
@@ -3079,6 +3189,7 @@
 "EE","Estonia",NA,1992
 "EE","Estonia",NA,1991
 "EE","Estonia",NA,1990
+"SZ","Eswatini",NA,2018
 "SZ","Eswatini",7870.64483872536,2017
 "SZ","Eswatini",7864.88701964381,2016
 "SZ","Eswatini",7758.49556272489,2015
@@ -3107,6 +3218,7 @@
 "SZ","Eswatini",5370.93353970683,1992
 "SZ","Eswatini",5322.98715059593,1991
 "SZ","Eswatini",5378.1677679676,1990
+"ET","Ethiopia",NA,2018
 "ET","Ethiopia",1729.92663898628,2017
 "ET","Ethiopia",1608.29347615363,2016
 "ET","Ethiopia",1533.10763200877,2015
@@ -3135,6 +3247,7 @@
 "ET","Ethiopia",514.790155400974,1992
 "ET","Ethiopia",584.341812374146,1991
 "ET","Ethiopia",651.953090575621,1990
+"FO","Faroe Islands",NA,2018
 "FO","Faroe Islands",NA,2017
 "FO","Faroe Islands",NA,2016
 "FO","Faroe Islands",NA,2015
@@ -3163,6 +3276,7 @@
 "FO","Faroe Islands",NA,1992
 "FO","Faroe Islands",NA,1991
 "FO","Faroe Islands",NA,1990
+"FJ","Fiji",NA,2018
 "FJ","Fiji",8702.97532202106,2017
 "FJ","Fiji",8447.26417897152,2016
 "FJ","Fiji",8477.64472981588,2015
@@ -3191,6 +3305,7 @@
 "FJ","Fiji",5951.98319087882,1992
 "FJ","Fiji",5678.8756314892,1991
 "FJ","Fiji",5891.2900807153,1990
+"FI","Finland",NA,2018
 "FI","Finland",40585.7210349228,2017
 "FI","Finland",39659.1660392991,2016
 "FI","Finland",38941.7636030551,2015
@@ -3219,6 +3334,7 @@
 "FI","Finland",26002.0799527475,1992
 "FI","Finland",27047.8399017226,1991
 "FI","Finland",28905.5703241723,1990
+"FR","France",NA,2018
 "FR","France",38605.6708967878,2017
 "FR","France",38062.6397284874,2016
 "FR","France",37766.3741116872,2015
@@ -3247,6 +3363,7 @@
 "FR","France",30124.3665253161,1992
 "FR","France",29797.8624063936,1991
 "FR","France",29514.8538107688,1990
+"PF","French Polynesia",NA,2018
 "PF","French Polynesia",NA,2017
 "PF","French Polynesia",NA,2016
 "PF","French Polynesia",NA,2015
@@ -3275,6 +3392,7 @@
 "PF","French Polynesia",NA,1992
 "PF","French Polynesia",NA,1991
 "PF","French Polynesia",NA,1990
+"GA","Gabon",NA,2018
 "GA","Gabon",16463.8713675317,2017
 "GA","Gabon",16758.0040216541,2016
 "GA","Gabon",16836.6046424206,2015
@@ -3303,6 +3421,7 @@
 "GA","Gabon",19006.0894687978,1992
 "GA","Gabon",20142.4821085987,1991
 "GA","Gabon",19500.7199393571,1990
+"GM","Gambia, The",NA,2018
 "GM","Gambia, The",1544.39065347421,2017
 "GM","Gambia, The",1522.04266573203,2016
 "GM","Gambia, The",1562.58473665564,2015
@@ -3331,6 +3450,7 @@
 "GM","Gambia, The",1502.58241390288,1992
 "GM","Gambia, The",1499.74216388656,1991
 "GM","Gambia, The",1506.40468720609,1990
+"GE","Georgia",NA,2018
 "GE","Georgia",9730.88963456533,2017
 "GE","Georgia",9276.76622706503,2016
 "GE","Georgia",9025.13312698269,2015
@@ -3359,6 +3479,7 @@
 "GE","Georgia",3420.20887339557,1992
 "GE","Georgia",6255.53831627998,1991
 "GE","Georgia",7984.41026643423,1990
+"DE","Germany",NA,2018
 "DE","Germany",45229.2452947032,2017
 "DE","Germany",44431.8228379944,2016
 "DE","Germany",43937.9471317278,2015
@@ -3387,6 +3508,7 @@
 "DE","Germany",33022.5755518938,1992
 "DE","Germany",32646.5618381478,1991
 "DE","Germany",31287.0698103409,1990
+"GH","Ghana",NA,2018
 "GH","Ghana",4091.90705844952,2017
 "GH","Ghana",3867.87250169445,2016
 "GH","Ghana",3823.53394116176,2015
@@ -3415,6 +3537,7 @@
 "GH","Ghana",1985.9528623737,1992
 "GH","Ghana",1965.72771769312,1991
 "GH","Ghana",1919.6015108077,1990
+"GI","Gibraltar",NA,2018
 "GI","Gibraltar",NA,2017
 "GI","Gibraltar",NA,2016
 "GI","Gibraltar",NA,2015
@@ -3443,6 +3566,7 @@
 "GI","Gibraltar",NA,1992
 "GI","Gibraltar",NA,1991
 "GI","Gibraltar",NA,1990
+"GR","Greece",NA,2018
 "GR","Greece",24574.382476123,2017
 "GR","Greece",24211.7408896851,2016
 "GR","Greece",24170.3018369872,2015
@@ -3471,6 +3595,7 @@
 "GR","Greece",21058.96205484,1992
 "GR","Greece",21072.9332724706,1991
 "GR","Greece",20686.1367611483,1990
+"GL","Greenland",NA,2018
 "GL","Greenland",NA,2017
 "GL","Greenland",NA,2016
 "GL","Greenland",NA,2015
@@ -3499,6 +3624,7 @@
 "GL","Greenland",NA,1992
 "GL","Greenland",NA,1991
 "GL","Greenland",NA,1990
+"GD","Grenada",NA,2018
 "GD","Grenada",13775.7311039387,2017
 "GD","Grenada",13174.4181577231,2016
 "GD","Grenada",12758.7261133078,2015
@@ -3527,6 +3653,7 @@
 "GD","Grenada",7210.95599712847,1992
 "GD","Grenada",7328.95819759675,1991
 "GD","Grenada",7241.63831691785,1990
+"GU","Guam",NA,2018
 "GU","Guam",NA,2017
 "GU","Guam",NA,2016
 "GU","Guam",NA,2015
@@ -3555,6 +3682,7 @@
 "GU","Guam",NA,1992
 "GU","Guam",NA,1991
 "GU","Guam",NA,1990
+"GT","Guatemala",NA,2018
 "GT","Guatemala",7423.79955180281,2017
 "GT","Guatemala",7368.60169528608,2016
 "GT","Guatemala",7292.71094829996,2015
@@ -3583,6 +3711,7 @@
 "GT","Guatemala",5289.26970711917,1992
 "GT","Guatemala",5165.01479215915,1991
 "GT","Guatemala",5100.77348829887,1990
+"GN","Guinea",NA,2018
 "GN","Guinea",2042.40319094285,2017
 "GN","Guinea",1894.44131284804,2016
 "GN","Guinea",1758.31560807294,2015
@@ -3611,6 +3740,7 @@
 "GN","Guinea",1337.3493822232,1992
 "GN","Guinea",1373.10668861329,1991
 "GN","Guinea",1411.9489316693,1990
+"GW","Guinea-Bissau",NA,2018
 "GW","Guinea-Bissau",1548.67764140097,2017
 "GW","Guinea-Bissau",1498.83983826331,2016
 "GW","Guinea-Bissau",1446.48940191455,2015
@@ -3639,6 +3769,7 @@
 "GW","Guinea-Bissau",1592.84076215978,1992
 "GW","Guinea-Bissau",1614.46667897573,1991
 "GW","Guinea-Bissau",1573.87189036055,1990
+"GY","Guyana",NA,2018
 "GY","Guyana",7435.04680142356,2017
 "GY","Guyana",7266.33500317251,2016
 "GY","Guyana",7076.93474387748,2015
@@ -3667,6 +3798,7 @@
 "GY","Guyana",3264.8748796805,1992
 "GY","Guyana",3045.47663806288,1991
 "GY","Guyana",2875.30948142768,1990
+"HT","Haiti",NA,2018
 "HT","Haiti",1653.17250369424,2017
 "HT","Haiti",1654.17053675815,2016
 "HT","Haiti",1651.22844549164,2015
@@ -3695,6 +3827,7 @@
 "HT","Haiti",1942.71998049537,1992
 "HT","Haiti",2092.33144545283,1991
 "HT","Haiti",2095.26615998104,1990
+"HN","Honduras",NA,2018
 "HN","Honduras",4541.79525706075,2017
 "HN","Honduras",4406.77353237576,2016
 "HN","Honduras",4319.47011829831,2015
@@ -3723,6 +3856,7 @@
 "HN","Honduras",3106.13505989776,1992
 "HN","Honduras",3013.19278175961,1991
 "HN","Honduras",3207.60415166336,1990
+"HK","Hong Kong SAR, China",NA,2018
 "HK","Hong Kong SAR, China",56054.9198320303,2017
 "HK","Hong Kong SAR, China",54412.9249387607,2016
 "HK","Hong Kong SAR, China",53591.835819824,2015
@@ -3751,6 +3885,7 @@
 "HK","Hong Kong SAR, China",29788.6360885607,1992
 "HK","Hong Kong SAR, China",28276.7709191424,1991
 "HK","Hong Kong SAR, China",26974.164889762,1990
+"HU","Hungary",NA,2018
 "HU","Hungary",26777.5607913953,2017
 "HU","Hungary",25664.136004531,2016
 "HU","Hungary",25034.4507306605,2015
@@ -3779,6 +3914,7 @@
 "HU","Hungary",14689.8633456283,1992
 "HU","Hungary",15148.286167219,1991
 "HU","Hungary",NA,1990
+"IS","Iceland",NA,2018
 "IS","Iceland",46482.9582874747,2017
 "IS","Iceland",45630.9381699818,2016
 "IS","Iceland",43048.1251452787,2015
@@ -3807,6 +3943,7 @@
 "IS","Iceland",NA,1992
 "IS","Iceland",NA,1991
 "IS","Iceland",NA,1990
+"IN","India",NA,2018
 "IN","India",6430.10739832204,2017
 "IN","India",6095.72286534372,2016
 "IN","India",5756.66473046658,2015
@@ -3835,6 +3972,7 @@
 "IN","India",1796.53236997942,1992
 "IN","India",1737.61506276974,1991
 "IN","India",1754.85734983085,1990
+"ID","Indonesia",NA,2018
 "ID","Indonesia",11188.7440161176,2017
 "ID","Indonesia",10766.3714478177,2016
 "ID","Indonesia",10367.7019920006,2015
@@ -3863,6 +4001,7 @@
 "ID","Indonesia",5088.86885787171,1992
 "ID","Indonesia",4859.9263230672,1991
 "ID","Indonesia",4625.37725970132,1990
+"IR","Iran, Islamic Rep.",NA,2018
 "IR","Iran, Islamic Rep.",18982.9412501947,2017
 "IR","Iran, Islamic Rep.",18497.6770080335,2016
 "IR","Iran, Islamic Rep.",16500.9005123883,2015
@@ -3891,6 +4030,7 @@
 "IR","Iran, Islamic Rep.",12706.5017065137,1992
 "IR","Iran, Islamic Rep.",12546.8602044537,1991
 "IR","Iran, Islamic Rep.",11392.5636270212,1990
+"IQ","Iraq",NA,2018
 "IQ","Iraq",15392.9323799367,2017
 "IQ","Iraq",16171.7706600241,2016
 "IQ","Iraq",14738.858592504,2015
@@ -3919,6 +4059,7 @@
 "IQ","Iraq",5198.14860970864,1992
 "IQ","Iraq",4033.03110686843,1991
 "IQ","Iraq",11521.7305407794,1990
+"IE","Ireland",NA,2018
 "IE","Ireland",67335.2934089652,2017
 "IE","Ireland",63227.2079765883,2016
 "IE","Ireland",60818.0462398536,2015
@@ -3947,6 +4088,7 @@
 "IE","Ireland",22315.9675988907,1992
 "IE","Ireland",21741.8506581448,1991
 "IE","Ireland",21453.240404315,1990
+"IM","Isle of Man",NA,2018
 "IM","Isle of Man",NA,2017
 "IM","Isle of Man",NA,2016
 "IM","Isle of Man",NA,2015
@@ -3975,6 +4117,7 @@
 "IM","Isle of Man",NA,1992
 "IM","Isle of Man",NA,1991
 "IM","Isle of Man",NA,1990
+"IL","Israel",NA,2018
 "IL","Israel",33132.3203044888,2017
 "IL","Israel",32688.4081041526,2016
 "IL","Israel",32024.3527705394,2015
@@ -4003,6 +4146,7 @@
 "IL","Israel",21668.2196138002,1992
 "IL","Israel",20814.9564095729,1991
 "IL","Israel",20520.4105012446,1990
+"IT","Italy",NA,2018
 "IT","Italy",35220.0837894122,2017
 "IT","Italy",34655.2627627333,2016
 "IT","Italy",34302.0374026544,2015
@@ -4031,6 +4175,7 @@
 "IT","Italy",31841.1091489015,1992
 "IT","Italy",31599.1206761956,1991
 "IT","Italy",31141.9028555525,1990
+"JM","Jamaica",NA,2018
 "JM","Jamaica",8240.08325403834,2017
 "JM","Jamaica",8185.5609403148,2016
 "JM","Jamaica",8100.57137360715,2015
@@ -4059,6 +4204,7 @@
 "JM","Jamaica",7660.11515114533,1992
 "JM","Jamaica",7579.82575448912,1991
 "JM","Jamaica",7288.01853738275,1990
+"JP","Japan",NA,2018
 "JP","Japan",39002.2233247384,2017
 "JP","Japan",38282.5046733349,2016
 "JP","Japan",37882.980624441,2015
@@ -4087,6 +4233,7 @@
 "JP","Japan",31718.1342985297,1992
 "JP","Japan",31529.5755371053,1991
 "JP","Japan",30582.4279689061,1990
+"JO","Jordan",NA,2018
 "JO","Jordan",8337.48967919188,2017
 "JO","Jordan",8389.60457395155,2016
 "JO","Jordan",8491.05031104045,2015
@@ -4115,6 +4262,7 @@
 "JO","Jordan",6812.14900395366,1992
 "JO","Jordan",6069.13451253172,1991
 "JO","Jordan",6283.25560361224,1990
+"KZ","Kazakhstan",NA,2018
 "KZ","Kazakhstan",24078.7186973976,2017
 "KZ","Kazakhstan",23447.0157043488,2016
 "KZ","Kazakhstan",23524.0604446748,2015
@@ -4143,6 +4291,7 @@
 "KZ","Kazakhstan",10938.3901901759,1992
 "KZ","Kazakhstan",11542.5625044052,1991
 "KZ","Kazakhstan",13050.4865029932,1990
+"KE","Kenya",NA,2018
 "KE","Kenya",2992.59224061243,2017
 "KE","Kenya",2926.42706431179,2016
 "KE","Kenya",2835.89430451445,2015
@@ -4171,6 +4320,7 @@
 "KE","Kenya",2245.51935377086,1992
 "KE","Kenya",2337.04564669724,1991
 "KE","Kenya",2380.40977383278,1990
+"KI","Kiribati",NA,2018
 "KI","Kiribati",1986.07237666524,2017
 "KI","Kiribati",2014.23198488057,2016
 "KI","Kiribati",1949.83355361446,2015
@@ -4199,6 +4349,7 @@
 "KI","Kiribati",1898.83869390859,1992
 "KI","Kiribati",1909.6297344998,1991
 "KI","Kiribati",1943.59652312649,1990
+"KP","Korea, Dem. People’s Rep.",NA,2018
 "KP","Korea, Dem. People’s Rep.",NA,2017
 "KP","Korea, Dem. People’s Rep.",NA,2016
 "KP","Korea, Dem. People’s Rep.",NA,2015
@@ -4227,6 +4378,7 @@
 "KP","Korea, Dem. People’s Rep.",NA,1992
 "KP","Korea, Dem. People’s Rep.",NA,1991
 "KP","Korea, Dem. People’s Rep.",NA,1990
+"KR","Korea, Rep.",NA,2018
 "KR","Korea, Rep.",35938.3742161469,2017
 "KR","Korea, Rep.",35020.4115062331,2016
 "KR","Korea, Rep.",34177.6544703221,2015
@@ -4255,6 +4407,7 @@
 "KR","Korea, Rep.",13356.0292258218,1992
 "KR","Korea, Rep.",12710.5997442147,1991
 "KR","Korea, Rep.",11632.5985558147,1990
+"XK","Kosovo",NA,2018
 "XK","Kosovo",9779.85807815531,2017
 "XK","Kosovo",9458.05945006033,2016
 "XK","Kosovo",9161.98520592269,2015
@@ -4283,6 +4436,7 @@
 "XK","Kosovo",NA,1992
 "XK","Kosovo",NA,1991
 "XK","Kosovo",NA,1990
+"KW","Kuwait",NA,2018
 "KW","Kuwait",65530.5365781216,2017
 "KW","Kuwait",68861.7920978832,2016
 "KW","Kuwait",68476.3250405689,2015
@@ -4311,6 +4465,7 @@
 "KW","Kuwait",NA,1992
 "KW","Kuwait",NA,1991
 "KW","Kuwait",NA,1990
+"KG","Kyrgyz Republic",NA,2018
 "KG","Kyrgyz Republic",3393.47361284144,2017
 "KG","Kyrgyz Republic",3309.85992947551,2016
 "KG","Kyrgyz Republic",3237.60293714448,2015
@@ -4339,6 +4494,7 @@
 "KG","Kyrgyz Republic",2681.33278066787,1992
 "KG","Kyrgyz Republic",3149.93488616251,1991
 "KG","Kyrgyz Republic",3474.66796869711,1990
+"LA","Lao PDR",NA,2018
 "LA","Lao PDR",6397.35982538814,2017
 "LA","Lao PDR",6073.22369456346,2016
 "LA","Lao PDR",5755.0595052128,2015
@@ -4367,6 +4523,7 @@
 "LA","Lao PDR",1778.60149986068,1992
 "LA","Lao PDR",1731.96461912345,1991
 "LA","Lao PDR",1708.03422631986,1990
+"LV","Latvia",NA,2018
 "LV","Latvia",25063.7108480803,2017
 "LV","Latvia",23743.1302196931,2016
 "LV","Latvia",23018.6923987553,2015
@@ -4395,6 +4552,7 @@
 "LV","Latvia",NA,1992
 "LV","Latvia",NA,1991
 "LV","Latvia",NA,1990
+"LB","Lebanon",NA,2018
 "LB","Lebanon",13191.1408646002,2017
 "LB","Lebanon",13156.1892764568,2016
 "LB","Lebanon",13274.042077064,2015
@@ -4423,6 +4581,7 @@
 "LB","Lebanon",9651.35212775576,1992
 "LB","Lebanon",8497.80133635386,1991
 "LB","Lebanon",5790.16561504593,1990
+"LS","Lesotho",NA,2018
 "LS","Lesotho",2665.03540941109,2017
 "LS","Lesotho",2763.92245211828,2016
 "LS","Lesotho",2714.70436891839,2015
@@ -4451,6 +4610,7 @@
 "LS","Lesotho",1518.28897610162,1992
 "LS","Lesotho",1447.85637759867,1991
 "LS","Lesotho",1379.3647663216,1990
+"LR","Liberia",NA,2018
 "LR","Liberia",1168.26195246805,2017
 "LR","Liberia",1169.29609369296,2016
 "LR","Liberia",1218.46359896727,2015
@@ -4479,6 +4639,7 @@
 "LR","Liberia",NA,1992
 "LR","Liberia",NA,1991
 "LR","Liberia",NA,1990
+"LY","Libya",NA,2018
 "LY","Libya",17881.5093336612,2017
 "LY","Libya",14298.4550558633,2016
 "LY","Libya",14847.1970706167,2015
@@ -4507,6 +4668,7 @@
 "LY","Libya",NA,1992
 "LY","Libya",NA,1991
 "LY","Libya",NA,1990
+"LI","Liechtenstein",NA,2018
 "LI","Liechtenstein",NA,2017
 "LI","Liechtenstein",NA,2016
 "LI","Liechtenstein",NA,2015
@@ -4535,6 +4697,7 @@
 "LI","Liechtenstein",NA,1992
 "LI","Liechtenstein",NA,1991
 "LI","Liechtenstein",NA,1990
+"LT","Lithuania",NA,2018
 "LT","Lithuania",29524.1376464875,2017
 "LT","Lithuania",28033.7533834327,2016
 "LT","Lithuania",27045.5967228667,2015
@@ -4563,6 +4726,7 @@
 "LT","Lithuania",NA,1992
 "LT","Lithuania",NA,1991
 "LT","Lithuania",NA,1990
+"LU","Luxembourg",NA,2018
 "LU","Luxembourg",94277.9653571589,2017
 "LU","Luxembourg",94920.9587222948,2016
 "LU","Luxembourg",94088.5922250508,2015
@@ -4591,6 +4755,7 @@
 "LU","Luxembourg",62059.6531074295,1992
 "LU","Luxembourg",61765.601039162,1991
 "LU","Luxembourg",57618.0207016709,1990
+"MO","Macao SAR, China",NA,2018
 "MO","Macao SAR, China",104861.851096529,2017
 "MO","Macao SAR, China",97751.7321632423,2016
 "MO","Macao SAR, China",100444.593628176,2015
@@ -4619,6 +4784,7 @@
 "MO","Macao SAR, China",44984.8072089545,1992
 "MO","Macao SAR, China",40680.1176393644,1991
 "MO","Macao SAR, China",40365.3455689617,1990
+"MK","Macedonia, FYR",NA,2018
 "MK","Macedonia, FYR",13132.1503235056,2017
 "MK","Macedonia, FYR",13112.9404425146,2016
 "MK","Macedonia, FYR",12761.4087256706,2015
@@ -4647,6 +4813,7 @@
 "MK","Macedonia, FYR",8477.37374529255,1992
 "MK","Macedonia, FYR",9051.90279307372,1991
 "MK","Macedonia, FYR",9633.06915099316,1990
+"MG","Madagascar",NA,2018
 "MG","Madagascar",1416.43950728464,2017
 "MG","Madagascar",1396.6696154848,2016
 "MG","Madagascar",1377.16821269101,2015
@@ -4675,6 +4842,7 @@
 "MG","Madagascar",1477.69772408654,1992
 "MG","Madagascar",1504.21513243242,1991
 "MG","Madagascar",1653.15890049926,1990
+"MW","Malawi",NA,2018
 "MW","Malawi",1095.04208875801,2017
 "MW","Malawi",1083.80142082959,2016
 "MW","Malawi",1088.70180507011,2015
@@ -4703,6 +4871,7 @@
 "MW","Malawi",727.315221917836,1992
 "MW","Malawi",792.079374710605,1991
 "MW","Malawi",744.197080607013,1990
+"MY","Malaysia",NA,2018
 "MY","Malaysia",26824.0849753415,2017
 "MY","Malaysia",25685.2831376538,2016
 "MY","Malaysia",25016.7308951438,2015
@@ -4731,6 +4900,7 @@
 "MY","Malaysia",11940.8557509991,1992
 "MY","Malaysia",11252.4903038441,1991
 "MY","Malaysia",10551.6589585344,1990
+"MV","Maldives",NA,2018
 "MV","Maldives",15168.5588293345,2017
 "MV","Maldives",14472.3171659697,2016
 "MV","Maldives",13790.6088416585,2015
@@ -4759,6 +4929,7 @@
 "MV","Maldives",NA,1992
 "MV","Maldives",NA,1991
 "MV","Maldives",NA,1990
+"ML","Mali",NA,2018
 "ML","Mali",2016.21879272815,2017
 "ML","Mali",1971.08447950848,2016
 "ML","Mali",1919.2284214274,2015
@@ -4787,6 +4958,7 @@
 "ML","Mali",1312.91119931661,1992
 "ML","Mali",1390.4007288101,1991
 "ML","Mali",1271.79407655675,1990
+"MT","Malta",NA,2018
 "MT","Malta",36505.4059195059,2017
 "MT","Malta",35050.8287352356,2016
 "MT","Malta",34079.6900956352,2015
@@ -4815,6 +4987,7 @@
 "MT","Malta",17332.8379847369,1992
 "MT","Malta",16727.8823935824,1991
 "MT","Malta",16172.9830745297,1990
+"MH","Marshall Islands",NA,2018
 "MH","Marshall Islands",3860.18867919691,2017
 "MH","Marshall Islands",3730.33398854254,2016
 "MH","Marshall Islands",3665.3753730567,2015
@@ -4843,6 +5016,7 @@
 "MH","Marshall Islands",2986.91128660172,1992
 "MH","Marshall Islands",2839.76964851633,1991
 "MH","Marshall Islands",2907.88097177802,1990
+"MR","Mauritania",NA,2018
 "MR","Mauritania",3597.63268948014,2017
 "MR","Mauritania",3572.28055028289,2016
 "MR","Mauritania",3601.61434961183,2015
@@ -4871,6 +5045,7 @@
 "MR","Mauritania",2759.18703757825,1992
 "MR","Mauritania",2781.48061468222,1991
 "MR","Mauritania",2806.7338297681,1990
+"MU","Mauritius",NA,2018
 "MU","Mauritius",20320.3702960878,2017
 "MU","Mauritius",19590.6421862714,2016
 "MU","Mauritius",18879.523006347,2015
@@ -4899,6 +5074,7 @@
 "MU","Mauritius",8022.41601161281,1992
 "MU","Mauritius",7631.64202235062,1991
 "MU","Mauritius",7386.83018093069,1990
+"MX","Mexico",NA,2018
 "MX","Mexico",17330.7319768603,2017
 "MX","Mexico",17200.1169397908,2016
 "MX","Mexico",16934.7349727752,2015
@@ -4927,6 +5103,7 @@
 "MX","Mexico",13847.2364047801,1992
 "MX","Mexico",13643.4949821712,1991
 "MX","Mexico",13354.5396152842,1990
+"FM","Micronesia, Fed. Sts.",NA,2018
 "FM","Micronesia, Fed. Sts.",3363.79381589461,2017
 "FM","Micronesia, Fed. Sts.",3278.34440148013,2016
 "FM","Micronesia, Fed. Sts.",3271.26702149826,2015
@@ -4955,6 +5132,7 @@
 "FM","Micronesia, Fed. Sts.",2887.96347401355,1992
 "FM","Micronesia, Fed. Sts.",2850.13850360709,1991
 "FM","Micronesia, Fed. Sts.",2721.05686705971,1990
+"MD","Moldova",NA,2018
 "MD","Moldova",5189.97166016505,2017
 "MD","Moldova",4963.39834391968,2016
 "MD","Moldova",4746.78491111423,2015
@@ -4983,6 +5161,7 @@
 "MD","Moldova",NA,1992
 "MD","Moldova",NA,1991
 "MD","Moldova",NA,1990
+"MC","Monaco",NA,2018
 "MC","Monaco",NA,2017
 "MC","Monaco",NA,2016
 "MC","Monaco",NA,2015
@@ -5011,6 +5190,7 @@
 "MC","Monaco",NA,1992
 "MC","Monaco",NA,1991
 "MC","Monaco",NA,1990
+"MN","Mongolia",NA,2018
 "MN","Mongolia",11766.9543200678,2017
 "MN","Mongolia",11352.6117138492,2016
 "MN","Mongolia",11411.9421058207,2015
@@ -5039,6 +5219,7 @@
 "MN","Mongolia",4131.96682048714,1992
 "MN","Mongolia",4605.98066703721,1991
 "MN","Mongolia",5122.53160723357,1990
+"ME","Montenegro",NA,2018
 "ME","Montenegro",16464.6423089059,2017
 "ME","Montenegro",15729.7871874776,2016
 "ME","Montenegro",15290.0173756809,2015
@@ -5067,6 +5248,7 @@
 "ME","Montenegro",NA,1992
 "ME","Montenegro",NA,1991
 "ME","Montenegro",NA,1990
+"MA","Morocco",NA,2018
 "MA","Morocco",7485.01295069865,2017
 "MA","Morocco",7285.90832106945,2016
 "MA","Morocco",7296.93440143191,2015
@@ -5095,6 +5277,7 @@
 "MA","Morocco",3960.06610920777,1992
 "MA","Morocco",4118.02292754559,1991
 "MA","Morocco",3912.00572444531,1990
+"MZ","Mozambique",NA,2018
 "MZ","Mozambique",1136.39388190832,2017
 "MZ","Mozambique",1127.35087760718,2016
 "MZ","Mozambique",1118.22284449785,2015
@@ -5123,6 +5306,7 @@
 "MZ","Mozambique",354.284535412528,1992
 "MZ","Mozambique",387.023287898838,1991
 "MZ","Mozambique",378.534273608397,1990
+"MM","Myanmar",NA,2018
 "MM","Myanmar",5611.58319816214,2017
 "MM","Myanmar",5304.57064368729,2016
 "MM","Myanmar",5056.85904071061,2015
@@ -5151,6 +5335,7 @@
 "MM","Myanmar",788.388429898514,1992
 "MM","Myanmar",728.031674937017,1991
 "MM","Myanmar",742.970893451487,1990
+"NA","Namibia",NA,2018
 "NA","Namibia",9517.3849122833,2017
 "NA","Namibia",9818.01231103493,2016
 "NA","Namibia",9973.21183307116,2015
@@ -5179,6 +5364,7 @@
 "NA","Namibia",6270.34715280833,1992
 "NA","Namibia",6041.2787468058,1991
 "NA","Namibia",5786.74977367967,1990
+"NR","Nauru",NA,2018
 "NR","Nauru",12895.6345072345,2017
 "NR","Nauru",12950.5289813432,2016
 "NR","Nauru",12270.2975919501,2015
@@ -5207,6 +5393,7 @@
 "NR","Nauru",NA,1992
 "NR","Nauru",NA,1991
 "NR","Nauru",NA,1990
+"NP","Nepal",NA,2018
 "NP","Nepal",2456.3301799674,2017
 "NP","Nepal",2301.67489664895,2016
 "NP","Nepal",2314.27488100624,2015
@@ -5235,6 +5422,7 @@
 "NP","Nepal",1257.83869442867,1992
 "NP","Nepal",1241.41755487461,1991
 "NP","Nepal",1197.94780348911,1990
+"NL","Netherlands",NA,2018
 "NL","Netherlands",48472.5445411531,2017
 "NL","Netherlands",47269.6329521216,2016
 "NL","Netherlands",46494.3642578078,2015
@@ -5263,6 +5451,7 @@
 "NL","Netherlands",32921.488544792,1992
 "NL","Netherlands",32614.9035517922,1991
 "NL","Netherlands",32090.2110490577,1990
+"NC","New Caledonia",NA,2018
 "NC","New Caledonia",NA,2017
 "NC","New Caledonia",NA,2016
 "NC","New Caledonia",NA,2015
@@ -5291,6 +5480,7 @@
 "NC","New Caledonia",NA,1992
 "NC","New Caledonia",NA,1991
 "NC","New Caledonia",NA,1990
+"NZ","New Zealand",NA,2018
 "NZ","New Zealand",36085.8427771972,2017
 "NZ","New Zealand",35776.5717269995,2016
 "NZ","New Zealand",35309.8237244851,2015
@@ -5319,6 +5509,7 @@
 "NZ","New Zealand",22229.4659377406,1992
 "NZ","New Zealand",22181.3226322416,1991
 "NZ","New Zealand",23671.2730077945,1990
+"NI","Nicaragua",NA,2018
 "NI","Nicaragua",5321.44351591724,2017
 "NI","Nicaragua",5130.58029479392,2016
 "NI","Nicaragua",4956.92129771835,2015
@@ -5347,6 +5538,7 @@
 "NI","Nicaragua",2870.06903895446,1992
 "NI","Nicaragua",2922.77636950858,1991
 "NI","Nicaragua",2993.48796559721,1990
+"NE","Niger",NA,2018
 "NE","Niger",925.990058310694,2017
 "NE","Niger",917.139570800964,2016
 "NE","Niger",908.173857687119,2015
@@ -5375,6 +5567,7 @@
 "NE","Niger",803.39436896988,1992
 "NE","Niger",888.11387218209,1991
 "NE","Niger",894.542821029159,1990
+"NG","Nigeria",NA,2018
 "NG","Nigeria",5351.07680294518,2017
 "NG","Nigeria",5448.05297476951,2016
 "NG","Nigeria",5684.53572277874,2015
@@ -5403,6 +5596,7 @@
 "NG","Nigeria",3352.6719705246,1992
 "NG","Nigeria",3286.09034670396,1991
 "NG","Nigeria",3358.77895934442,1990
+"MP","Northern Mariana Islands",NA,2018
 "MP","Northern Mariana Islands",NA,2017
 "MP","Northern Mariana Islands",NA,2016
 "MP","Northern Mariana Islands",NA,2015
@@ -5431,6 +5625,7 @@
 "MP","Northern Mariana Islands",NA,1992
 "MP","Northern Mariana Islands",NA,1991
 "MP","Northern Mariana Islands",NA,1990
+"NO","Norway",NA,2018
 "NO","Norway",64800.0573263061,2017
 "NO","Norway",64159.544250136,2016
 "NO","Norway",64008.2868303461,2015
@@ -5459,6 +5654,7 @@
 "NO","Norway",45232.8416940254,1992
 "NO","Norway",43924.628254043,1991
 "NO","Norway",42813.7649619025,1990
+"OM","Oman",NA,2018
 "OM","Oman",37960.7091885335,2017
 "OM","Oman",39883.9536508277,2016
 "OM","Oman",39873.3856042969,2015
@@ -5487,6 +5683,7 @@
 "OM","Oman",36821.1947771276,1992
 "OM","Oman",35568.7733414672,1991
 "OM","Oman",35042.1336865014,1990
+"PK","Pakistan",NA,2018
 "PK","Pakistan",5034.70775633353,2017
 "PK","Pakistan",4857.16871756739,2016
 "PK","Pakistan",4695.69987892337,2015
@@ -5515,6 +5712,7 @@
 "PK","Pakistan",3272.47951472187,1992
 "PK","Pakistan",3121.1236233627,1991
 "PK","Pakistan",3054.95335823222,1990
+"PW","Palau",NA,2018
 "PW","Palau",13501.423829988,2017
 "PW","Palau",14148.5079026541,2016
 "PW","Palau",14216.5420858914,2015
@@ -5543,6 +5741,7 @@
 "PW","Palau",NA,1992
 "PW","Palau",NA,1991
 "PW","Palau",NA,1990
+"PA","Panama",NA,2018
 "PA","Panama",22287.9590825505,2017
 "PA","Panama",21500.0737964663,2016
 "PA","Panama",20817.5565529507,2015
@@ -5571,6 +5770,7 @@
 "PA","Panama",8920.71972003985,1992
 "PA","Panama",8417.1753930489,1991
 "PA","Panama",7855.0271763251,1990
+"PG","Papua New Guinea",NA,2018
 "PG","Papua New Guinea",3824.54684946704,2017
 "PG","Papua New Guinea",3806.25573274669,2016
 "PG","Papua New Guinea",3824.72982235069,2015
@@ -5599,6 +5799,7 @@
 "PG","Papua New Guinea",2815.01559967644,1992
 "PG","Papua New Guinea",2535.48309888795,1991
 "PG","Papua New Guinea",2373.51982984815,1990
+"PY","Paraguay",NA,2018
 "PY","Paraguay",11915.5863806334,2017
 "PY","Paraguay",11470.2751885803,2016
 "PY","Paraguay",11138.7773453079,2015
@@ -5627,6 +5828,7 @@
 "PY","Paraguay",7955.14051233549,1992
 "PY","Paraguay",8020.24435235328,1991
 "PY","Paraguay",7951.19450299292,1990
+"PE","Peru",NA,2018
 "PE","Peru",12236.8013398074,2017
 "PE","Peru",12082.1680106024,2016
 "PE","Peru",11770.0344482345,2015
@@ -5655,6 +5857,7 @@
 "PE","Peru",5184.96718005874,1992
 "PE","Peru",5319.34129917013,1991
 "PE","Peru",5312.68466380626,1990
+"PH","Philippines",NA,2018
 "PH","Philippines",7599.18806044601,2017
 "PH","Philippines",7233.20610321343,2016
 "PH","Philippines",6874.58256556192,2015
@@ -5683,6 +5886,7 @@
 "PH","Philippines",3808.17056970907,1992
 "PH","Philippines",3889.0051274397,1991
 "PH","Philippines",4010.20282413001,1990
+"PL","Poland",NA,2018
 "PL","Poland",27343.3638422889,2017
 "PL","Poland",26093.5192486838,2016
 "PL","Poland",25307.2455311155,2015
@@ -5711,6 +5915,7 @@
 "PL","Poland",9731.36115631266,1992
 "PL","Poland",9521.78049650312,1991
 "PL","Poland",10276.5733299682,1990
+"PT","Portugal",NA,2018
 "PT","Portugal",27936.8960928735,2017
 "PT","Portugal",27124.155038865,2016
 "PT","Portugal",26607.8331233896,2015
@@ -5739,6 +5944,7 @@
 "PT","Portugal",21342.8565638582,1992
 "PT","Portugal",21096.4284610415,1991
 "PT","Portugal",20166.9279938074,1990
+"PR","Puerto Rico",NA,2018
 "PR","Puerto Rico",35403.0073803581,2017
 "PR","Puerto Rico",35527.6774861055,2016
 "PR","Puerto Rico",35314.4295032091,2015
@@ -5767,6 +5973,7 @@
 "PR","Puerto Rico",23457.7153730005,1992
 "PR","Puerto Rico",22579.0914562659,1991
 "PR","Puerto Rico",22227.1844890834,1990
+"QA","Qatar",NA,2018
 "QA","Qatar",116931.986252432,2017
 "QA","Qatar",118222.426907505,2016
 "QA","Qatar",119872.581981261,2015
@@ -5795,6 +6002,7 @@
 "QA","Qatar",NA,1992
 "QA","Qatar",NA,1991
 "QA","Qatar",NA,1990
+"RO","Romania",NA,2018
 "RO","Romania",23501.5522642466,2017
 "RO","Romania",21782.0564946193,2016
 "RO","Romania",20665.5636310378,2015
@@ -5823,6 +6031,7 @@
 "RO","Romania",9192.7881654904,1992
 "RO","Romania",9985.56618337475,1991
 "RO","Romania",11367.7015034891,1990
+"RU","Russian Federation",NA,2018
 "RU","Russian Federation",24765.9536336261,2017
 "RU","Russian Federation",24416.6238784033,2016
 "RU","Russian Federation",24516.5499502712,2015
@@ -5851,6 +6060,7 @@
 "RU","Russian Federation",16704.9338257425,1992
 "RU","Russian Federation",19553.5855977858,1991
 "RU","Russian Federation",20639.0005359771,1990
+"RW","Rwanda",NA,2018
 "RW","Rwanda",1857.41183547356,2017
 "RW","Rwanda",1794.06846812725,2016
 "RW","Rwanda",1734.73100053994,2015
@@ -5879,6 +6089,7 @@
 "RW","Rwanda",974.361529222424,1992
 "RW","Rwanda",874.64807106686,1991
 "RW","Rwanda",874.387237930933,1990
+"WS","Samoa",NA,2018
 "WS","Samoa",6035.98775224474,2017
 "WS","Samoa",5916.63287774413,2016
 "WS","Samoa",5559.74372606785,2015
@@ -5907,6 +6118,7 @@
 "WS","Samoa",3499.97485760478,1992
 "WS","Samoa",3538.92150781071,1991
 "WS","Samoa",3649.14421710174,1990
+"SM","San Marino",NA,2018
 "SM","San Marino",57761.757975692,2017
 "SM","San Marino",57245.7832209094,2016
 "SM","San Marino",56426.4500255263,2015
@@ -5935,6 +6147,7 @@
 "SM","San Marino",NA,1992
 "SM","San Marino",NA,1991
 "SM","San Marino",NA,1990
+"ST","Sao Tome and Principe",NA,2018
 "ST","Sao Tome and Principe",3052.71374319686,2017
 "ST","Sao Tome and Principe",3003.76844608335,2016
 "ST","Sao Tome and Principe",2947.51097130132,2015
@@ -5963,6 +6176,7 @@
 "ST","Sao Tome and Principe",NA,1992
 "ST","Sao Tome and Principe",NA,1991
 "ST","Sao Tome and Principe",NA,1990
+"SA","Saudi Arabia",NA,2018
 "SA","Saudi Arabia",48985.5538210823,2017
 "SA","Saudi Arabia",50423.0134931014,2016
 "SA","Saudi Arabia",50723.7126450691,2015
@@ -5991,6 +6205,7 @@
 "SA","Saudi Arabia",47702.4016536937,1992
 "SA","Saudi Arabia",47262.8993595535,1991
 "SA","Saudi Arabia",42457.1148948899,1990
+"SN","Senegal",NA,2018
 "SN","Senegal",3142.68272980243,2017
 "SN","Senegal",3016.40529118383,2016
 "SN","Senegal",2921.94688451736,2015
@@ -6019,6 +6234,7 @@
 "SN","Senegal",2261.0957162479,1992
 "SN","Senegal",2302.17331143792,1991
 "SN","Senegal",2314.33304954494,1990
+"RS","Serbia",NA,2018
 "RS","Serbia",14048.7939488366,2017
 "RS","Serbia",13720.8062274928,2016
 "RS","Serbia",13277.7181874288,2015
@@ -6047,6 +6263,7 @@
 "RS","Serbia",NA,1992
 "RS","Serbia",NA,1991
 "RS","Serbia",NA,1990
+"SC","Seychelles",NA,2018
 "SC","Seychelles",26656.9525249887,2017
 "SC","Seychelles",25630.7100889485,2016
 "SC","Seychelles",24856.5599036553,2015
@@ -6075,6 +6292,7 @@
 "SC","Seychelles",15377.3130604256,1992
 "SC","Seychelles",14415.6709830086,1991
 "SC","Seychelles",14216.5298976404,1990
+"SL","Sierra Leone",NA,2018
 "SL","Sierra Leone",1391.01466236182,2017
 "SL","Sierra Leone",1363.86357140263,2016
 "SL","Sierra Leone",1314.27372771108,2015
@@ -6103,6 +6321,7 @@
 "SL","Sierra Leone",1032.05733852267,1992
 "SL","Sierra Leone",1272.61239760062,1991
 "SL","Sierra Leone",1250.57519313636,1990
+"SG","Singapore",NA,2018
 "SG","Singapore",85535.3832002,2017
 "SG","Singapore",82621.5031826688,2016
 "SG","Singapore",81741.096935529,2015
@@ -6131,6 +6350,7 @@
 "SG","Singapore",37008.8239667746,1992
 "SG","Singapore",35613.3981577913,1991
 "SG","Singapore",34344.6722955869,1990
+"SX","Sint Maarten (Dutch part)",NA,2018
 "SX","Sint Maarten (Dutch part)",NA,2017
 "SX","Sint Maarten (Dutch part)",32017.7666381359,2016
 "SX","Sint Maarten (Dutch part)",32820.0878151,2015
@@ -6159,6 +6379,7 @@
 "SX","Sint Maarten (Dutch part)",NA,1992
 "SX","Sint Maarten (Dutch part)",NA,1991
 "SX","Sint Maarten (Dutch part)",NA,1990
+"SK","Slovak Republic",NA,2018
 "SK","Slovak Republic",30155.1521229863,2017
 "SK","Slovak Republic",29212.3781979582,2016
 "SK","Slovak Republic",28308.8797698535,2015
@@ -6187,6 +6408,7 @@
 "SK","Slovak Republic",11632.7452578559,1992
 "SK","Slovak Republic",NA,1991
 "SK","Slovak Republic",NA,1990
+"SI","Slovenia",NA,2018
 "SI","Slovenia",31400.8395120955,2017
 "SI","Slovenia",29930.037038675,2016
 "SI","Slovenia",29037.7416756681,2015
@@ -6215,6 +6437,7 @@
 "SI","Slovenia",NA,1992
 "SI","Slovenia",NA,1991
 "SI","Slovenia",NA,1990
+"SB","Solomon Islands",NA,2018
 "SB","Solomon Islands",2205.92322032157,2017
 "SB","Solomon Islands",2179.23213663509,2016
 "SB","Solomon Islands",2149.22164743384,2015
@@ -6243,6 +6466,7 @@
 "SB","Solomon Islands",2126.08982086512,1992
 "SB","Solomon Islands",1940.77799641011,1991
 "SB","Solomon Islands",1883.1797663852,1990
+"SO","Somalia",NA,2018
 "SO","Somalia",NA,2017
 "SO","Somalia",NA,2016
 "SO","Somalia",NA,2015
@@ -6271,6 +6495,7 @@
 "SO","Somalia",NA,1992
 "SO","Somalia",NA,1991
 "SO","Somalia",NA,1990
+"ZA","South Africa",NA,2018
 "ZA","South Africa",12294.4730979882,2017
 "ZA","South Africa",12286.696506841,2016
 "ZA","South Africa",12377.6608521388,2015
@@ -6299,6 +6524,7 @@
 "ZA","South Africa",8966.32387626779,1992
 "ZA","South Africa",9381.98162139068,1991
 "ZA","South Africa",9699.88997168429,1990
+"SS","South Sudan",NA,2018
 "SS","South Sudan",NA,2017
 "SS","South Sudan",1569.88834552626,2016
 "SS","South Sudan",1875.38006599798,2015
@@ -6327,6 +6553,7 @@
 "SS","South Sudan",NA,1992
 "SS","South Sudan",NA,1991
 "SS","South Sudan",NA,1990
+"ES","Spain",NA,2018
 "ES","Spain",34272.3603838191,2017
 "ES","Spain",33320.3727243715,2016
 "ES","Spain",32291.1551993266,2015
@@ -6355,6 +6582,7 @@
 "ES","Spain",24407.675543355,1992
 "ES","Spain",24301.6921936592,1991
 "ES","Spain",23758.7280977593,1990
+"LK","Sri Lanka",NA,2018
 "LK","Sri Lanka",11691.2851731181,2017
 "LK","Sri Lanka",11445.4645275355,2016
 "LK","Sri Lanka",11079.7108348115,2015
@@ -6383,6 +6611,7 @@
 "LK","Sri Lanka",3853.38769253956,1992
 "LK","Sri Lanka",3733.28333278591,1991
 "LK","Sri Lanka",3612.33859642717,1990
+"KN","St. Kitts and Nevis",NA,2018
 "KN","St. Kitts and Nevis",26028.6916910126,2017
 "KN","St. Kitts and Nevis",25973.4483056506,2016
 "KN","St. Kitts and Nevis",25634.3769493471,2015
@@ -6411,6 +6640,7 @@
 "KN","St. Kitts and Nevis",15418.9766926861,1992
 "KN","St. Kitts and Nevis",14913.1870796216,1991
 "KN","St. Kitts and Nevis",15263.0972656015,1990
+"LC","St. Lucia",NA,2018
 "LC","St. Lucia",12712.3720615518,2017
 "LC","St. Lucia",12301.9276731772,2016
 "LC","St. Lucia",11955.7601295894,2015
@@ -6439,6 +6669,7 @@
 "LC","St. Lucia",10126.5657565367,1992
 "LC","St. Lucia",9517.30508129835,1991
 "LC","St. Lucia",9602.21630149985,1990
+"MF","St. Martin (French part)",NA,2018
 "MF","St. Martin (French part)",NA,2017
 "MF","St. Martin (French part)",NA,2016
 "MF","St. Martin (French part)",NA,2015
@@ -6467,6 +6698,7 @@
 "MF","St. Martin (French part)",NA,1992
 "MF","St. Martin (French part)",NA,1991
 "MF","St. Martin (French part)",NA,1990
+"VC","St. Vincent and the Grenadines",NA,2018
 "VC","St. Vincent and the Grenadines",10697.4508276002,2017
 "VC","St. Vincent and the Grenadines",10630.8133644071,2016
 "VC","St. Vincent and the Grenadines",10442.7803340513,2015
@@ -6495,6 +6727,7 @@
 "VC","St. Vincent and the Grenadines",5971.45322372375,1992
 "VC","St. Vincent and the Grenadines",5623.31661084892,1991
 "VC","St. Vincent and the Grenadines",5576.14890569998,1990
+"SD","Sudan",NA,2018
 "SD","Sudan",4466.50675475659,2017
 "SD","Sudan",4386.35257858328,2016
 "SD","Sudan",4290.37224949542,2015
@@ -6523,6 +6756,7 @@
 "SD","Sudan",1896.33056430382,1992
 "SD","Sudan",1826.26944582026,1991
 "SD","Sudan",1743.44603933143,1990
+"SR","Suriname",NA,2018
 "SR","Suriname",13807.8611276661,2017
 "SR","Suriname",13701.1960905202,2016
 "SR","Suriname",14643.3371185485,2015
@@ -6551,6 +6785,7 @@
 "SR","Suriname",10293.9390999939,1992
 "SR","Suriname",10439.2854378475,1991
 "SR","Suriname",10358.0174491456,1990
+"SE","Sweden",NA,2018
 "SE","Sweden",46949.2830858792,2017
 "SE","Sweden",46568.1771455909,2016
 "SE","Sweden",45679.2779973863,2015
@@ -6579,6 +6814,7 @@
 "SE","Sweden",29843.9701537683,1992
 "SE","Sweden",30371.4092603186,1991
 "SE","Sweden",30933.6327264387,1990
+"CH","Switzerland",NA,2018
 "CH","Switzerland",57410.1658575199,2017
 "CH","Switzerland",57421.5485009872,2016
 "CH","Switzerland",57264.1573970635,2015
@@ -6607,6 +6843,7 @@
 "CH","Switzerland",46610.189795911,1992
 "CH","Switzerland",47147.5392941208,1991
 "CH","Switzerland",48181.7557750506,1990
+"SY","Syrian Arab Republic",NA,2018
 "SY","Syrian Arab Republic",NA,2017
 "SY","Syrian Arab Republic",NA,2016
 "SY","Syrian Arab Republic",NA,2015
@@ -6635,6 +6872,7 @@
 "SY","Syrian Arab Republic",NA,1992
 "SY","Syrian Arab Republic",NA,1991
 "SY","Syrian Arab Republic",NA,1990
+"TJ","Tajikistan",NA,2018
 "TJ","Tajikistan",2910.21274769655,2017
 "TJ","Tajikistan",2761.92341221635,2016
 "TJ","Tajikistan",2640.6245848597,2015
@@ -6663,6 +6901,7 @@
 "TJ","Tajikistan",2318.80403830758,1992
 "TJ","Tajikistan",3327.76113353381,1991
 "TJ","Tajikistan",3661.39980221021,1990
+"TZ","Tanzania",NA,2018
 "TZ","Tanzania",2683.3040235534,2017
 "TZ","Tanzania",2583.5285031541,2016
 "TZ","Tanzania",2490.95575931317,2015
@@ -6691,6 +6930,7 @@
 "TZ","Tanzania",1414.30672109553,1992
 "TZ","Tanzania",1454.33063954955,1991
 "TZ","Tanzania",1472.58374991444,1990
+"TH","Thailand",NA,2018
 "TH","Thailand",16279.2229217917,2017
 "TH","Thailand",15705.8065994744,2016
 "TH","Thailand",15252.2282530581,2015
@@ -6719,6 +6959,7 @@
 "TH","Thailand",7633.86424249786,1992
 "TH","Thailand",7134.41910023195,1991
 "TH","Thailand",6650.4397381059,1990
+"TL","Timor-Leste",NA,2018
 "TL","Timor-Leste",6569.96033227838,2017
 "TL","Timor-Leste",7297.02399205292,2016
 "TL","Timor-Leste",7398.61649825547,2015
@@ -6747,6 +6988,7 @@
 "TL","Timor-Leste",NA,1992
 "TL","Timor-Leste",NA,1991
 "TL","Timor-Leste",NA,1990
+"TG","Togo",NA,2018
 "TG","Togo",1511.95242751629,2017
 "TG","Togo",1484.65688733624,2016
 "TG","Togo",1448.71982914359,2015
@@ -6775,6 +7017,7 @@
 "TG","Togo",1176.05209149531,1992
 "TG","Togo",1253.53488350841,1991
 "TG","Togo",1294.14952403989,1990
+"TO","Tonga",NA,2018
 "TO","Tonga",5425.62062501365,2017
 "TO","Tonga",5327.26719960567,2016
 "TO","Tonga",5189.84245337396,2015
@@ -6803,6 +7046,7 @@
 "TO","Tonga",3799.3662634392,1992
 "TO","Tonga",3796.29628853828,1991
 "TO","Tonga",3574.19523187212,1990
+"TT","Trinidad and Tobago",NA,2018
 "TT","Trinidad and Tobago",28763.0707660781,2017
 "TT","Trinidad and Tobago",29540.8743021682,2016
 "TT","Trinidad and Tobago",31524.5886261755,2015
@@ -6831,6 +7075,7 @@
 "TT","Trinidad and Tobago",12220.9296458183,1992
 "TT","Trinidad and Tobago",12502.1845501497,1991
 "TT","Trinidad and Tobago",12255.413887361,1990
+"TN","Tunisia",NA,2018
 "TN","Tunisia",10849.2973861625,2017
 "TN","Tunisia",10761.5145274606,2016
 "TN","Tunisia",10765.8862472411,2015
@@ -6859,6 +7104,7 @@
 "TN","Tunisia",6018.76666380854,1992
 "TN","Tunisia",5706.03366485327,1991
 "TN","Tunisia",5614.9383832106,1990
+"TR","Turkey",NA,2018
 "TR","Turkey",25134.6144239339,2017
 "TR","Turkey",23756.4741030879,2016
 "TR","Turkey",23388.4741018446,2015
@@ -6887,6 +7133,7 @@
 "TR","Turkey",11665.2112498573,1992
 "TR","Turkey",11289.9079112929,1991
 "TR","Turkey",11400.1761715141,1990
+"TM","Turkmenistan",NA,2018
 "TM","Turkmenistan",16389.0233128331,2017
 "TM","Turkmenistan",15648.3731140805,2016
 "TM","Turkmenistan",14992.3231371601,2015
@@ -6915,6 +7162,7 @@
 "TM","Turkmenistan",6372.93651603837,1992
 "TM","Turkmenistan",7713.44219358594,1991
 "TM","Turkmenistan",8316.75697680075,1990
+"TC","Turks and Caicos Islands",NA,2018
 "TC","Turks and Caicos Islands",NA,2017
 "TC","Turks and Caicos Islands",NA,2016
 "TC","Turks and Caicos Islands",NA,2015
@@ -6943,6 +7191,7 @@
 "TC","Turks and Caicos Islands",NA,1992
 "TC","Turks and Caicos Islands",NA,1991
 "TC","Turks and Caicos Islands",NA,1990
+"TV","Tuvalu",NA,2018
 "TV","Tuvalu",3575.10382120986,2017
 "TV","Tuvalu",3492.497412426,2016
 "TV","Tuvalu",3419.20346835308,2015
@@ -6971,6 +7220,7 @@
 "TV","Tuvalu",2477.50656882962,1992
 "TV","Tuvalu",2425.19642335199,1991
 "TV","Tuvalu",2353.71576207675,1990
+"UG","Uganda",NA,2018
 "UG","Uganda",1698.06127376978,2017
 "UG","Uganda",1689.08848457487,2016
 "UG","Uganda",1665.94990533102,2015
@@ -6999,6 +7249,7 @@
 "UG","Uganda",785.285690687382,1992
 "UG","Uganda",785.107414489362,1991
 "UG","Uganda",769.452484131556,1990
+"UA","Ukraine",NA,2018
 "UA","Ukraine",7894.39292578581,2017
 "UA","Ukraine",7668.0557761534,2016
 "UA","Ukraine",7464.93983359294,2015
@@ -7027,6 +7278,7 @@
 "UA","Ukraine",8611.47455872664,1992
 "UA","Ukraine",9563.88213573112,1991
 "UA","Ukraine",10463.9599550096,1990
+"AE","United Arab Emirates",NA,2018
 "AE","United Arab Emirates",67293.4827590288,2017
 "AE","United Arab Emirates",67705.9493287962,2016
 "AE","United Arab Emirates",66569.4034144417,2015
@@ -7055,6 +7307,7 @@
 "AE","United Arab Emirates",102615.170341809,1992
 "AE","United Arab Emirates",105171.409619111,1991
 "AE","United Arab Emirates",110432.464978755,1990
+"GB","United Kingdom",NA,2018
 "GB","United Kingdom",39753.2438934915,2017
 "GB","United Kingdom",39309.3270821404,2016
 "GB","United Kingdom",38839.1669568199,2015
@@ -7083,6 +7336,7 @@
 "GB","United Kingdom",26481.6315650866,1992
 "GB","United Kingdom",26454.4098108301,1991
 "GB","United Kingdom",26827.8422642227,1990
+"US","United States",NA,2018
 "US","United States",54225.4461231621,2017
 "US","United States",53399.3591673623,2016
 "US","United States",53005.6361464627,2015
@@ -7111,6 +7365,7 @@
 "US","United States",37321.1290369821,1992
 "US","United States",36543.0849228687,1991
 "US","United States",37062.1302595789,1990
+"UY","Uruguay",NA,2018
 "UY","Uruguay",20551.4094200387,2017
 "UY","Uruguay",20093.6322583515,2016
 "UY","Uruguay",19831.4458985188,2015
@@ -7139,6 +7394,7 @@
 "UY","Uruguay",10840.7182917612,1992
 "UY","Uruguay",10117.1970180029,1991
 "UY","Uruguay",9840.72006960593,1990
+"UZ","Uzbekistan",NA,2018
 "UZ","Uzbekistan",6253.10386034453,2017
 "UZ","Uzbekistan",6038.92829875491,2016
 "UZ","Uzbekistan",5700.23602764231,2015
@@ -7167,6 +7423,7 @@
 "UZ","Uzbekistan",2594.85200674681,1992
 "UZ","Uzbekistan",2991.44616540407,1991
 "UZ","Uzbekistan",3071.02264741918,1990
+"VU","Vanuatu",NA,2018
 "VU","Vanuatu",2921.90867553046,2017
 "VU","Vanuatu",2856.47531029292,2016
 "VU","Vanuatu",2806.7896863444,2015
@@ -7195,6 +7452,7 @@
 "VU","Vanuatu",2547.88243956258,1992
 "VU","Vanuatu",2557.05381233243,1991
 "VU","Vanuatu",2549.28795435969,1990
+"VE","Venezuela, RB",NA,2018
 "VE","Venezuela, RB",NA,2017
 "VE","Venezuela, RB",NA,2016
 "VE","Venezuela, RB",NA,2015
@@ -7223,6 +7481,7 @@
 "VE","Venezuela, RB",16059.9759448218,1992
 "VE","Venezuela, RB",15490.0764869912,1991
 "VE","Venezuela, RB",14450.6838400955,1990
+"VN","Vietnam",NA,2018
 "VN","Vietnam",6171.8841923362,2017
 "VN","Vietnam",5837.62870356959,2016
 "VN","Vietnam",5554.85805564661,2015
@@ -7251,6 +7510,7 @@
 "VN","Vietnam",1603.9038221598,1992
 "VN","Vietnam",1507.19172776076,1991
 "VN","Vietnam",1452.87747911376,1990
+"VI","Virgin Islands (U.S.)",NA,2018
 "VI","Virgin Islands (U.S.)",NA,2017
 "VI","Virgin Islands (U.S.)",NA,2016
 "VI","Virgin Islands (U.S.)",NA,2015
@@ -7279,6 +7539,7 @@
 "VI","Virgin Islands (U.S.)",NA,1992
 "VI","Virgin Islands (U.S.)",NA,1991
 "VI","Virgin Islands (U.S.)",NA,1990
+"PS","West Bank and Gaza",NA,2018
 "PS","West Bank and Gaza",4449.89832452996,2017
 "PS","West Bank and Gaza",4738.01542623788,2016
 "PS","West Bank and Gaza",4713.49958664497,2015
@@ -7307,6 +7568,7 @@
 "PS","West Bank and Gaza",NA,1992
 "PS","West Bank and Gaza",NA,1991
 "PS","West Bank and Gaza",NA,1990
+"YE","Yemen, Rep.",NA,2018
 "YE","Yemen, Rep.",2369.05031032158,2017
 "YE","Yemen, Rep.",2579.55225662347,2016
 "YE","Yemen, Rep.",3060.44938473744,2015
@@ -7335,6 +7597,7 @@
 "YE","Yemen, Rep.",3462.46261597022,1992
 "YE","Yemen, Rep.",3367.63089383682,1991
 "YE","Yemen, Rep.",3327.10269673763,1990
+"ZM","Zambia",NA,2018
 "ZM","Zambia",3665.37533675118,2017
 "ZM","Zambia",3652.15192618377,2016
 "ZM","Zambia",3627.20204093772,2015
@@ -7363,6 +7626,7 @@
 "ZM","Zambia",2184.88074527988,1992
 "ZM","Zambia",2280.71694422267,1991
 "ZM","Zambia",2341.93306322727,1990
+"ZW","Zimbabwe",NA,2018
 "ZW","Zimbabwe",2212.09991693219,2017
 "ZW","Zimbabwe",2162.36692293021,2016
 "ZW","Zimbabwe",2196.87049672932,2015

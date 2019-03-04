@@ -14,6 +14,8 @@ output:
       in_header: '../../../src/templates/ohi_hdr.html'
 pdf_document:
   toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -63,6 +65,7 @@ library(WDI) # install.packages('WDI')
 library(stringr)
 library(readr)
 library(here)
+library(tidyverse)
 
 # Delete after moving to here package
 # comment out when knitting:
@@ -70,6 +73,7 @@ library(here)
 
 # directory paths and relevant files
 source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R')
+
 
 ```
 
@@ -80,14 +84,15 @@ source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/wor
 
 # check website to see what years are available
 yr_start = 1990
-yr_end   = 2017
+yr_end   = 2018
 
 
 # get description of variables (NOTE: these descriptions appear out of date, they aren't in sync with the definitions of the World Bank):
 indicators <-  data.frame(WDI_data[[1]])
 
 head(indicators)
-
+head(WDI_data)
+str(WDI_data)
 # indicators[grep("NY.GDP.PCAP.PP.CD", indicators$indicator), ]  # current dollars (influenced by inflation, not being used)
 indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollars. grep helps identify rows to select based on a string. (used this data)
 
@@ -97,7 +102,7 @@ indicators[grep("NY.GDP.PCAP.PP.KD", indicators$indicator), ]  # constant dollar
 gdppcppp_raw <-  WDI(country = "all",
                indicator = "NY.GDP.PCAP.PP.KD", 
                start = yr_start, end=yr_end)
-
+summary(gdppcppp_raw)
 
 # check if 'raw', 'intermediate', and 'final' exists, if not, then create the folder in the working directory
 if (!file.exists("raw")){
@@ -125,7 +130,7 @@ When a country has some values (but not a complete series), a within country reg
 ```{r, eval=F}
 
 # Reorganize to create cells for countries that have missing values for some years
-d <- read.csv(here('globalprep/ao/v2019/raw/raw_gdppcppp.csv')) %>%
+d <- read.csv(here('globalprep/ao/v2018/raw/raw_gdppcppp.csv')) %>%
   dplyr::select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   dplyr::filter(year >= 2005) %>%
   tidyr::spread(year, value) %>%
@@ -135,6 +140,8 @@ d <- read.csv(here('globalprep/ao/v2019/raw/raw_gdppcppp.csv')) %>%
   dplyr::mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
   dplyr::mutate(year = as.numeric(year)) #convert the year column into a numeric format
   
+head(d)
+summary(d)
 
 # For the first case, if there is only one value use this value for all years
 # This is not ideal, but likely better than other forms of gapfilling
@@ -146,9 +153,12 @@ d <- d %>%
   dplyr::ungroup() %>%
   dplyr::mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave it, otherwise gapfill; still have NAs where 13 > value_num > 1
   dplyr::select(country, year, value, value_num)  # select just these columns; to eliminate extraneous value_num_gf column
- 
-  
-  
+
+ head(d)
+  summary(d)
+check_d <- filter(d, is.na(value))  
+check_d
+
 # Predict values using a linear regression with 'year' as an independent variable 
 # Create new column with these predicted values
 d_gf <- d %>%
@@ -160,7 +170,8 @@ d_gf <- d %>%
   }) %>% 
   dplyr::ungroup()
 
-
+summary(d_gf)
+head(d_gf)
 # Fill in the remaining NA values using the predicted values
 
 d_gf <- d_gf %>%
@@ -171,6 +182,7 @@ d_gf <- d_gf %>%
   dplyr::mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling; this puts message "lm based..." even in some rows gapfilled with one year of data
   dplyr::mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method)) # this overwrites/corrects method "lm based..." for rows actually gapfilled with "one-year of data"" method
   
+summary(d_gf)
 ```
 
 ## Calculate rescaled values
@@ -185,19 +197,27 @@ d_rescale <- d_gf %>%
   dplyr::mutate(value_stand = ifelse(value_stand > 1, 1, value_stand)) %>% 
   dplyr::select(country, year, value, score=value_stand, gapfilled, method) # rename value_stand 'score'
 
+summary(d_rescale)
+head(d_rescale)
 
 ##check the data with some plots
-# plotData <- d_rescale %>%
-#   dplyr::mutate(need = 1-score) %>%
-#   dplyr::select(country, year, need)
+ plotData <- d_rescale %>%
+   dplyr::mutate(need = 1-score) %>%
+   dplyr::select(country, year, need)
 # 
-# library(googleVis)
+ library(googleVis)
 # 
-# Motion = gvisMotionChart(plotData,idvar="country", timevar="year")
+ Motion = gvisMotionChart(plotData,idvar="country", timevar="year")
 # 
-# plot(Motion)
-# print(Motion, file = file.path('ao_need_95q.html'))
+ plot(Motion)
+ print(Motion, file = file.path('ao_need_95q.html'))
 
+ #check to see if scores make sense 
+ rescale_vis <- ggplot(d_rescale, aes(x =value , y = score, label = country)) +
+   geom_point()
+ library(plotly)
+ 
+ ggplotly(rescale_vis)
 ```
 
 
@@ -205,39 +225,19 @@ d_rescale <- d_gf %>%
 
 ```{r, eval=F}
 
-
-low_pop <- function(){
-cat("uninhabited and low population regions")
-low_pop <<- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/rgn_uninhabited_islands.csv")
-}
-
-low_pop <- low_pop() %>%
-  filter(rgn_id != 38) #filter out region that has pop of 3000
-
-low_pop_vector <- c(low_pop$rgn_id) #make a vector of low population areas 
-
- #mutate(score = case_when(
-  #                rgn_id %in% low_pop_vector ~  "NA",
-   #             !(rgn_id %in% low_pop_vector) ~  score
-    #            ))
-
 # Function to add OHI region ID based on country name
 d_stand_rgn <- name_2_rgn(df_in = d_rescale, 
                        fld_name='country', 
-                       flds_unique=c('year')) %>% # cannot load look up tables.
-  mutate(score = case_when(
-                  rgn_id %in% low_pop_vector ~  NA,
-               !(rgn_id %in% low_pop_vector) ~  score
-                 ))
-###works when assigning score to 0. Doesn't matter though, none of the region ids in the low population vector are in the d_stand_rgn dataset? Am I just confused? 
+                       flds_unique=c('year'))  # cannot load look up tables.
 
 
+data.frame(filter(d_stand_rgn, rgn_id == 209))
 ##Check if removed countries/regions are according to what is expected.
 
 
 # Combine the duplicate regions (we report these at lower resolution)
 # In this case, we take the average score weighted by population
-population_weights <- read.csv('../../../../ohiprep_v2018/src/LookupTables/Pop_weight_ChinaSAR_USVIslPRico.csv')
+population_weights <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2017/master/src/LookupTables/Pop_weight_ChinaSAR_USVIslPRico.csv')
 
 
 # Weight the `score`, `value`, and `gapfilled` column by population
@@ -248,6 +248,8 @@ d_stand_rgn <- d_stand_rgn %>%
   dplyr::summarize(score = weighted.mean(score, population), # weight the single score value by pop.
             value = weighted.mean(value, population)) %>%
   ungroup() 
+
+data.frame(filter(d_stand_rgn, rgn_id == 209))
 
 
 # Removed `Azerbaijan` (255) because the adjacent body of water is a sea not the ocean 
@@ -261,7 +263,7 @@ summary(d_stand_rgn)
 gdppcppp_data <- d_stand_rgn %>%
   select(rgn_id, year, value)
 
-write_csv(gdppcppp_data, "intermediate/gdppcppp_ohi.csv")
+write_csv(gdppcppp_data, here("globalprep/ao/v2019/intermediate/gdppcppp_ohi.csv"))
 
 ```
 
@@ -269,27 +271,46 @@ write_csv(gdppcppp_data, "intermediate/gdppcppp_ohi.csv")
 In this case, we gapfill regions with no data using UN geopolitical means.
 
 ```{r, eval=F}
-
+UNgeorgn()
+head(UNgeorgn)
+summary(UNgeorgn)
 # Create dataframe pairing each UN geopolitical region id with a year from 2005 to current
 
-georegions <- ohicore::georegions
-d_stand_gf <- data.frame(year=min(d_stand_rgn$year):max(d_stand_rgn$year)) %>% 
-  merge(georegions, by=NULL) 
 
+d_stand_gf <- data.frame(year=min(d_stand_rgn$year):max(d_stand_rgn$year)) %>% 
+  merge(UNgeorgn, by=NULL) 
+
+head(d_stand_gf)
 
 # Combine the two data frames by region id and year
 # Calculate means across different geopolitical levels (e.g. r2, r1)
 d_stand_gf <- d_stand_gf %>%  
   left_join(d_stand_rgn, by = c("rgn_id", "year")) %>%
-  group_by(r2, year) %>%
+  group_by(r2_label, year) %>%
   mutate(r2_value = mean(score, na.rm=TRUE)) %>%
   ungroup() %>%
-  group_by(r1, year) %>%
+  group_by(r1_label, year) %>%
   mutate(r1_value = mean(score, na.rm=TRUE)) %>%
   ungroup() %>%
-  group_by(r0, year) %>%
+  group_by(r0_label, year) %>%
   mutate(r0_value = mean(score, na.rm=TRUE)) %>%
   ungroup()
+summary(d_stand_gf)
+
+
+low_pop()
+summary(low_pop)
+
+low_pop <- low_pop %>%
+  filter(est_population < 3000 | is.na(est_population)) #filter out regions that have populations > 3000 and keep NA values 
+summary(low_pop)
+
+low_pop_vector <- c(low_pop$rgn_id) #make a vector of low population areas 
+
+ #mutate(score = case_when(
+    #              rgn_id %in% low_pop_vector ~  "NA",
+     #           !(rgn_id %in% low_pop_vector) ~  score
+      #          ))
 
 
 # For `score` cells that still have NA values (still several hundred):
@@ -304,9 +325,13 @@ d_stand_gf <- d_stand_gf %>%
   mutate(gapfilled = ifelse(is.na(score) & !is.na(r0_value), "1", gapfilled)) %>%
   mutate(method = ifelse(is.na(score) & !is.na(r0_value), "UN_geopolitical region avg, r0", method)) %>%
   mutate(score = ifelse(is.na(score), r0_value, score))
+  
 
-# should no longer have NAs in the score column!
-summary(d_stand_gf) #No NA!!
+d_stand_gf$score[d_stand_gf$rgn_id %in% low_pop_vector] <- NA
+#should now have NA values in score column for low popuation areas!!
+   summary(d_stand_gf)
+
+summary(d_stand_gf) 
 
 ```
 
@@ -319,14 +344,14 @@ summary(d_stand_gf) #No NA!!
 final <- d_stand_gf %>%
   select(rgn_id, year, value=score)
 
-write.csv(final, "output/wb_gdppcppp_rescaled.csv", row.names=FALSE)
+write.csv(final, here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled.csv"), row.names=FALSE)
 
 
 # Save dataframe with gapfilled method and status information
 final_gf <- d_stand_gf %>%
   select(rgn_id, year, gapfilled, method)
 
-write.csv(final_gf, "output/wb_gdppcppp_rescaled_gf.csv", row.names=FALSE)
+write.csv(final_gf, here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled_gf.csv"), row.names=FALSE)
 
 
 ```
@@ -335,17 +360,23 @@ write.csv(final_gf, "output/wb_gdppcppp_rescaled_gf.csv", row.names=FALSE)
 ## Compare data to previous year
 
 ```{r, eval=F}
-old_gdppppc <- read.csv("../v2017/output/wb_gdppcppp_rescaled.csv") %>% 
+old_gdppppc <- read.csv(here("globalprep/ao/v2018/output/wb_gdppcppp_rescaled.csv")) %>% 
   dplyr::rename(old_value=value) %>% 
-  dplyr::filter(year == 2016)
+  dplyr::filter(year == 2017)
+summary(old_gdppppc)
 
-new <- read.csv("output/wb_gdppcppp_rescaled.csv") %>%
-  dplyr::filter(year == 2016) %>% 
+new <- read.csv(here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled.csv")) %>%
+  dplyr::filter(year == 2017) %>% 
   dplyr::left_join(old_gdppppc, by="rgn_id") #by=c("rgn_id", "year")
+summary(new)
 
 plot(new$value, new$old_value)
 abline(0,1, col="red")
 identify(new$value, new$old_value, labels = new$rgn_id)
+
+ggplotly(ggplot(new, aes(x = value, y = old_value, labels = rgn_id)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red")) # if anything was off of abline then something went wrong
 
 #identify(old$old_pressure, old$pressure_score, labels = old$rgn_id)
 

@@ -570,7 +570,7 @@
 47,2014,"0",NA
 47,2015,"0",NA
 47,2016,"0",NA
-47,2017,"0",NA
+47,2017,"1","lm based on N years data: 12"
 48,2005,"0",NA
 48,2006,"0",NA
 48,2007,"0",NA
@@ -1377,19 +1377,19 @@
 112,2015,"1","UN_geopolitical region avg, r2"
 112,2016,"1","UN_geopolitical region avg, r2"
 112,2017,"1","UN_geopolitical region avg, r2"
-113,2005,"0",NA
-113,2006,"0",NA
-113,2007,"0",NA
-113,2008,"0",NA
-113,2009,"0",NA
-113,2010,"0",NA
-113,2011,"0",NA
-113,2012,"0",NA
-113,2013,"0",NA
-113,2014,"0",NA
-113,2015,"0",NA
-113,2016,"0",NA
-113,2017,"0",NA
+113,2005,"1","gapfilled using one year of data"
+113,2006,"1","gapfilled using one year of data"
+113,2007,"1","gapfilled using one year of data"
+113,2008,"1","gapfilled using one year of data"
+113,2009,"1","gapfilled using one year of data"
+113,2010,"1","gapfilled using one year of data"
+113,2011,"1","gapfilled using one year of data"
+113,2012,"1","gapfilled using one year of data"
+113,2013,"1","gapfilled using one year of data"
+113,2014,"1","gapfilled using one year of data"
+113,2015,"1","gapfilled using one year of data"
+113,2016,"1","gapfilled using one year of data"
+113,2017,"1","gapfilled using one year of data"
 114,2005,"0",NA
 114,2006,"0",NA
 114,2007,"0",NA
@@ -1428,7 +1428,7 @@
 116,2014,"0",NA
 116,2015,"0",NA
 116,2016,"0",NA
-116,2017,"0",NA
+116,2017,"1","lm based on N years data: 12"
 117,2005,"1","UN_geopolitical region avg, r2"
 117,2006,"1","UN_geopolitical region avg, r2"
 117,2007,"1","UN_geopolitical region avg, r2"
@@ -2651,19 +2651,19 @@
 219,2015,"1","UN_geopolitical region avg, r2"
 219,2016,"1","UN_geopolitical region avg, r2"
 219,2017,"1","UN_geopolitical region avg, r2"
-220,2005,"1","lm based on N years data: 8"
-220,2006,"1","lm based on N years data: 8"
-220,2007,"1","lm based on N years data: 8"
-220,2008,"1","lm based on N years data: 8"
-220,2009,"0",NA
-220,2010,"0",NA
-220,2011,"0",NA
-220,2012,"0",NA
-220,2013,"0",NA
-220,2014,"0",NA
-220,2015,"0",NA
-220,2016,"0",NA
-220,2017,"1","lm based on N years data: 8"
+220,2005,"1","gapfilled using one year of data"
+220,2006,"1","gapfilled using one year of data"
+220,2007,"1","gapfilled using one year of data"
+220,2008,"1","gapfilled using one year of data"
+220,2009,"1","gapfilled using one year of data"
+220,2010,"1","gapfilled using one year of data"
+220,2011,"1","gapfilled using one year of data"
+220,2012,"1","gapfilled using one year of data"
+220,2013,"1","gapfilled using one year of data"
+220,2014,"1","gapfilled using one year of data"
+220,2015,"1","gapfilled using one year of data"
+220,2016,"1","gapfilled using one year of data"
+220,2017,"1","gapfilled using one year of data"
 221,2005,"1","UN_geopolitical region avg, r2"
 221,2006,"1","UN_geopolitical region avg, r2"
 221,2007,"1","UN_geopolitical region avg, r2"
@@ -2781,19 +2781,19 @@
 237,2015,"1","UN_geopolitical region avg, r2"
 237,2016,"1","UN_geopolitical region avg, r2"
 237,2017,"1","UN_geopolitical region avg, r2"
-244,2005,"1","gapfilled using one year of data"
-244,2006,"1","gapfilled using one year of data"
-244,2007,"1","gapfilled using one year of data"
-244,2008,"1","gapfilled using one year of data"
-244,2009,"1","gapfilled using one year of data"
-244,2010,"1","gapfilled using one year of data"
-244,2011,"1","gapfilled using one year of data"
-244,2012,"1","gapfilled using one year of data"
-244,2013,"1","gapfilled using one year of data"
-244,2014,"1","gapfilled using one year of data"
-244,2015,"1","gapfilled using one year of data"
-244,2016,"1","gapfilled using one year of data"
-244,2017,"1","gapfilled using one year of data"
+244,2005,"1","UN_geopolitical region avg, r2"
+244,2006,"1","UN_geopolitical region avg, r2"
+244,2007,"1","UN_geopolitical region avg, r2"
+244,2008,"1","UN_geopolitical region avg, r2"
+244,2009,"1","UN_geopolitical region avg, r2"
+244,2010,"1","UN_geopolitical region avg, r2"
+244,2011,"1","UN_geopolitical region avg, r2"
+244,2012,"1","UN_geopolitical region avg, r2"
+244,2013,"1","UN_geopolitical region avg, r2"
+244,2014,"1","UN_geopolitical region avg, r2"
+244,2015,"1","UN_geopolitical region avg, r2"
+244,2016,"1","UN_geopolitical region avg, r2"
+244,2017,"1","UN_geopolitical region avg, r2"
 245,2005,"1","UN_geopolitical region avg, r2"
 245,2006,"1","UN_geopolitical region avg, r2"
 245,2007,"1","UN_geopolitical region avg, r2"
@@ -2846,16 +2846,16 @@
 249,2015,"1","UN_geopolitical region avg, r2"
 249,2016,"1","UN_geopolitical region avg, r2"
 249,2017,"1","UN_geopolitical region avg, r2"
-250,2005,"0",NA
-250,2006,"0",NA
-250,2007,"0",NA
-250,2008,"0",NA
-250,2009,"0",NA
-250,2010,"0",NA
-250,2011,"0",NA
-250,2012,"0",NA
-250,2013,"0",NA
-250,2014,"0",NA
-250,2015,"0",NA
-250,2016,"0",NA
-250,2017,"0",NA
+250,2005,"1","gapfilled using one year of data"
+250,2006,"1","gapfilled using one year of data"
+250,2007,"1","gapfilled using one year of data"
+250,2008,"1","gapfilled using one year of data"
+250,2009,"1","gapfilled using one year of data"
+250,2010,"1","gapfilled using one year of data"
+250,2011,"1","gapfilled using one year of data"
+250,2012,"1","gapfilled using one year of data"
+250,2013,"1","gapfilled using one year of data"
+250,2014,"1","gapfilled using one year of data"
+250,2015,"1","gapfilled using one year of data"
+250,2016,"1","gapfilled using one year of data"
+250,2017,"1","gapfilled using one year of data"
