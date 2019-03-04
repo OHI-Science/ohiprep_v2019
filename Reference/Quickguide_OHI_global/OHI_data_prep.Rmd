@@ -5,14 +5,17 @@ output: html_document
 
 All data layers are prepared in the ohiprep_v20?? repository.  
 
-The best workflow is to prepare the layer or layers within a single Rmd script and then update the scores with these layers from the ohi-global repository.  If only one layer is updated at a time it is much easier to identify and track potential errors.
+Spend some time researching the data prior to launching into the coding in R.  I look over the files in the dataprep folder on Github, as well as the Mazu folder that contains the raw data. I research the specific data layers I will be working on and the goals/pressures/resilience dimensions they are used to calculate.  I typically start in the [methods](https://raw.githack.com/OHI-Science/ohi-global/published/global_supplement/Supplement.html) document.  I also research the source data, looking over websites, reports, and published papers.  
+
+In regard to preparing the data, the best approach is to prepare the layer or layers within a single Rmd script and then update the OHI scores one layer at a time.  This approach makes it much easier to identify and track potential errors.
 
 This section will discuss:
 1. File organization
-2. Starting a new data prep folder
-3. A typical data prep script
+2. Starting a new data prep project
+3. Anatomy of a typical data prep script
 4. Notes on parallel processing
 
+*** 
 ## File organization
 
 ### Saving external data
@@ -102,17 +105,45 @@ Store any intermediate or final output files that are too large for github in th
 
 **Raw data should not be stored here. This should be stored in Mazu's `_raw_data` folder**
 
-## Starting a new data prep folder
+*** 
 
-In ohiprep_v20??/globalprep navigate to the folder that contains the files you will need to prepare the data.  Select the most recent assessment year of data and copy the folder and paste to the same location, changing the name to reflect the current assessment year.
+## Starting a new data prep project
+
+### Prepare the dataprep folder
+
+In ohiprep_v20??/globalprep navigate to the folder that contains the files you will need to prepare the data.  Select the most recent assessment year of data and copy/paste to create a new folder in the same location, changing the name to reflect the current assessment year.
 
 For example, if we are preparing data layers for the 2019 assessment for the artisanal opportunities goal, ao, we would copy the v2018 folder and name it v2019.
 
 ![](images/global_prep_new_assessment.png)
 
-IMPORTANT: Delete the files in the raw, intermediate, and output files!  These data will be created in the updated data_prep script.
+Next, delete all unnecessary files, particularly the files in the raw, intermediate, and output folders!  New versions of these data will be created in the updated data_prep script, and you want to be sure that this is indeed what happens. If there are data already in the folder it can be easy to overlook a mistake, such as not using the correct file path to save the data, etc..
 
-You will then walk through the data_prep script and update it as necessary.  
+Typically, you not delete the dataprep script/s and README.  Youl will also want to preserve the folder structure.  If in doubt, I delete the files and then copy them over as needed.  For some goals, such as fisheries, there are lots and lots of files and it is very confusing. In these cases, I just copy the files as I need them. 
+
+Once you have created and cleaned the new folder commit and push the updates!
+
+### Start an issue
+On Github create an issue for this dataprep project.  Here you will document progress, report problems or concerns, pose questions, describe changes to code, and report on final results.  
+
+Once the relevant data layers are created and incorporated into the OHI scores this issue will be closed.
+
+### Update the files
+
+Carefully walk through the data prep script/s and update as necessary.
+
+You will also need to update READMEs.
+
+As you check and update the scripts, don't assume everything is correct.  There could be changes to the source data that introduce errors (this often happens).  We could have made a mistake somewhere.  And, even if there aren't any mistakes, there is usually room for improvement.
+
+Checking the dataprep scripts involves:
+
+* Going through each line of code to understand what is happening. Each step of dplyr chains should be evaluated, rather than running the entire chain and assuming it is correct.
+* Using functions such as summary, dim, length functions and figures to explore the data at different stages of preparation. 
+* Check the dimensions of the dataframe after each join or spread/collapse to ensure the length of the updated data makes sense.
+* Check that the frequency of NA values seems reasonable, especially after joins and spread/collapse functions.  And, if you gapfill missing values, make sure that you end up estimating all NA values.
+
+***
 
 ## A typical data prep script
 
@@ -535,4 +566,8 @@ Check the following:
 * Review warnings
 * Identify parts of the code you are unsure of, and have someone review
 
+***
 
+## Notes on parallel processing
+
+Coming soon!
