@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2018 - World Governance Indicator'
+title: 'OHI 2019 - World Governance Indicator'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -27,10 +27,10 @@ None
 # Data Source 
 **Reference**:  http://info.worldbank.org/governance/wgi/index.aspx#home    
 
-**Downloaded**: April 6 2018
+**Downloaded**: March 11 2019 (data updated Sep 21 2018)
 
 **Description**:  
-The Worldwide Governance Indicators (WGI) project reports aggregate and individual governance indicators for 215 economies over the period 1996–2016, for six dimensions of governance:
+The Worldwide Governance Indicators (WGI) project reports aggregate and individual governance indicators for 215 economies over the period 1996–2017, for six dimensions of governance:
 
 * Voice and Accountability
 * Political Stability and Absence of Violence
@@ -39,7 +39,7 @@ The Worldwide Governance Indicators (WGI) project reports aggregate and individu
 * Rule of Law
 * Control of Corruption
 
-**Time range**: 1996-2016
+**Time range**: 1996-2017
 
 ***
 
