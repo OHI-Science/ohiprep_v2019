@@ -57,7 +57,7 @@ library(stringr)
 
 # check website to see what years are available: http://info.worldbank.org/governance/wgi/index.aspx#home
 yr_start = 1996
-yr_end   = 2016
+yr_end   = 2017
 
 
 ```
@@ -66,7 +66,7 @@ yr_end   = 2016
 Download each of the 6 WGI indicators:
 ```{r, eval=FALSE}
 
-## access data ----
+## access data through the WDI package
 
 ## get description of variables:
 indicators <-  data.frame(WDI_data[[1]])
@@ -109,13 +109,14 @@ Combine the indicators into a single table, with a column for each indicator, an
 
 ```{r, eval=FALSE}
 d = key_voice %>% 
-  select(country, year, VA.EST) %>%
+  select(country, year, indicator) %>%
   left_join(key_polst %>% select(-iso2c), by=(c('country', 'year'))) %>%
   left_join(key_gvtef %>% select(-iso2c), by=(c('country', 'year'))) %>%
   left_join(key_regqt %>% select(-iso2c), by=(c('country', 'year'))) %>%
   left_join(key_rolaw %>% select(-iso2c), by=(c('country', 'year'))) %>%
-  left_join(key_corrp %>% select(-iso2c), by=(c('country', 'year'))); head(d); summary(d); sapply(d, class)  
+  left_join(key_corrp %>% select(-iso2c), by=(c('country', 'year'))); head(d); summary(d); sapply(d, class)
 
+colnames(d) <- c("country", "year", "VA.EST", "PV.EST", "GE.EST",	"RQ.EST",	"RL.EST", "CC.EST")
 ```
 
 ## Save a record of any new raw data for archival purposes
@@ -124,9 +125,10 @@ Uncomment the code chunk lines when updating WGI data, this will most likely occ
 
 ```{r, eval=FALSE}
 
-# date <- Sys.Date()
-# write.csv(d, sprintf('raw/worldbank_wgi_from_wdi_api_%s.csv', date), row.names=FALSE)
+date <- Sys.Date()
+write.csv(d, sprintf('raw/worldbank_wgi_from_wdi_api_%s.csv', date), row.names=FALSE)
 
+# This dataset currently has non-OHI regions included
 ```
 
 
@@ -136,7 +138,7 @@ The first gapfilling occurs when we use the average of previous years data withi
 
 **Read in WGI data - change appended date in file name to reflect the most recent version of the saved WGI data:**
 ```{r, eval=FALSE}
-d <- read.csv('raw/worldbank_wgi_from_wdi_api_2018-04-13.csv') # change appended date 
+d <- read.csv('raw/worldbank_wgi_from_wdi_api_2019-03-18.csv') # change appended date 
 ```
 
 ```{r, eval=FALSE}
@@ -161,7 +163,7 @@ d_gap_fill  <- d %>%
 ## Safeguard: cut regions with < 4 indicators (if any) to calculate score.
 Once gapfilling is complete, the WGI scores are calculated as an average of the 6 indicators.  However, if a country is missing 4 or more of the indicators within a year the average would be very biased.  In these cases, a different method should be used to gapfill these data 
 
-(NOTE: for the 2018 assessment all regions had at least 3 of the 6 indicators).
+(NOTE: for the 2019 assessment all regions had at least 3 of the 6 indicators).
 
 ```{r purge datapoor region, eval=FALSE}
 
@@ -279,7 +281,7 @@ population_weights <- data.frame(country = c("Virgin Islands (U.S.)", "Puerto Ri
 
 d_calcs_rgn <- d_calcs_rgn %>%
   left_join(population_weights, by="country") %>%
-  mutate(population = ifelse(is.na(population), 1, population)) %>%
+  mutate(population = ifelse(is.na(population), 1, population))
   group_by(rgn_id, year) %>%
   summarize(score = weighted.mean(score, population),
             gapfill_within_rgn = weighted.mean(gap_fill, population)) %>%
@@ -377,19 +379,19 @@ Plot most recent shared year between last year and this years data, and look for
 
 ```{r, eval=FALSE}
 
-new2015 <- d_gf2 %>%
+new2017 <- d_gf2 %>%
 
-  filter(year==2015) %>% # update to most recent shared year for comparison
+  filter(year==2017) %>% # update to most recent shared year for comparison
   select(rgn_id, score)
 
-old2015 <- read.csv('../v2017/output/wgi_res.csv') %>% # change filepath to the previous assessment year's, rename variable for clarity
-  filter(year == 2015) %>%
+old2016 <- read.csv('../v2018/output/wgi_res.csv') %>% # change filepath to the previous assessment year's, rename variable for clarity
+  filter(year == 2016) %>%
 
   select(rgn_id, old_score=resilience_score) %>%
-  full_join(new2015)
+  full_join(new2017)
 
 
-plot(old_score ~ score, data=old2015)
+plot(old_score ~ score, data=old2016)
 # identify(old2015$score, old2015$old_score, labels=old2015$rgn_id) # can use this to identify regions from the plot
 abline(0,1, col="red")
 
@@ -403,7 +405,7 @@ Look at top/bottom 10 regions to make sure these seem reasonable:
 ## Top/Bottom 10 scorers:
 
 tmp <- d_gf2 %>%
-  filter(year==2016) %>%
+  filter(year==2017) %>%
   arrange(score) %>%
   select(rgn_id, score) %>%
   left_join(regions)
