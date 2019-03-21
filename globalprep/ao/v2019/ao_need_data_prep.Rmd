@@ -307,12 +307,6 @@ summary(low_pop)
 
 low_pop_vector <- c(low_pop$rgn_id) #make a vector of low population areas 
 
- #mutate(score = case_when(
-    #              rgn_id %in% low_pop_vector ~  "NA",
-     #           !(rgn_id %in% low_pop_vector) ~  score
-      #          ))
-
-
 # For `score` cells that still have NA values (still several hundred):
 # Check to see if r2 has a value, if so use that to gapfill `score`, otherwise use r1, otherwise use r0
 d_stand_gf <- d_stand_gf %>%
@@ -329,7 +323,6 @@ d_stand_gf <- d_stand_gf %>%
 
 d_stand_gf$score[d_stand_gf$rgn_id %in% low_pop_vector] <- NA
 #should now have NA values in score column for low popuation areas!!
-   summary(d_stand_gf)
 
 summary(d_stand_gf) 
 
