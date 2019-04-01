@@ -11,6 +11,8 @@ output:
       in_header: '../../../src/templates/ohi_hdr.html'
   pdf_document:
     toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 [REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2017/WGI_dataprep.html]
@@ -51,9 +53,10 @@ library(dplyr)
 library(tidyr)
 library(WDI) # install.packages('WDI')  # used to extract World Development Indicator (World Bank) data 
 library(stringr)
+library(here)
+library(ggplot2)
+library(plotly)
 
-# comment out when knitting:
-# setwd('globalprep/prs_res_wgi/v2018')
 
 # check website to see what years are available: http://info.worldbank.org/governance/wgi/index.aspx#home
 yr_start = 1996
@@ -126,7 +129,8 @@ Uncomment the code chunk lines when updating WGI data, this will most likely occ
 ```{r, eval=FALSE}
 
 date <- Sys.Date()
-write.csv(d, sprintf('raw/worldbank_wgi_from_wdi_api_%s.csv', date), row.names=FALSE)
+write.csv(d, here(sprintf('globalprep/prs_res_wgi/v2019/raw/worldbank_wgi_from_wdi_api_%s.csv', date)), row.names=FALSE)
+
 
 # This dataset currently has non-OHI regions included
 ```
@@ -138,7 +142,8 @@ The first gapfilling occurs when we use the average of previous years data withi
 
 **Read in WGI data - change appended date in file name to reflect the most recent version of the saved WGI data:**
 ```{r, eval=FALSE}
-d <- read.csv('raw/worldbank_wgi_from_wdi_api_2019-03-18.csv') # change appended date 
+d <- read.csv(here('globalprep/prs_res_wgi/v2019/raw/worldbank_wgi_from_wdi_api_2019-03-18.csv')) # change appended date so that it only changes if you do so actively
+
 ```
 
 ```{r, eval=FALSE}
@@ -149,7 +154,7 @@ d <- gather(d, "indicator", "value", VA.EST:CC.EST)
 ## each country has 18 years of data
 d_gap_fill  <- d %>%
   group_by(country, year) %>%
-  mutate(NA_count_c_y = sum(is.na(value))) %>% # gf record: NA values within a region/year prior to gapfilling, max value is 6
+  mutate(NA_count_c_y = sum(is.na(value))) %>% # gf record: NA values within a region/year prior to gapfilling, max value is 6 (meaning that a country has no data)
   ungroup() %>%
   group_by(country, indicator) %>% # gapfill missing data with mean of values across years within the same region/indicator
   mutate(ind_mean_c_i = mean(value, na.rm=TRUE)) %>%
@@ -201,7 +206,7 @@ d_calcs  <-  d_gap_fill %>%
 ## Check that the values in `scores_wgi_scale` fall within the wgi range specified below:
 ```{r, eval=FALSE}
 
-# summary(d_calcs)
+# summary(d_calcs) - checking to make sure NA values make sense
 wgi_range = c(-2.5, 2.5) # historic values have been between -2.5 and 2.5
 
 ```
@@ -211,12 +216,14 @@ wgi_range = c(-2.5, 2.5) # historic values have been between -2.5 and 2.5
 d_calcs <- d_calcs %>%
   mutate(score =  (score_wgi_scale - wgi_range[1]) / (wgi_range[2] - wgi_range[1])) %>%
   ungroup(); head(d_calcs); summary(d_calcs)
+# converts the scores between 0 and 1, using min/max to scale the data
 
 # document gapfilling
 d_calcs <- d_calcs %>%
   mutate(gap_fill = NA_start - NA_post_gf_1,   # if there are values in NA_post_gf_1, it means these weren't gapfilled
          gap_fill = ifelse(is.na(score), 0, gap_fill)) %>% # number of values that were gapfilled
   select(-NA_start, -NA_post_gf_1)
+
 ```
 
 ## Explore & check intermediate d_calcs data table
@@ -226,6 +233,9 @@ d_calcs <- d_calcs %>%
 d_calcs[d_calcs$gap_fill>0, ]     
 d_calcs[d_calcs$country == "New Caledonia", ]  # no data, was deleted earlier
 d_calcs[d_calcs$country == "Niue", ] # should have gap-fill values between 0-6
+d_calcs[d_calcs$country == "American Samoa",]
+
+# Future improvement: create a linear model to estimate missing data rather than just taking averages of years with data
 
 ```
 
@@ -236,7 +246,7 @@ d_calcs[d_calcs$country == "Niue", ] # should have gap-fill values between 0-6
 ## save intermediate file of wgi scores pre-gapfilling (for OHI+ use)
 write.csv(d_calcs %>%
             select(country, year, score_wgi_scale, score_ohi_scale = score), 
-          file.path('intermediate/wgi_combined_scores_by_country.csv'),
+          here('globalprep/prs_res_wgi/v2019/intermediate/wgi_combined_scores_by_country.csv'),
           row.names = FALSE)
 
 ```
@@ -264,24 +274,27 @@ d_calcs <- d_calcs %>%
   mutate(country = as.character(country))
 
 d_calcs$country[grep("Korea, Dem.", d_calcs$country)] <- "North Korea"
-
+# Maybe in future update package with country synonym list
 
 
 ## Function to convert to OHI region ID
 d_calcs_rgn <- name_2_rgn(df_in = d_calcs, 
                        fld_name='country', 
                        flds_unique=c('year'))
+# Eswatini is a landlocked country (aka Swaziland) in Southern Africa
 
 ## Combine the duplicate regions (we report these at lower resolution)
 ## In this case, we take the weighted average
 population_weights <- data.frame(country = c("Virgin Islands (U.S.)", "Puerto Rico",
                                              "China", "Hong Kong SAR, China", "Macao SAR, China"),
-                                 population = c(106405, 3725789,
-                                         1339724852, 7071576, 636200))
+                                 population = c(107270, 3337180,
+                                         1386395000, 7391700, 622570))
+# updated population values on 1 Apr 2019 (source: World Bank website, 2017 values)
+
 
 d_calcs_rgn <- d_calcs_rgn %>%
   left_join(population_weights, by="country") %>%
-  mutate(population = ifelse(is.na(population), 1, population))
+  mutate(population = ifelse(is.na(population), 1, population)) %>% 
   group_by(rgn_id, year) %>%
   summarize(score = weighted.mean(score, population),
             gapfill_within_rgn = weighted.mean(gap_fill, population)) %>%
@@ -322,6 +335,7 @@ d_sovs = d_calcs_rgn %>%
    filter(!is.na(gapfill_within_rgn)) %>%
   ungroup()
 
+# filter(d_sovs, rgn_id %in% c(1,2,3,16) & year == 2017) check in console to make sure Australia and territories have the same score and sov_id
 ```
 
 
@@ -379,21 +393,22 @@ Plot most recent shared year between last year and this years data, and look for
 
 ```{r, eval=FALSE}
 
-new2017 <- d_gf2 %>%
-
-  filter(year==2017) %>% # update to most recent shared year for comparison
+new2016 <- d_gf2 %>%
+  filter(year==2016) %>% # update to most recent shared year for comparison
   select(rgn_id, score)
 
-old2016 <- read.csv('../v2018/output/wgi_res.csv') %>% # change filepath to the previous assessment year's, rename variable for clarity
+old2016 <- read.csv(here('globalprep/prs_res_wgi/v2018/output/wgi_res.csv')) %>% # change filepath to the previous assessment year's, rename variable for clarity
   filter(year == 2016) %>%
-
   select(rgn_id, old_score=resilience_score) %>%
-  full_join(new2017)
+  full_join(new2016)
 
 
-plot(old_score ~ score, data=old2016)
-# identify(old2015$score, old2015$old_score, labels=old2015$rgn_id) # can use this to identify regions from the plot
-abline(0,1, col="red")
+score_compare_plot <- ggplot(old2016, aes(x = old_score, y = score, text = rgn_id)) +
+  geom_point() +
+  geom_abline(slope=1, intercept = 0, col = "red")
+   
+ggplotly(score_compare_plot) # looks good (no outliers), no real need for comparison
+
 
 ```
 
@@ -420,13 +435,15 @@ hist(tmp$score)
 Look at a summary to confirm scores are between 0 and 1, there are 220 regions, and there are no NAs (for this particular dataset):
 
 ```{r, eval=FALSE}
-summary(d_gf2)
-length(unique(d_gf2$rgn_id))
-c(min(d_gf2$score), max(d_gf2$score))
+summary(d_gf2) # scores are between 0-1, gapfilled info present, no NAs
+length(unique(d_gf2$rgn_id)) # 220 regions
+c(min(d_gf2$score), max(d_gf2$score)) # checking for score min and max; making sure they're between 0-1
+
 ```
 
 # Save the data
 Save gapfilling and data for this assessment year.
+
 
 ```{r, eval=FALSE}
 
@@ -439,9 +456,11 @@ tmp_data_prs <- d_gf2 %>%
   select(rgn_id, year, pressure_score = score)
 write.csv(tmp_data_prs, "output/wgi_prs.csv", row.names=FALSE)
 
+# gapfilled data
 tmp_gf <- d_gf2 %>%
   select(rgn_id, year, gapfill_within_rgn, gapfill_territory)
 write.csv(tmp_gf, "output/wgi_gf.csv", row.names=FALSE)
-  
+  # change format to match data SOP, add method column
+
 
 ```
