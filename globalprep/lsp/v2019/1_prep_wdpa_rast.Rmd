@@ -25,7 +25,9 @@ View lsp_data_prep.Rmd for full description of Lasting Special Places data prepa
 
 # Updates from previous assessment
 
-None yet. 
+Using `fasterize::fasterize()` to rasterize the WDPA polygons, rather than ArcGIS.  This allows the entire process to be completed in R. 
+
+Using `fasterize()` argument `fun=min` to assign oldest year to an area where there are overlapping polygons. Prior assessment re-ordered the status year with the oldest year at the end, so that `gdalUtils::gdal_rasterize()` in `gdal_rast2()` would work correctly. Both achieve the same results.
 
 ***
 
@@ -38,7 +40,7 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 library(rgdal)
 library(gdalUtils)
 library(tidyverse)
-source('~/github/ohiprep_v2019/workflow/R/common.R')
+source('~/github/ohiprep_v2018/src/R/common.R')
 
 goal     <- 'globalprep/lsp'
 scenario <- 'v2018'
@@ -156,7 +158,6 @@ if(!file.exists(paste0(shp_xformed, '.shp'))) {
   message('Go inspect it to make sure it looks good!')
 }
 
-#where do I go to check this? 
 ```
 
 ### Define some raster functions.

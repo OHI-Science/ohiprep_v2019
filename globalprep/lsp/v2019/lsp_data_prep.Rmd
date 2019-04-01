@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2019: Lasting Special Places'
+title: 'OHI 2018: Lasting Special Places'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output:
   html_document:
@@ -39,7 +39,7 @@ where:
 
 # Updates from previous assessment
 
-None yet. 
+No longer use ArcPy for rasterization of WDPA-MPA database. ArcPy works great for our purposes, but is neither open-source nor cross-platform. Using `fasterize` in R to rasterize the shapefiles.
 
 ***
 
@@ -71,7 +71,7 @@ library(tidyverse)
 # library(tmap)
 
 
-source('~/github/ohiprep_v2019/workflow/R/common.R')
+source('~/github/ohiprep_v2018/src/R/common.R')
 
 goal     <- 'lsp'
 scenario <- 'v2018'
