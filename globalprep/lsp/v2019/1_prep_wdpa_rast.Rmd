@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2018: LSP, Rasterize WDPA polygons'
+title: 'OHI 2019: LSP, Rasterize WDPA polygons'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -25,9 +25,7 @@ View lsp_data_prep.Rmd for full description of Lasting Special Places data prepa
 
 # Updates from previous assessment
 
-Using `fasterize::fasterize()` to rasterize the WDPA polygons, rather than ArcGIS.  This allows the entire process to be completed in R. 
-
-Using `fasterize()` argument `fun=min` to assign oldest year to an area where there are overlapping polygons. Prior assessment re-ordered the status year with the oldest year at the end, so that `gdalUtils::gdal_rasterize()` in `gdal_rast2()` would work correctly. Both achieve the same results.
+Same as previous assessment other than updated data from April 2019. 
 
 ***
 
@@ -40,17 +38,17 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 library(rgdal)
 library(gdalUtils)
 library(tidyverse)
-source('~/github/ohiprep_v2018/src/R/common.R')
+source('~/github/ohiprep_v2019/workflow/R/common.R')
 
 goal     <- 'globalprep/lsp'
-scenario <- 'v2018'
+scenario <- 'v2019'
 dir_goal_anx   <- file.path(dir_M, 'git-annex', goal, scenario) 
-dir_goal  <- file.path('~/github/ohiprep_v2018', goal, scenario)
+dir_goal  <- file.path('~/github/ohiprep_v2019', goal, scenario)
 dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
-                         'wdpa_mpa/d2018')
+                         'wdpa_mpa/d2019')
 
 ## set up provenance tracking for this script:
-# library(provRmd); prov_setup() #devtools::install_github('oharac/provRmd', build_vignettes = TRUE)
+ library(provRmd); prov_setup() #devtools::install_github('oharac/provRmd', build_vignettes = TRUE)
 
 ```
 
@@ -62,13 +60,16 @@ dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
 Read in the polygons from the WDPA dataset; filter as needed.
 
 ``` {r filter_and_reorder_poly}
+library(foreign)
+read.dbf(file.path(dir_data, 'WDPA_Apr2019-shapefile', 'WDPA_Apr2019-shapefile-polygons.dbf'))
+## check to see if .dbf actually uploaded in mazu, it did. 222,015 rows. 
 
-shp_raw     <- file.path(dir_data, 'WDPA_June2018-shapefile', 'WDPA_June2018-shapefile-polygons')
-shp_reorder <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_ordered')
+shp_raw     <- file.path(dir_data, 'WDPA_Apr2019-shapefile', 'WDPA_Apr2019-shapefile-polygons')
+shp_reorder <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered')
 
 if(!file.exists(paste0(shp_reorder, '.shp'))) {
   message('No shp found for filtered/reordered WDPA database')
-  ## Read in the raw shapefile (3.6 GB); 472 sec on Mazu
+  ## Read in the raw shapefile (4.1 GB); 468 sec on Mazu
   message('Reading in raw shapefile: \n  ', shp_raw)
   ptm <- proc.time()
   wdpa_poly <- rgdal::readOGR(dsn = dirname(shp_raw), 
@@ -115,6 +116,10 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
   message('Filtered shapefile exists: \n  ', shp_reorder)
 }
 
+
+#library(sf)
+read_sf(file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered.shp'))
+#check to see if it worked!
 ```
 
 ## Transform to Mollweide Projection
@@ -123,7 +128,8 @@ Transform ordered polygons to Mollweide and save as new polygons.
 
 ``` {r transform_poly}
 
-shp_xformed <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_xformed')
+
+shp_xformed <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed')
 
 if(!file.exists(paste0(shp_xformed, '.shp'))) {
   message('No shp found for filtered/reordered/transformed WDPA database')
@@ -131,7 +137,7 @@ if(!file.exists(paste0(shp_xformed, '.shp'))) {
   if(!exists('wdpa_poly1')) {
     
     message('loading wdpa polygons (filtered and ordered)')
-    shp_reorder <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_ordered')
+    shp_reorder <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered')
     wdpa_poly1 <- readOGR(dsn = dirname(shp_reorder), 
                           layer = basename(shp_reorder),
                           stringsAsFactors = FALSE)
@@ -158,6 +164,8 @@ if(!file.exists(paste0(shp_xformed, '.shp'))) {
   message('Go inspect it to make sure it looks good!')
 }
 
+read_sf(file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed.shp'))
+#check to see if it worked!
 ```
 
 ### Define some raster functions.
@@ -181,7 +189,7 @@ writeRasterBlocks <- function(rast, filename) {
     rast <- writeValues(rast, v, bs$row[i])
   }
   rast <- writeStop(rast)
-  # return(rast)
+   #return(rast)
 }
 
 
@@ -197,10 +205,10 @@ writeRasterBlocks <- function(rast, filename) {
 
 library(sf)
 library(fasterize) ### devtools::install_github('ecohealthalliance/fasterize')
-rast_wdpa_file   <- file.path(dir_goal_anx, 'rast', 'wdpa_2018_moll_500m.tif')
+rast_wdpa_file   <- file.path(dir_goal_anx, 'rast', 'wdpa_2019_moll_500m.tif')
 
 if(!file.exists(rast_wdpa_file)) {
-shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_xformed')
+shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed')
   
   ptm <- proc.time()
   wdpa_poly <- sf::st_read(dsn = dirname(shp_xformed_file),

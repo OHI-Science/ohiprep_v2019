@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2018: Lasting Special Places'
+title: 'OHI 2019: Lasting Special Places'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output:
   html_document:
@@ -39,22 +39,22 @@ where:
 
 # Updates from previous assessment
 
-No longer use ArcPy for rasterization of WDPA-MPA database. ArcPy works great for our purposes, but is neither open-source nor cross-platform. Using `fasterize` in R to rasterize the shapefiles.
+Only using updated April 2019 data. 
 
 ***
 
 # Data Source
-**Reference**: IUCN and UNEP-WCMC (2018), The World Database on Protected Areas (WDPA) [On-line], June 2018. Cambridge, UK: UNEP-WCMC. Available at: www.protectedplanet.net.
+**Reference**: IUCN and UNEP-WCMC (2019), The World Database on Protected Areas (WDPA) [On-line], April 2019. Cambridge, UK: UNEP-WCMC. Available at: www.protectedplanet.net.
 
-**Downloaded**: July 2, 2018
+**Downloaded**: April 1, 2019
 
 **Description**:  Shapefile of World Database on Protected Areas
 
-**Time range**: 1819 - 2018; some protected areas do not have an associated "status year" and are reported as year 0.
+**Time range**: 1819 - 2019; some protected areas do not have an associated "status year" and are reported as year 0.
 
 **Format**:  Shapefile
 
-**File location**: `Mazu:git-annex/globalprep/_raw_data/wdpa_mpa/d2018/WDPA_June2018-shapefile/`
+**File location**: `Mazu:git-annex/globalprep/_raw_data/wdpa_mpa/d2019/WDPA_Apr2019-shapefile/`
 
 ***
 
@@ -68,22 +68,22 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 library(raster)
 library(readr)
 library(tidyverse)
-# library(tmap)
+#library(tmap) this package won't load for some reason. Not sure if we need it. 
 
 
-source('~/github/ohiprep_v2018/src/R/common.R')
+source('~/github/ohiprep_v2019/workflow/R/common.R')
 
 goal     <- 'lsp'
-scenario <- 'v2018'
+scenario <- 'v2019'
 dir_anx       <- file.path(dir_M, 'git-annex/globalprep') 
-dir_goal      <- file.path('~/github/ohiprep_v2018/globalprep', goal, scenario)
+dir_goal      <- file.path('~/github/ohiprep_v2019/globalprep', goal, scenario)
 dir_goal_anx  <- file.path(dir_anx, goal, scenario)
 
 ## set up provenance tracking for this script:
-# library(provRmd)
-# prov_setup()
+ library(provRmd)
+ prov_setup()
 
-#setwd("~/github/ohiprep_v2018/globalprep/lsp/v2018")
+#setwd("~/github/ohiprep_v2019/globalprep/lsp/v2019")
 
 
 ```
