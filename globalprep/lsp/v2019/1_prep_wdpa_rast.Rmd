@@ -43,7 +43,7 @@ source('~/github/ohiprep_v2019/workflow/R/common.R')
 goal     <- 'globalprep/lsp'
 scenario <- 'v2019'
 dir_goal_anx   <- file.path(dir_M, 'git-annex', goal, scenario) 
-dir_goal  <- file.path('~/github/ohiprep_v2019', goal, scenario)
+dir_goal  <- file.path(here('globalprep', goal, scenario))
 dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
                          'wdpa_mpa/d2019')
 

@@ -69,6 +69,7 @@ library(raster)
 library(readr)
 library(tidyverse)
 #library(tmap) this package won't load for some reason. Not sure if we need it. 
+library(here)
 
 
 source('~/github/ohiprep_v2019/workflow/R/common.R')
@@ -76,14 +77,12 @@ source('~/github/ohiprep_v2019/workflow/R/common.R')
 goal     <- 'lsp'
 scenario <- 'v2019'
 dir_anx       <- file.path(dir_M, 'git-annex/globalprep') 
-dir_goal      <- file.path('~/github/ohiprep_v2019/globalprep', goal, scenario)
+dir_goal      <- file.path(here('globalprep', goal, scenario))
 dir_goal_anx  <- file.path(dir_anx, goal, scenario)
 
 ## set up provenance tracking for this script:
  library(provRmd)
  prov_setup()
-
-#setwd("~/github/ohiprep_v2019/globalprep/lsp/v2019")
 
 
 ```
