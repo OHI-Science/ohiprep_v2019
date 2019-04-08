@@ -25,7 +25,7 @@ View lsp_data_prep.Rmd for full description of Lasting Special Places data prepa
 
 # Updates from previous assessment
 
-Changing all of the readOGR to st_read so as to treat the shapefiles as simple features. Source directly from the github link.
+Same as previous assessment other than updated data from April 2019. 
 
 ***
 
@@ -39,7 +39,6 @@ library(rgdal)
 library(gdalUtils)
 library(tidyverse)
 library(here)
-library(sf)
 
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 
@@ -61,6 +60,9 @@ dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
 Read in the polygons from the WDPA dataset; filter as needed.
 
 ``` {r filter_and_reorder_poly}
+#library(foreign)
+#read.dbf(file.path(dir_data, 'WDPA_Apr2019-shapefile', 'WDPA_Apr2019-shapefile-polygons.dbf'))
+## check to see if .dbf actually uploaded in mazu, it did. 222,015 rows. 
 
 shp_raw     <- file.path(dir_data, 'WDPA_Apr2019-shapefile', 'WDPA_Apr2019-shapefile-polygons')
 shp_reorder <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered')
@@ -68,17 +70,16 @@ shp_reorder <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered')
 if(!file.exists(paste0(shp_reorder, '.shp'))) {
   message('No shp found for filtered/reordered WDPA database')
   ## Read in the raw shapefile (4.1 GB); 468 sec on Mazu
-  ##Once changed to st_read from readOGR, only ~50 secs on Mazu 
   message('Reading in raw shapefile: \n  ', shp_raw)
   ptm <- proc.time()
-  wdpa_poly <- st_read(dsn = dirname(shp_raw), 
+  wdpa_poly <- rgdal::readOGR(dsn = dirname(shp_raw), 
                        layer = basename(shp_raw),
                        stringsAsFactors = FALSE)
   message('elapsed: ', (proc.time() - ptm)[3])
   
   ## filter polygons
   # glimpse(wdpa_poly@data) ## check class of STATUS_YR
-  wdpa_poly <- wdpa_poly %>%
+  wdpa_poly@data <- wdpa_poly@data %>%
     setNames(tolower(names(.))) %>%
     dplyr::select(wdpaid, name, orig_name, 
            desig, desig_eng, desig_type,
@@ -94,13 +95,13 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
 
   # x <- wdpa_poly@data %>% filter(str_detect(tolower(mang_plan), 'non-mpa program'))
   ## 84 observations
-  wdpa_poly <- wdpa_poly[wdpa_poly$status == 'Designated', ]
-  wdpa_poly <- wdpa_poly[!str_detect(tolower(wdpa_poly$mang_plan), 'non-mpa program'), ]
+  wdpa_poly <- wdpa_poly[wdpa_poly@data$status == 'Designated', ]
+  wdpa_poly <- wdpa_poly[!str_detect(tolower(wdpa_poly@data$mang_plan), 'non-mpa program'), ]
   
   message('Writing filtered WDPA polygons to: \n  ', shp_reorder)
   ## probably gonna take half an hour to write?
   ptm <- proc.time()
-  st_write(wdpa_poly, 
+  writeOGR(wdpa_poly, 
            dsn = dirname(shp_reorder), layer = basename(shp_reorder),
            driver = 'ESRI Shapefile')
   message('elapsed: ', (proc.time() - ptm)[3])
@@ -115,6 +116,10 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
   message('Filtered shapefile exists: \n  ', shp_reorder)
 }
 
+
+#library(sf)
+#read_sf(file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered.shp'))
+#check to see if it worked!
 ```
 
 ## Transform to Mollweide Projection
@@ -260,8 +265,8 @@ library(sf)
 library(raster)
 
 ## Read in reordered shapefile
- #shp_reorder <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered')
- #shp_reorder18 <- file.path(dir_data, '../d2018', 'shps', 'WDPA_June2018_shp_ordered')
+ shp_reorder <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered')
+ shp_reorder18 <- file.path(dir_data, '../d2018', 'shps', 'WDPA_June2018_shp_ordered')
   
 ## Read in as shapefile
 # wdpa_order <- rgdal::readOGR(dsn = dirname(shp_reorder),
