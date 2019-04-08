@@ -60,8 +60,8 @@ dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
 Read in the polygons from the WDPA dataset; filter as needed.
 
 ``` {r filter_and_reorder_poly}
-library(foreign)
-read.dbf(file.path(dir_data, 'WDPA_Apr2019-shapefile', 'WDPA_Apr2019-shapefile-polygons.dbf'))
+#library(foreign)
+#read.dbf(file.path(dir_data, 'WDPA_Apr2019-shapefile', 'WDPA_Apr2019-shapefile-polygons.dbf'))
 ## check to see if .dbf actually uploaded in mazu, it did. 222,015 rows. 
 
 shp_raw     <- file.path(dir_data, 'WDPA_Apr2019-shapefile', 'WDPA_Apr2019-shapefile-polygons')
@@ -118,7 +118,7 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
 
 
 #library(sf)
-read_sf(file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered.shp'))
+#read_sf(file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered.shp'))
 #check to see if it worked!
 ```
 
@@ -164,7 +164,7 @@ if(!file.exists(paste0(shp_xformed, '.shp'))) {
   message('Go inspect it to make sure it looks good!')
 }
 
-read_sf(file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed.shp'))
+#read_sf(file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed.shp'))
 #check to see if it worked!
 ```
 
@@ -215,7 +215,7 @@ shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed')
                            layer = basename(shp_xformed_file))
   cat('elapsed: ', (proc.time() - ptm)[3])
   ### 47-53 seconds to read in the polygons (about 472 sec for readOGR)
-
+  ### 2019 elapsed 38 seconds
   rast_base <- raster::raster(file.path(dir_M, 'git-annex/globalprep/spatial/d2014',
                                 'data/rgn_mol_raster_500m',
                                 'rgn_inland1km_mol_500mcell.tif'))
@@ -234,6 +234,7 @@ shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed')
   rast_wdpa <- fasterize(wdpa_poly, rast_base, field = 'status_yr', fun = 'min')
   cat('fasterize elapsed: ', (proc.time() - ptm)[3]) 
   ### 358 - 403 seconds?! holy crap, if it rasterized properly...
+  #2019 fasterize elapsed 26 seconds... is this right? 
   
   # ptm <- proc.time()
   # raster::writeRaster(rast_wdpa, rast_wdpa_file)
@@ -247,7 +248,7 @@ shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed')
   ptm <- proc.time()
   x <- writeRasterBlocks(rast_wdpa, rast_wdpa_file)
   message('writeRaster elapsed: ', (proc.time() - ptm)[3])
-  
+  #259 seconds
 }
 
 
@@ -255,7 +256,7 @@ shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed')
 
 ## Data Checking
 
-Compare shapfile 2017 v 2018.
+Compare shapfile 2018 v 2019.
 
 ```{r}
 
@@ -263,8 +264,8 @@ library(sf)
 library(raster)
 
 ## Read in reordered shapefile
-# shp_reorder <- file.path(dir_data, 'shps', 'WDPA_June2018_shp_ordered')
-# shp_reorder17 <- file.path(dir_data, '../d2017', 'shps', 'WDPA_May2017_shp_ordered')
+ shp_reorder <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered')
+ shp_reorder18 <- file.path(dir_data, '../d2018', 'shps', 'WDPA_June2018_shp_ordered')
   
 ## Read in as shapefile
 # wdpa_order <- rgdal::readOGR(dsn = dirname(shp_reorder), 
@@ -280,11 +281,11 @@ library(raster)
 
 
 ## Read in as sf
-wdpa_sf <- st_read(dsn = file.path(dir_data, 'shps'), layer = "WDPA_June2018_shp_ordered")
-wdpa_sf_17 <- st_read(dsn = file.path(dir_data, '../d2017', 'shps'), layer = 'WDPA_May2017_shp_ordered')
+wdpa_sf <- st_read(dsn = file.path(dir_data, 'shps'), layer = "WDPA_Apr2019_shp_ordered")
+wdpa_sf_18 <- st_read(dsn = file.path(dir_data, '../d2018', 'shps'), layer = 'WDPA_June2018_shp_ordered')
 
 plot(wdpa_sf[1])
-wdpa_diff <- st_difference(wdpa_sf[1], wdpa_sf_17[1])
+wdpa_diff <- st_difference(wdpa_sf[1], wdpa_sf_18[1]) #cant get this to run, taking for ever. Waited over 45 minutes. 
 plot(wdpa_diff)
 ggplot(wdpa_diff) +
   geom_sf()
@@ -292,7 +293,6 @@ ggplot(wdpa_diff) +
 
 ## Convert back to 'Spatial' object
 # wdpa_order <- as(variable, "Spatial")
-
 
 ```
 
