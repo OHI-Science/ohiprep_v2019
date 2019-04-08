@@ -38,7 +38,9 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 library(rgdal)
 library(gdalUtils)
 library(tidyverse)
-source('~/github/ohiprep_v2019/workflow/R/common.R')
+library(here)
+
+source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 
 goal     <- 'globalprep/lsp'
 scenario <- 'v2019'
@@ -47,8 +49,6 @@ dir_goal  <- file.path(here('globalprep', goal, scenario))
 dir_data <- file.path(dir_M, 'git-annex/globalprep', '_raw_data',
                          'wdpa_mpa/d2019')
 
-## set up provenance tracking for this script:
- library(provRmd); prov_setup() #devtools::install_github('oharac/provRmd', build_vignettes = TRUE)
 
 ```
 
@@ -251,6 +251,7 @@ shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed')
   #259 seconds
 }
 
+check <- raster::raster(rast_wdpa_file)
 
 ```
 
@@ -268,11 +269,11 @@ library(raster)
  shp_reorder18 <- file.path(dir_data, '../d2018', 'shps', 'WDPA_June2018_shp_ordered')
   
 ## Read in as shapefile
-# wdpa_order <- rgdal::readOGR(dsn = dirname(shp_reorder), 
+# wdpa_order <- rgdal::readOGR(dsn = dirname(shp_reorder),
 #                        layer = basename(shp_reorder),
 #                        stringsAsFactors = FALSE)
 # 
-# wdpa_order17 <- rgdal::readOGR(dsn = dirname(shp_reorder17), 
+# wdpa_order17 <- rgdal::readOGR(dsn = dirname(shp_reorder17),
 #                        layer = basename(shp_reorder17),
 #                        stringsAsFactors = FALSE)
 
