@@ -25,7 +25,16 @@ View lsp_data_prep.Rmd for full description of Lasting Special Places data prepa
 
 # Updates from previous assessment
 
-Changing all of the readOGR to st_read so as to treat the shapefiles as simple features. Source directly from the github link.
+Changing all of the readOGR to st_read so as to treat the shapefiles as simple features.
+Changed spTranform to st_transform. 
+Changed writeOGR to st_write. 
+All of the above changes significantly reduce run time. 
+
+Deleted the following code from LSP data prep:
+wdpa_diff <- st_difference(wdpa_sf[1], wdpa_sf_18[1])
+
+The code was included as a data check. It subtracts the old WDPA shapefile from the new WDPA shapefile to visualize the change in polygons between last year and this year. Overall, the resulting shapefile would be relatively sparse because there shouldn't be too many changes.
+However, this was taking forever to run (>24 hours). It is a nice check, but not critical.
 
 ***
 
@@ -67,7 +76,7 @@ shp_reorder <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered')
 
 if(!file.exists(paste0(shp_reorder, '.shp'))) {
   message('No shp found for filtered/reordered WDPA database')
-  ## Read in the raw shapefile (4.1 GB); 468 sec on Mazu
+  ## Read in the raw shapefile (~4.1 GB);
   ##Once changed to st_read from readOGR, only ~50 secs on Mazu 
   message('Reading in raw shapefile: \n  ', shp_raw)
   ptm <- proc.time()
@@ -98,7 +107,6 @@ if(!file.exists(paste0(shp_reorder, '.shp'))) {
   wdpa_poly <- wdpa_poly[!str_detect(tolower(wdpa_poly$mang_plan), 'non-mpa program'), ]
   
   message('Writing filtered WDPA polygons to: \n  ', shp_reorder)
-  ## probably gonna take half an hour to write?
   ptm <- proc.time()
   st_write(wdpa_poly, 
            dsn = dirname(shp_reorder), layer = basename(shp_reorder),
@@ -133,23 +141,24 @@ if(!file.exists(paste0(shp_xformed, '.shp'))) {
     
     message('loading wdpa polygons (filtered and ordered)')
     shp_reorder <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_ordered')
-    wdpa_poly1 <- readOGR(dsn = dirname(shp_reorder), 
+    wdpa_poly1 <- st_read(dsn = dirname(shp_reorder), 
                           layer = basename(shp_reorder),
                           stringsAsFactors = FALSE)
   }
 
   message('Spatial transforming WDPA polygons to Mollweide')
-  crs_mol <- CRS('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs')
+  #crs_mol <- CRS('+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs')
   ptm <- proc.time()
-  wdpa_poly2 <- spTransform(wdpa_poly1, crs_mol)
-  message('elapsed: ', (proc.time() - ptm)[3])  ### elapsed: 251 s on Mazu
+  wdpa_poly2 <- st_transform(wdpa_poly1, crs = '+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs')
+  message('elapsed: ', (proc.time() - ptm)[3])  ### elapsed: ~ 3 minutes
   
   message('Writing filtered/reorderedtransformed WDPA polygons to: \n  ', shp_xformed)
   ptm <- proc.time()
-  writeOGR(wdpa_poly2, dsn = dirname(shp_xformed), layer = basename(shp_xformed),
-           driver = 'ESRI Shapefile')
+  st_write(wdpa_poly2, dsn = dirname(shp_xformed), layer = basename(shp_xformed),
+           driver = 'ESRI Shapefile', update = TRUE)
   message('elapsed: ', (proc.time() - ptm)[3])
-  ## elapsed: 734.635 s on Mazu
+  ## elapsed: 5 - 7 minutes
+  ## will receive A LOT of warnings, disregard these as you did above. You can look at the file size on mazu to check if it is done writing. Warnings will continue for awhile after it has completed writing to mazu. 
   
   rm('wdpa_poly1', 'wdpa_poly2') ### clean up the memory
   
@@ -159,8 +168,6 @@ if(!file.exists(paste0(shp_xformed, '.shp'))) {
   message('Go inspect it to make sure it looks good!')
 }
 
-#read_sf(file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed.shp'))
-#check to see if it worked!
 ```
 
 ### Define some raster functions.
@@ -247,7 +254,6 @@ shp_xformed_file <- file.path(dir_data, 'shps', 'WDPA_Apr2019_shp_xformed')
 }
 
 check <- raster::raster(rast_wdpa_file)
-
 ```
 
 ## Data Checking
@@ -281,11 +287,7 @@ wdpa_sf <- st_read(dsn = file.path(dir_data, 'shps'), layer = "WDPA_Apr2019_shp_
 wdpa_sf_18 <- st_read(dsn = file.path(dir_data, '../d2018', 'shps'), layer = 'WDPA_June2018_shp_ordered')
 
 plot(wdpa_sf[1])
-wdpa_diff <- st_difference(wdpa_sf[1], wdpa_sf_18[1]) #cant get this to run, taking for ever. Waited over 45 minutes. 
-plot(wdpa_diff)
-ggplot(wdpa_diff) +
-  geom_sf()
-
+plot(wdpa_sf_18[1])
 
 ## Convert back to 'Spatial' object
 # wdpa_order <- as(variable, "Spatial")
