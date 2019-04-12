@@ -89,20 +89,25 @@ library(here)
 
 goal          <- 'globalprep/ico'
 scenario      <- 'v2019'
-previous_scen <- '2018'
-source(sprintf('~/github/ohiprep_%s/workflow/R/common.R', scenario))
+previous_scen <- 'v2018'
+source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 
-dir_anx      <- file.path(dir_M, 'git-annex', goal)
-dir_goal     <- file.path(sprintf('~/github/ohiprep_%s', scenario), goal, scenario)
-dir_previous <- file.path(sprintf('~/github/ohiprep_%s/%s/v%s', scenario, goal, previous_scen))
-source(file.path(dir_goal, 'ico_fxn.R'))
 
-if(!file.exists(file.path(dir_goal, 'README.md'))) {
-  warning(sprintf('No README detected in %s', dir_goal))
+dir_server      <- file.path(dir_M, 'git-annex', goal)
+dir_github     <- here(goal, scenario)
+
+source(file.path(dir_github, 'ico_fxn.R'))
+
+
+## Checking to see if there is a README in the ico and ico/v20?? folders
+## all goal prep files will need a readme!
+if(!file.exists(file.path(dir_github, 'README.md'))) {
+  warning(sprintf('No README detected in %s', dir_github))
 }
-if(!file.exists(file.path(dirname(dir_goal), 'README.md'))) {
-  warning(sprintf('No README detected in %s', file.path(dirname(dir_goal))))
+if(!file.exists(file.path(dirname(dir_github), 'README.md'))) {
+  warning(sprintf('No README detected in %s', file.path(dirname(dir_github))))
 }
+
 ```
 
 
@@ -117,20 +122,26 @@ Get all pages and bind into total species list, using the IUCN API.
 
 ``` {r get_spp_info, eval= F}
 
-api_file <- file.path(dir_anx, 'api_key.csv')
-api_key <- scan(api_file, what = 'character') # fb71ae836f415f04f41176f6d30c4a9e4cea620d46b9e5021bf2fb142ea51bf5
+api_file <- file.path(dir_server, 'api_key.csv')
+api_key <- scan(api_file, what = 'character') 
 
-spp_list_from_api_file <- file.path(dir_goal, 'int/spp_list_from_api.csv')
+# file path to save species list that is scraped from the web.
+spp_list_from_api_file <- file.path(dir_github, 'raw/spp_list_from_api.csv')
 reload <- TRUE
 
+# scrapes IUCN website to get data for species list and saves as int/spp_list_from_api.csv
 if(!file.exists(spp_list_from_api_file) | reload) {
   message('Using API to create full species list from scratch')
   
+  
+  # determine the number of species on IUCN and then determine the number of cores we will 
+  # be using to get the data from the website.
   spp_npage_url <- sprintf('http://apiv3.iucnredlist.org/api/v3/speciescount?token=%s', api_key)
   n_spp <- fromJSON(spp_npage_url) %>%
     .$count %>% as.integer()
-  n_pages <- ceiling(n_spp/10000)
+  n_pages <- ceiling(n_spp/10000)  
   
+  # send to cores
   spp_page_url <- 'http://apiv3.iucnredlist.org/api/v3/species/page/%s?token=%s'
   spp_df_all <- mc_get_from_api(spp_page_url, c(0:(n_pages - 1)), api_key) # mc_get_from_api function is defined in the ico_fxn.R script
   
@@ -156,7 +167,11 @@ The list of Iconic Species is based upon the original ICO list generated in 2011
 
 
 ``` {r get_ico_spp_list, eval=FALSE}
-# Need to have ohi-global repo cloned to run the following line:
+
+# ico master species list from Mazu: 'git-annex/globalprep/ico/ico/ico_global_list2016.csv'
+# (if there are any changes to the master list then this needs to be udated)
+
+# Need to have ohi-global repo cloned to run the following line (region ids are from ohi-global):
 ico_list_raw <- get_ico_list(reload = TRUE) # get_ico_list is defined in ico_fxn.R
 
 ## head(ico_list_raw)
@@ -174,7 +189,7 @@ ico_list_raw <- get_ico_list(reload = TRUE) # get_ico_list is defined in ico_fxn
 ## ico_rgn_id: rgn_id in which species is iconic by regional/national lists; 
 ## if globally iconic, ico_rgn_id <- NA
 
-write_csv(ico_list_raw, file.path(dir_goal, 'raw/ico_list_raw.csv'))
+write_csv(ico_list_raw, file.path(dir_github, 'raw/ico_list_raw.csv'))
 ```
 
 ```{r, eval=F}
@@ -191,8 +206,8 @@ Filtering the complete IUCN species list to include only the identified Iconic S
 
 ``` {r combine_iucn_spp_info_with_ico_list, eval= F}
 
-spp_df_all <- read_csv(file.path(dir_goal, 'int/spp_list_from_api.csv'))
-ico_list_raw <- read_csv(file.path(dir_goal, 'raw/ico_list_raw.csv')) # static list; same each year
+spp_df_all <- read_csv(file.path(dir_github, 'raw/spp_list_from_api.csv'))
+ico_list_raw <- read_csv(file.path(dir_github, 'raw/ico_list_raw.csv')) # static list; same each year
 
 spp_ico <- spp_df_all %>% 
   filter(sciname %in% ico_list_raw$sciname) 
@@ -206,7 +221,7 @@ ico_list <- ico_list_raw %>%
             by = 'sciname') %>%
   filter(!is.na(iucn_sid))
 
-write_csv(ico_list, file.path(dir_goal, 'int/ico_list_prepped.csv')) # 270 in v2019
+write_csv(ico_list, file.path(dir_github, 'int/ico_list_prepped.csv')) # 270 in v2019
 ```
 
 For each of these species, use the IUCN API to gather a list of countries in which it is present.
@@ -219,8 +234,8 @@ ico_country_url <- 'http://apiv3.iucnredlist.org/api/v3/species/countries/id/%s?
 ico_spp_countries <- mc_get_from_api(ico_country_url, ico_list$iucn_sid, api_key)
 
 
-rgn_iucn2ohi <- read_csv(file.path(dir_goal, 'raw/rgns_iucn2ohi.csv'))
-### How are we generating this file?? Just copied over from v2018/raw 
+rgn_iucn2ohi <- read_csv(file.path(dir_github, 'raw/rgns_iucn2ohi.csv'))
+### This file is used from year to year and should be copied from previous year.
 
 ico_spp_rgn_raw <- ico_spp_countries %>%
   select(-code, -count, iucn_sid = name, iucn_rgn_name = country) %>% 
@@ -243,15 +258,15 @@ ico_spp_rgn_raw <- ico_spp_rgn_raw %>%
   filter(!is.na(rgn_id)) %>%
   distinct()
 
-write_csv(ico_spp_rgn_raw, file.path(dir_goal, 'raw/ico_spp_rgn_raw.csv'))
+write_csv(ico_spp_rgn_raw, file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
 
 ```
 
 
 ``` {r attach_country_list_to_spp_info_list, eval=F}
 
-ico_spp_rgn_raw <- read_csv(file.path(dir_goal, 'raw/ico_spp_rgn_raw.csv'))
-ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
+ico_spp_rgn_raw <- read_csv(file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
+ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
 
 ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
   left_join(ico_list, by = 'iucn_sid')
@@ -261,7 +276,7 @@ ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
 ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>%
   filter(ico_gl == TRUE | ico_rgn_id == rgn_id)
 
-write_csv(ico_spp_rgn_prepped, file.path(dir_goal, 'int/ico_spp_rgn_prepped.csv'))
+write_csv(ico_spp_rgn_prepped, file.path(dir_github, 'int/ico_spp_rgn_prepped.csv'))
 
 ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>% 
   select(iucn_sid, sciname, comname, presence, origin, distribution_code, cat, ico_gl, rgn_id, rgn_name, subpop, ico_rgn_id, param_id)
@@ -297,7 +312,7 @@ Each assessment includes a year and an extinction risk, along with additional in
 ``` {r get_category_list, eval=F}
 
 ico_past_assess_url <- 'http://apiv3.iucnredlist.org/api/v3/species/history/id/%s?token=%s'
-ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
+ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
 
 ## for each species ID, get past assessments
 ico_assess_raw <- mc_get_from_api(ico_past_assess_url, ico_list$iucn_sid, api_key)
@@ -311,7 +326,7 @@ ico_assess_raw <- ico_assess_raw %>%
               distinct(),
             by = 'iucn_sid')
 
-write_csv(ico_assess_raw, file.path(dir_goal, 'raw/ico_assessments_raw.csv'))
+write_csv(ico_assess_raw, file.path(dir_github, 'raw/ico_assessments_raw.csv'))
 
 ```
 
@@ -347,7 +362,7 @@ iucn_sid | year | code | category | sciname
 
 ``` {r clean_up_category_list, eval= F}
 
-ico_assess_raw <- read_csv(file.path(dir_goal, 'raw/ico_assessments_raw.csv'))
+ico_assess_raw <- read_csv(file.path(dir_github, 'raw/ico_assessments_raw.csv'))
 
 ico_assess <- ico_assess_raw %>%
   rename(cat = code, cat_txt = category) %>%
@@ -371,7 +386,7 @@ ico_assess <- ico_assess %>%
   distinct() %>%
   arrange(iucn_sid, year)
 
-write_csv(ico_assess, file.path(dir_goal, 'int/ico_assess_clean.csv'))
+write_csv(ico_assess, file.path(dir_github, 'int/ico_assess_clean.csv'))
 
 ```
 
@@ -381,8 +396,8 @@ Using `tidyr::complete()` and `tidyr::fill()`, we create a full time series for 
 
 ``` {r fill_out_category_time_series, eval= F}
 
-ico_assess <- read_csv(file.path(dir_goal, 'int/ico_assess_clean.csv'))
-ico_list <- read_csv(file.path(dir_goal, 'int/ico_list_prepped.csv'))
+ico_assess <- read_csv(file.path(dir_github, 'int/ico_assess_clean.csv'))
+ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
 
 ico_assess_full <- ico_assess %>%
   mutate(eval_yr = year) %>% 
@@ -421,7 +436,7 @@ ico_spp_cat <- ico_spp_cat %>%
   ungroup() %>%
   distinct()
   
-write_csv(ico_spp_cat, file.path(dir_goal, 'int/ico_spp_cat.csv'))
+write_csv(ico_spp_cat, file.path(dir_github, 'int/ico_spp_cat.csv'))
 
 ```
 
@@ -431,11 +446,11 @@ Using `dplyr::full_join()` we combine the `ico_spp_rgn` dataframe (iconic specie
 
 ``` {r combine_ico_spp_cat_with_countries, eval= F}
 
-ico_cat_ts_abbr <- read_csv(file.path(dir_goal, 'int/ico_spp_cat.csv')) %>%
+ico_cat_ts_abbr <- read_csv(file.path(dir_github, 'int/ico_spp_cat.csv')) %>%
   select(iucn_sid, sciname, year, cat, cat_score, eval_yr) %>%
   filter(year >= 1992)
 
-ico_spp_rgn <- read_csv(file.path(dir_goal, 'int/ico_spp_rgn_prepped.csv')) %>%
+ico_spp_rgn <- read_csv(file.path(dir_github, 'int/ico_spp_rgn_prepped.csv')) %>%
   select(rgn_id, rgn_name, iucn_sid, comname, sciname, ico_gl, ico_rgn_id, presence)
 
 ico_spp_rgn_cat <- ico_cat_ts_abbr %>% 
@@ -448,7 +463,7 @@ ico_spp_rgn_cat <- ico_spp_rgn_cat %>%
   filter(ico_gl | ico_rgn_id == rgn_id) %>% # keep (all globally iconic) and (regionally iconic in region only)
   distinct()
 
-write_csv(ico_spp_rgn_cat, file.path(dir_goal, 'int/ico_spp_rgn_cat.csv'))
+write_csv(ico_spp_rgn_cat, file.path(dir_github, 'int/ico_spp_rgn_cat.csv'))
 
 ```
 
@@ -466,7 +481,7 @@ While the official calculations are performed in the toolbox, we perform the sam
 
 ``` {r report_status_and_trend, eval= F}
 
-ico_spp_rgn_cat <- read_csv(file.path(dir_goal, 'int/ico_spp_rgn_cat.csv'))
+ico_spp_rgn_cat <- read_csv(file.path(dir_github, 'int/ico_spp_rgn_cat.csv'))
 
 ## Report out for toolbox format (rgn_id | sciname | category or popn_trend for each species within a region).
 ## Note: in toolbox, group_by(rgn_id, sciname) and then summarize(category = mean(category)) to
@@ -506,15 +521,15 @@ ico_sum <- ico_status_raw %>%
   left_join(ico_status_calc, by = c('rgn_id', 'rgn_name', 'year')) %>%
   left_join(ico_trend, by = c('rgn_id', 'year'))
 
-write_csv(ico_sum, file.path(dir_goal, 'summary/ico_summary.csv'))
+write_csv(ico_sum, file.path(dir_github, 'summary/ico_summary.csv'))
 ### Report out for finalized status and trend values per region
 
 ico_status_raw1 <- ico_status_raw %>%
   dplyr::select(rgn_id, sciname, iucn_sid, year, eval_yr, category = cat)
 
-write_csv(ico_status_raw1, file.path(dir_goal, 'output/ico_spp_iucn_status.csv'))
-write_csv(ico_status_calc, file.path(dir_goal, 'output/ico_status_calc.csv'))
-write_csv(ico_trend,       file.path(dir_goal, 'output/ico_trend.csv'))
+write_csv(ico_status_raw1, file.path(dir_github, 'output/ico_spp_iucn_status.csv'))
+write_csv(ico_status_calc, file.path(dir_github, 'output/ico_status_calc.csv'))
+write_csv(ico_trend,       file.path(dir_github, 'output/ico_trend.csv'))
 
 ico_status_raw1[duplicated(ico_status_raw1 ), ] 
 ### NOTE: if iucn_sid were removed, this would show duplicates due to subpops with same category.

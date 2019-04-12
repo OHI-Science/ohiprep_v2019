@@ -44,7 +44,7 @@ get_ico_list <- function(reload = TRUE) {
       mutate(ico_gl = (!is.na(ico_global) | !is.na(ico_local) | !is.na(ico_flag))) %>%
       select(-ico_global, -ico_local, -ico_flag) 
     
-    rgn_name_file <- '~/github/ohi-global/eez/layers/rgn_global.csv' 
+    rgn_name_file <- here('../ohi-global/eez/layers/rgn_global.csv') 
     rgn_names <- read_csv(rgn_name_file)
     ico_list <- ico_list %>%
       left_join(ico_list %>%
