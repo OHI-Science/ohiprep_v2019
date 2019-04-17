@@ -86,7 +86,6 @@ dir_goal_anx  <- file.path(dir_anx, goal, scenario)
  library(provRmd)
  prov_setup()
 
-
 ```
 
 # Methods
@@ -203,9 +202,9 @@ y <- lsp_crosstab(rgn_rast_list[2], rast_values = rast_wdpa)#16 minutes to run #
 z <- lsp_crosstab(rgn_rast_list[3], rast_values = rast_wdpa) #35 minutes to run #eez
 
 ## Save these to the int folder
-write_csv(x, zonal_files_to_run[1])
-write_csv(y, zonal_files_to_run[2])
-write_csv(z, zonal_files_to_run[3])
+#write_csv(x, zonal_files_to_run[1])
+#write_csv(y, zonal_files_to_run[2])
+#write_csv(z, zonal_files_to_run[3])
 
 ```
 
@@ -216,6 +215,7 @@ Once the WDPA raster is cross-tabulated against the OHI region rasters (both 3 n
 ``` {r}
 stats_3nm <- read_csv(zonal_files['zonal_3nm'])
 print(summary(stats_3nm))
+
 ```
 
 ### Summary of zonal stats dataframes (1 km inland):
@@ -254,6 +254,8 @@ max_year <- max(c(stats_1km$year, stats_3nm$year, stats_eez$year), na.rm = TRUE)
 ### Determine total cells per region (n_cells_tot) and then a cumulative
 ### total of cells per region
   
+#region_data() #use this function to call rgns_eez, which is called below
+
 calc_areas <- function(stats_df) {
   area_df <- stats_df %>%
     group_by(rgn_id) %>%
@@ -267,7 +269,8 @@ calc_areas <- function(stats_df) {
     ungroup() %>%
     select(-contains('cell')) %>%
     distinct() %>%
-    left_join(get_rgn_names(), by = 'rgn_id')
+    left_join(rgns_eez, by = 'rgn_id') %>%
+    select(rgn_id:rgn_name)
   
   return(area_df)
 }
@@ -288,17 +291,17 @@ write_csv(prot_eez, file.path(dir_goal, 'int', 'area_protected_eez.csv'))
 ```
 
 
-### Protected areas (3 nm offshore, 2018 only):
+### Protected areas (3 nm offshore, 2019 only):
 
-`r DT::datatable(prot_3nm %>% filter(year == 2018) %>% select(-year, -contains('cell')), caption = '3 nautical mile offshore zone - area in km^2^')`
+`r DT::datatable(prot_3nm %>% filter(year == 2019) %>% select(-year, -contains('cell')), caption = '3 nautical mile offshore zone - area in km^2^')`
 
-### Protected areas (1 km inland, 2018 only):
+### Protected areas (1 km inland, 2019 only):
 
-`r DT::datatable(prot_1km %>% filter(year == 2018) %>% select(-year, -contains('cell')), caption = '1 kilometer inland zone - area in km^2^')`
+`r DT::datatable(prot_1km %>% filter(year == 2019) %>% select(-year, -contains('cell')), caption = '1 kilometer inland zone - area in km^2^')`
 
 ### Protected areas (full EEZ, 2018 only):
 
-`r DT::datatable(prot_eez %>% filter(year == 2018) %>% select(-year, -contains('cell')), caption = 'Full EEZ - area in km^2^')`
+`r DT::datatable(prot_eez %>% filter(year == 2019) %>% select(-year, -contains('cell')), caption = 'Full EEZ - area in km^2^')`
 
 ***
 
@@ -395,10 +398,10 @@ write.csv(offshore, "output/lsp_prot_area_offshore3nm_gf.csv", row.names=FALSE)
 
 # Data checking
 
-Plot scores for 2018 vs 2017 assessment years
+Plot scores for 2019 vs 2018 assessment years
 
 * 2018 AY data goes through June 2018
-* 2017 AY data goes through May 2017
+* 2019 AY data goes through March (downloaded on April 1) 2019
 
 ``` {r plot_scores_vs_v2016, plotly = TRUE, eval = TRUE}
 
@@ -415,7 +418,7 @@ status_3nm_new <- read_csv(file.path(dir_goal, 'output', 'lsp_prot_area_offshore
   filter(year == max(year)) %>%
   select(rgn_id, pct_prot_3nm_new, status_3nm_new)
 
-status_3nm_old <- read_csv(file.path(dir_goal, '../v2017/output', 'lsp_prot_area_offshore3nm.csv')) %>%
+status_3nm_old <- read_csv(file.path(dir_goal, '../v2018/output', 'lsp_prot_area_offshore3nm.csv')) %>%
   full_join(read_csv(file.path(dir_goal, 'output', 'rgn_area_offshore3nm.csv')),
             by = 'rgn_id') %>%
   mutate(pct_prot_3nm_old = a_prot_3nm / area,
@@ -434,7 +437,7 @@ status_1km_new <- read_csv(file.path(dir_goal, 'output', 'lsp_prot_area_inland1k
   filter(year == max(year)) %>%
   select(rgn_id, pct_prot_1km_new, status_1km_new)
 
-status_1km_old <- read_csv(file.path(dir_goal, '../v2017/output', 'lsp_prot_area_inland1km.csv')) %>%
+status_1km_old <- read_csv(file.path(dir_goal, '../v2018/output', 'lsp_prot_area_inland1km.csv')) %>%
   full_join(read_csv(file.path(dir_goal, 'output', 'rgn_area_inland1km.csv')),
             by = 'rgn_id') %>%
   mutate(pct_prot_1km_old = a_prot_1km / area,
@@ -458,21 +461,22 @@ lsp_new_old <- status_3nm_new %>%
   filter(rgn_id <= 250) %>%
   filter(rgn == rgn_old) %>%
   select(-rgn_old) %>%
-  left_join(get_rgn_names(), by = 'rgn_id')
+  left_join(rgns_eez, by = 'rgn_id') %>%
+  select(rgn_id:rgn_name)
   
 lsp_status_plot <- ggplot(lsp_new_old, 
                         aes(x = score_old, y = score_new, key = rgn_name)) +
   geom_point(alpha = .6) +
   theme(legend.position = 'none') +
   geom_abline(slope = 1, intercept = 0, color = 'red') +
-  labs(x = 'LSP status v2017 (data through May 2017)',
-       y = 'LSP status v2018 (data through June 2018)',
-       title = 'Comparing LSP status: 2018 vs 2017') +
+  labs(x = 'LSP status v2018 (data through June 2018)',
+       y = 'LSP status v2019 (data through April 2019)',
+       title = 'Comparing LSP status: 2019 vs 2018') +
   facet_wrap( ~ rgn)
 
 ggplotly(lsp_status_plot)
 
-ggsave(file.path(dir_goal, 'Figs/plot_v2017_v2018.png'), 
+ggsave(file.path(dir_goal, 'Figs/plot_v2018_v2019.png'), 
        plot = lsp_status_plot, height = 4.5, width = 6)
 
 x <- lsp_new_old %>%

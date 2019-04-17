@@ -92,7 +92,7 @@ scenario      <- 'v2019'
 previous_scen <- 'v2018'
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 
-
+# Changed these names to dir_server and dir_github from dir_anx and dir_goal, updated them in ico_fxn.R also
 dir_server      <- file.path(dir_M, 'git-annex', goal)
 dir_github     <- here(goal, scenario)
 
@@ -232,31 +232,37 @@ For each of these species, use the IUCN API to gather a list of countries in whi
 ico_country_url <- 'http://apiv3.iucnredlist.org/api/v3/species/countries/id/%s?token=%s'
 
 ico_spp_countries <- mc_get_from_api(ico_country_url, ico_list$iucn_sid, api_key)
+# sometimes this line takes a while to run - add a progress bar?
 
+ico_spp_rgn_raw <- name_2_rgn(df_in = ico_spp_countries, 
+                       fld_name='country')
 
-rgn_iucn2ohi <- read_csv(file.path(dir_github, 'raw/rgns_iucn2ohi.csv'))
-### This file is used from year to year and should be copied from previous year.
+# 2019 version removed rgn_iucn2ohi file; replaced with name_2_rgn function, code below now becomes unnecessary (can delete later)
 
-ico_spp_rgn_raw <- ico_spp_countries %>%
-  select(-code, -count, iucn_sid = name, iucn_rgn_name = country) %>% 
-  mutate(iucn_sid = as.integer(iucn_sid),
-         iucn_rgn_name  = str_trim(iucn_rgn_name)) %>% 
-  left_join(rgn_iucn2ohi,
-            by = 'iucn_rgn_name')
+# ico_spp_rgn_raw <- ico_spp_countries %>%
+#  select(-code, -count, iucn_sid = name, iucn_rgn_name = country) %>% 
+#  mutate(iucn_sid = as.integer(iucn_sid),
+#         iucn_rgn_name  = str_trim(iucn_rgn_name)) %>% 
+#  left_join(rgn_iucn2ohi,
+#            by = 'iucn_rgn_name')
 
 ## error check on region name matching; landlocked --> not matched (597 in v2019)
 non_match <- ico_spp_rgn_raw %>%
-  filter(is.na(ohi_rgn_name))
+  filter(is.na(rgn_name))
 if(nrow(non_match) > 0) {
   cat('The following IUCN countries did not match with OHI region names:\n  ')
   print(paste(non_match$iucn_rgn_name %>% unique(), collapse = ', '))
 }
+# In 2019 non_match has 0 obs. (no NAs)
 
+# I think this step is unncessary now that we used the name_2_rgn function? OHI rgn_name already called rgn_name
 ico_spp_rgn_raw <- ico_spp_rgn_raw %>%
-  rename(rgn_name = ohi_rgn_name) %>%
-  select(-iucn_rgn_name) %>%
+#  rename(rgn_name = ohi_rgn_name) %>%
+  select(-country) %>% # removed "country" instead of iucn_rgn_name
   filter(!is.na(rgn_id)) %>%
   distinct()
+
+summary(ico_spp_rgn_raw)
 
 write_csv(ico_spp_rgn_raw, file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
 
@@ -269,7 +275,7 @@ ico_spp_rgn_raw <- read_csv(file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
 ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
 
 ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
-  left_join(ico_list, by = 'iucn_sid')
+  left_join(ico_list, by = 'iucn_sid') # need to see what this was in the old file
 
 ## filter this for species who are global (so all instances are iconic) 
 ##  OR ico_rgn_id matches rgn_id (so locally iconic matches with location)
