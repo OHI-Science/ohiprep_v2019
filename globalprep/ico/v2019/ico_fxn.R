@@ -4,7 +4,7 @@
 
 
 message('NOTE: ico_fxn.R requires that the following variables be set in the global environment (main script):\n')
-message(sprintf('dir_anx:  currently set to \'%s\'\n', dir_anx))
+message(sprintf('dir_server:  currently set to \'%s\'\n', dir_server))
 message(sprintf('scenario: currently set to \'%s\'\n\n', scenario))
 
 
@@ -14,8 +14,8 @@ get_ico_list <- function(reload = TRUE) {
 ### consider for ICO (as well as global and regional ICO status); then attaches 
 ### this ICO species list to the IUCN master species list.  
 
-  ico_list_file <- file.path(dir_goal, 'int/ico_global_list.csv')
-  ico_raw_file <- file.path(dir_anx, 'ico/ico_global_list2016.csv')
+  ico_list_file <- file.path(dir_github, 'int/ico_global_list.csv')
+  ico_raw_file <- file.path(dir_server, 'ico/ico_global_list2016.csv')
   
   if(file.exists(ico_list_file) & !reload) {
     message(sprintf('Reading prepped iconic species list from: \n  %s\n', ico_list_file))
@@ -111,7 +111,7 @@ get_ico_details_all <- function(ico_spp_list, reload = FALSE) {
   ### gets a list of countries in which parents and subpops appear, from
   ### the scraped data in iucn_details.
   
-  ico_rgns_file <- file.path(dir_anx, 'tmp/ico_rgns.csv')
+  ico_rgns_file <- file.path(dir_server, 'tmp/ico_rgns.csv')
   if(!file.exists(ico_rgns_file) | reload == TRUE) {
     message('Creating temporary ICO regions list.\n')
     ico_rgns <- data.frame() # initialize
@@ -207,7 +207,7 @@ ico_rgn_name_to_number <- function(ico_countries) {
   rgn_names <- read_csv(rgn_name_file) %>%
     rename(rgn_name = label)
   
-  rgn_iucn2ohi <- read_csv(file.path(dir_anx, 'rgns/rgns_iucn2ohi.csv'))
+  rgn_iucn2ohi <- read_csv(file.path(dir_server, 'rgns/rgns_iucn2ohi.csv'))
   ico_countries <- ico_countries %>%
     left_join(rgn_names,
               by = 'rgn_name')

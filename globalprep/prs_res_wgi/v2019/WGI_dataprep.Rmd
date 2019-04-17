@@ -467,7 +467,7 @@ tmp_gf <- d_gf2 %>%
   mutate(method = gsub("; NA", "", method)) %>%
   mutate(method = gsub("NA", NA, method)) %>%
   mutate(gapfilled = ifelse(is.na(method), 0, 1)) %>%
-  select(rgn_id, gapfilled, method)
+  select(rgn_id, year, gapfilled, method)
 
 
 write.csv(tmp_gf, here("globalprep/prs_res_wgi/v2019/output/wgi_gf.csv"), row.names=FALSE)
@@ -475,3 +475,24 @@ write.csv(tmp_gf, here("globalprep/prs_res_wgi/v2019/output/wgi_gf.csv"), row.na
 
 
 ```
+
+Checking on outliers in 2019 assessment:
+```{r}
+
+worldbank_wgi_from_wdi_api <- read_csv("globalprep/prs_res_wgi/v2019/raw/worldbank_wgi_from_wdi_api_2019-04-15.csv")
+
+worldbank_2016 <- worldbank_wgi_from_wdi_api %>% 
+  filter(year == 2016) %>% 
+  filter(country == "Australia" | country == "Marshall Islands")
+
+# Compare to data from 2018:
+worldbank_wgi_from_wdi_api_2018 <- read_csv("globalprep/prs_res_wgi/v2018/raw/worldbank_wgi_from_wdi_api_2018-04-13.csv")
+
+worldbank_old <- worldbank_wgi_from_wdi_api_2018 %>% 
+  filter(year == 2016) %>% 
+  filter(country == "Australia" | country == "Marshall Islands")
+
+```
+
+
+

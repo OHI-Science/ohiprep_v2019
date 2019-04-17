@@ -92,7 +92,7 @@ scenario      <- 'v2019'
 previous_scen <- 'v2018'
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 
-
+# Changed these names to dir_server and dir_github from dir_anx and dir_goal, updated them in ico_fxn.R also
 dir_server      <- file.path(dir_M, 'git-annex', goal)
 dir_github     <- here(goal, scenario)
 
@@ -244,6 +244,11 @@ ico_spp_rgn_raw <- ico_spp_countries %>%
   left_join(rgn_iucn2ohi,
             by = 'iucn_rgn_name')
 
+ico_spp_rgn_raw_nas <- ico_spp_rgn_raw %>% 
+  filter(is.na(ohi_rgn_name))
+
+#708 NAs under rgn_id, but 597 in ohi_rgn_name
+
 ## error check on region name matching; landlocked --> not matched (597 in v2019)
 non_match <- ico_spp_rgn_raw %>%
   filter(is.na(ohi_rgn_name))
@@ -257,6 +262,8 @@ ico_spp_rgn_raw <- ico_spp_rgn_raw %>%
   select(-iucn_rgn_name) %>%
   filter(!is.na(rgn_id)) %>%
   distinct()
+
+summary(ico_spp_rgn_raw)
 
 write_csv(ico_spp_rgn_raw, file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
 
