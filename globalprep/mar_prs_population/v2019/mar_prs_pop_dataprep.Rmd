@@ -24,12 +24,16 @@ pdf_document:
 This document describes the steps for obtaining and wrangling the data used to calculate the mariculture population pressure subdimension for the 2019 global assessment. The general data preparation calculations are summarized [here](http://ohi-science.org/ohi-global/layers.html#inland_coastal_population). For context and explanation see the mariculture (subgoal of food provision) [model summary](http://ohi-science.org/ohi-global/goals.html#food_provision:_mariculture).
 
 # Updates from previous assessment
+<<<<<<< HEAD
 No updates were made to this methodology since the previous assessment.
+=======
+>>>>>>> 4368abb02c9b4100218c9f336e77067dfa2c0706
 
 ***
 
 # Data Sources
 
+<<<<<<< HEAD
 ## Gridded Population of the World (v4) by CIESE and CIAT
 
 **Reference**: http://sedac.ciesin.columbia.edu/data/collection/gpw-v4/sets/browse
@@ -38,6 +42,18 @@ No updates were made to this methodology since the previous assessment.
 
 **Description**:
 Population counts and population density (both UN WPP adjusted). Population estimates for 2000, 2005, 2010, 2015, 2020, extrapolated from results of the 2010 Population and Housing Censuses which occurred between 2005 and 2014. Estimates adjusted to national level, historic and future, population predictions from the United Nation's World Population Prospects (WPP) report are used. Documentation for gridded population of the world is located [here](http://sedac.ciesin.columbia.edu/downloads/docs/gpw-v4/gpw-v4-documentation.pdf).
+=======
+## Gridded Population of the World (v4.11) by CIESE and CIAT
+
+**Reference**: http://sedac.ciesin.columbia.edu/data/set/gpw-v4-population-density-adjusted-to-2015-unwpp-country-totals-rev11/data-download
+
+Center for International Earth Science Information Network - CIESIN - Columbia University. 2018. Gridded Population of the World, Version 4 (GPWv4): Population Density Adjusted to Match 2015 Revision UN WPP Country Totals, Revision 11. Palisades, NY: NASA Socioeconomic Data and Applications Center (SEDAC). https://doi.org/10.7927/H4F47M65. Accessed DAY MONTH YEAR.
+
+**Downloaded**: April 17 2019
+
+**Description**:
+The Gridded Population of the World, Version 4 (GPWv4): Population Density Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 consists of estimates of human population density (number of persons per square kilometer) based on counts consistent with national censuses and population registers with respect to relative spatial distribution, but adjusted to match the 2015 Revision of the United Nation's World Population Prospects (UN WPP) country totals, for the years 2000, 2005, 2011, 2015, and 2020. A proportional allocation gridding algorithm, utilizing approximately 13.5 million national and sub-national administrative units, was used to assign UN WPP-adjusted population counts to 30 arc-second grid cells. The density rasters were created by dividing the UN WPP-adjusted population count raster for a given target year by the land area raster.  Documentation for gridded population of the world is located [here](http://sedac.ciesin.columbia.edu/data/set/gpw-v4-population-density-adjusted-to-2015-unwpp-country-totals-rev11/docs).
+>>>>>>> 4368abb02c9b4100218c9f336e77067dfa2c0706
 
 **Native data resolution**: 30 arc-seconds
 
@@ -77,10 +93,14 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.width = 6, fig.heigh
 
 ```{r file paths, eval=FALSE}
 ## source common and spatial common files
+<<<<<<< HEAD
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 
 # Updating this source file, but it isn't being found:
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/spatial_common.R')
+=======
+source("../../src/R/common.R")
+>>>>>>> 4368abb02c9b4100218c9f336e77067dfa2c0706
 source("../../src/R/spatial_common.R")
 
 ## Update these!
@@ -244,6 +264,7 @@ closeAllConnections()
 ```
 
 ## Create EEZ + 25-mile Inland Raster
+<<<<<<< HEAD
 
 ```{r create eez + 25-mile inland raster, eval=FALSE}
 ## re-add Fiji which appears to get cut: include all of Fiji land falling within 50 mile boundary
@@ -267,6 +288,39 @@ if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland
 inland_raster <- fasterize::fasterize(inland, eez_raster, field = 'rgn_id')
 eez_25mi_inland <- raster::merge(eez_raster, inland_raster, 
                                  filename = file.path(path_mar_prs, "int/eez_25mi_inland.tif"))
+=======
+(These spatial files were created last year and do not need to be recreated becasue there were no changes to the spatial files).
+```{r create eez + 25-mile inland raster, eval=FALSE}
+# ## re-add Fiji which appears to get cut: include all of Fiji land falling within 50 mile boundary
+# fiji <- regions %>%
+#   dplyr::filter(rgn_type == "land" & rgn_id == 18) %>%
+#   dplyr::select(rgn_id, geometry)
+# 
+# ## create the 25-mile inland raster and add Fiji
+# inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"),
+#                       layer = "sp_inland25mi_gcs") %>% select(rgn_id, geometry)
+# inland <- sf::st_transform(inland, st_crs(fiji))
+# inland <- rbind(inland, fiji)
+
+# ## save shapefile for future reference if it doesn't already exist
+# if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"))){
+#   sf::st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
+#            layer = "EEZ_inland_25mi", driver = "ESRI Shapefile")
+# }
+# 
+# ## create new object merging eez and rasterized 25mile inland buffer
+# inland_raster <- fasterize::fasterize(inland, eez_raster, field = 'rgn_id')
+# eez_25mi_inland <- raster::merge(eez_raster, inland_raster, 
+#                                  filename = file.path(path_mar_prs, "int/eez_25mi_inland.tif"))
+
+# shapefile
+inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
+            layer = "EEZ_inland_25mi")
+
+# raster
+eez_25mi_inland <- raster(file.path(path_mar_prs, "int/eez_25mi_inland.tif"))
+
+>>>>>>> 4368abb02c9b4100218c9f336e77067dfa2c0706
 ```
 
 ## Append or Extract by OHI Regions
@@ -274,6 +328,11 @@ eez_25mi_inland <- raster::merge(eez_raster, inland_raster,
 Stack rasters of population counts for each year, sum within regions (using eez_25mi_inland) for each year, and save this as `coastal_pop_zonal_sums.csv` in the intermediate folder. Gather this into long format dataframe, and save as `output/mar_pop_25mi.csv`.
 
 ```{r extract population data from all population layers, eval=FALSE}
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 4368abb02c9b4100218c9f336e77067dfa2c0706
 pop_stack <- raster::stack(list.files(file.path(path_mar_prs, "int"), pattern = "count_\\d{4}_mol.tif$", full = TRUE)) # stack
 coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland, fun="sum", progress="text") # sum within zones (regions as specified by eez_25mi_inland)
 
