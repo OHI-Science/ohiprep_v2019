@@ -1,11 +1,11 @@
 ### Support functions for this project
 
 ### setup common directories
-dir_setup <- file.path(dir_git, '_setup')
-dir_data  <- file.path(dir_git, '_data')
-dir_spatial  <- file.path(dir_git, '_spatial')
-dir_output  <- file.path(dir_git, '_output')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_setup <- file.path(dir_goal, '_setup')
+dir_data  <- file.path(dir_goal, '_data')
+dir_spatial  <- file.path(dir_goal, '_spatial')
+dir_output  <- file.path(dir_goal, '_output')
+dir_goal_anx <- file.path(dir_anx, goal, scenario, 'spp_risk_dists')
 
 ### * IUCN API functions
 ### * Simple Features and Raster common functions
@@ -164,7 +164,7 @@ api_key <- scan(api_file, what = 'character')
 # api_version <- fromJSON('http://apiv3.iucnredlist.org/api/v3/version') %>%
 #   .$version
 
-api_version <- '2018-1'
+api_version <- '2019-1'
 
 
 get_from_api <- function(url, param, api_key, delay) {

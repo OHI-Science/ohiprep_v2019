@@ -1,5 +1,5 @@
 ---
-title: "OHI 2018 - Species subgoal (Biodiversity goal and resilience)"
+title: "OHI 2019 - Species subgoal (Biodiversity goal and resilience)"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -27,7 +27,7 @@ library(here)
 library(ggridges)
 library(ggplot2)
 
-source(here('src/R/common.R'))
+source(here('workflow/R/common.R'))
 rgns_global <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/regionData.csv") %>%
   dplyr::filter(rgn_type == "eez") %>%
   dplyr::select(rgn_id) %>%
@@ -37,7 +37,7 @@ rgns_global <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/m
 ```
 
 # Source
-We use the methods and code from Casey O'Harac: https://github.com/oharac/spp_risk_dists
+We use the methods and code from Casey O'Hara: https://github.com/oharac/spp_risk_dists
 to prepare the data for the species subgoal.
 
 Reference:
@@ -94,9 +94,9 @@ Trend is calculated using time series of risk categories based on current and pa
 IUCN:
 
 * __Reference__: 
-    * IUCN 2018. The IUCN Red List of Threatened Species. Version 2018-1. <http://www.iucnredlist.org>.
+    * IUCN 2019. The IUCN Red List of Threatened Species. Version 2019-1. <http://www.iucnredlist.org>.
         * Shapefiles available from: http://www.iucnredlist.org/technical-documents/spatial-data
-        * __Downloaded__: 
+        * __Downloaded__: April 22, 2019
     * BirdLife International and Handbook of the Birds of the World (2017) Bird species distribution maps of the world. Version 7.0. BirdLife International, Cambridge, UK and NatureServe, Arlington, USA. http://datazone.birdlife.org/species/requestdis
         * Zipped shapefile available from BirdLife International.  
         * __Downloaded__: 
