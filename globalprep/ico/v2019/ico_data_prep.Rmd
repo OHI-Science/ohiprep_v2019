@@ -83,6 +83,7 @@ library(readr)
 library(tidyverse)
 library(parallel)
 library(here)
+library(ohicore)
 
 ## set up provenance tracking for this script:
 # source(file.path('~/github/ohibc', 'src/R/prov.R'))  
@@ -209,9 +210,11 @@ Filtering the complete IUCN species list to include only the identified Iconic S
 spp_df_all <- read_csv(file.path(dir_github, 'raw/spp_list_from_api.csv'))
 ico_list_raw <- read_csv(file.path(dir_github, 'raw/ico_list_raw.csv')) # static list; same each year
 
+# Filtering the IUCN list of species to just those that are in the list of iconic species
 spp_ico <- spp_df_all %>% 
   filter(sciname %in% ico_list_raw$sciname) 
 
+# Is everything we see in the iconic list in the IUCN list?
 spp_missing <- ico_list_raw %>% 
   filter(!sciname %in% spp_ico$sciname) # no data here for v2019
 
@@ -231,11 +234,14 @@ For each of these species, use the IUCN API to gather a list of countries in whi
 ## for each species ID, get country list
 ico_country_url <- 'http://apiv3.iucnredlist.org/api/v3/species/countries/id/%s?token=%s'
 
-ico_spp_countries <- mc_get_from_api(ico_country_url, ico_list$iucn_sid, api_key)
-# sometimes this line takes a while to run - add a progress bar?
+ico_spp_countries <- mc_get_from_api(url = ico_country_url, param_vec = ico_list$iucn_sid, api_key = api_key, delay = 0.5)
+# sometimes this line takes a while to run! Make sure you have the project open........
+
+write_csv(ico_spp_countries, file.path(dir_github, 'int/ico_spp_countries.csv')) # save this as an intermediate data file since it takes so long to create the df
 
 ico_spp_rgn_raw <- name_2_rgn(df_in = ico_spp_countries, 
-                       fld_name='country')
+                       fld_name='country',
+                       flds_unique = 'name')
 
 # 2019 version removed rgn_iucn2ohi file; replaced with name_2_rgn function, code below now becomes unnecessary (can delete later)
 

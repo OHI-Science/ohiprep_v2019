@@ -139,7 +139,7 @@ get_ico_details_all <- function(ico_spp_list, reload = FALSE) {
 
 #############################################################################=
 get_from_api <- function(url, param, api_key, delay) {
-  
+#  param = param_vec[which(param_vec == "12419")]
   i <- 1; tries <- 5; success <- FALSE
   
   while(i <= tries & success == FALSE) {
