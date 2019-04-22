@@ -9,7 +9,7 @@ Center for International Earth Science Information Network - CIESIN - Columbia U
 library(downloader)
 library(here)
 library(RCurl)
-source(here("src/R/spatial_common.R"))
+source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 
 url <- "http://sedac.ciesin.columbia.edu/downloads/data/gpw-v4/gpw-v4-population-density-rev10/gpw-v4-population-density-rev10_2000_30_sec_tif.zip"
 
