@@ -234,45 +234,54 @@ For each of these species, use the IUCN API to gather a list of countries in whi
 ## for each species ID, get country list
 ico_country_url <- 'http://apiv3.iucnredlist.org/api/v3/species/countries/id/%s?token=%s'
 
-ico_spp_countries <- mc_get_from_api(url = ico_country_url, param_vec = ico_list$iucn_sid, api_key = api_key, delay = 0.5)
+ico_spp_countries <- mc_get_from_api(url = ico_country_url, param_vec = unique(ico_list$iucn_sid), api_key = api_key, delay = 0.5)
 # sometimes this line takes a while to run! Make sure you have the project open........
 
 write_csv(ico_spp_countries, file.path(dir_github, 'int/ico_spp_countries.csv')) # save this as an intermediate data file since it takes so long to create the df
 
-ico_spp_rgn_raw <- name_2_rgn(df_in = ico_spp_countries, 
-                       fld_name='country',
-                       flds_unique = 'name')
-
-# 2019 version removed rgn_iucn2ohi file; replaced with name_2_rgn function, code below now becomes unnecessary (can delete later)
-
-# ico_spp_rgn_raw <- ico_spp_countries %>%
-#  select(-code, -count, iucn_sid = name, iucn_rgn_name = country) %>% 
-#  mutate(iucn_sid = as.integer(iucn_sid),
-#         iucn_rgn_name  = str_trim(iucn_rgn_name)) %>% 
-#  left_join(rgn_iucn2ohi,
-#            by = 'iucn_rgn_name')
-
-## error check on region name matching; landlocked --> not matched (597 in v2019)
-non_match <- ico_spp_rgn_raw %>%
-  filter(is.na(rgn_name))
-if(nrow(non_match) > 0) {
-  cat('The following IUCN countries did not match with OHI region names:\n  ')
-  print(paste(non_match$iucn_rgn_name %>% unique(), collapse = ', '))
-}
-# In 2019 non_match has 0 obs. (no NAs)
-
-# I think this step is unncessary now that we used the name_2_rgn function? OHI rgn_name already called rgn_name
-ico_spp_rgn_raw <- ico_spp_rgn_raw %>%
-#  rename(rgn_name = ohi_rgn_name) %>%
-  select(-country) %>% # removed "country" instead of iucn_rgn_name
-  filter(!is.na(rgn_id)) %>%
-  distinct()
-
-summary(ico_spp_rgn_raw)
-
-write_csv(ico_spp_rgn_raw, file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
+ico_spp_countries <- read_csv(here("globalprep/ico/v2019/int/ico_spp_countries.csv"))
 
 ```
+
+```{r}
+
+# Report these regions at higher spatial resolution:
+country_split_1 <- data.frame(country = "Bonaire, Sint Eustatius and Saba", region = c('Bonaire', 'Saba', 'Sint Eustatius'))
+
+country_split_2 <- data.frame(country = "French Southern Territories", region = c('Glorioso Islands', 'Juan de Nova Island', 'Bassas da India', 'Ile Europa', 'Ile Tromelin', 'Crozet Islands', 'Amsterdam Island and Saint Paul Island', 'Kerguelen Islands'))
+
+country_split_3 <- data.frame(country = "Saint Helena, Ascension and Tristan da Cunha", region = c('Ascension', 'Saint Helena', 'Tristan da Cunha'))
+
+country_split_4 <- data.frame(country = "United States Minor Outlying Islands",region = c('Wake Island', 'Jarvis Island', 'Palmyra Atoll', 'Howland Island and Baker Island', 'Johnston Atoll'))
+
+country_split <- rbind(country_split_1, country_split_2, country_split_3, country_split_4)
+country_split_data <- country_split %>%
+  left_join(ico_spp_countries) %>%
+  select(-country) %>%
+  rename(country = region)
+
+ico_spp_countries <- rbind(ico_spp_countries, country_split_data)
+ico_spp_countries <- ico_spp_countries %>% 
+  mutate(country = ifelse(country == "Curaçao", "Curacao", country)) %>% 
+  mutate(country = ifelse(country == "Côte d'Ivoire", "Ivory Coast", country)) %>% 
+  mutate(country = ifelse(country == "Réunion", "Reunion", country)) %>% 
+  mutate(country = ifelse(country == "Saint Martin (French part)", "Sint Maarten", country)) %>% 
+  rename(iucn_sid = name) # changed this back to align with ico_list for next step
+
+ico_spp_rgn_raw <- name_2_rgn(df_in = ico_spp_countries, 
+                       fld_name='country',
+                       flds_unique = 'iucn_sid')
+
+# No match for Isle of Man (not reported in OHI), Palestine (disputed), Saint Barthélemy (not reported in OHI) or Macedonia (landlocked)
+
+# Check error message to make sure the unmatched countries don't have an OHI region match, that there are no duplicates, and that the unmatched regions make sense (not disputed, landlocked, not reported). If there are duplicates or unmatched regions that are reported in OHI, need to go back to fix and rerun the code.
+
+
+summary(ico_spp_rgn_raw) # Make sure there are no NAs!
+
+write_csv(ico_spp_rgn_raw, file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
+```
+
 
 
 ``` {r attach_country_list_to_spp_info_list, eval=F}
@@ -281,7 +290,7 @@ ico_spp_rgn_raw <- read_csv(file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
 ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
 
 ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
-  left_join(ico_list, by = 'iucn_sid') # need to see what this was in the old file
+  left_join(ico_list, by = 'iucn_sid') 
 
 ## filter this for species who are global (so all instances are iconic) 
 ##  OR ico_rgn_id matches rgn_id (so locally iconic matches with location)
