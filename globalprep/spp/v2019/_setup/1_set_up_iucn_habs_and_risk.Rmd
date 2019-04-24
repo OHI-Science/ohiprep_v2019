@@ -22,6 +22,7 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 
+
 ##BEFORE
 #source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 #dir_git <- '~/github/spp_risk_dists'
@@ -74,6 +75,7 @@ Using the `mc_get_from_api()` function, get the entire species list of IUCN Red 
 ``` {r get_spp_info_from_api}
 ### Get all pages and bind into total species list.  This is pretty fast.
 
+
 spp_info_from_api_file <- file.path(dir_goal_anx, sprintf('iucn/spp_info_from_api_%s.csv', api_version))
 reload <- FALSE
 
@@ -115,6 +117,7 @@ if(!file.exists(spp_info_from_api_file) | reload) {
 From the full IUCN species list, send each IUCN species ID into the API to get the habitats listed for that species.  Combine all habitat dataframes into a master dataframe of all habitats for all species.  Note that many species do not have habitat information and will be listed as NA for habitat variables.
 
 ``` {r determine_spp_habs}
+
 ####STOPPED HERE ON MONDAY APRIL 22, 2019 
 
 ### For each species ID on the total list, get a dataframe of habitats.
@@ -148,6 +151,7 @@ if(!file.exists(spp_habs_from_api_file) | reload) {
   for(j in 1:n_chunks) { 
     ### j <- 2
     spp_index <- c( ((j - 1) * chunk_size + 1) : min((j * chunk_size), length(spp_ids_all)) )
+    
     chunk_file <- file.path(dir_goal_anx, 'tmp', 
                     sprintf('spp_habs_chunk_%s_%s.csv', 
                             min(spp_index), max(spp_index)))

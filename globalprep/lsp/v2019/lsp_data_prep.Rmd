@@ -41,7 +41,7 @@ where:
 
 Using updated April 2019 data. 
 Implementing here() for filepaths not in Mazu.
-
+Changed the code to calculate zonal statistics. No longer using the "mcapply()" function to calculate each lsp_crosstab(). Updated to calculate each zonal statistic df individually. 
 
 ***
 
@@ -136,14 +136,13 @@ rgn_rast_list <- c(
 zonal_files_to_run <- zonal_files[!file.exists(zonal_files)]
 rgn_rast_list <- rgn_rast_list[!file.exists(zonal_files)]
 
-if(length(zonal_files_to_run) > 0) {
+
   ### NOTE: The crosstab function returns this warning - does it affect the
   ### outcomes, or does the function coerce the correct outcome?
       # Warning message:
       # In FUN(X[[i]], ...) : integer overflow - use sum(as.numeric(.))
   ### zonal() wouldn't work since we want to track the frequency of each
   ### year value within each rgn_id value.
-  ### This will probably take about 1.5 hours
   
   lsp_crosstab <- function(rgn_rast_file, rast_values) {
     rgn_rast <- raster::raster(rgn_rast_file)
@@ -158,50 +157,12 @@ if(length(zonal_files_to_run) > 0) {
     return(rast_df)
   }
   
-  ### For processing & saving zonal statistics for a single raster 
-  ### if for loop or mclapply not working
-  # x <- lsp_crosstab(rgn_rast_list[3])
-  # write_csv(x, zonal_files[3])
-  
-  ### Indicates start time of zonal stats calculation
-  ptm <- proc.time()
-  
-  ### Use either a simple for loop or mclapply to process the zonal stats
-  ### Use for loop - will see messages and progress bar
-  # zonal_dfs <- vector('list', length = length(zonal_files))
-  # for(i in seq_along(zonal_files)) {
-  #   tmp_df <- lsp_crosstab(rgn_rast_list[i],
-  #                          rast_wdpa)
-  #   zonal_dfs[[i]] <- tmp_df
-  # }
-  # zonal_dfs %>%
-  #   setNames(names(rgn_rast_list))
-  
-  ### Use mclapply - won't see messages and progress bar
-  ### Not sure how long this takes - ran it for 3 hours with no result
-  zonal_dfs <- parallel::mclapply(rgn_rast_list,
-                                  lsp_crosstab, rast_values = rast_wdpa,
-                                  mc.cores = 3) %>%
-    setNames(names(rgn_rast_list))
-  
-  ### Duration of zonal stats calculations for all rasters
-  message('Elapsed: ', (proc.time() - ptm)[3], ' sec')
-  
-  ### Save completed zonal stats data tables
-  for(zone in names(zonal_files_to_run)) {
-    message('Writing zonal dataframe to ', zonal_files_to_run[zone])
-    write_csv(zonal_dfs[[zone]], zonal_files_to_run[zone])
-  }
-}
-  
-
-##Above loop would not work. Looking through the 2018 LSP issue, Iwen used the following code to run each lsp_crosstab() individually, rather than using mclapply. 
-
+### Processing & saving zonal statistics for a single raster 
 x <- lsp_crosstab(rgn_rast_list[1], rast_values = rast_wdpa) #18 minutes to run #3nm
-y <- lsp_crosstab(rgn_rast_list[2], rast_values = rast_wdpa)#16 minutes to run #1km
+y <- lsp_crosstab(rgn_rast_list[2], rast_values = rast_wdpa) #16 minutes to run #1km
 z <- lsp_crosstab(rgn_rast_list[3], rast_values = rast_wdpa) #35 minutes to run #eez
 
-## Save these to the int folder
+## Save these files to the int folder
 #write_csv(x, zonal_files_to_run[1])
 #write_csv(y, zonal_files_to_run[2])
 #write_csv(z, zonal_files_to_run[3])
@@ -254,7 +215,7 @@ max_year <- max(c(stats_1km$year, stats_3nm$year, stats_eez$year), na.rm = TRUE)
 ### Determine total cells per region (n_cells_tot) and then a cumulative
 ### total of cells per region
   
-#region_data() #use this function to call rgns_eez, which is called below
+#region_data() #use this function to call rgns_eez, which is called below in the function "calc_areas()"
 
 calc_areas <- function(stats_df) {
   area_df <- stats_df %>%
@@ -481,7 +442,7 @@ ggsave(file.path(dir_goal, 'Figs/plot_v2018_v2019.png'),
 
 x <- lsp_new_old %>%
   mutate(diff = score_new - score_old) %>%
-  filter(rgn == 'status' & abs(diff) > .1)
+  filter(rgn == 'status' & abs(diff) > 0.05)
 
 ```
 
