@@ -291,6 +291,7 @@ ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
 
 ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
   left_join(ico_list, by = 'iucn_sid') 
+# check dimensions here; expect it to expand because each species in the iconic global list will be linked to the country it's listed in in the IUCN data
 
 ## filter this for species who are global (so all instances are iconic) 
 ##  OR ico_rgn_id matches rgn_id (so locally iconic matches with location)
@@ -299,26 +300,21 @@ ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>%
 
 write_csv(ico_spp_rgn_prepped, file.path(dir_github, 'int/ico_spp_rgn_prepped.csv'))
 
-ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>% 
-  select(iucn_sid, sciname, comname, presence, origin, distribution_code, cat, ico_gl, rgn_id, rgn_name, subpop, ico_rgn_id, param_id)
-
-# v2019: 2018 version had more amendments to ico_spp_rgn_prepped after saving it - should I move this around? 
-# v2019: took out api_error as it is no longer present in the data set. In 2018 all the values in this column were NA
-
-# v2019: running these lines returned: 
-### `ico_spp_rgn_prepped` saved at `~/github/ohiprep/globalprep/ico/v2016/int/ico_spp_rgn_prepped.csv`
 
 ```
-
-
-```{r, eval=F}
-`ico_spp_rgn_prepped` saved at `~/github/ohiprep/globalprep/ico/v2016/int/ico_spp_rgn_prepped.csv`
-```
-
 
 ---
 
 ```{r, eval=F}
+
+ico_spp_rgn_prepped <- read_csv(file.path(dir_github, 'int/ico_spp_rgn_prepped.csv'))
+
+ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>% 
+  select(iucn_sid, sciname, comname, presence, origin, distribution_code, cat, ico_gl, rgn_id, rgn_name, subpop, ico_rgn_id)
+
+# v2019: 2018 version had more amendments to ico_spp_rgn_prepped after saving it - should I move this around? 
+# v2019: took out api_error and as it is no longer present in the data set. In 2018 all the values in this column were NA; also took out param_id since it wasn't being found (do we need this?)
+
 DT::datatable(ico_spp_rgn_prepped, width = 400)
 ```
 
@@ -338,7 +334,7 @@ ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
 ## for each species ID, get past assessments
 ico_assess_raw <- mc_get_from_api(ico_past_assess_url, ico_list$iucn_sid, api_key)
 
-ico_assess_raw <- ico_assess_raw %>% 
+ico_assess_raw <- ico_assess_raw %>%
   rename(iucn_sid = name) %>%
   mutate(iucn_sid = as.integer(iucn_sid),
          year     = as.integer(year)) %>% 
@@ -346,6 +342,7 @@ ico_assess_raw <- ico_assess_raw %>%
               select(iucn_sid, sciname) %>%
               distinct(),
             by = 'iucn_sid')
+# 705 in v2018, 743 in v2019
 
 write_csv(ico_assess_raw, file.path(dir_github, 'raw/ico_assessments_raw.csv'))
 
@@ -420,6 +417,7 @@ Using `tidyr::complete()` and `tidyr::fill()`, we create a full time series for 
 ico_assess <- read_csv(file.path(dir_github, 'int/ico_assess_clean.csv'))
 ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
 
+# Fill in category score for missing years based on previous year's data:
 ico_assess_full <- ico_assess %>%
   mutate(eval_yr = year) %>% 
   select(-sciname) %>%
