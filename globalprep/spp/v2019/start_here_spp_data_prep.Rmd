@@ -81,11 +81,7 @@ Trend is calculated using time series of risk categories based on current and pa
 
 # Updates from previous assessment
 
-* Trend is now calculated using the time series of risk categories from current and past IUCN assessments, and we use the trend to estimate previous scenario years of species status based on a linear model of change.  Previously we used the most current scores for all previous scenario years.
-* We use only comprehensively assessed species groups (>90% of species have IUCN risk assessment)
-* We now use range maps from IUCN, whereas in the past we used Aquamap range maps when IUCN maps were unavailable. This is good news due to the challenges of aligning two different data sources. 
-* We improve range maps using additional information about habitat, etc.
-* We incorporate regional IUCN scores for species.
+Added Casey Ohara's personal common.R functions into the common_fxns.R file located in the '_setup' file for this goal. 
 
 ***
 

@@ -34,7 +34,8 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 #source(file.path(dir_setup, 'common_fxns.R'))
 
 ##AFTER
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+#source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+source(here('workflow/R/common.R'))
 
 goal     <- 'spp'
 scenario <- 'v2019'
@@ -120,7 +121,7 @@ From the full IUCN species list, send each IUCN species ID into the API to get t
 ####STOPPED HERE ON MONDAY APRIL 22, 2019 
 
 ### For each species ID on the total list, get a dataframe of habitats.
-### This is slow.  Skip if possible.
+### This is slow. 
 
 spp_habs_from_api_file <- file.path(dir_goal_anx, 
   sprintf('iucn/spp_habs_from_api_%s.csv', api_version))
