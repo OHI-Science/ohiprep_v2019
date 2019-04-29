@@ -118,7 +118,9 @@ From the full IUCN species list, send each IUCN species ID into the API to get t
 
 ``` {r determine_spp_habs}
 
-####STOPPED HERE ON MONDAY APRIL 22, 2019 
+####You might run and get this error at some point: Error in write_delim(x, path, delim = ",", na = na, append = append, col_names = col_names,  : is.data.frame(x) is not TRUE
+
+####Fear not, we believe this is occurring because a link is timing out during the data retrieval process. If this error happens, just try running again (it will skip over the species id's already retrieved).
 
 ### For each species ID on the total list, get a dataframe of habitats.
 ### This is slow. 
@@ -149,8 +151,8 @@ if(!file.exists(spp_habs_from_api_file) | reload) {
   }
   
   for(j in 1:n_chunks) { 
-    ### j <- 2
-    spp_index <- c( ((j - 1) * chunk_size + 1) : min((j * chunk_size), length(spp_ids_all)) )
+    ###j <- 16
+    spp_index <- c( ((j - 1) * chunk_size + 1) : min((j * chunk_size), length(spp_ids_all)) )#[1:100]
     
     chunk_file <- file.path(dir_goal_anx, 'tmp', 
                     sprintf('spp_habs_chunk_%s_%s.csv', 
