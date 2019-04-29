@@ -671,6 +671,34 @@ rgn_id,rgn_name,year,mean_cat,ico_status,n_spp
 29,Mayotte,2017,0.425,57.49999999999999,8
 29,Mayotte,2018,0.425,57.49999999999999,8
 29,Mayotte,2019,0.45,55.00000000000001,8
+30,Glorioso Islands,1992,0.52857,47.143,7
+30,Glorioso Islands,1993,0.52857,47.143,7
+30,Glorioso Islands,1994,0.52857,47.143,7
+30,Glorioso Islands,1995,0.52857,47.143,7
+30,Glorioso Islands,1996,0.61429,38.571,7
+30,Glorioso Islands,1997,0.61429,38.571,7
+30,Glorioso Islands,1998,0.61429,38.571,7
+30,Glorioso Islands,1999,0.61429,38.571,7
+30,Glorioso Islands,2000,0.62857,37.143,7
+30,Glorioso Islands,2001,0.62857,37.143,7
+30,Glorioso Islands,2002,0.62857,37.143,7
+30,Glorioso Islands,2003,0.62857,37.143,7
+30,Glorioso Islands,2004,0.62857,37.143,7
+30,Glorioso Islands,2005,0.62857,37.143,7
+30,Glorioso Islands,2006,0.62857,37.143,7
+30,Glorioso Islands,2007,0.62857,37.143,7
+30,Glorioso Islands,2008,0.57143,42.857,7
+30,Glorioso Islands,2009,0.57143,42.857,7
+30,Glorioso Islands,2010,0.57143,42.857,7
+30,Glorioso Islands,2011,0.57143,42.857,7
+30,Glorioso Islands,2012,0.57143,42.857,7
+30,Glorioso Islands,2013,0.54286,45.714,7
+30,Glorioso Islands,2014,0.54286,45.714,7
+30,Glorioso Islands,2015,0.54286,45.714,7
+30,Glorioso Islands,2016,0.54286,45.714,7
+30,Glorioso Islands,2017,0.54286,45.714,7
+30,Glorioso Islands,2018,0.51429,48.571,7
+30,Glorioso Islands,2019,0.51429,48.571,7
 31,Seychelles,1992,0.37857,62.142999999999994,14
 31,Seychelles,1993,0.37857,62.142999999999994,14
 31,Seychelles,1994,0.37857,62.142999999999994,14
@@ -727,6 +755,118 @@ rgn_id,rgn_name,year,mean_cat,ico_status,n_spp
 32,Reunion,2017,0.35556,64.444,9
 32,Reunion,2018,0.33333,66.667,9
 32,Reunion,2019,0.37778,62.222,9
+33,Juan de Nova Island,1992,0.52857,47.143,7
+33,Juan de Nova Island,1993,0.52857,47.143,7
+33,Juan de Nova Island,1994,0.52857,47.143,7
+33,Juan de Nova Island,1995,0.52857,47.143,7
+33,Juan de Nova Island,1996,0.61429,38.571,7
+33,Juan de Nova Island,1997,0.61429,38.571,7
+33,Juan de Nova Island,1998,0.61429,38.571,7
+33,Juan de Nova Island,1999,0.61429,38.571,7
+33,Juan de Nova Island,2000,0.62857,37.143,7
+33,Juan de Nova Island,2001,0.62857,37.143,7
+33,Juan de Nova Island,2002,0.62857,37.143,7
+33,Juan de Nova Island,2003,0.62857,37.143,7
+33,Juan de Nova Island,2004,0.62857,37.143,7
+33,Juan de Nova Island,2005,0.62857,37.143,7
+33,Juan de Nova Island,2006,0.62857,37.143,7
+33,Juan de Nova Island,2007,0.62857,37.143,7
+33,Juan de Nova Island,2008,0.57143,42.857,7
+33,Juan de Nova Island,2009,0.57143,42.857,7
+33,Juan de Nova Island,2010,0.57143,42.857,7
+33,Juan de Nova Island,2011,0.57143,42.857,7
+33,Juan de Nova Island,2012,0.57143,42.857,7
+33,Juan de Nova Island,2013,0.54286,45.714,7
+33,Juan de Nova Island,2014,0.54286,45.714,7
+33,Juan de Nova Island,2015,0.54286,45.714,7
+33,Juan de Nova Island,2016,0.54286,45.714,7
+33,Juan de Nova Island,2017,0.54286,45.714,7
+33,Juan de Nova Island,2018,0.51429,48.571,7
+33,Juan de Nova Island,2019,0.51429,48.571,7
+34,Bassas da India,1992,0.52857,47.143,7
+34,Bassas da India,1993,0.52857,47.143,7
+34,Bassas da India,1994,0.52857,47.143,7
+34,Bassas da India,1995,0.52857,47.143,7
+34,Bassas da India,1996,0.61429,38.571,7
+34,Bassas da India,1997,0.61429,38.571,7
+34,Bassas da India,1998,0.61429,38.571,7
+34,Bassas da India,1999,0.61429,38.571,7
+34,Bassas da India,2000,0.62857,37.143,7
+34,Bassas da India,2001,0.62857,37.143,7
+34,Bassas da India,2002,0.62857,37.143,7
+34,Bassas da India,2003,0.62857,37.143,7
+34,Bassas da India,2004,0.62857,37.143,7
+34,Bassas da India,2005,0.62857,37.143,7
+34,Bassas da India,2006,0.62857,37.143,7
+34,Bassas da India,2007,0.62857,37.143,7
+34,Bassas da India,2008,0.57143,42.857,7
+34,Bassas da India,2009,0.57143,42.857,7
+34,Bassas da India,2010,0.57143,42.857,7
+34,Bassas da India,2011,0.57143,42.857,7
+34,Bassas da India,2012,0.57143,42.857,7
+34,Bassas da India,2013,0.54286,45.714,7
+34,Bassas da India,2014,0.54286,45.714,7
+34,Bassas da India,2015,0.54286,45.714,7
+34,Bassas da India,2016,0.54286,45.714,7
+34,Bassas da India,2017,0.54286,45.714,7
+34,Bassas da India,2018,0.51429,48.571,7
+34,Bassas da India,2019,0.51429,48.571,7
+35,Ile Europa,1992,0.52857,47.143,7
+35,Ile Europa,1993,0.52857,47.143,7
+35,Ile Europa,1994,0.52857,47.143,7
+35,Ile Europa,1995,0.52857,47.143,7
+35,Ile Europa,1996,0.61429,38.571,7
+35,Ile Europa,1997,0.61429,38.571,7
+35,Ile Europa,1998,0.61429,38.571,7
+35,Ile Europa,1999,0.61429,38.571,7
+35,Ile Europa,2000,0.62857,37.143,7
+35,Ile Europa,2001,0.62857,37.143,7
+35,Ile Europa,2002,0.62857,37.143,7
+35,Ile Europa,2003,0.62857,37.143,7
+35,Ile Europa,2004,0.62857,37.143,7
+35,Ile Europa,2005,0.62857,37.143,7
+35,Ile Europa,2006,0.62857,37.143,7
+35,Ile Europa,2007,0.62857,37.143,7
+35,Ile Europa,2008,0.57143,42.857,7
+35,Ile Europa,2009,0.57143,42.857,7
+35,Ile Europa,2010,0.57143,42.857,7
+35,Ile Europa,2011,0.57143,42.857,7
+35,Ile Europa,2012,0.57143,42.857,7
+35,Ile Europa,2013,0.54286,45.714,7
+35,Ile Europa,2014,0.54286,45.714,7
+35,Ile Europa,2015,0.54286,45.714,7
+35,Ile Europa,2016,0.54286,45.714,7
+35,Ile Europa,2017,0.54286,45.714,7
+35,Ile Europa,2018,0.51429,48.571,7
+35,Ile Europa,2019,0.51429,48.571,7
+36,Ile Tromelin,1992,0.52857,47.143,7
+36,Ile Tromelin,1993,0.52857,47.143,7
+36,Ile Tromelin,1994,0.52857,47.143,7
+36,Ile Tromelin,1995,0.52857,47.143,7
+36,Ile Tromelin,1996,0.61429,38.571,7
+36,Ile Tromelin,1997,0.61429,38.571,7
+36,Ile Tromelin,1998,0.61429,38.571,7
+36,Ile Tromelin,1999,0.61429,38.571,7
+36,Ile Tromelin,2000,0.62857,37.143,7
+36,Ile Tromelin,2001,0.62857,37.143,7
+36,Ile Tromelin,2002,0.62857,37.143,7
+36,Ile Tromelin,2003,0.62857,37.143,7
+36,Ile Tromelin,2004,0.62857,37.143,7
+36,Ile Tromelin,2005,0.62857,37.143,7
+36,Ile Tromelin,2006,0.62857,37.143,7
+36,Ile Tromelin,2007,0.62857,37.143,7
+36,Ile Tromelin,2008,0.57143,42.857,7
+36,Ile Tromelin,2009,0.57143,42.857,7
+36,Ile Tromelin,2010,0.57143,42.857,7
+36,Ile Tromelin,2011,0.57143,42.857,7
+36,Ile Tromelin,2012,0.57143,42.857,7
+36,Ile Tromelin,2013,0.54286,45.714,7
+36,Ile Tromelin,2014,0.54286,45.714,7
+36,Ile Tromelin,2015,0.54286,45.714,7
+36,Ile Tromelin,2016,0.54286,45.714,7
+36,Ile Tromelin,2017,0.54286,45.714,7
+36,Ile Tromelin,2018,0.51429,48.571,7
+36,Ile Tromelin,2019,0.51429,48.571,7
 37,Mauritius,1992,0.43846,56.153999999999996,13
 37,Mauritius,1993,0.43846,56.153999999999996,13
 37,Mauritius,1994,0.43846,56.153999999999996,13
@@ -1231,6 +1371,34 @@ rgn_id,rgn_name,year,mean_cat,ico_status,n_spp
 54,United Arab Emirates,2017,0.4125,58.75,8
 54,United Arab Emirates,2018,0.4125,58.75,8
 54,United Arab Emirates,2019,0.4125,58.75,8
+56,Cape Verde,1992,0.36154,63.846000000000004,13
+56,Cape Verde,1993,0.36154,63.846000000000004,13
+56,Cape Verde,1994,0.36154,63.846000000000004,13
+56,Cape Verde,1995,0.36154,63.846000000000004,13
+56,Cape Verde,1996,0.4,60,13
+56,Cape Verde,1997,0.4,60,13
+56,Cape Verde,1998,0.4,60,13
+56,Cape Verde,1999,0.4,60,13
+56,Cape Verde,2000,0.4,60,13
+56,Cape Verde,2001,0.4,60,13
+56,Cape Verde,2002,0.4,60,13
+56,Cape Verde,2003,0.4,60,13
+56,Cape Verde,2004,0.4,60,13
+56,Cape Verde,2005,0.4,60,13
+56,Cape Verde,2006,0.4,60,13
+56,Cape Verde,2007,0.4,60,13
+56,Cape Verde,2008,0.33846,66.154,13
+56,Cape Verde,2009,0.35385,64.615,13
+56,Cape Verde,2010,0.35385,64.615,13
+56,Cape Verde,2011,0.35385,64.615,13
+56,Cape Verde,2012,0.35385,64.615,13
+56,Cape Verde,2013,0.35385,64.615,13
+56,Cape Verde,2014,0.35385,64.615,13
+56,Cape Verde,2015,0.34615,65.385,13
+56,Cape Verde,2016,0.36154,63.846000000000004,13
+56,Cape Verde,2017,0.36154,63.846000000000004,13
+56,Cape Verde,2018,0.34615,65.385,13
+56,Cape Verde,2019,0.37692,62.30800000000001,13
 59,Belgium,1992,0.375,62.5,4
 59,Belgium,1993,0.375,62.5,4
 59,Belgium,1994,0.375,62.5,4
@@ -5207,34 +5375,6 @@ rgn_id,rgn_name,year,mean_cat,ico_status,n_spp
 220,Sint Maarten,2017,0.32,68,10
 220,Sint Maarten,2018,0.32,68,10
 220,Sint Maarten,2019,0.35,65,10
-221,Northern Saint-Martin,1992,0.34,65.99999999999999,10
-221,Northern Saint-Martin,1993,0.34,65.99999999999999,10
-221,Northern Saint-Martin,1994,0.34,65.99999999999999,10
-221,Northern Saint-Martin,1995,0.34,65.99999999999999,10
-221,Northern Saint-Martin,1996,0.36,64,10
-221,Northern Saint-Martin,1997,0.36,64,10
-221,Northern Saint-Martin,1998,0.36,64,10
-221,Northern Saint-Martin,1999,0.36,64,10
-221,Northern Saint-Martin,2000,0.37,63,10
-221,Northern Saint-Martin,2001,0.37,63,10
-221,Northern Saint-Martin,2002,0.37,63,10
-221,Northern Saint-Martin,2003,0.37,63,10
-221,Northern Saint-Martin,2004,0.37,63,10
-221,Northern Saint-Martin,2005,0.37,63,10
-221,Northern Saint-Martin,2006,0.37,63,10
-221,Northern Saint-Martin,2007,0.37,63,10
-221,Northern Saint-Martin,2008,0.31,69,10
-221,Northern Saint-Martin,2009,0.32,68,10
-221,Northern Saint-Martin,2010,0.32,68,10
-221,Northern Saint-Martin,2011,0.32,68,10
-221,Northern Saint-Martin,2012,0.32,68,10
-221,Northern Saint-Martin,2013,0.3,70,10
-221,Northern Saint-Martin,2014,0.3,70,10
-221,Northern Saint-Martin,2015,0.3,70,10
-221,Northern Saint-Martin,2016,0.32,68,10
-221,Northern Saint-Martin,2017,0.32,68,10
-221,Northern Saint-Martin,2018,0.32,68,10
-221,Northern Saint-Martin,2019,0.35,65,10
 222,Sweden,1992,0.4,60,5
 222,Sweden,1993,0.4,60,5
 222,Sweden,1994,0.4,60,5

@@ -243,6 +243,7 @@ ico_spp_countries <- read_csv(here("globalprep/ico/v2019/int/ico_spp_countries.c
 
 ```
 
+Name to region function (in OHI core package) reports regions that don't have a match in OHI region list. Here we report certain reported regions at a higher spatial scale, based on the listed regions in the error message. 
 ```{r}
 
 # Report these regions at higher spatial resolution:
@@ -260,6 +261,7 @@ country_split_data <- country_split %>%
   select(-country) %>%
   rename(country = region)
 
+# Join country split data with ico_spp_countries
 ico_spp_countries <- rbind(ico_spp_countries, country_split_data)
 ico_spp_countries <- ico_spp_countries %>% 
   mutate(country = ifelse(country == "Curaçao", "Curacao", country)) %>% 
@@ -283,7 +285,7 @@ write_csv(ico_spp_rgn_raw, file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
 ```
 
 
-
+Filter for globally iconic species
 ``` {r attach_country_list_to_spp_info_list, eval=F}
 
 ico_spp_rgn_raw <- read_csv(file.path(dir_github, 'raw/ico_spp_rgn_raw.csv'))
@@ -297,6 +299,7 @@ ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
 ##  OR ico_rgn_id matches rgn_id (so locally iconic matches with location)
 ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>%
   filter(ico_gl == TRUE | ico_rgn_id == rgn_id)
+# dimensions should shrink after running this line
 
 write_csv(ico_spp_rgn_prepped, file.path(dir_github, 'int/ico_spp_rgn_prepped.csv'))
 
@@ -431,8 +434,7 @@ ico_spp_cat <- ico_list %>%
   rename(cat_2016 = cat) %>%
   left_join(ico_assess_full, by = c('iucn_sid'))
 
-## if no time series available, time series years will be NA.  Assign a list to
-## those NAs, then unnest it to create observations for those years.
+## if no time series available, time series years will be NA.  Assign a list to those NAs, then unnest it to create observations for those years.
 ico_spp_cat <- ico_spp_cat %>%
   mutate(year = ifelse(is.na(year), 
                        list(c(min(year, na.rm = TRUE):max(year, na.rm = TRUE))), 
@@ -467,7 +469,7 @@ Using `dplyr::full_join()` we combine the `ico_spp_rgn` dataframe (iconic specie
 
 ico_cat_ts_abbr <- read_csv(file.path(dir_github, 'int/ico_spp_cat.csv')) %>%
   select(iucn_sid, sciname, year, cat, cat_score, eval_yr) %>%
-  filter(year >= 1992)
+  filter(year >= 1992) # This goal uses 20 years of data to calculate trends (assessment started in 2012)
 
 ico_spp_rgn <- read_csv(file.path(dir_github, 'int/ico_spp_rgn_prepped.csv')) %>%
   select(rgn_id, rgn_name, iucn_sid, comname, sciname, ico_gl, ico_rgn_id, presence)
@@ -511,9 +513,10 @@ ico_status_raw <- ico_spp_rgn_cat %>%
   arrange(rgn_id, desc(year), sciname) %>%
   ungroup()
 
+# Get a preview of status and trend:
 ico_status_calc <- ico_status_raw %>%
   group_by(rgn_id, rgn_name, sciname, year) %>%
-  filter(!is.na(cat_score)) %>% # remove any DDs
+  filter(!is.na(cat_score)) %>% # remove any DDs (data deficient)
   summarize(cat_score = mean(cat_score)) %>% 
   group_by(rgn_id, rgn_name, year) %>%
   summarize(mean_cat = round(mean(cat_score), 5), 
@@ -546,6 +549,7 @@ write_csv(ico_sum, file.path(dir_github, 'summary/ico_summary.csv'))
 ico_status_raw1 <- ico_status_raw %>%
   dplyr::select(rgn_id, sciname, iucn_sid, year, eval_yr, category = cat)
 
+# Create the files the toolbox will use:
 write_csv(ico_status_raw1, file.path(dir_github, 'output/ico_spp_iucn_status.csv'))
 write_csv(ico_status_calc, file.path(dir_github, 'output/ico_status_calc.csv'))
 write_csv(ico_trend,       file.path(dir_github, 'output/ico_trend.csv'))
@@ -556,19 +560,19 @@ table(ico_status_raw1$category)
 
 ```
 
-### Iconic Species full list (year == 2015)
+### Iconic Species full list (year == 2018)
 
 ```{r, eval=F}
-DT::datatable(ico_status_raw %>% filter(year == 2017))
+DT::datatable(ico_status_raw %>% filter(year == 2018))
 ```
 
 
 ### Iconic Species processed status and trend by region
 
 ```{r, eval=FALSE}
-DT::datatable(ico_status_calc %>% filter(year == 2017), caption = 'ICO status')
+DT::datatable(ico_status_calc %>% filter(year == 2018), caption = 'ICO status')
 
-DT::datatable(ico_trend %>% filter(year == 2017) %>% select(-trend_lm), caption = 'ICO trend')
+DT::datatable(ico_trend %>% filter(year == 2018) %>% select(-trend_lm), caption = 'ICO trend')
 ```
 
 ***
@@ -613,24 +617,24 @@ Plot the estimated status and trends for 2016 from assessments v2017, v2018, and
 
 ``` {r spp_plot_scores_vs_2015, fig.height = 4, fig.width = 6, fig.align = 'center', eval=FALSE}
 
+
 status_trend <- ico_sum %>% # status and trend in this year's assessment
-  filter(year == max(year)-2) %>%  # max year of ico_sum is 2019
+  filter(year == max(year)-1) %>%  # max year of ico_sum is 2019; want to compare the most recent shared year (2018)
   select(rgn_id, ico_status, ico_trend, n_spp) %>% 
   distinct() # because removing iucn_sid, cat, cat_score, and species name, results in duplicates
   
-##############
-ico_compare <- read_csv(file.path(dir_previous, 'summary/ico_summary.csv')) %>% 
-  filter(year == max(year)) %>% # max year of v2019 ico_summary is 2019
+ico_compare <- read_csv(here('globalprep/ico',previous_scen,'/summary/ico_summary.csv')) %>% 
+  filter(year == max(year)) %>% # 2018 data is max of last year's data
   select(rgn_id, rgn_name, ico_status, ico_trend, n_spp) %>% 
   distinct() %>% 
   rename(previous_status = ico_status, previous_trend = ico_trend, previous_nspp = n_spp) %>% 
   left_join(status_trend, by = 'rgn_id') %>% 
-  mutate(d_nspp = as.factor(previous_nspp - n_spp))
+  mutate(d_nspp = as.factor(n_spp - previous_nspp))
 
 compare_status_plot <- ggplot(ico_compare) + 
   geom_point(aes(previous_status, ico_status, color = d_nspp, label = rgn_id), alpha = 0.6) + 
     geom_abline(slope = 1, intercept = 0, color = 'red') +
-  labs(x = sprintf('ICO status v%s', previous_scen),
+  labs(x = sprintf('ICO status %s', previous_scen),
        y = sprintf('ICO status %s', scenario),
        title = 'ICO Status Comparison')
 ggplotly(compare_status_plot)
@@ -638,7 +642,7 @@ ggplotly(compare_status_plot)
 trend_compare_plot <- ggplot(ico_compare) +
   geom_point(aes(previous_trend, ico_trend, color = d_nspp, label = rgn_id), alpha = .6) +
   geom_abline(slope = 1, intercept = 0, color = 'red') +
-  labs(x = sprintf('ICO trend v%s', previous_scen),
+  labs(x = sprintf('ICO trend %s', previous_scen),
        y = sprintf('ICO trend %s', scenario),
        title = 'ICO Trend Comparison')
 ggplotly(trend_compare_plot)
@@ -646,3 +650,44 @@ ggplotly(trend_compare_plot)
 ```
 
 ***
+
+Data forensics - why are outliers occurring?
+Region ID | Region Name | Status | Prev Status | d_nspp | Insights
+----------|---------------|-------|-------------|---------|-------
+3 | Norfolk Island | 72 | 80 | 3 | -
+16 | Australia | 61.6 | 76.4 | -22 | -
+52 | Bahrain | 57.5 | 46.7 | 2 | -
+73 | Russia | 54.4 | 73.8 | -11 | -
+105 | Bouvet Island (Norway) | 40 | 70 | 1 | -
+175 | Denmark | 68.3 | 83.9 | -12 | -
+176 | Germany | 62.5 | 83.3 | -11 | -
+192 | Iraq | 62 | 48 | 0 | -
+213 | Antarctica | 70 | 80 | -1 | disregard; not included in OHI
+215 | Jordan | 66.7 | 50 | 1 | -
+222 | Sweden | 60 | 82.4 | -12 | -
+```{r}
+
+# Read in ico_spp_countries from v2018
+ico_spp_rgn_prepped_v2018 <- read_csv(here('globalprep/ico/v2018/int/ico_spp_rgn_prepped.csv')) %>% 
+  mutate(year = 2018)
+
+# Add year column to ico_spp_rgn_prepped:
+ico_spp_rgn_prepped <- read_csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv')) %>% 
+  mutate(year = 2019)
+
+
+# Create data frames to compare between values between v2018 and v2019
+norfolk_island <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Norfolk Island") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+norfolk_island2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Norfolk Island") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+# ^^ need to work on getting these lined up in the same df
+
+
+
+```
+
+
