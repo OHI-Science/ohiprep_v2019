@@ -677,7 +677,7 @@ ico_spp_rgn_prepped <- read_csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepp
 
 
 # Create data frames to compare between values between v2018 and v2019
-norfolk_island <- ico_spp_rgn_prepped_v2018 %>% 
+norfolk_island1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Norfolk Island") %>% 
   select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
@@ -686,6 +686,132 @@ norfolk_island2 <- ico_spp_rgn_prepped %>%
   select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 # ^^ need to work on getting these lined up in the same df
 
+norfolk_island <- rbind(norfolk_island1, norfolk_island2)
+
+# short fin mako, blue whale and humpback whale added
+
+australia1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Australia") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+australia2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Australia") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+australia <- rbind(australia1, australia2)
+
+# Here I'm guessing that the new code removed repeat species that are in the 2018 data that have the same scientific name but different iucn_sids (humpback whale, leatherback turtle, loggerheaded turtle, shortfin mako). But is it getting filtered out later in the code....? otherwise the only species added in 2019 was the Sei whale
+
+bahrain1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Bahrain") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+bahrain2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Bahrain") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+bahrain <- rbind(bahrain1, bahrain2)
+
+# Same issue here; loggerhead turtle has duplicate listings for both years
+
+russia1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Russia") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+russia2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Russia") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+russia <- rbind(russia1, russia2)
+# again, multiple duplicate species
+
+bouvet1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Bouvet Island") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+bouvet2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Bouvet Island") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+bouvet <- rbind(bouvet1, bouvet2)
+
+# no idea what's going on here!
+
+
+denmark1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Denmark") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+denmark2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Denmark") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+denmark <- rbind(denmark1, denmark2)
+
+# multiple duplicate species
+
+
+germany1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Germany") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+germany2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Germany") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+germany <- rbind(germany1, germany2)
+
+# three duplicate species
+
+iraq1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Iraq") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+iraq2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Iraq") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+iraq <- rbind(iraq1, iraq2)
+
+# only one duplicate species; must be something else causing the issue
+
+jordan1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Jordan") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+jordan2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Jordan") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+jordan <- rbind(jordan1, jordan2)
+
+# just one species added, nothing duplicated
+
+sweden1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Sweden") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+sweden2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Sweden") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+sweden <- rbind(sweden1, sweden2)
+
+# three species duplicated
+
+
+# Trying another country that's not an outlier to check on this issue:
+
+us1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "United States") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+us2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "United States") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+us <- rbind(us1, us2)
+# 7 species duplicated , but this was not determined to be an outlier 
 
 
 ```
