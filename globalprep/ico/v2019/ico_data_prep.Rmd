@@ -481,7 +481,7 @@ ico_spp_rgn_cat <- ico_cat_ts_abbr %>%
 ico_spp_rgn_cat <- ico_spp_rgn_cat %>%
   mutate(cat = ifelse(str_detect(presence, '^Extinct'), 'EX', cat), # ^ indicates start of string
          cat_score = ifelse(cat == 'EX', 1, cat_score)) %>%
-  filter(ico_gl | ico_rgn_id == rgn_id) %>% # keep (all globally iconic) and (regionally iconic in region only)
+  filter(ico_gl | ico_rgn_id == rgn_id) %>% # keep (all globally iconic) and (regionally iconic in region only) - the whole ico_rgn_id column is NAs
   distinct()
 
 write_csv(ico_spp_rgn_cat, file.path(dir_github, 'int/ico_spp_rgn_cat.csv'))
@@ -657,6 +657,7 @@ Region ID | Region Name | Status | Prev Status | d_nspp | Insights
 3 | Norfolk Island | 72 | 80 | 3 | -
 16 | Australia | 61.6 | 76.4 | -22 | -
 52 | Bahrain | 57.5 | 46.7 | 2 | -
+59 | Belgium | 77.5 | 63.3 | 1 | -
 73 | Russia | 54.4 | 73.8 | -11 | -
 105 | Bouvet Island (Norway) | 40 | 70 | 1 | -
 175 | Denmark | 68.3 | 83.9 | -12 | -
@@ -692,15 +693,67 @@ norfolk_island <- rbind(norfolk_island1, norfolk_island2)
 
 australia1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Australia") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year2018 = year)
 
 australia2 <- ico_spp_rgn_prepped %>% 
   filter(rgn_name == "Australia") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, yea2019 = year)
 
-australia <- rbind(australia1, australia2)
+australia <- full_join(australia1, australia2)
+setdiff(australia1$iucn_sid, australia2$iucn_sid)
+
+table(australia1$cat)
+table(australia2$cat)
 
 # Here I'm guessing that the new code removed repeat species that are in the 2018 data that have the same scientific name but different iucn_sids (humpback whale, leatherback turtle, loggerheaded turtle, shortfin mako). But is it getting filtered out later in the code....? otherwise the only species added in 2019 was the Sei whale
+
+australia_raw <- ico_status_raw %>% 
+  filter(rgn_name == "Australia") %>% 
+  filter(year == 2019) %>% 
+  select(iucn_sid, rgn_id, rgn_name, sciname, cat, year)
+
+australia_sum <- ico_sum %>% 
+  filter(rgn_name == "Australia") %>% 
+  filter(year == 2019) %>% 
+  select(iucn_sid, rgn_id, rgn_name, sciname, cat, year)
+
+setdiff(australia2$iucn_sid, australia_raw$iucn_sid) # whats in the first column called thats not in the second one? 
+setdiff(australia2$iucn_sid, australia_sum$iucn_sid) # both sum and raw dfs have 38 iucn_IDs going missing from the 2019 prepped data - time to do some data forensics using the Antarctic minke whale (iucn_sid = 2480) and the Southern right whale (8153) as a case study
+
+# Line 340: ico_assess_raw created; this is just spp names , no countries; but 2480 is here for 2018 with cat = NT
+aus_assess_raw <- ico_assess_raw %>% 
+  filter(iucn_sid == 2480 | iucn_sid == 8153)
+
+# Line 388: ico_assess created, still contains 2480 as NT for 2018 (eval year)
+aus_assess <- ico_assess %>% 
+  filter(iucn_sid == 2480)
+
+# Line 424: ico_assess_full created from ico_assess; still contains 2480 as NT for 2018 (eval year)
+aus_assess_full <- ico_assess_full %>% 
+  filter(iucn_sid == 2480)
+
+# Line 433: ico_spp_cat created and modified; does not list 2480 as a globally iconic species 
+aus_cat <- ico_spp_cat %>% 
+  filter(iucn_sid == 2480)
+
+# Line 470: ico_cat_ts_abbr filters for 1992 on
+aus_abbr <- ico_cat_ts_abbr %>% 
+  filter(iucn_sid == 2480)
+
+# Line 474: ico_spp_rgn results i a single line for 2480
+aus_spp_rgn <- ico_spp_rgn %>% 
+  filter(rgn_name == "Australia")
+  # filter(iucn_sid == 2480 | iucn_sid == 8153)
+
+# Line 477: ico_spp_rgn_cat expands for all years, 2480 still included until modifications are made on Line 481 to this df that remove non-globally iconic species (same with 8153). is this because there is an NA for ico_rgn_id? Globally iconic species like the Sei whale (2475), are retained in ico_spp_rgn_cat
+aus_spp_rgn_cat <- ico_spp_rgn_cat %>% 
+  filter(iucn_sid == 2480 | iucn_sid == 8153 | iucn_sid == 2475) %>% 
+  filter(rgn_name == "Australia")
+  
+
+
+
+#####
 
 bahrain1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Bahrain") %>% 
@@ -713,6 +766,18 @@ bahrain2 <- ico_spp_rgn_prepped %>%
 bahrain <- rbind(bahrain1, bahrain2)
 
 # Same issue here; loggerhead turtle has duplicate listings for both years
+
+belgium1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Belgium") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+belgium2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Belgium") %>% 
+  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+belgium <- rbind(belgium1, belgium2)
+
+# One duplicated species and one new species for 2019
 
 russia1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Russia") %>% 
