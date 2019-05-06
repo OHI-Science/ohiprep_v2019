@@ -11,7 +11,6 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -22,16 +21,26 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+library(dplyr)
+library(rgdal)
+library(raster)
+library(here)
+library(ggridges)
+library(ggplot2)
 
-dir_git <- '~/github/spp_risk_dists'
+source(here('workflow/R/common.R'))
+
+### provenance tracking
+library(provRmd); prov_setup()
+
+goal     <- 'spp'
+scenario <- 'v2019'
+dir_goal <- here('globalprep', goal, scenario)
 
 ### goal specific folders and info
-dir_setup   <- file.path(dir_git, 'setup')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-
-# ### provenance tracking
-library(provRmd); prov_setup()
+dir_anx  <- file.path(dir_M, 'git-annex/globalprep')
+dir_setup   <- file.path(dir_goal, '_setup')
+dir_goal_anx <- file.path(dir_anx, goal, scenario, 'spp_risk_dists')
 
 source(file.path(dir_setup, 'common_fxns.R'))
 
@@ -146,7 +155,7 @@ rgn_to_meow_df <- data.frame(iucn_rgn = names(rgn_to_meow),
          priority = n()) %>%
   arrange(priority)
 
-write_csv(rgn_to_meow_df, file.path(dir_git, sprintf('spatial/iucn_rgn_to_meow.csv')))
+write_csv(rgn_to_meow_df, file.path(dir_goal, sprintf('_spatial/iucn_rgn_to_meow.csv')))
 
 ```
 
@@ -174,7 +183,7 @@ rgn_to_lme_df <- data.frame(iucn_rgn = names(rgn_to_lme),
          priority = n()) %>%
   arrange(priority)
 
-write_csv(rgn_to_lme_df, file.path(dir_git, sprintf('spatial/iucn_rgn_to_lme.csv')))
+write_csv(rgn_to_lme_df, file.path(dir_goal, sprintf('_spatial/iucn_rgn_to_lme.csv')))
 
 ```
 

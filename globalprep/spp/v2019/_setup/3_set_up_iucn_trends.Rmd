@@ -11,7 +11,6 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -21,14 +20,24 @@ output:
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
+library(dplyr)
+library(rgdal)
+library(raster)
+library(here)
+library(ggridges)
+library(ggplot2)
 
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+source(here('workflow/R/common.R'))
 
-dir_git <- '~/github/spp_risk_dists'
+goal     <- 'spp'
+scenario <- 'v2019'
+dir_goal <- here('globalprep', goal, scenario)
 
 ### goal specific folders and info
-dir_data  <- file.path(dir_git, '_data')
-dir_setup <- file.path(dir_git, '_setup')
+dir_data  <- file.path(dir_goal, '_data')
+dir_setup <- file.path(dir_goal, '_setup')
+dir_anx  <- file.path(dir_M, 'git-annex/globalprep')
+dir_goal_anx <- file.path(dir_anx, goal, scenario, 'spp_risk_dists')
 
 # ### provenance tracking
 library(provRmd); prov_setup()
@@ -88,7 +97,7 @@ if(!file.exists(trends_file)) {
   #                             api_key, cores = 12, delay = .5)
 
   spp_trend_reclass <- spp_narr %>%
-    lapply(FUN = function(x) select(x, iucn_sid = name, pop_trend = result.populationtrend))
+    lapply(FUN = function(x) dplyr::select(x, iucn_sid = name, pop_trend = result.populationtrend))
   ### have to select out the columns of interest b/c one of the other cols was
   ### switching between character and logical, so bind_rows wouldn't work
   
@@ -124,7 +133,7 @@ if(!file.exists(trends_file)) {
   }
 
   spp_trend_reclass <- spp_narr %>%
-    lapply(FUN = function(x) select(x, iucn_sid = name, 
+    lapply(FUN = function(x) dplyr::select(x, iucn_sid = name, 
                                     iucn_rgn = region_identifier, 
                                     pop_trend = result.populationtrend))
   ### have to select out the columns of interest b/c one of the other cols was
@@ -148,7 +157,7 @@ if(!file.exists(trends_file)) {
 
 ## Regress species with multiple recent historic assessments against population trends
 
-From data gathered in the execution of SPP v2017, collect species data on past assessments (category) and population trend.  Combine and save.  Note that trend has to be assumed to be related to the most recent assessment only - not included in historical assessment API call.  We will need both a text description of trend (i.e. stable, increasing, or decreasing) and multiple assessments.
+From data gathered in the execution of SPP v2019, collect species data on past assessments (category) and population trend.  Combine and save.  Note that trend has to be assumed to be related to the most recent assessment only - not included in historical assessment API call.  We will need both a text description of trend (i.e. stable, increasing, or decreasing) and multiple assessments.
 
 For this analysis we will focus only on assessments performed since 1991, the year of v1.0 Red List.
 
@@ -245,21 +254,21 @@ trend_coeffs_91 <- summary(trend_regr_91)
 ### BASED ON FILTERING SINCE 1991 (IUCN Red List v1.0)
 # lm(formula = calc_trend ~ pop_trend, data = trend_91)
 # 
-# Residuals:
-#       Min        1Q    Median        3Q       Max 
-# -0.063883 -0.003883  0.000589  0.005060  0.042017 
-# 
-# Coefficients:
-#               Estimate Std. Error t value Pr(>|t|)    
-# (Intercept) -0.0005888  0.0006691   -0.88     0.38    
-# pop_trend   -0.0044716  0.0007697   -5.81 2.19e-08 ***
-# ---
-# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-# 
-# Residual standard error: 0.009113 on 219 degrees of freedom
-#   (748 observations deleted due to missingness)
-# Multiple R-squared:  0.1335,	Adjusted R-squared:  0.1296 
-# F-statistic: 33.75 on 1 and 219 DF,  p-value: 2.188e-08  
+#Residuals:
+#     Min       1Q   Median       3Q      Max 
+#-0.59914 -0.00265  0.00086  0.00398  0.13068 
+#
+#Coefficients:
+#              Estimate Std. Error t value Pr(>|t|)    
+#(Intercept) -0.0008556  0.0007490  -1.142    0.254    
+#pop_trend   -0.0035039  0.0008963  -3.909 9.76e-05 ***
+#---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.02232 on 1238 degrees of freedom
+#  (722 observations deleted due to missingness)
+#Multiple R-squared:  0.01219,	Adjusted R-squared:  0.0114 
+#F-statistic: 15.28 on 1 and 1238 DF,  p-value: 9.756e-05
 
 trend_plot_91 <- ggplot(trend_91, aes(x = pop_trend, y = calc_trend, group = pop_trend)) +
   geom_violin(color = 'grey60', fill = 'grey80') +
@@ -293,22 +302,23 @@ trend_coeffs_01 <- summary(trend_regr_01)
 
 ### BASED ON FILTERING SINCE 2001 (v3.1)
 # lm(formula = calc_trend ~ pop_trend, data = trend_01)
-# 
-# Residuals:
-#       Min        1Q    Median        3Q       Max 
-# -0.063447 -0.003447  0.000661  0.004769  0.042453 
-# 
-# Coefficients:
-#               Estimate Std. Error t value Pr(>|t|)   
-# (Intercept) -0.0006608  0.0010513  -0.629  0.53056   
-# pop_trend   -0.0041080  0.0012270  -3.348  0.00102 **
-# ---
-# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-# 
-# Residual standard error: 0.01203 on 156 degrees of freedom
-#   (686 observations deleted due to missingness)
-# Multiple R-squared:  0.06704,	Adjusted R-squared:  0.06106 
-# F-statistic: 11.21 on 1 and 156 DF,  p-value: 0.00102
+#
+#Residuals:
+#     Min       1Q   Median       3Q      Max 
+#-0.59879 -0.00189 -0.00189  0.00121  0.13144 
+#
+#Coefficients:
+#              Estimate Std. Error t value Pr(>|t|)   
+#(Intercept) -0.0012116  0.0007967  -1.521  0.12858   
+#pop_trend   -0.0031048  0.0009609  -3.231  0.00127 **
+#---
+#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+#Residual standard error: 0.02316 on 1153 degrees of freedom
+#  (638 observations deleted due to missingness)
+#Multiple R-squared:  0.008974,	Adjusted R-squared:  0.008115 
+#F-statistic: 10.44 on 1 and 1153 DF,  p-value: 0.001267
+
 
 trend_plot_01 <- ggplot(trend_01, aes(x = pop_trend, y = calc_trend, group = pop_trend)) +
   geom_violin(color = 'grey60', fill = 'grey80') +
@@ -331,8 +341,6 @@ print(trend_plot_01)
 
 ```
 
-One risk category shift would be 0.2 "risk units" (i.e. LC = 0, NT = .2, ..., EX = 1.0); so a decreasing population is likely to increase risk score by about 0.0063 units per year, or on average, take about 30 years to change risk status by one category.  For species on the high and low ends of trends based on time series, about -.06 to +.06, we can read this as changing by as much as one category every three to four years.
-
 ## Save species to trend lookup 
 
 The saved trends are based on linear regression of species with at least two non-DD assessments since 1991.  Because of this limitation, only a small number of regionally assessed species contribute to the trend scores.  NOTE:  For OHI, the determination should be made about how to calculate trends - how many assessments must be included? what starting year?
@@ -346,7 +354,7 @@ slope <- trend_coeffs_91$coefficients[2, 1] %>% round(5)
 trend_score_lookup <- c('decreasing' = -slope, 'stable' = 0, 'increasing' = slope)
 
 trend_91 <- read_csv(file.path(dir_setup, 'int/trend_calcs/trend_lm_vs_pop_91.csv')) %>%
-  select(iucn_sid, iucn_rgn, calc_trend) %>%
+  dplyr::select(iucn_sid, iucn_rgn, calc_trend) %>%
   distinct()
 
 trend_df <- read_csv(trends_file) %>%
@@ -357,7 +365,7 @@ trend_df <- read_csv(trends_file) %>%
          trend_source = case_when(!is.na(calc_trend)  ~ 'lm', 
                                   !is.na(trend_score) ~ 'regr',
                                   TRUE ~ NA_character_)) %>%
-  select(iucn_sid, iucn_rgn, pop_trend, trend_score, trend_source) %>%
+  dplyr::select(iucn_sid, iucn_rgn, pop_trend, trend_score, trend_source) %>%
   distinct()
 
 write_csv(trend_df, file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', api_version)))

@@ -24,14 +24,25 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
 library(raster)
 library(sf)
 library(fasterize)
+library(dplyr)
+library(rgdal)
+library(here)
+library(ggplot2)
 
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
-  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
+source(here('workflow/R/common.R'))
 
-dir_git <- '~/github/spp_risk_dists'
+goal     <- 'spp'
+scenario <- 'v2019'
+dir_goal <- here('globalprep', goal, scenario)
 
-### project specific folders and info
-source(file.path(dir_git, '_setup/common_fxns.R'))
+### goal specific folders and info
+dir_data  <- file.path(dir_goal, '_data')
+dir_setup <- file.path(dir_goal, '_setup')
+dir_anx  <- file.path(dir_M, 'git-annex/globalprep')
+dir_goal_anx <- file.path(dir_anx, goal, scenario, 'spp_risk_dists')
+dir_raw_data_anx <- file.path(dir_anx, '_raw_data')
+
+source(file.path(dir_setup, 'common_fxns.R'))
 
 ```
 
@@ -60,8 +71,8 @@ To define spatial areas more accurately, create rasters of WDPA and ocean area a
 
 ocean_area_file <- file.path(dir_spatial, 'ocean_area_rast.tif')
 cell_id_file    <- file.path(dir_spatial, 'cell_id_rast.tif')
-# ocean_1km_file  <- file.path(dir_o_anx, 'spatial', 'ocean_1km.tif')
-ocean_500m_file  <- file.path(dir_o_anx, 'spatial', 'ocean_500m.tif')
+# ocean_1km_file  <- file.path(dir_goal_anx, 'spatial', 'ocean_1km.tif')
+ocean_500m_file  <- file.path(dir_goal_anx, 'spatial', 'ocean_500m.tif')
 
 if(!file.exists(ocean_area_file)) {
   
@@ -90,6 +101,7 @@ if(!file.exists(ocean_area_file)) {
     writeRaster(rast_ocean_500m, 
                 ocean_500m_file,
                 progress = 'text')
+    #plot(rast_ocean_500m) #check if worked in R 
   } else {
     rast_ocean_500m <- raster(ocean_500m_file)
   }
@@ -128,16 +140,18 @@ Actually, create two maps: one by protection category, another by year for no-ta
 
 rast_cell_id    <- raster(cell_id_file)
 rast_ocean_500m  <- raster(ocean_500m_file)
+#plot(rast_ocean_500m) check to see if loaded properly 
 
-wdpa_marine_file <- file.path(dir_o_anx, 'wdpa/wdpa_mar_by_cat_jun2018_500m.tif')
-wdpa_poly_file   <- file.path(dir_o_anx, 'wdpa/wdpa_jun2018', 
-                              'WDPA_June2018-shapefile-polygons.shp')
+wdpa_marine_file <- file.path(dir_raw_data_anx, 'wdpa_mpa/d2019/wdpa_mar_by_cat_Apr2019_500m.tif')
+wdpa_poly_file   <- file.path(dir_raw_data_anx, 'wdpa_mpa/d2019/WDPA_Apr2019-shapefile', 
+                              'WDPA_Apr2019-shapefile-polygons.shp')
 
 if(!file.exists(wdpa_marine_file)) {
   
   wdpa_poly <- sf::read_sf(wdpa_poly_file)
 
-  # wdpa_poly$IUCN_CAT %>% unique()
+  # wdpa_poly$IUCN_CAT %>% unique() 
+  ##only grab ones that are reported/assigned/applicable
   iucn_cats <- c('Ia'  = 1,
                  'Ib'  = 1,
                  'II'  = 2,
@@ -145,9 +159,9 @@ if(!file.exists(wdpa_marine_file)) {
                  'IV'  = 4,
                  'V'   = 5,
                  'VI'  = 6)
-  # wdpa_poly$STATUS %>% table()
+   #wdpa_poly$STATUS %>% table()
        # Adopted   Designated  Established    Inscribed Not Reported     Proposed 
-       #      34       215853            2          241          128         1537 
+       #      34       220127            48          242          128         1436 
   # wdpa_poly$NO_TAKE %>% unique()
   # x <- wdpa_poly %>% filter(NO_TAKE %in% c('All', 'Part'))
   
@@ -182,9 +196,6 @@ if(!file.exists(wdpa_marine_file)) {
               overwrite = TRUE)
   
 }
-  
-# git_prov(wdpa_poly_file, 'input')
-# git_prov(wdpa_marine_file, 'output') ### even in "if", mask() won't prov-register it.
 
 ```
 
@@ -193,8 +204,8 @@ if(!file.exists(wdpa_marine_file)) {
 rast_cell_id    <- raster(cell_id_file)
 rast_ocean_500m  <- raster(ocean_500m_file)
 
-wdpa_prot_yr_file <- file.path(dir_o_anx, 'wdpa', 
-                               'wdpa_mar_by_prot_yr_jun2018_500m.tif')
+wdpa_prot_yr_file <- file.path(dir_raw_data_anx, 'wdpa_mpa/d2019', 
+                               'wdpa_mar_by_prot_yr_Apr2019_500m.tif')
 
 if(!file.exists(wdpa_prot_yr_file)) {
   
@@ -208,9 +219,9 @@ if(!file.exists(wdpa_prot_yr_file)) {
                  'IV'  = 4,
                  'V'   = 5,
                  'VI'  = 6)
-  # wdpa_poly$STATUS %>% table()
+   # wdpa_poly$STATUS %>% table()
        # Adopted   Designated  Established    Inscribed Not Reported     Proposed 
-       #      34       215853            2          241          128         1537 
+       #      34       220127            48          242          128         1436 
   # wdpa_poly$NO_TAKE %>% unique()
   # x <- wdpa_poly %>% filter(NO_TAKE %in% c('All', 'Part'))
   
@@ -247,9 +258,6 @@ if(!file.exists(wdpa_prot_yr_file)) {
               overwrite = TRUE)
   
 }
-  
-# git_prov(wdpa_poly_file, 'input')
-# git_prov(wdpa_prot_yr_file, 'output') 
 
 ```
 
@@ -266,7 +274,7 @@ rast_cell_id    <- raster(cell_id_file)    ### cell IDs at 10 km^2
 rast_ocean_500m <- raster(ocean_500m_file)  ### ocean presence at 1 km^2
 rast_ocean_area <- raster(ocean_area_file) ### ocean proportional area at 10 km^2
 
-cell_id_500m_file <- file.path(dir_o_anx, 'spatial/cell_id_500m.tif')
+cell_id_500m_file <- file.path(dir_goal_anx, 'spatial/cell_id_500m.tif')
 
 ### Need a 500 m raster of cell IDs for crosstabbing...
 if(!file.exists(cell_id_500m_file)) {
@@ -332,7 +340,7 @@ if(!file.exists(wdpa_cell_area_file)) {
     filter(!is.na(wdpa_category)) %>%
     mutate(prot_area_km2 = n_prot / 4, ### count of cells in 500 x 500 m raster, div by 4
            mpa_pct = prot_area_km2 / area_km2) %>%
-    select(wdpa_category, cell_id, mpa_pct, prot_area_km2) %>%
+    dplyr::select(wdpa_category, cell_id, mpa_pct, prot_area_km2) %>%
       ### mpa pct is relative to *ocean* area - not *total cell* area
     group_by(wdpa_category, cell_id) %>%
     summarize(mpa_pct = sum(mpa_pct), prot_area_km2 = sum(prot_area_km2)) %>%

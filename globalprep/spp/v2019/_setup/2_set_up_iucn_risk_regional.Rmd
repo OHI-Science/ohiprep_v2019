@@ -11,7 +11,6 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -22,16 +21,26 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
+library(dplyr)
+library(rgdal)
+library(raster)
+library(here)
+library(ggridges)
+library(ggplot2)
+
+source(here('workflow/R/common.R'))
 
 ### provenance tracking
 library(provRmd); prov_setup()
 
-dir_git <- '~/github/spp_risk_dists'
+goal     <- 'spp'
+scenario <- 'v2019'
+dir_goal <- here('globalprep', goal, scenario)
 
 ### goal specific folders and info
-dir_setup   <- file.path(dir_git, 'setup')
-dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
+dir_anx  <- file.path(dir_M, 'git-annex/globalprep')
+dir_setup   <- file.path(dir_goal, '_setup')
+dir_goal_anx <- file.path(dir_anx, goal, scenario, 'spp_risk_dists')
 
 source(file.path(dir_setup, 'common_fxns.R'))
 
@@ -93,7 +102,7 @@ For each assessment, read the pages of species info.  Pages are 10k spp long, so
 
 rgn_assess <- read_csv(rgn_assess_from_api_file)
 
-rgn_spp_info_file <- file.path(dir_git, sprintf('data/iucn_risk_rgn_current_%s.csv', api_version))
+rgn_spp_info_file <- file.path(dir_goal, sprintf('_data/iucn_risk_rgn_current_%s.csv', api_version))
 
 if(!file.exists(rgn_spp_info_file)) {
   
@@ -118,14 +127,14 @@ if(!file.exists(rgn_spp_info_file)) {
   spp_df_rgn_all <- bind_rows(spp_df_rgn_list)
   
   ### filter to just marine species, and select relevant columns
-  spp_rgn_marine <- read_csv(file.path(dir_git, 'data',
+  spp_rgn_marine <- read_csv(file.path(dir_goal, '_data',
                                    sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
     inner_join(spp_df_rgn_all, by = c('iucn_sid' = 'taxonid')) %>%
-    select(iucn_sid, sciname,
+    dplyr::select(iucn_sid, sciname,
            old_cat = category, iucn_rgn)
   
   cat_lookup <- read_csv(file.path(dir_setup, 'raw', 'risk_code_lookup.csv')) %>%
-    select(cat = code, cat_score = cat_score, cat_current = code_current) %>%
+    dplyr::select(cat = code, cat_score = cat_score, cat_current = code_current) %>%
     filter(!is.na(cat))
   
   spp_rgn_marine1 <- spp_rgn_marine %>%
@@ -150,14 +159,14 @@ Once regional assessments are gleaned from the API, check them against the globa
 
 ``` {r}
 
-global_marine_spp_risk <- read_csv(file.path(dir_git, sprintf('data/iucn_risk_current_%s.csv', api_version)))
+global_marine_spp_risk <- read_csv(file.path(dir_goal, sprintf('_data/iucn_risk_current_%s.csv', api_version)))
 
 rgn_marine_spp <- read_csv(rgn_spp_info_file)
 
 rgn_spp_list <- global_marine_spp_risk %>%
-  select(iucn_sid, sciname, main_common_name, global_cat = cat, global_cat_score = cat_score) %>%
+  dplyr::select(iucn_sid, sciname, main_common_name, global_cat = cat, global_cat_score = cat_score) %>%
   inner_join(rgn_marine_spp %>%
-               select(iucn_sid, 
+               dplyr::select(iucn_sid, 
                       # rgn_sciname = sciname, rgn_pop = population,
                       rgn_cat = cat_current, rgn_cat_score = cat_score, iucn_rgn),
              by = 'iucn_sid') %>%
@@ -168,16 +177,16 @@ rgn_spp_list <- global_marine_spp_risk %>%
 ## Get IUCN regional historical assessments
 
 ``` {r get_iucn_past_assessments}
-
-spp_timeseries_file <- file.path(dir_git, 'data',
+###The created file, iucn_risk_ts_rgn_2019-1.csv is empty. This is okay. Checked the corresponding 2018 file and it is also empty...
+spp_timeseries_file <- file.path(dir_goal, '_data',
                                  sprintf('iucn_risk_ts_rgn_%s.csv', api_version))
 
-global_marine_spp_risk <- read_csv(file.path(dir_git, sprintf('data/iucn_risk_current_%s.csv', api_version)))
+global_marine_spp_risk <- read_csv(file.path(dir_goal, sprintf('_data/iucn_risk_current_%s.csv', api_version)))
 
 rgn_marine_spp <- read_csv(rgn_spp_info_file)
 
 cat_lookup <- read_csv(file.path(dir_setup, 'raw', 'risk_code_lookup.csv')) %>%
-  select(rgn_cat = code, rgn_cat_ts_score = cat_score, rgn_cat_ts = code_current) %>%
+  dplyr::select(rgn_cat = code, rgn_cat_ts_score = cat_score, rgn_cat_ts = code_current) %>%
   filter(!is.na(rgn_cat))
 
 rgn_assess <- read_csv(rgn_assess_from_api_file)
@@ -185,7 +194,7 @@ rgn_assess <- read_csv(rgn_assess_from_api_file)
 if(!file.exists(spp_timeseries_file)) {
   
   spp_ts_df_rgn_list <- vector(length = nrow(rgn_assess), 'list')
-  for(i in 1:nrow(rgn_assess)) { ### i <- 5
+  for(i in 1:nrow(rgn_assess)) {  ###i <- 5
     rgn_id <- rgn_assess$identifier[i]
     
     spp_hist_url <- file.path('http://apiv3.iucnredlist.org/api/v3/species', 
@@ -202,7 +211,7 @@ if(!file.exists(spp_timeseries_file)) {
     
     if(names(spp_ts_df_rgn) != c('param_id', 'api_error')) {
       spp_ts_df_rgn <- spp_ts_df_rgn %>%
-        select(iucn_sid = name, year, rgn_cat = code, iucn_rgn = region_identifier) %>%
+        dplyr::select(iucn_sid = name, year, rgn_cat = code, iucn_rgn = region_identifier) %>%
         filter(!is.na(iucn_sid))
     }
     
@@ -219,7 +228,7 @@ if(!file.exists(spp_timeseries_file)) {
     left_join(cat_lookup, by = c('rgn_cat' = 'rgn_cat')) %>%
     filter(!is.na(rgn_cat_ts_score) & !is.na(year)) %>%
     arrange(iucn_sid, year) %>%
-    select(iucn_sid, year, rgn_cat_ts, rgn_cat_ts_score, iucn_rgn) %>%
+    dplyr::select(iucn_sid, year, rgn_cat_ts, rgn_cat_ts_score, iucn_rgn) %>%
     mutate(iucn_version = api_version) %>%
     group_by(iucn_sid, iucn_rgn) %>%
     filter(n() >= 2)

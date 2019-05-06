@@ -11,16 +11,23 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
 
 ``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
 
+#when using "select()" we receive an error. I believe this is because of a package conflict. Specify dplyr::select() whenever using hte function. 
+
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
+library(dplyr)
+library(rgdal)
+library(raster)
+library(here)
+library(ggridges)
+library(ggplot2)
 
 
 ##BEFORE
@@ -120,7 +127,7 @@ From the full IUCN species list, send each IUCN species ID into the API to get t
 
 ####You might run and get this error at some point: Error in write_delim(x, path, delim = ",", na = na, append = append, col_names = col_names,  : is.data.frame(x) is not TRUE
 
-####Fear not, we believe this is occurring because a link is timing out during the data retrieval process. If this error happens, just try running again (it will skip over the species id's already retrieved).
+####We believe this is occurring because a link is timing out during the data retrieval process. If this error happens, just try running again (it will skip over the species id's already retrieved and continue where you left off).
 
 ### For each species ID on the total list, get a dataframe of habitats.
 ### This is slow. 
@@ -207,10 +214,13 @@ if(!file.exists(spp_habs_from_api_file) | reload) {
 ```
 
 ``` {r determine_spp_systems}
+### You might receive an error like this at some point: Error in (function (classes, fdef, mtable) : unable to find an inherited method for function ‘select’ for signature ‘"data.frame"’
+### Just try running again and it should work
+
 ### For each species ID on the total list, get species information, which
 ### includes "system" of marine, terrestrial, or both.
 
-spp_sys_from_api_file <- file.path(dir_o_anx, 
+spp_sys_from_api_file <- file.path(dir_goal_anx, 
   sprintf('iucn/spp_systems_from_api_%s.csv', api_version))
 reload <- FALSE
 
@@ -230,14 +240,14 @@ if(!file.exists(spp_sys_from_api_file) | reload) {
   chunk_size <- 2000
   n_chunks <- ceiling(length(spp_ids_all)/chunk_size)
   
-  if(!dir.exists(file.path(dir_o_anx, 'tmp'))) {
-    dir.create(file.path(dir_o_anx, 'tmp'))
+  if(!dir.exists(file.path(dir_goal_anx, 'tmp'))) {
+    dir.create(file.path(dir_goal_anx, 'tmp'))
   }
   
   for(j in 1:n_chunks) { 
     ### j <- 1
     spp_index <- c( ((j - 1) * chunk_size + 1) : min((j * chunk_size), length(spp_ids_all)) )
-    chunk_file <- file.path(dir_o_anx, 'tmp', 
+    chunk_file <- file.path(dir_goal_anx, 'tmp', 
                     sprintf('spp_sys_chunk_%s_%s.csv', 
                             min(spp_index), max(spp_index)))
 
@@ -249,7 +259,7 @@ if(!file.exists(spp_sys_from_api_file) | reload) {
                                        cores = 12, delay = .5)
 
       spp_sys_chunk <- spp_sys_chunk %>%
-        select(iucn_sid = name, 
+        dplyr::select(iucn_sid = name, 
                sciname = scientific_name, comname = main_common_name,
                contains('system'), year = published_year, category, criteria)
       cat_msg('... found ', nrow(spp_sys_chunk), ' systems for these species')
@@ -266,7 +276,7 @@ if(!file.exists(spp_sys_from_api_file) | reload) {
   ### fields: 
   ### id | code | habitat | suitability | season | majorimportance
 
-  spp_sys_chunk_files <- list.files(file.path(dir_o_anx, 'tmp'), 
+  spp_sys_chunk_files <- list.files(file.path(dir_goal_anx, 'tmp'), 
                                     pattern = 'spp_sys_chunk', 
                                     full.names = TRUE)
   
@@ -297,7 +307,7 @@ From the habitats gleaned in the previous chunk, generate an inclusion list base
 hab_inclusion_file <- file.path(dir_setup, 'int', 'iucn_habitat_categories.csv')
 
 hab_cats <- read_csv(spp_habs_from_api_file, col_types = 'iciccccc') %>%
-  select(habitat, code) %>%
+  dplyr::select(habitat, code) %>%
   distinct() %>%
   separate(code, c('cat', 'subcat1', 'subcat2'),
            remove = FALSE, convert = TRUE) %>%
@@ -342,11 +352,11 @@ It appears that coastal species suffer from the extended buffers so clipping the
 ``` {r determine_marine_spp_from_api}
 
 spp_habs_from_api <- read_csv(spp_habs_from_api_file,
-                              col_types = '__iccccc')
+                              col_types = 'iciccccc')
 ### 'code' is character since it is in the form x.xx.xxx
 
 spp_systems_from_api <- read_csv(spp_sys_from_api_file) %>%
-  select(iucn_sid, sciname, comname, marine_system, terrestrial_system, freshwater_system) %>%
+  dplyr::select(iucn_sid, sciname, comname, marine_system, terrestrial_system, freshwater_system) %>%
   distinct()
 
 hab_marine <- read_csv(hab_inclusion_file)
@@ -358,32 +368,47 @@ spp_habs_and_systems <- spp_habs_from_api %>%
   left_join(hab_marine, by = c('habitat', 'code'))
 
 ### Spot checks:  how to best differentiate true marine spp?
-# qwer <- spp_habs_and_systems %>%
-#   filter(include == TRUE)
-# length(qwer$iucn_sid %>% unique())
-# length(qwer %>% filter(!cat %in% 17:18) %>% .$iucn_sid %>% unique())
+ #qwer <- spp_habs_and_systems %>%
+  # filter(include == TRUE)
+ #length(qwer$iucn_sid %>% unique())
+ #length(qwer %>% filter(!cat %in% 17:18) %>% .$iucn_sid %>% unique())
+ #2018: 
 ### 15105 spp marine by habitat only (NAs dropped); note undoubtedly
 ### some "other" and "unknown" that are NOT marine - only 12108 when
 ### excluding "other" and "unknown"
+ #2019:
+### 16541 spp marine by habitat only (NAs dropped); note undoubtedly
+### some "other" and "unknown" that are NOT marine - only 13437 when
+### excluding "other" and "unknown"
 
-# asdf <- spp_habs_and_systems %>%
-#   filter(marine_system) %>%
-#   distinct()
-# length(asdf$iucn_sid %>% unique())
+ asdf <- spp_habs_and_systems %>%
+   filter(marine_system) %>%
+   distinct()
+ length(asdf$iucn_sid %>% unique())
+ #2018:
 ### 13188 spp by marine_system only; some might be marine/terrestrial
-
+ #2019:
+ ### 13669 spp by marine_system only; some might be marine/terrestrial
+ 
 # zxcv <- spp_habs_and_systems %>%
 #   filter(include == TRUE | (is.na(include) & marine_system == TRUE)) %>%
 #   distinct()
 # length(zxcv$iucn_sid %>% unique())
 # length(zxcv %>% filter(!cat %in% 17:18) %>% .$iucn_sid %>% unique())
+ #2018:
 ### 16253 in marine habitats, and/or with NA habitat but marine_system
 ### 13256 when ignoring "other" and "unknown"
-
+ #2019:
+### 16823 in marine habitats, and/or with NA habitat but marine_system
+### 13719 when ignoring "other" and "unknown"
+ 
 # qwer <- spp_habs_and_systems %>%
 #   filter((include == TRUE | is.na(include)) & marine_system == TRUE)
 # length(qwer$iucn_sid %>% unique())
+ #2018:
 ### 12934 both marine hab (or NA hab) AND marine_system
+ #2019:
+### 13425 both marine hab (or NA hab) AND marine_system 
 
 ### Let's examine the spp that are marine_system but not by hab,
 ### and by hab but not marine_system.
@@ -391,25 +416,41 @@ spp_habs_and_systems <- spp_habs_from_api %>%
 #   filter(include == TRUE & !marine_system)
 # length(asdf$iucn_sid %>% unique())
 # length(asdf %>% filter(!cat %in% 17:18) %>% .$iucn_sid %>% unique())
+ #2018:
 ### 3319 spp: including "other" and "unknown" requires an additional filter... just
 ### too many extras included here.  782 if we ignore those.
+  #2019:
+### 3395 spp: including "other" and "unknown" requires an additional filter... just
+### too many extras included here.  810 if we ignore those.
+ 
 # zxcv <- spp_habs_and_systems %>%
 #   group_by(iucn_sid) %>%
 #   mutate(include = any(include == TRUE)) %>%
 #   filter(include == FALSE & marine_system)
 # length(zxcv$iucn_sid %>% unique())
+ #2018:
 ### 254 spp here.  This looks pretty solid - the remainders look like
+### they are inland wetlands, coastal lakes, caves, etc.  Some may
+### be misclassified by IUCN as to their habitats.
+ #2019:
+### 244 spp here.  This looks pretty solid - the remainders look like
 ### they are inland wetlands, coastal lakes, caves, etc.  Some may
 ### be misclassified by IUCN as to their habitats.
 
 spp_marine <- spp_habs_and_systems %>%
   filter((include == TRUE | is.na(include)) & marine_system == TRUE)
-# length(spp_marine$iucn_sid %>% unique())
+ length(spp_marine$iucn_sid %>% unique())
+ #2018:
 ### These 12934 spp either are positively coded hab or NA hab, and
 ### ALSO classified as marine system.  This is a reasonably aggressive
 ### cut that seems to minimize false positives and false negatives.
 ### NOTE: This still includes hippos because of estuaries - see next cut.
-
+ #2019:
+### These 13425 spp either are positively coded hab or NA hab, and
+### ALSO classified as marine system.  This is a reasonably aggressive
+### cut that seems to minimize false positives and false negatives.
+### NOTE: This still includes hippos because of estuaries - see next cut.
+ 
 ### See which species are only "marginal" or of unknown suitability for
 ### marine habitats.  Filter out those that are pelagic, subtidal - 
 ### those are clearly marine species.  If spp are only found in
@@ -426,8 +467,11 @@ marg_suit <- spp_marine %>%
   filter(!str_detect(suit_all, 'suitable|unknown|^na')) %>%
   filter(intertidal_only) %>%
   left_join(read_csv(spp_info_from_api_file), by = 'iucn_sid') %>%
-  select(iucn_sid, sciname, suit_all, kingdom, phylum, class, order, family)
+  dplyr::select(iucn_sid, sciname, suit_all, kingdom, phylum, class, order, family)
 
+#2018:
+### 21 spp
+#2019:
 ### 21 spp
 write_csv(marg_suit, file.path(dir_setup, 'int',
                                sprintf('spp_marine_marginal_%s.csv', api_version)))
@@ -445,7 +489,7 @@ spp_habs_clean <- spp_marine %>%
                                   any(cat %in% c(12))     ~ '< 20 m',
                                   TRUE                    ~ 'unknown'))
 
-write_csv(spp_habs_clean, file.path(dir_git, 'data',
+write_csv(spp_habs_clean, file.path(dir_goal, '_data',
                                      sprintf('spp_marine_from_api_%s.csv', api_version)))
 
 ```
@@ -454,16 +498,17 @@ write_csv(spp_habs_clean, file.path(dir_git, 'data',
 
 ``` {r get_iucn_past_assessments}
 
-spp_timeseries_file <- file.path(dir_git, 'data',
+spp_timeseries_file <- file.path(dir_goal, '_data',
                                  sprintf('iucn_risk_timeseries_%s.csv', api_version))
 
-iucn_spp_info <- read_csv(file.path(dir_o_anx, 
+iucn_spp_info <- read_csv(file.path(dir_goal_anx, 
                                     sprintf('iucn/spp_info_from_api_%s.csv', api_version)))
 
-iucn_marine_spp <- read_csv(file.path(dir_git, 'data',
+iucn_marine_spp <- read_csv(file.path(dir_goal, '_data',
                                       sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
   left_join(iucn_spp_info)
 ### Subpopulations are in here too, by ID number
+### Always check how many observations there after a join. 2019: 13404
 
 reload <- FALSE
 
@@ -478,7 +523,7 @@ if(!file.exists(spp_timeseries_file) | reload) {
     
   ptm <- proc.time()
   spp_past_df <- mc_get_from_api(spp_hist_url, sid_list, api_key, delay = 1, cores = 16)
-  cat_msg('elapsed time: ', (proc.time() - ptm)[3])
+  cat_msg('elapsed time: ', (proc.time() - ptm)[3]) #2019 elapsed time:  1115.739 
   
   
   ### Clean up the time series: reclassify old codes to current
@@ -498,7 +543,7 @@ if(!file.exists(spp_timeseries_file) | reload) {
     left_join(pop_cat, by = 'cat_ts') %>%
     filter(!is.na(cat_ts_score) & !is.na(year)) %>%
     arrange(iucn_sid, year) %>%
-    select(iucn_sid, year, cat_ts, cat_ts_score) %>%
+    dplyr::select(iucn_sid, year, cat_ts, cat_ts_score) %>%
     mutate(iucn_version = api_version)
   
   write_csv(spp_past_df1, spp_timeseries_file)
@@ -513,12 +558,12 @@ if(!file.exists(spp_timeseries_file) | reload) {
 
 ``` {r get_iucn_current_assessment}
 
-spp_current_file <- file.path(dir_git, 'data', 
+spp_current_file <- file.path(dir_goal, '_data', 
                               sprintf('iucn_risk_current_%s.csv', api_version))
-iucn_spp_info <- read_csv(file.path(dir_o_anx, 
+iucn_spp_info <- read_csv(file.path(dir_goal_anx, 
                                     sprintf('iucn/spp_info_from_api_%s.csv', api_version)))
 
-iucn_marine_spp <- read_csv(file.path(dir_git, 'data',
+iucn_marine_spp <- read_csv(file.path(dir_goal, '_data',
                                       sprintf('spp_marine_from_api_%s.csv', api_version))) %>%
   left_join(iucn_spp_info)
 
@@ -540,8 +585,9 @@ if(!file.exists(spp_current_file) | reload) {
   cat_msg('elapsed time: ', (proc.time() - ptm)[3])
     #   user   system  elapsed 
     # 74.756   23.032 1251.880
+    # 2019:           1130.972 
   spp_current_df1 <- spp_current_df %>%
-    select(iucn_sid = name, sciname = scientific_name,
+    dplyr::select(iucn_sid = name, sciname = scientific_name,
            main_common_name, 
            published_year, code = category, 
            criteria)
@@ -554,7 +600,7 @@ if(!file.exists(spp_current_file) | reload) {
 
   ### Clean up the time series: reclassify old codes to current and add scores
   cat_lookup <- read_csv(file.path(dir_setup, 'raw', 'risk_code_lookup.csv')) %>%
-    select(-category)
+    dplyr::select(-category)
   
   spp_current_df2 <- spp_current_df1 %>%
     left_join(cat_lookup, by = c('code')) %>%
