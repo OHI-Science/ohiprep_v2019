@@ -40,7 +40,7 @@ name,count,code,country,presence,origin,distribution_code
 39381,148,ES,Spain,Extant,Native,Native
 39381,148,FJ,Fiji,Extant,Native,Native
 39381,148,FK,Falkland Islands (Malvinas),Extant,Native,Native
-39381,148,FM,"Micronesia, Federated States of",Extant,Native,Native
+39381,148,FM,"Micronesia, Federated States of ",Extant,Native,Native
 39381,148,GA,Gabon,Extant,Native,Native
 39381,148,GB,United Kingdom,Extant,Native,Native
 39381,148,GD,Grenada,Extant,Native,Native
@@ -90,7 +90,7 @@ name,count,code,country,presence,origin,distribution_code
 39381,148,MX,Mexico,Extant,Native,Native
 39381,148,MY,Malaysia,Extant,Native,Native
 39381,148,MZ,Mozambique,Extant,Native,Native
-39381,148,NA,Namibia,Extant,Native,Native
+39381,148,"NA",Namibia,Extant,Native,Native
 39381,148,NC,New Caledonia,Extant,Native,Native
 39381,148,NG,Nigeria,Extant,Native,Native
 39381,148,NI,Nicaragua,Extant,Native,Native
@@ -184,7 +184,7 @@ name,count,code,country,presence,origin,distribution_code
 19488,127,ER,Eritrea,Extant,Native,Native
 19488,127,ET,Ethiopia,Extant,Native,Native
 19488,127,FJ,Fiji,Extant,Native,Native
-19488,127,FM,"Micronesia, Federated States of",Extant,Native,Native
+19488,127,FM,"Micronesia, Federated States of ",Extant,Native,Native
 19488,127,GA,Gabon,Extant,Native,Native
 19488,127,GD,Grenada,Extant,Native,Native
 19488,127,GF,French Guiana,Extant,Native,Native
@@ -225,7 +225,7 @@ name,count,code,country,presence,origin,distribution_code
 19488,127,MX,Mexico,Extant,Native,Native
 19488,127,MY,Malaysia,Extant,Native,Native
 19488,127,MZ,Mozambique,Extant,Native,Native
-19488,127,NA,Namibia,Extant,Native,Native
+19488,127,"NA",Namibia,Extant,Native,Native
 19488,127,NC,New Caledonia,Extant,Native,Native
 19488,127,NG,Nigeria,Extant,Native,Native
 19488,127,NI,Nicaragua,Extant,Native,Native
@@ -316,7 +316,7 @@ name,count,code,country,presence,origin,distribution_code
 39341,157,ER,Eritrea,Extant,Native,Native
 39341,157,ES,Spain,Extant,Native,Native
 39341,157,FJ,Fiji,Extant,Native,Native
-39341,157,FM,"Micronesia, Federated States of",Extant,Native,Native
+39341,157,FM,"Micronesia, Federated States of ",Extant,Native,Native
 39341,157,FR,France,Extant,Native,Native
 39341,157,GA,Gabon,Extant,Native,Native
 39341,157,GB,United Kingdom,Extant,Native,Native
@@ -372,7 +372,7 @@ name,count,code,country,presence,origin,distribution_code
 39341,157,MX,Mexico,Extant,Native,Native
 39341,157,MY,Malaysia,Extant,Native,Native
 39341,157,MZ,Mozambique,Extant,Native,Native
-39341,157,NA,Namibia,Extant,Native,Native
+39341,157,"NA",Namibia,Extant,Native,Native
 39341,157,NC,New Caledonia,Extant,Native,Native
 39341,157,NF,Norfolk Island,Extant,Native,Native
 39341,157,NG,Nigeria,Extant,Native,Native
@@ -474,7 +474,7 @@ name,count,code,country,presence,origin,distribution_code
 161749,63,MR,Mauritania,Extant,Native,Native
 161749,63,MS,Montserrat,Extant,Native,Native
 161749,63,MX,Mexico,Extant,Native,Native
-161749,63,NA,Namibia,Extant,Native,Native
+161749,63,"NA",Namibia,Extant,Native,Native
 161749,63,NI,Nicaragua,Extant,Native,Native
 161749,63,NO,Norway,Extant,Native,Native
 161749,63,PA,Panama,Extant,Native,Native
@@ -546,7 +546,7 @@ name,count,code,country,presence,origin,distribution_code
 11534,76,DO,Dominican Republic,Extant,Native,Native
 11534,76,EC,Ecuador,Extant,Native,Native
 11534,76,ER,Eritrea,Extant,Native,Native
-11534,76,FM,"Micronesia, Federated States of",Extant,Native,Native
+11534,76,FM,"Micronesia, Federated States of ",Extant,Native,Native
 11534,76,GA,Gabon,Extant,Native,Native
 11534,76,GF,French Guiana,Extant,Native,Native
 11534,76,GH,Ghana,Extant,Native,Native
@@ -576,7 +576,7 @@ name,count,code,country,presence,origin,distribution_code
 11534,76,MX,Mexico,Extant,Native,Native
 11534,76,MY,Malaysia,Extant,Native,Native
 11534,76,MZ,Mozambique,Extant,Native,Native
-11534,76,NA,Namibia,Extant,Native,Native
+11534,76,"NA",Namibia,Extant,Native,Native
 11534,76,NG,Nigeria,Extant,Native,Native
 11534,76,NI,Nicaragua,Extant,Native,Native
 11534,76,OM,Oman,Extant,Native,Native
@@ -635,7 +635,7 @@ name,count,code,country,presence,origin,distribution_code
 4592,59,EG,Egypt,Extant,Native,Native
 4592,59,ER,Eritrea,Extant,Native,Native
 4592,59,FJ,Fiji,Extant,Native,Native
-4592,59,FM,"Micronesia, Federated States of",Extant,Native,Native
+4592,59,FM,"Micronesia, Federated States of ",Extant,Native,Native
 4592,59,GU,Guam,Extant,Native,Native
 4592,59,HK,Hong Kong,Extant,Native,Native
 4592,59,ID,Indonesia,Extant,Native,Native
@@ -712,7 +712,7 @@ name,count,code,country,presence,origin,distribution_code
 3855,41,MR,Mauritania,Extant,Native,Native
 3855,41,MU,Mauritius,Extant,Native,Native
 3855,41,MZ,Mozambique,Extant,Native,Native
-3855,41,NA,Namibia,Extant,Native,Native
+3855,41,"NA",Namibia,Extant,Native,Native
 3855,41,NC,New Caledonia,Extant,Native,Native
 3855,41,NZ,New Zealand,Extant,Native,Native
 3855,41,PH,Philippines,Extant,Native,Native
@@ -851,7 +851,7 @@ name,count,code,country,presence,origin,distribution_code
 2477,79,MX,Mexico,Extant,Native,Native
 2477,79,MY,Malaysia,Extant,Native,Native
 2477,79,MZ,Mozambique,Extant,Native,Native
-2477,79,NA,Namibia,Extant,Native,Native
+2477,79,"NA",Namibia,Extant,Native,Native
 2477,79,NC,New Caledonia,Extant,Native,Native
 2477,79,NF,Norfolk Island,Extant,Native,Native
 2477,79,NI,Nicaragua,Extant,Native,Native
@@ -913,7 +913,7 @@ name,count,code,country,presence,origin,distribution_code
 4615,107,EG,Egypt,Extant,Native,Native
 4615,107,ER,Eritrea,Extant,Native,Native
 4615,107,FJ,Fiji,Extant,Native,Native
-4615,107,FM,"Micronesia, Federated States of",Extant,Native,Native
+4615,107,FM,"Micronesia, Federated States of ",Extant,Native,Native
 4615,107,GD,Grenada,Extant,Native,Native
 4615,107,GF,French Guiana,Extant,Native,Native
 4615,107,GN,Guinea,Extant,Native,Native
@@ -1022,7 +1022,7 @@ name,count,code,country,presence,origin,distribution_code
 39378,115,EH,Western Sahara,Extant,Native,Native
 39378,115,ER,Eritrea,Extant,Native,Native
 39378,115,FJ,Fiji,Extant,Native,Native
-39378,115,FM,"Micronesia, Federated States of",Extant,Native,Native
+39378,115,FM,"Micronesia, Federated States of ",Extant,Native,Native
 39378,115,GA,Gabon,Extant,Native,Native
 39378,115,GB,United Kingdom,Extant,Native,Native
 39378,115,GD,Grenada,Extant,Native,Native
@@ -1155,7 +1155,7 @@ name,count,code,country,presence,origin,distribution_code
 13006,165,ES,Spain,Extant,Native,Native
 13006,165,FJ,Fiji,Extant,Native,Native
 13006,165,FK,Falkland Islands (Malvinas),Extant,Native,Native
-13006,165,FM,"Micronesia, Federated States of",Extant,Native,Native
+13006,165,FM,"Micronesia, Federated States of ",Extant,Native,Native
 13006,165,FO,Faroe Islands,Extant,Native,Native
 13006,165,FR,France,Extant,Native,Native
 13006,165,GA,Gabon,Extant,Native,Native
@@ -1210,7 +1210,7 @@ name,count,code,country,presence,origin,distribution_code
 13006,165,MX,Mexico,Extant,Native,Native
 13006,165,MY,Malaysia,Extant,Native,Native
 13006,165,MZ,Mozambique,Extant,Native,Native
-13006,165,NA,Namibia,Extant,Native,Native
+13006,165,"NA",Namibia,Extant,Native,Native
 13006,165,NC,New Caledonia,Extant,Native,Native
 13006,165,NF,Norfolk Island,Extant,Native,Native
 13006,165,NG,Nigeria,Extant,Native,Native
@@ -1277,7 +1277,7 @@ name,count,code,country,presence,origin,distribution_code
 132832,22,AU,Australia,Extant,Native,Native
 132832,22,CK,Cook Islands,Extant,Native,Native
 132832,22,FJ,Fiji,Extant,Native,Native
-132832,22,FM,"Micronesia, Federated States of",Extant,Native,Native
+132832,22,FM,"Micronesia, Federated States of ",Extant,Native,Native
 132832,22,GU,Guam,Extant,Native,Native
 132832,22,KI,Kiribati,Extant,Native,Native
 132832,22,MH,Marshall Islands,Extant,Native,Native
@@ -1363,7 +1363,7 @@ name,count,code,country,presence,origin,distribution_code
 39339,93,MV,Maldives,Extant,Native,Native
 39339,93,MX,Mexico,Extant,Native,Native
 39339,93,MZ,Mozambique,Extant,Native,Native
-39339,93,NA,Namibia,Extant,Native,Native
+39339,93,"NA",Namibia,Extant,Native,Native
 39339,93,NC,New Caledonia,Extant,Native,Native
 39339,93,NG,Nigeria,Extant,Native,Native
 39339,93,NI,Nicaragua,Extant,Native,Native
@@ -1484,7 +1484,7 @@ name,count,code,country,presence,origin,distribution_code
 2475,43,MP,Northern Mariana Islands,Extant,Native,Native
 2475,43,MR,Mauritania,Extant,Native,Native
 2475,43,MX,Mexico,Extant,Native,Native
-2475,43,NA,Namibia,Extant,Native,Native
+2475,43,"NA",Namibia,Extant,Native,Native
 2475,43,NO,Norway,Extant,Native,Native
 2475,43,NZ,New Zealand,Extant,Native,Native
 2475,43,PE,Peru,Extant,Native,Native
@@ -1544,7 +1544,7 @@ name,count,code,country,presence,origin,distribution_code
 2478,68,MU,Mauritius,Extant,Native,Native
 2478,68,MX,Mexico,Extant,Native,Native
 2478,68,MZ,Mozambique,Extant,Native,Native
-2478,68,NA,Namibia,Extant,Native,Native
+2478,68,"NA",Namibia,Extant,Native,Native
 2478,68,NC,New Caledonia,Extant,Native,Native
 2478,68,NL,Netherlands,Extant,Native,Native
 2478,68,NO,Norway,Extant,Native,Native
@@ -1599,7 +1599,7 @@ name,count,code,country,presence,origin,distribution_code
 11200,22,GN,Guinea,Extant,Native,Native
 11200,22,IE,Ireland,Extant,Native,Native
 11200,22,MA,Morocco,Extant,Native,Native
-11200,22,NA,Namibia,Extant,Native,Native
+11200,22,"NA",Namibia,Extant,Native,Native
 11200,22,PT,Portugal,Extant,Native,Native
 11200,22,SE,Sweden,Extant,Native,Native
 11200,22,US,United States,Extant,Native,Native
@@ -1783,7 +1783,7 @@ name,count,code,country,presence,origin,distribution_code
 3897,105,MX,Mexico,Extant,Native,Native
 3897,105,MY,Malaysia,Extant,Native,Native
 3897,105,MZ,Mozambique,Extant,Native,Native
-3897,105,NA,Namibia,Extant,Native,Native
+3897,105,"NA",Namibia,Extant,Native,Native
 3897,105,NC,New Caledonia,Extant,Native,Native
 3897,105,NI,Nicaragua,Extant,Native,Native
 3897,105,NU,Niue,Extant,Native,Native
@@ -1964,7 +1964,7 @@ name,count,code,country,presence,origin,distribution_code
 6494,134,ER,Eritrea,Extant,Native,Native
 6494,134,ES,Spain,Extant,Native,Native
 6494,134,FJ,Fiji,Extant,Native,Native
-6494,134,FM,"Micronesia, Federated States of",Extant,Native,Native
+6494,134,FM,"Micronesia, Federated States of ",Extant,Native,Native
 6494,134,FR,France,Extant,Native,Native
 6494,134,GA,Gabon,Extant,Native,Native
 6494,134,GB,United Kingdom,Extant,Native,Native
@@ -2016,7 +2016,7 @@ name,count,code,country,presence,origin,distribution_code
 6494,134,MX,Mexico,Extant,Native,Native
 6494,134,MY,Malaysia,Extant,Native,Native
 6494,134,MZ,Mozambique,Extant,Native,Native
-6494,134,NA,Namibia,Extant,Native,Native
+6494,134,"NA",Namibia,Extant,Native,Native
 6494,134,NC,New Caledonia,Extant,Native,Native
 6494,134,NG,Nigeria,Extant,Native,Native
 6494,134,NI,Nicaragua,Extant,Native,Native
@@ -2079,7 +2079,7 @@ name,count,code,country,presence,origin,distribution_code
 46967817,31,CA,Canada,Extant,Native,Native
 46967817,31,CN,China,Extant,Native,Native
 46967817,31,FJ,Fiji,Extant,Native,Native
-46967817,31,FM,"Micronesia, Federated States of",Extant,Native,Native
+46967817,31,FM,"Micronesia, Federated States of ",Extant,Native,Native
 46967817,31,GU,Guam,Extant,Native,Native
 46967817,31,ID,Indonesia,Extant,Native,Native
 46967817,31,JP,Japan,Extant,Native,Native
@@ -2192,7 +2192,7 @@ name,count,code,country,presence,origin,distribution_code
 46967838,23,GQ,Equatorial Guinea,Extant,Native,Native
 46967838,23,GW,Guinea-Bissau,Extant,Native,Native
 46967838,23,LR,Liberia,Extant,Native,Native
-46967838,23,NA,Namibia,Extant,Native,Native
+46967838,23,"NA",Namibia,Extant,Native,Native
 46967838,23,NG,Nigeria,Extant,Native,Native
 46967838,23,SH,"Saint Helena, Ascension and Tristan da Cunha",Extant,Native,Native
 46967838,23,SL,Sierra Leone,Extant,Native,Native
@@ -2216,7 +2216,7 @@ name,count,code,country,presence,origin,distribution_code
 46967848,24,GQ,Equatorial Guinea,Extant,Native,Native
 46967848,24,GW,Guinea-Bissau,Extant,Native,Native
 46967848,24,LR,Liberia,Extant,Native,Native
-46967848,24,NA,Namibia,Extant,Native,Native
+46967848,24,"NA",Namibia,Extant,Native,Native
 46967848,24,NG,Nigeria,Extant,Native,Native
 46967848,24,SH,"Saint Helena, Ascension and Tristan da Cunha",Extant,Native,Native
 46967848,24,SL,Sierra Leone,Extant,Native,Native
@@ -2231,7 +2231,7 @@ name,count,code,country,presence,origin,distribution_code
 46967863,12,MG,Madagascar,Extant,Native,Native
 46967863,12,MU,Mauritius,Extant,Native,Native
 46967863,12,MZ,Mozambique,Extant,Native,Native
-46967863,12,NA,Namibia,Extant,Native,Native
+46967863,12,"NA",Namibia,Extant,Native,Native
 46967863,12,SC,Seychelles,Extant,Native,Native
 46967863,12,TF,French Southern Territories,Extant,Native,Native
 46967863,12,TZ,"Tanzania, United Republic of",Extant,Native,Native
@@ -2264,7 +2264,7 @@ name,count,code,country,presence,origin,distribution_code
 8005,76,EG,Egypt,Extant,Native,Native
 8005,76,ER,Eritrea,Extant,Native,Native
 8005,76,FJ,Fiji,Extant,Native,Native
-8005,76,FM,"Micronesia, Federated States of",Extant,Native,Native
+8005,76,FM,"Micronesia, Federated States of ",Extant,Native,Native
 8005,76,GD,Grenada,Extant,Native,Native
 8005,76,GP,Guadeloupe,Extant,Native,Native
 8005,76,GQ,Equatorial Guinea,Extant,Native,Native
@@ -2441,7 +2441,7 @@ name,count,code,country,presence,origin,distribution_code
 60225,127,EC,Ecuador,Extant,Native,Native
 60225,127,EH,Western Sahara,Extant,Native,Native
 60225,127,ES,Spain,Extant,Native,Native
-60225,127,FM,"Micronesia, Federated States of",Extant,Native,Native
+60225,127,FM,"Micronesia, Federated States of ",Extant,Native,Native
 60225,127,GA,Gabon,Extant,Native,Native
 60225,127,GD,Grenada,Extant,Native,Native
 60225,127,GF,French Guiana,Extant,Native,Native
@@ -2488,7 +2488,7 @@ name,count,code,country,presence,origin,distribution_code
 60225,127,MX,Mexico,Extant,Native,Native
 60225,127,MY,Malaysia,Extant,Native,Native
 60225,127,MZ,Mozambique,Extant,Native,Native
-60225,127,NA,Namibia,Extant,Native,Native
+60225,127,"NA",Namibia,Extant,Native,Native
 60225,127,NC,New Caledonia,Extant,Native,Native
 60225,127,NI,Nicaragua,Extant,Native,Native
 60225,127,NR,Nauru,Extant,Native,Native
@@ -2651,7 +2651,7 @@ name,count,code,country,presence,origin,distribution_code
 20738,133,EH,Western Sahara,Extant,Native,Native
 20738,133,ES,Spain,Extant,Native,Native
 20738,133,FJ,Fiji,Extant,Native,Native
-20738,133,FM,"Micronesia, Federated States of",Extant,Native,Native
+20738,133,FM,"Micronesia, Federated States of ",Extant,Native,Native
 20738,133,FR,France,Extant,Native,Native
 20738,133,GA,Gabon,Extant,Native,Native
 20738,133,GD,Grenada,Extant,Native,Native
@@ -2701,7 +2701,7 @@ name,count,code,country,presence,origin,distribution_code
 20738,133,MX,Mexico,Extant,Native,Native
 20738,133,MY,Malaysia,Extant,Native,Native
 20738,133,MZ,Mozambique,Extant,Native,Native
-20738,133,NA,Namibia,Extant,Native,Native
+20738,133,"NA",Namibia,Extant,Native,Native
 20738,133,NC,New Caledonia,Extant,Native,Native
 20738,133,NG,Nigeria,Extant,Native,Native
 20738,133,NI,Nicaragua,Extant,Native,Native
@@ -2796,7 +2796,7 @@ name,count,code,country,presence,origin,distribution_code
 22563,168,ES,Spain,Extant,Native,Native
 22563,168,FJ,Fiji,Extant,Native,Native
 22563,168,FK,Falkland Islands (Malvinas),Extant,Native,Native
-22563,168,FM,"Micronesia, Federated States of",Extant,Native,Native
+22563,168,FM,"Micronesia, Federated States of ",Extant,Native,Native
 22563,168,FO,Faroe Islands,Extant,Native,Native
 22563,168,FR,France,Extant,Native,Native
 22563,168,GA,Gabon,Extant,Native,Native
@@ -2856,7 +2856,7 @@ name,count,code,country,presence,origin,distribution_code
 22563,168,MX,Mexico,Extant,Native,Native
 22563,168,MY,Malaysia,Extant,Native,Native
 22563,168,MZ,Mozambique,Extant,Native,Native
-22563,168,NA,Namibia,Extant,Native,Native
+22563,168,"NA",Namibia,Extant,Native,Native
 22563,168,NC,New Caledonia,Extant,Native,Native
 22563,168,NG,Nigeria,Extant,Native,Native
 22563,168,NI,Nicaragua,Extant,Native,Native
@@ -2945,7 +2945,7 @@ name,count,code,country,presence,origin,distribution_code
 2480,13,BR,Brazil,Extant,Native,Native
 2480,13,CL,Chile,Extant,Native,Native
 2480,13,GS,South Georgia and the South Sandwich Islands,Extant,Native,Native
-2480,13,NA,Namibia,Extant,Native,Native
+2480,13,"NA",Namibia,Extant,Native,Native
 2480,13,NZ,New Zealand,Extant,Native,Native
 2480,13,PE,Peru,Extant,Native,Native
 2480,13,SR,Suriname,Extant,Native,Native
@@ -2990,7 +2990,7 @@ name,count,code,country,presence,origin,distribution_code
 2476,135,EH,Western Sahara,Extant,Native,Native
 2476,135,ER,Eritrea,Extant,Native,Native
 2476,135,FJ,Fiji,Extant,Native,Native
-2476,135,FM,"Micronesia, Federated States of",Extant,Native,Native
+2476,135,FM,"Micronesia, Federated States of ",Extant,Native,Native
 2476,135,GA,Gabon,Extant,Native,Native
 2476,135,GD,Grenada,Extant,Native,Native
 2476,135,GF,French Guiana,Extant,Native,Native
@@ -3038,7 +3038,7 @@ name,count,code,country,presence,origin,distribution_code
 2476,135,MX,Mexico,Extant,Native,Native
 2476,135,MY,Malaysia,Extant,Native,Native
 2476,135,MZ,Mozambique,Extant,Native,Native
-2476,135,NA,Namibia,Extant,Native,Native
+2476,135,"NA",Namibia,Extant,Native,Native
 2476,135,NC,New Caledonia,Extant,Native,Native
 2476,135,NG,Nigeria,Extant,Native,Native
 2476,135,NI,Nicaragua,Extant,Native,Native
@@ -3104,7 +3104,7 @@ name,count,code,country,presence,origin,distribution_code
 3778,7,AU,Australia,Extant,Native,Native
 3778,7,CL,Chile,Extant,Native,Native
 3778,7,FK,Falkland Islands (Malvinas),Extant,Native,Native
-3778,7,NA,Namibia,Extant,Native,Native
+3778,7,"NA",Namibia,Extant,Native,Native
 3778,7,NZ,New Zealand,Extant,Native,Native
 3778,7,ZA,South Africa,Extant,Native,Native
 6336,71,AL,Albania,Extant,Native,Native
@@ -3156,7 +3156,7 @@ name,count,code,country,presence,origin,distribution_code
 6336,71,MR,Mauritania,Extant,Native,Native
 6336,71,MT,Malta,Extant,Native,Native
 6336,71,MX,Mexico,Extant,Native,Native
-6336,71,NA,Namibia,Extant,Native,Native
+6336,71,"NA",Namibia,Extant,Native,Native
 6336,71,NC,New Caledonia,Extant,Native,Native
 6336,71,NI,Nicaragua,Extant,Native,Native
 6336,71,NL,Netherlands,Extant,Native,Native
@@ -3210,7 +3210,7 @@ name,count,code,country,presence,origin,distribution_code
 8153,17,GS,South Georgia and the South Sandwich Islands,Extant,Native,Native
 8153,17,MG,Madagascar,Extant,Native,Native
 8153,17,MZ,Mozambique,Extant,Native,Native
-8153,17,NA,Namibia,Extant,Native,Native
+8153,17,"NA",Namibia,Extant,Native,Native
 8153,17,NZ,New Zealand,Extant,Native,Native
 8153,17,PE,Peru,Extant,Native,Native
 8153,17,SH,"Saint Helena, Ascension and Tristan da Cunha",Extant,Native,Native
@@ -3250,7 +3250,7 @@ name,count,code,country,presence,origin,distribution_code
 8551,115,EH,Western Sahara,Extant,Native,Native
 8551,115,ES,Spain,Extant,Native,Native
 8551,115,FJ,Fiji,Extant,Native,Native
-8551,115,FM,"Micronesia, Federated States of",Extant,Native,Native
+8551,115,FM,"Micronesia, Federated States of ",Extant,Native,Native
 8551,115,FR,France,Extant,Native,Native
 8551,115,GA,Gabon,Extant,Native,Native
 8551,115,GD,Grenada,Extant,Native,Native
@@ -3371,7 +3371,7 @@ name,count,code,country,presence,origin,distribution_code
 9249,136,ER,Eritrea,Extant,Native,Native
 9249,136,ES,Spain,Extant,Native,Native
 9249,136,FJ,Fiji,Extant,Native,Native
-9249,136,FM,"Micronesia, Federated States of",Extant,Native,Native
+9249,136,FM,"Micronesia, Federated States of ",Extant,Native,Native
 9249,136,GA,Gabon,Extant,Native,Native
 9249,136,GD,Grenada,Extant,Native,Native
 9249,136,GF,French Guiana,Extant,Native,Native
@@ -3417,7 +3417,7 @@ name,count,code,country,presence,origin,distribution_code
 9249,136,MX,Mexico,Extant,Native,Native
 9249,136,MY,Malaysia,Extant,Native,Native
 9249,136,MZ,Mozambique,Extant,Native,Native
-9249,136,NA,Namibia,Extant,Native,Native
+9249,136,"NA",Namibia,Extant,Native,Native
 9249,136,NC,New Caledonia,Extant,Native,Native
 9249,136,NG,Nigeria,Extant,Native,Native
 9249,136,NI,Nicaragua,Extant,Native,Native
@@ -3498,7 +3498,7 @@ name,count,code,country,presence,origin,distribution_code
 9250,41,MA,Morocco,Extant,Native,Native
 9250,41,MR,Mauritania,Extant,Native,Native
 9250,41,MT,Malta,Extant,Native,Native
-9250,41,NA,Namibia,Extant,Native,Native
+9250,41,"NA",Namibia,Extant,Native,Native
 9250,41,NL,Netherlands,Extant,Native,Native
 9250,41,NO,Norway,Extant,Native,Native
 9250,41,NZ,New Zealand,Extant,Native,Native
@@ -3701,7 +3701,7 @@ name,count,code,country,presence,origin,distribution_code
 11047,153,EH,Western Sahara,Extant,Native,Native
 11047,153,ES,Spain,Extant,Native,Native
 11047,153,FJ,Fiji,Extant,Native,Native
-11047,153,FM,"Micronesia, Federated States of",Extant,Native,Native
+11047,153,FM,"Micronesia, Federated States of ",Extant,Native,Native
 11047,153,FR,France,Extant,Native,Native
 11047,153,GA,Gabon,Extant,Native,Native
 11047,153,GB,United Kingdom,Extant,Native,Native
@@ -3756,7 +3756,7 @@ name,count,code,country,presence,origin,distribution_code
 11047,153,MX,Mexico,Extant,Native,Native
 11047,153,MY,Malaysia,Extant,Native,Native
 11047,153,MZ,Mozambique,Extant,Native,Native
-11047,153,NA,Namibia,Extant,Native,Native
+11047,153,"NA",Namibia,Extant,Native,Native
 11047,153,NC,New Caledonia,Extant,Native,Native
 11047,153,NF,Norfolk Island,Extant,Native,Native
 11047,153,NG,Nigeria,Extant,Native,Native
@@ -3852,7 +3852,7 @@ name,count,code,country,presence,origin,distribution_code
 11048,144,EH,Western Sahara,Extant,Native,Native
 11048,144,ES,Spain,Extant,Native,Native
 11048,144,FJ,Fiji,Extant,Native,Native
-11048,144,FM,"Micronesia, Federated States of",Extant,Native,Native
+11048,144,FM,"Micronesia, Federated States of ",Extant,Native,Native
 11048,144,GA,Gabon,Extant,Native,Native
 11048,144,GD,Grenada,Extant,Native,Native
 11048,144,GF,French Guiana,Extant,Native,Native
@@ -3901,7 +3901,7 @@ name,count,code,country,presence,origin,distribution_code
 11048,144,MX,Mexico,Extant,Native,Native
 11048,144,MY,Malaysia,Extant,Native,Native
 11048,144,MZ,Mozambique,Extant,Native,Native
-11048,144,NA,Namibia,Extant,Native,Native
+11048,144,"NA",Namibia,Extant,Native,Native
 11048,144,NC,New Caledonia,Extant,Native,Native
 11048,144,NF,Norfolk Island,Extant,Native,Native
 11048,144,NG,Nigeria,Extant,Native,Native
@@ -3968,7 +3968,7 @@ name,count,code,country,presence,origin,distribution_code
 11140,53,CV,Cabo Verde,Extant,Native,Native
 11140,53,DM,Dominica,Extant,Native,Native
 11140,53,EC,Ecuador,Extant,Native,Native
-11140,53,FM,"Micronesia, Federated States of",Extant,Native,Native
+11140,53,FM,"Micronesia, Federated States of ",Extant,Native,Native
 11140,53,FR,France,Extant,Vagrant,Vagrant
 11140,53,GB,United Kingdom,Extant,Vagrant,Vagrant
 11140,53,GH,Ghana,Extant,Native,Native
@@ -4023,7 +4023,7 @@ name,count,code,country,presence,origin,distribution_code
 11146,11,AU,Australia,Extant,Native,Native
 11146,11,CL,Chile,Extant,Native,Native
 11146,11,FK,Falkland Islands (Malvinas),Extant,Native,Native
-11146,11,NA,Namibia,Extant,Native,Native
+11146,11,"NA",Namibia,Extant,Native,Native
 11146,11,NZ,New Zealand,Extant,Native,Native
 11146,11,PE,Peru,Extant,Native,Native
 11146,11,SH,"Saint Helena, Ascension and Tristan da Cunha",Extant,Native,Native
@@ -4037,7 +4037,7 @@ name,count,code,country,presence,origin,distribution_code
 12126,15,FK,Falkland Islands (Malvinas),Extant,Native,Native
 12126,15,GS,South Georgia and the South Sandwich Islands,Extant,Native,Native
 12126,15,MZ,Mozambique,Extant,Native,Native
-12126,15,NA,Namibia,Extant,Native,Native
+12126,15,"NA",Namibia,Extant,Native,Native
 12126,15,NZ,New Zealand,Extant,Native,Native
 12126,15,PE,Peru,Extant,Native,Native
 12126,15,SH,"Saint Helena, Ascension and Tristan da Cunha",Extant,Native,Native
@@ -4067,7 +4067,7 @@ name,count,code,country,presence,origin,distribution_code
 13244,74,EH,Western Sahara,Extant,Native,Native
 13244,74,ES,Spain,Extant,Native,Native
 13244,74,FJ,Fiji,Extant,Native,Native
-13244,74,FM,"Micronesia, Federated States of",Extant,Native,Native
+13244,74,FM,"Micronesia, Federated States of ",Extant,Native,Native
 13244,74,GB,United Kingdom,Extant,Native,Native
 13244,74,GT,Guatemala,Extant,Native,Native
 13244,74,GU,Guam,Extant,Native,Native
@@ -4090,7 +4090,7 @@ name,count,code,country,presence,origin,distribution_code
 13244,74,MU,Mauritius,Extant,Native,Native
 13244,74,MY,Malaysia,Extant,Native,Native
 13244,74,MZ,Mozambique,Extant,Native,Native
-13244,74,NA,Namibia,Extant,Native,Native
+13244,74,"NA",Namibia,Extant,Native,Native
 13244,74,NC,New Caledonia,Extant,Native,Native
 13244,74,NG,Nigeria,Extant,Native,Native
 13244,74,NI,Nicaragua,Extant,Native,Native
@@ -4132,7 +4132,7 @@ name,count,code,country,presence,origin,distribution_code
 13246,38,CO,Colombia,Extant,Native,Native
 13246,38,EC,Ecuador,Extant,Native,Native
 13246,38,FJ,Fiji,Extant,Native,Native
-13246,38,FM,"Micronesia, Federated States of",Extant,Native,Native
+13246,38,FM,"Micronesia, Federated States of ",Extant,Native,Native
 13246,38,ID,Indonesia,Extant,Native,Native
 13246,38,IN,India,Extant,Native,Native
 13246,38,JP,Japan,Extant,Native,Native
@@ -4255,7 +4255,7 @@ name,count,code,country,presence,origin,distribution_code
 15421,151,ES,Spain,Extant,Native,Native
 15421,151,FJ,Fiji,Extant,Native,Native
 15421,151,FK,Falkland Islands (Malvinas),Extant,Native,Native
-15421,151,FM,"Micronesia, Federated States of",Extant,Native,Native
+15421,151,FM,"Micronesia, Federated States of ",Extant,Native,Native
 15421,151,FO,Faroe Islands,Extant,Native,Native
 15421,151,FR,France,Extant,Native,Native
 15421,151,GA,Gabon,Extant,Native,Native
@@ -4309,7 +4309,7 @@ name,count,code,country,presence,origin,distribution_code
 15421,151,MX,Mexico,Extant,Native,Native
 15421,151,MY,Malaysia,Extant,Native,Native
 15421,151,MZ,Mozambique,Extant,Native,Native
-15421,151,NA,Namibia,Extant,Native,Native
+15421,151,"NA",Namibia,Extant,Native,Native
 15421,151,NC,New Caledonia,Extant,Native,Native
 15421,151,NG,Nigeria,Extant,Native,Native
 15421,151,NI,Nicaragua,Extant,Native,Native
@@ -4393,7 +4393,7 @@ name,count,code,country,presence,origin,distribution_code
 16564,114,EC,Ecuador,Extant,Native,Native
 16564,114,EH,Western Sahara,Extant,Native,Native
 16564,114,FJ,Fiji,Extant,Native,Native
-16564,114,FM,"Micronesia, Federated States of",Extant,Native,Native
+16564,114,FM,"Micronesia, Federated States of ",Extant,Native,Native
 16564,114,FR,France,Extant,Vagrant,Vagrant
 16564,114,GA,Gabon,Extant,Native,Native
 16564,114,GD,Grenada,Extant,Native,Native
@@ -4434,7 +4434,7 @@ name,count,code,country,presence,origin,distribution_code
 16564,114,MX,Mexico,Extant,Native,Native
 16564,114,MY,Malaysia,Extant,Native,Native
 16564,114,MZ,Mozambique,Extant,Native,Native
-16564,114,NA,Namibia,Extant,Native,Native
+16564,114,"NA",Namibia,Extant,Native,Native
 16564,114,NC,New Caledonia,Extant,Native,Native
 16564,114,NG,Nigeria,Extant,Native,Native
 16564,114,NI,Nicaragua,Extant,Native,Native
@@ -4521,7 +4521,7 @@ name,count,code,country,presence,origin,distribution_code
 41755,134,ES,Spain,Extant,Native,Native
 41755,134,FJ,Fiji,Extant,Native,Native
 41755,134,FK,Falkland Islands (Malvinas),Extant,Native,Native
-41755,134,FM,"Micronesia, Federated States of",Extant,Native,Native
+41755,134,FM,"Micronesia, Federated States of ",Extant,Native,Native
 41755,134,FO,Faroe Islands,Extant,Native,Native
 41755,134,FR,France,Extant,Native,Native
 41755,134,GA,Gabon,Extant,Native,Native
@@ -4572,7 +4572,7 @@ name,count,code,country,presence,origin,distribution_code
 41755,134,MX,Mexico,Extant,Native,Native
 41755,134,MY,Malaysia,Extant,Native,Native
 41755,134,MZ,Mozambique,Extant,Native,Native
-41755,134,NA,Namibia,Extant,Native,Native
+41755,134,"NA",Namibia,Extant,Native,Native
 41755,134,NG,Nigeria,Extant,Native,Native
 41755,134,NI,Nicaragua,Extant,Native,Native
 41755,134,NL,Netherlands,Extant,Native,Native
@@ -4677,7 +4677,7 @@ name,count,code,country,presence,origin,distribution_code
 18596,153,ER,Eritrea,Extant,Native,Native
 18596,153,ES,Spain,Extant,Native,Native
 18596,153,FJ,Fiji,Extant,Native,Native
-18596,153,FM,"Micronesia, Federated States of",Extant,Native,Native
+18596,153,FM,"Micronesia, Federated States of ",Extant,Native,Native
 18596,153,FR,France,Extant,Native,Native
 18596,153,GA,Gabon,Extant,Native,Native
 18596,153,GB,United Kingdom,Extant,Native,Native
@@ -4731,7 +4731,7 @@ name,count,code,country,presence,origin,distribution_code
 18596,153,MX,Mexico,Extant,Native,Native
 18596,153,MY,Malaysia,Extant,Native,Native
 18596,153,MZ,Mozambique,Extant,Native,Native
-18596,153,NA,Namibia,Extant,Native,Native
+18596,153,"NA",Namibia,Extant,Native,Native
 18596,153,NC,New Caledonia,Extant,Native,Native
 18596,153,NG,Nigeria,Extant,Native,Native
 18596,153,NI,Nicaragua,Extant,Native,Native
@@ -4829,7 +4829,7 @@ name,count,code,country,presence,origin,distribution_code
 20729,106,EG,Egypt,Extant,Native,Native
 20729,106,ER,Eritrea,Extant,Native,Native
 20729,106,FJ,Fiji,Extant,Native,Native
-20729,106,FM,"Micronesia, Federated States of",Extant,Native,Native
+20729,106,FM,"Micronesia, Federated States of ",Extant,Native,Native
 20729,106,GA,Gabon,Extant,Native,Native
 20729,106,GD,Grenada,Extant,Native,Native
 20729,106,GF,French Guiana,Extant,Native,Native
@@ -4953,7 +4953,7 @@ name,count,code,country,presence,origin,distribution_code
 20731,151,ES,Spain,Extant,Native,Native
 20731,151,ET,Ethiopia,Extant,Native,Native
 20731,151,FJ,Fiji,Extant,Native,Native
-20731,151,FM,"Micronesia, Federated States of",Extant,Native,Native
+20731,151,FM,"Micronesia, Federated States of ",Extant,Native,Native
 20731,151,FR,France,Extant,Native,Native
 20731,151,GA,Gabon,Extant,Native,Native
 20731,151,GB,United Kingdom,Extant,Native,Native
@@ -5008,7 +5008,7 @@ name,count,code,country,presence,origin,distribution_code
 20731,151,MX,Mexico,Extant,Native,Native
 20731,151,MY,Malaysia,Extant,Native,Native
 20731,151,MZ,Mozambique,Extant,Native,Native
-20731,151,NA,Namibia,Extant,Native,Native
+20731,151,"NA",Namibia,Extant,Native,Native
 20731,151,NC,New Caledonia,Extant,Native,Native
 20731,151,NG,Nigeria,Extant,Native,Native
 20731,151,NI,Nicaragua,Extant,Native,Native
@@ -5107,7 +5107,7 @@ name,count,code,country,presence,origin,distribution_code
 20733,115,EG,Egypt,Extant,Native,Native
 20733,115,ER,Eritrea,Extant,Native,Native
 20733,115,FJ,Fiji,Extant,Native,Native
-20733,115,FM,"Micronesia, Federated States of",Extant,Native,Native
+20733,115,FM,"Micronesia, Federated States of ",Extant,Native,Native
 20733,115,GF,French Guiana,Extant,Native,Native
 20733,115,GH,Ghana,Extant,Native,Native
 20733,115,GN,Guinea,Extant,Native,Native
@@ -5272,7 +5272,7 @@ name,count,code,country,presence,origin,distribution_code
 23211,145,ES,Spain,Extant,Native,Native
 23211,145,FJ,Fiji,Extant,Native,Native
 23211,145,FK,Falkland Islands (Malvinas),Extant,Native,Native
-23211,145,FM,"Micronesia, Federated States of",Extant,Native,Native
+23211,145,FM,"Micronesia, Federated States of ",Extant,Native,Native
 23211,145,FO,Faroe Islands,Extant,Native,Native
 23211,145,FR,France,Extant,Native,Native
 23211,145,GA,Gabon,Extant,Native,Native
@@ -5324,7 +5324,7 @@ name,count,code,country,presence,origin,distribution_code
 23211,145,MX,Mexico,Extant,Native,Native
 23211,145,MY,Malaysia,Extant,Native,Native
 23211,145,MZ,Mozambique,Extant,Native,Native
-23211,145,NA,Namibia,Extant,Native,Native
+23211,145,"NA",Namibia,Extant,Native,Native
 23211,145,NC,New Caledonia,Extant,Native,Native
 23211,145,NG,Nigeria,Extant,Native,Native
 23211,145,NI,Nicaragua,Extant,Native,Native

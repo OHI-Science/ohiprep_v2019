@@ -155,7 +155,7 @@ if(!file.exists(spp_list_from_api_file) | reload) {
   write_csv(spp_df_all, spp_list_from_api_file)
 } else {
   message('reading file of API species list: \n  ', spp_list_from_api_file)
-  spp_df_all <- read_csv(spp_list_from_api_file)
+  spp_df_all <- read.csv(spp_list_from_api_file)
 }
 
 ```
@@ -305,10 +305,9 @@ ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>%
 
 
 write.csv(ico_spp_rgn_prepped, here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'))
-#ico_rgn_id column values being preserved in this csv, but not where it is being imported below. Converting the column to numeric didn't solve the problem!
-# Changed to write.csv instead of write_csv, because write_csv is coercing ico_rgn_id column to logical instead of numeric/integer format
-# Might need an update to the tidyverse to solve this problem since read/write_csv seems to be causing the issue
+#ico_rgn_id column values being preserved in this csv, but not where it is being imported below. Converting the column to numeric didn't solve the problem, neither did updating the tidyverse, so changed to write.csv from write_csv. Write_csv is coercing ico_rgn_id column to logical instead of numeric/integer format
 
+#6 May: Considering taking this intermediate writing step out, as it doesn't take long to create this file and nothing significant is really happening to it in the next step
 
 ```
 
@@ -317,7 +316,7 @@ write.csv(ico_spp_rgn_prepped, here('globalprep/ico/v2019/int/ico_spp_rgn_preppe
 ```{r, eval=F}
 
 ico_spp_rgn_prepped <- read.csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'))
-# commenting this out for now to prevent the data loss described above
+# Changed to read.csv from read_csv for reason described above; adds a weird "X" column but gets filtered out in the next step
 
 ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>% 
   select(iucn_sid, sciname, comname, presence, origin, distribution_code, cat, ico_gl, rgn_id, rgn_name, subpop, ico_rgn_id)
@@ -340,6 +339,8 @@ Each assessment includes a year and an extinction risk, along with additional in
 
 ico_past_assess_url <- 'http://apiv3.iucnredlist.org/api/v3/species/history/id/%s?token=%s'
 ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
+# for some reason, read_csv is not eliminating the ico_rgn_id column data here, and is correctly classifying it as col_double()
+
 
 ## for each species ID, get past assessments
 ico_assess_raw <- mc_get_from_api(ico_past_assess_url, ico_list$iucn_sid, api_key)
@@ -437,6 +438,8 @@ ico_assess_full <- ico_assess %>%
   fill(cat, cat_txt, cat_score, eval_yr) %>% ## fills all the way to latest year
   ungroup()
 
+# does it make sense that there are 4818 NAs here for cat_score and eval_yr? 
+
 ico_spp_cat <- ico_list %>% 
   rename(cat_2016 = cat) %>%
   left_join(ico_assess_full, by = c('iucn_sid'))
@@ -447,6 +450,7 @@ ico_spp_cat <- ico_spp_cat %>%
                        list(c(min(year, na.rm = TRUE):max(year, na.rm = TRUE))), 
                        year)) %>% 
   unnest(year)
+# ico_rgn_id is classified as numeric 
 
 ## NAs will be filled backward in time by starting from the most recent non-NA.
 ## To do this, we'll swap any current-year NAs with the cat_score (meaning no
@@ -478,7 +482,7 @@ ico_cat_ts_abbr <- read_csv(file.path(dir_github, 'int/ico_spp_cat.csv')) %>%
   select(iucn_sid, sciname, year, cat, cat_score, eval_yr) %>%
   filter(year >= 1992) # This goal uses 20 years of data to calculate trends (assessment started in 2012)
 
-ico_spp_rgn <- ico_spp_rgn_prepped %>%  #read_csv(file.path(dir_github, 'int/ico_spp_rgn_prepped.csv')) %>%
+ico_spp_rgn <- read.csv(file.path(dir_github, 'int/ico_spp_rgn_prepped.csv')) %>%
   select(rgn_id, rgn_name, iucn_sid, comname, sciname, ico_gl, ico_rgn_id, presence)
 # Data in ico_rgn_id not being retained; commented out the read_csv
 
@@ -490,7 +494,7 @@ ico_spp_rgn_cat <- ico_cat_ts_abbr %>%
 ico_spp_rgn_cat <- ico_spp_rgn_cat %>%
   mutate(cat = ifelse(str_detect(presence, '^Extinct'), 'EX', cat),
          cat_score = ifelse(cat == 'EX', 1, cat_score)) %>%
-  filter(ico_gl | ico_rgn_id == rgn_id) %>% # keep (all globally iconic) and (regionally iconic in region only) - the whole ico_rgn_id column is NAs
+  filter(ico_gl | ico_rgn_id == rgn_id) %>% # keep (all globally iconic) and (regionally iconic in region only)
   distinct()
 
 write_csv(ico_spp_rgn_cat, file.path(dir_github, 'int/ico_spp_rgn_cat.csv'))
@@ -511,8 +515,7 @@ While the official calculations are performed in the toolbox, we perform the sam
 
 ``` {r report_status_and_trend, eval= F}
 
-# ico_spp_rgn_cat <- read_csv(file.path(dir_github, 'int/ico_spp_rgn_cat.csv'))
-# commenting this out for now bc ico_rgn_id column is being lost!
+ico_spp_rgn_cat <- read.csv(file.path(dir_github, 'int/ico_spp_rgn_cat.csv'))
 
 
 ## Report out for toolbox format (rgn_id | sciname | category or popn_trend for each species within a region).
@@ -641,6 +644,7 @@ ico_compare <- read_csv(here('globalprep/ico',previous_scen,'/summary/ico_summar
   rename(previous_status = ico_status, previous_trend = ico_trend, previous_nspp = n_spp) %>% 
   left_join(status_trend, by = 'rgn_id') %>% 
   mutate(d_nspp = as.factor(n_spp - previous_nspp))
+# one region has NAs 
 
 compare_status_plot <- ggplot(ico_compare) + 
   geom_point(aes(previous_status, ico_status, color = d_nspp, label = rgn_id), alpha = 0.6) + 
@@ -665,18 +669,21 @@ ggplotly(trend_compare_plot)
 Data forensics - why are outliers occurring?
 Region ID | Region Name | Status | Prev Status | d_nspp | Insights
 ----------|---------------|-------|-------------|---------|-------
-3 | Norfolk Island | 72 | 80 | 3 | -
+3 | Norfolk Island | 72 | 80 | 3 | - only kind of an outlier after all other outliers under the trendline were addressed; not sure this is still of concern
 16 | Australia | 61.6 | 76.4 | -22 | Spp were being removed due to data not being preserved through import
-52 | Bahrain | 57.5 | 46.7 | 2 | - Trend was 0 in 2018
-59 | Belgium | 77.5 | 63.3 | 1 | -
+52 | Bahrain | 57.5 | 46.7 | 2 | - 
+59 | Belgium | 77.5 | 63.3 | 1 | - Trend was 0 in 2018
 73 | Russia | 54.4 | 73.8 | -11 | Spp were being removed due to data not being preserved through import
-105 | Bouvet Island (Norway) | 40 | 70 | 1 | - Why did this go from 40 to 80? Trend was 0 in 2018
+105 | Bouvet Island (Norway) | 40 | 70 | 1 | - Why did this go from 40 to 80? Trend was 0 in 2018, seems to have increased too much
 175 | Denmark | 68.3 | 83.9 | -12 | Spp were being removed due to data not being preserved through import
 176 | Germany | 62.5 | 83.3 | -11 | Spp were being removed due to data not being preserved through import
 192 | Iraq | 62 | 48 | 0 | -
 213 | Antarctica | 70 | 80 | -1 | disregard; not included in OHI
 215 | Jordan | 66.7 | 50 | 1 | -
 222 | Sweden | 60 | 82.4 | -12 | Spp were being removed due to data not being preserved through import
+
+
+
 ```{r}
 
 # Read in ico_spp_countries from v2018
