@@ -298,13 +298,16 @@ ico_spp_rgn_prepped <- ico_spp_rgn_raw %>%
 ## filter this for species who are global (so all instances are iconic) 
 ##  OR ico_rgn_id matches rgn_id (so locally iconic matches with location)
 ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>%
-  filter(ico_gl == TRUE | ico_rgn_id == rgn_id)
+  filter(ico_gl == TRUE | ico_rgn_id == rgn_id) %>% 
+  as.tibble()
 # dimensions should shrink after running this line
+# Adding as.tibble() simplified the structure, prevents ico_rgn_id from being coerced to logical structue
 
-ico_spp_rgn_prepped$ico_rgn_id <- as.numeric(ico_spp_rgn_prepped$ico_rgn_id)
 
-write_csv(ico_spp_rgn_prepped, here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'))
+write.csv(ico_spp_rgn_prepped, here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'))
 #ico_rgn_id column values being preserved in this csv, but not where it is being imported below. Converting the column to numeric didn't solve the problem!
+# Changed to write.csv instead of write_csv, because write_csv is coercing ico_rgn_id column to logical instead of numeric/integer format
+# Might need an update to the tidyverse to solve this problem since read/write_csv seems to be causing the issue
 
 
 ```
@@ -313,7 +316,7 @@ write_csv(ico_spp_rgn_prepped, here('globalprep/ico/v2019/int/ico_spp_rgn_preppe
 
 ```{r, eval=F}
 
-# ico_spp_rgn_prepped <- read_csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'))
+ico_spp_rgn_prepped <- read.csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'))
 # commenting this out for now to prevent the data loss described above
 
 ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>% 
@@ -664,10 +667,10 @@ Region ID | Region Name | Status | Prev Status | d_nspp | Insights
 ----------|---------------|-------|-------------|---------|-------
 3 | Norfolk Island | 72 | 80 | 3 | -
 16 | Australia | 61.6 | 76.4 | -22 | Spp were being removed due to data not being preserved through import
-52 | Bahrain | 57.5 | 46.7 | 2 | -
+52 | Bahrain | 57.5 | 46.7 | 2 | - Trend was 0 in 2018
 59 | Belgium | 77.5 | 63.3 | 1 | -
 73 | Russia | 54.4 | 73.8 | -11 | Spp were being removed due to data not being preserved through import
-105 | Bouvet Island (Norway) | 40 | 70 | 1 | -
+105 | Bouvet Island (Norway) | 40 | 70 | 1 | - Why did this go from 40 to 80? Trend was 0 in 2018
 175 | Denmark | 68.3 | 83.9 | -12 | Spp were being removed due to data not being preserved through import
 176 | Germany | 62.5 | 83.3 | -11 | Spp were being removed due to data not being preserved through import
 192 | Iraq | 62 | 48 | 0 | -
