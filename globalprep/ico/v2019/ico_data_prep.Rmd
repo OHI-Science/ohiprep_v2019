@@ -78,6 +78,7 @@ Changes _were_ made in 2018 to the iconic species trend calculation. Trends are 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = FALSE, message = FALSE, warning = FALSE)
 
+# Load required libraries:
 library(jsonlite)
 library(readr)
 library(tidyverse)
@@ -85,8 +86,8 @@ library(parallel)
 library(here)
 library(ohicore)
 
-## set up provenance tracking for this script:
-# source(file.path('~/github/ohibc', 'src/R/prov.R'))  
+
+# Set up sourcing and storage 
 
 goal          <- 'globalprep/ico'
 scenario      <- 'v2019'
@@ -155,7 +156,7 @@ if(!file.exists(spp_list_from_api_file) | reload) {
   write_csv(spp_df_all, spp_list_from_api_file)
 } else {
   message('reading file of API species list: \n  ', spp_list_from_api_file)
-  spp_df_all <- read.csv(spp_list_from_api_file)
+  spp_df_all <- read_csv(spp_list_from_api_file)
 }
 
 ```
@@ -304,10 +305,8 @@ ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>%
 # Adding as.tibble() simplified the structure, prevents ico_rgn_id from being coerced to logical structue
 
 
-write.csv(ico_spp_rgn_prepped, here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'))
-#ico_rgn_id column values being preserved in this csv, but not where it is being imported below. Converting the column to numeric didn't solve the problem, neither did updating the tidyverse, so changed to write.csv from write_csv. Write_csv is coercing ico_rgn_id column to logical instead of numeric/integer format
-
-#6 May: Considering taking this intermediate writing step out, as it doesn't take long to create this file and nothing significant is really happening to it in the next step
+write_csv(ico_spp_rgn_prepped, here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'))
+# This part of the code presented an issue where the ico_rgn_id column values being preserved in this csv, but these data were being lost where the csv is imported in the next code chunk. Tried converting the column to numeric before saving and updating the tidyverse, neither of which solved the problem.  . Read_csv is coercing ico_rgn_id column to logical instead of numeric/integer format, as it only looks at the first 1000 rows of data, all of which are NA for ico_rgn_id (where ico_gl = TRUE). Read.csv solves the problem, but the better solution was to hard code col_types into the read_csv function in the next code chunk.
 
 ```
 
@@ -315,8 +314,9 @@ write.csv(ico_spp_rgn_prepped, here('globalprep/ico/v2019/int/ico_spp_rgn_preppe
 
 ```{r, eval=F}
 
-ico_spp_rgn_prepped <- read.csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'))
-# Changed to read.csv from read_csv for reason described above; adds a weird "X" column but gets filtered out in the next step
+ico_spp_rgn_prepped <- read_csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'),
+                                col_types = "ddcccccdcccldcc")
+# Explicitly designating col_types retains all data !
 
 ico_spp_rgn_prepped <- ico_spp_rgn_prepped %>% 
   select(iucn_sid, sciname, comname, presence, origin, distribution_code, cat, ico_gl, rgn_id, rgn_name, subpop, ico_rgn_id)
@@ -482,11 +482,11 @@ ico_cat_ts_abbr <- read_csv(file.path(dir_github, 'int/ico_spp_cat.csv')) %>%
   select(iucn_sid, sciname, year, cat, cat_score, eval_yr) %>%
   filter(year >= 1992) # This goal uses 20 years of data to calculate trends (assessment started in 2012)
 
-ico_spp_rgn <- read.csv(file.path(dir_github, 'int/ico_spp_rgn_prepped.csv')) %>%
-  select(rgn_id, rgn_name, iucn_sid, comname, sciname, ico_gl, ico_rgn_id, presence)
-# Data in ico_rgn_id not being retained; commented out the read_csv
+ico_spp_rgn <- read_csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'),
+                                col_types = "ddcccccdcccldcc") %>% 
+    select(rgn_id, rgn_name, iucn_sid, comname, sciname, ico_gl, ico_rgn_id, presence)
+# Explicitly designating col_types retains all data !
 
-  
 ico_spp_rgn_cat <- ico_cat_ts_abbr %>% 
   full_join(ico_spp_rgn, by = c('iucn_sid', 'sciname'))
 
@@ -515,7 +515,8 @@ While the official calculations are performed in the toolbox, we perform the sam
 
 ``` {r report_status_and_trend, eval= F}
 
-ico_spp_rgn_cat <- read.csv(file.path(dir_github, 'int/ico_spp_rgn_cat.csv'))
+ico_spp_rgn_cat <- read_csv(file.path(dir_github, 'int/ico_spp_rgn_cat.csv'),
+                            col_types = "dcdcdddccldc")
 
 
 ## Report out for toolbox format (rgn_id | sciname | category or popn_trend for each species within a region).
