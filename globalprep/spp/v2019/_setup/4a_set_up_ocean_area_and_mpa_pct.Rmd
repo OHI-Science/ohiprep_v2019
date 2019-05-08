@@ -11,7 +11,6 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -361,7 +360,7 @@ rast_cell_id    <- raster(cell_id_file)    ### cell IDs at 10 km^2
 rast_ocean_500m  <- raster(ocean_500m_file)  ### ocean presence at 1 km^2
 rast_ocean_area <- raster(ocean_area_file) ### ocean proportional area at 10 km^2
 
-cell_id_500m_file <- file.path(dir_o_anx, 'spatial/cell_id_500m.tif')
+cell_id_500m_file <- file.path(dir_goal_anx, 'spatial/cell_id_500m.tif')
 rast_cell_id_500m <- raster(cell_id_500m_file)
 
 wdpa_cell_year_file <- file.path(dir_spatial, 'wdpa_mpa_year.csv')
@@ -416,7 +415,7 @@ if(!file.exists(wdpa_cell_year_file)) {
     mutate(prot_area_km2 = n_prot / 4, 
               ### count of cells in 500 x 500 m^2 raster, times .25 km^2 area per cell
            mpa_pct = prot_area_km2 / area_km2) %>%
-    select(mpa_year, cell_id, mpa_pct, prot_area_km2) %>%
+    dplyr::select(mpa_year, cell_id, mpa_pct, prot_area_km2) %>%
       ### mpa pct is relative to *ocean* area - not *total cell* area
     group_by(mpa_year, cell_id) %>%
     summarize(mpa_pct = sum(mpa_pct), prot_area_km2 = sum(prot_area_km2)) %>%
@@ -473,7 +472,5 @@ plot(all_prot_raster, main = 'All protection (any category)')
 
 -----
 
-``` {r prov_footer, results = 'asis'}
-# prov_wrapup(commit_outputs = FALSE)
-```
+
 
