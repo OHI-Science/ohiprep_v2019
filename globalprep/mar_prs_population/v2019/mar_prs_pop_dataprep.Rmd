@@ -103,9 +103,6 @@ Define frequently used pathnames. Change scenario and data years in file pathnam
 ## source common and spatial common files
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 
-# Updating this source file, but it isn't being found; should I move this from the 2018 folder or are we just using the functions in common.R now? 
-source('http://ohi-science.org/ohiprep_v2019/workflow/R/spatial_common.R')
-
 ## Update these!
 scenario_yr <- "v2019" # change to reflect assessment year!
 data_yr_gpw <- "d2019" # change to reflect year of most recently downloaded data! (no change for v2019)
@@ -141,8 +138,8 @@ raw <- list.files(file.path(dir_server, sprintf("CIESEandCIAT_population/%s", da
 raw <- raw[grep("density", raw)]
 raw # check that this looks correct
 
-eez_raster <- zones; # sourced as "zones" from src/spatial_commons.R
-# not finding this bc spatial_common is not in the workflow/R folder, but there is a zones function in line 62 of common.R? Is there a way to reference this without opening up the file and running this line?
+ohi_rasters() # loads rasters
+eez_raster <- zones # sourced from ohi_rasters()
 
 ## import raw, cleaned UN population data to be wrangled then used to confirm gpw-derived spatial population
 pop <- read.csv(file.path(dir_server, 
@@ -167,8 +164,9 @@ foreach(i = raw, .packages = c("raster", "rgdal", "stringr")) %dopar% {
     raster::projectRaster(crs = crs(ocean), res = res(ocean), over = TRUE, method = "ngb",
                           filename = file.path(dir_github, sprintf("int/human_density_%s_mol.tif", yr)),
                           overwrite = TRUE)
-} # using "ocean" found on line 69 of common.R
-# this liine is taking forever! 
+} 
+# this line takes a while to run
+
 stopCluster(cl)
 closeAllConnections()
 
@@ -258,65 +256,20 @@ closeAllConnections()
 # }
 ```
 
-## Create EEZ + 25-mile Inland Raster
+## Load EEZ + 25-mile Inland Raster and Shapefile
 
 ```{r create eez + 25-mile inland raster, eval=FALSE}
-## re-add Fiji which appears to get cut: include all of Fiji land falling within 50 mile boundary
-fiji <- regions %>%
-  dplyr::filter(rgn_type == "land" & rgn_id == 18) %>%
-  dplyr::select(rgn_id, geometry)
-# regions = line 46 of common.r
-
-## create the 25-mile inland raster and add Fiji
-inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"), 
-                      layer = "sp_inland25mi_gcs") %>% 
-  select(rgn_id, geometry)
-# not able to use select here for some reason
-
-inland <- sf::st_transform(inland, st_crs(fiji))
-inland <- rbind(inland, fiji)
-
-## save shapefile for future reference if it doesn't already exist
-if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"))){
-  sf::st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
-           layer = "EEZ_inland_25mi", driver = "ESRI Shapefile")
-}
-
-## create new object merging eez and rasterized 25mile inland buffer
-inland_raster <- fasterize::fasterize(inland, eez_raster, field = 'rgn_id')
-eez_25mi_inland <- raster::merge(eez_raster, inland_raster, 
-                                 filename = file.path(dir_github, "int/eez_25mi_inland.tif"))
-
-(These spatial files were created last year and do not need to be recreated becasue there were no changes to the spatial files).
-```{r create eez + 25-mile inland raster, eval=FALSE}
-# ## re-add Fiji which appears to get cut: include all of Fiji land falling within 50 mile boundary
-# fiji <- regions %>%
-#   dplyr::filter(rgn_type == "land" & rgn_id == 18) %>%
-#   dplyr::select(rgn_id, geometry)
-# 
-# ## create the 25-mile inland raster and add Fiji
-# inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"),
-#                       layer = "sp_inland25mi_gcs") %>% select(rgn_id, geometry)
-# inland <- sf::st_transform(inland, st_crs(fiji))
-# inland <- rbind(inland, fiji)
-
-# ## save shapefile for future reference if it doesn't already exist
-# if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"))){
-#   sf::st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
-#            layer = "EEZ_inland_25mi", driver = "ESRI Shapefile")
-# }
-# 
-# ## create new object merging eez and rasterized 25mile inland buffer
-# inland_raster <- fasterize::fasterize(inland, eez_raster, field = 'rgn_id')
-# eez_25mi_inland <- raster::merge(eez_raster, inland_raster, 
-#                                  filename = file.path(dir_github, "int/eez_25mi_inland.tif"))
 
 # shapefile
 inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
             layer = "EEZ_inland_25mi")
 
 # raster
-eez_25mi_inland <- raster(file.path(dir_github, "int/eez_25mi_inland.tif"))
+eez_25mi_inland <- raster(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2018/int/eez_25mi_inland.tif"))
+
+
+# Make sure that the layers make sense!
+plot(eez_25mi_inland) # this doesnt really make sense... what do the numbers mean? need to dig into this 
 
 ```
 
