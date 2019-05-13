@@ -84,8 +84,8 @@ library(readr)
 library(tidyverse)
 library(parallel)
 library(here)
-library(ohicore)
-
+library(devtools)
+if (!("ohicore" %in% installed.packages())){devtools::install_github("ohi-science/ohicore")}
 
 # Set up sourcing and storage 
 
@@ -632,6 +632,7 @@ Plot the estimated status and trends for 2016 from assessments v2017, v2018, and
 
 ``` {r spp_plot_scores_vs_2015, fig.height = 4, fig.width = 6, fig.align = 'center', eval=FALSE}
 
+ico_sum <- read_csv(file.path(dir_github, 'summary/ico_summary.csv'))
 
 status_trend <- ico_sum %>% # status and trend in this year's assessment
   filter(year == max(year)-1) %>%  # max year of ico_sum is 2019; want to compare the most recent shared year (2018)
@@ -675,7 +676,7 @@ Region ID | Region Name | Status | Prev Status | d_nspp | Insights
 52 | Bahrain | 57.5 | 46.7 | 2 | - 
 59 | Belgium | 77.5 | 63.3 | 1 | - Trend was 0 in 2018
 73 | Russia | 54.4 | 73.8 | -11 | Spp were being removed due to data not being preserved through import
-105 | Bouvet Island (Norway) | 40 | 70 | 1 | - Why did this go from 40 to 80? Trend was 0 in 2018, seems to have increased too much
+105 | Bouvet Island (Norway) | 40 | 70 | 1 | Status jumped because this region had only one fin whale that was endangered, now it is vulnerable and they've added another species of least concern - source data issue! 
 175 | Denmark | 68.3 | 83.9 | -12 | Spp were being removed due to data not being preserved through import
 176 | Germany | 62.5 | 83.3 | -11 | Spp were being removed due to data not being preserved through import
 192 | Iraq | 62 | 48 | 0 | -
