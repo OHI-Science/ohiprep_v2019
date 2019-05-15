@@ -86,6 +86,7 @@ library(parallel)
 library(here)
 library(devtools)
 if (!("ohicore" %in% installed.packages())){devtools::install_github("ohi-science/ohicore")}
+library(ohicore)
 
 # Set up sourcing and storage 
 
@@ -344,6 +345,7 @@ ico_list <- read_csv(file.path(dir_github, 'int/ico_list_prepped.csv'))
 
 ## for each species ID, get past assessments
 ico_assess_raw <- mc_get_from_api(ico_past_assess_url, ico_list$iucn_sid, api_key)
+# this line also sometimes takes a while to run
 
 ico_assess_raw <- ico_assess_raw %>%
   rename(iucn_sid = name) %>%
@@ -668,33 +670,41 @@ ggplotly(trend_compare_plot)
 
 ***
 
-Data forensics - why are outliers occurring?
+## Data forensics - why are outliers occurring?
+*No need to run this section of the code; for data exploration purposes only*.
+
 Region ID | Region Name | Status | Prev Status | d_nspp | Insights
 ----------|---------------|-------|-------------|---------|-------
 3 | Norfolk Island | 72 | 80 | 3 | - only kind of an outlier after all other outliers under the trendline were addressed; not sure this is still of concern
 16 | Australia | 61.6 | 76.4 | -22 | Spp were being removed due to data not being preserved through import
-52 | Bahrain | 57.5 | 46.7 | 2 | - 
-59 | Belgium | 77.5 | 63.3 | 1 | - Trend was 0 in 2018
+52 | Bahrain | 57.5 | 46.7 | 2 | Went from having 7 spp in 2018 to 9 in 2019 (added tiger shark (NT) and humpback whale (LC), other spp did not change status)
+*59 | Belgium | 77.5 | 63.3 | 1 | Similar situation to Netherlands; went from 4 spp in 2018 to 5 spp in 2019 by adding the humpback whale (LC)
 73 | Russia | 54.4 | 73.8 | -11 | Spp were being removed due to data not being preserved through import
 105 | Bouvet Island (Norway) | 40 | 70 | 1 | Status jumped because this region had only one fin whale that was endangered, now it is vulnerable and they've added another species of least concern - source data issue! 
 175 | Denmark | 68.3 | 83.9 | -12 | Spp were being removed due to data not being preserved through import
 176 | Germany | 62.5 | 83.3 | -11 | Spp were being removed due to data not being preserved through import
-192 | Iraq | 62 | 48 | 0 | -
+*177 | Netherlands | 78 | 67.5 | 1 | In 2019, Netherlands went from 5 to 6 species by adding the humpback whale (status = least concern) and the fin whale went from being vulnerable to endangered = big jump in improvement in status?
+192 | Iraq | 62 | 48 | 0 | Went from 5 spp in 2018 to 6 in 2019. The fin whale (status=EN) was dropped from the list, tiger shark was added (NT) as well as another humpback whale subpopulation
 213 | Antarctica | 70 | 80 | -1 | disregard; not included in OHI
-215 | Jordan | 66.7 | 50 | 1 | -
+215 | Jordan | 66.7 | 50 | 1 | Went from having 2 spp in 2018 to 3 spp in 2019 (added humpback whale, other spp did not change status)
 222 | Sweden | 60 | 82.4 | -12 | Spp were being removed due to data not being preserved through import
 
 
 
 ```{r}
+ico_spp_rgn_prepped <- read_csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'),
+                                col_types = "ddcccccdcccldcc") %>% 
+  mutate(year = 2019)
 
 # Read in ico_spp_countries from v2018
-ico_spp_rgn_prepped_v2018 <- read_csv(here('globalprep/ico/v2018/int/ico_spp_rgn_prepped.csv')) %>% 
+ico_spp_rgn_prepped_v2018 <- read.csv(here('globalprep/ico/v2018/int/ico_spp_rgn_prepped.csv')) %>%
   mutate(year = 2018)
+  
 
 # Add year column to ico_spp_rgn_prepped:
-ico_spp_rgn_prepped <- read_csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv')) %>% 
+ico_spp_rgn_prepped <- read.csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv')) %>%
   mutate(year = 2019)
+
 
 
 # Create data frames to compare between values between v2018 and v2019
@@ -771,17 +781,15 @@ aus_spp_rgn_cat <- ico_spp_rgn_cat %>%
   filter(rgn_name == "Australia")
   
 
-
-
 #####
 
 bahrain1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Bahrain") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 bahrain2 <- ico_spp_rgn_prepped %>% 
   filter(rgn_name == "Bahrain") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 bahrain <- rbind(bahrain1, bahrain2)
 
@@ -789,11 +797,11 @@ bahrain <- rbind(bahrain1, bahrain2)
 
 belgium1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Belgium") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 belgium2 <- ico_spp_rgn_prepped %>% 
   filter(rgn_name == "Belgium") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 belgium <- rbind(belgium1, belgium2)
 
@@ -825,11 +833,11 @@ bouvet <- rbind(bouvet1, bouvet2)
 
 denmark1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Denmark") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 denmark2 <- ico_spp_rgn_prepped %>% 
   filter(rgn_name == "Denmark") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 denmark <- rbind(denmark1, denmark2)
 
@@ -850,11 +858,11 @@ germany <- rbind(germany1, germany2)
 
 iraq1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Iraq") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 iraq2 <- ico_spp_rgn_prepped %>% 
   filter(rgn_name == "Iraq") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 iraq <- rbind(iraq1, iraq2)
 
@@ -862,19 +870,27 @@ iraq <- rbind(iraq1, iraq2)
 
 jordan1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Jordan") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 jordan2 <- ico_spp_rgn_prepped %>% 
   filter(rgn_name == "Jordan") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 jordan <- rbind(jordan1, jordan2)
 
 # just one species added, nothing duplicated
 
+netherlands1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_name == "Netherlands") %>% 
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+netherlands2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_name == "Netherlands") %>% 
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
 sweden1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Sweden") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 sweden2 <- ico_spp_rgn_prepped %>% 
   filter(rgn_name == "Sweden") %>% 
