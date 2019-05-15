@@ -692,6 +692,9 @@ Region ID | Region Name | Status | Prev Status | d_nspp | Insights
 
 
 ```{r}
+library(tidyverse)
+library(here)
+
 ico_spp_rgn_prepped <- read_csv(here('globalprep/ico/v2019/int/ico_spp_rgn_prepped.csv'),
                                 col_types = "ddcccccdcccldcc") %>% 
   mutate(year = 2019)
@@ -820,14 +823,15 @@ russia <- rbind(russia1, russia2)
 
 bouvet1 <- ico_spp_rgn_prepped_v2018 %>% 
   filter(rgn_name == "Bouvet Island") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 bouvet2 <- ico_spp_rgn_prepped %>% 
   filter(rgn_name == "Bouvet Island") %>% 
-  select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
 bouvet <- rbind(bouvet1, bouvet2)
 
+bouvet_hmd <- rbind(bouvet, hmd)
 # no idea what's going on here!
 
 
@@ -876,7 +880,7 @@ jordan2 <- ico_spp_rgn_prepped %>%
   filter(rgn_name == "Jordan") %>% 
   dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
 
-jordan <- rbind(jordan1, jordan2)
+jordan <- rbind(hmd, bouvet,jordan1, jordan2)
 
 # just one species added, nothing duplicated
 
@@ -914,6 +918,32 @@ us2 <- ico_spp_rgn_prepped %>%
 us <- rbind(us1, us2)
 # 7 species duplicated , but this was not determined to be an outlier 
 
+gi1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_id == 30) %>% 
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+gi2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_id == 30) %>% 
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+it1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_id == 36) %>% 
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+it2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_id == 36) %>% 
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+
+hmd1 <- ico_spp_rgn_prepped_v2018 %>% 
+  filter(rgn_id == 94) %>% 
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+hmd2 <- ico_spp_rgn_prepped %>% 
+  filter(rgn_id == 94) %>% 
+  dplyr::select(iucn_sid, presence, rgn_id, rgn_name, comname, sciname, cat, year)
+
+hmd <- rbind(hmd1, hmd2)
 
 ```
 
