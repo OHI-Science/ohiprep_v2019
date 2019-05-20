@@ -333,14 +333,14 @@ status <- status_gf %>%
 dim(status)  # 220*length(assess_years)
 summary(status) # should be no NA values
 
-write.csv(status, here("globalprep/spp/v2019/_output/sp_status_global.csv"), row.names=FALSE)  
+write.csv(status, here("globalprep/spp/v2019/output/sp_status_global.csv"), row.names=FALSE)  
 
 ```
 
 ### Status: Compare to last year
 
 ```{r}
-status <- read_csv(here("globalprep/spp/v2019/_output/sp_status_global.csv"))
+status <- read_csv(here("globalprep/spp/v2019/output/sp_status_global.csv"))
 
 old_spp <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
   filter(year == max(year)) %>%
@@ -368,7 +368,7 @@ ggplot(old_spp_gather, aes(y=assessment, x=score)) +
 Getting proportional trend requires the status data (trend/status). Proportional trend is multiplied by 5 to get estimated change in five years. 
 ```{r}
 # proportional trend requires status data
-status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_global.csv")) %>%
+status <- read.csv(here("globalprep/spp/v2019/output/sp_status_global.csv")) %>%
   dplyr::filter(year==max(year)) %>%
   dplyr::select(rgn_id, score)
 
@@ -407,7 +407,7 @@ trend <- trend %>%
 dim(trend) # should be 220
 summary(trend) # should be no NAs
 
-write.csv(trend, here("globalprep/spp/v2019/_output/sp_trend_global.csv"), row.names=FALSE)  
+write.csv(trend, here("globalprep/spp/v2019/output/sp_trend_global.csv"), row.names=FALSE)  
 
 
 ```
@@ -416,7 +416,7 @@ write.csv(trend, here("globalprep/spp/v2019/_output/sp_trend_global.csv"), row.n
 We use a very different approach for calculating trend this year. Previously we used proxy data rather than actual change in IUCN status over time.  Our previous method overestimated the magnitude of the trend.  It is not surprising there is poor correlation with trend estimates in previous years, but it is reassuring the the values mainly fall in the same quadrant.  
 ```{r}
 
-trend <- read.csv(here("globalprep/spp/v2019/_output/sp_trend_global.csv"))  
+trend <- read.csv(here("globalprep/spp/v2019/output/sp_trend_global.csv"))  
 
 old_spp <- read.csv(here("globalprep/spp/v2018/output/sp_trend_global.csv")) %>%
   rename(old_score = score) %>%
@@ -436,17 +436,17 @@ abline(0,1, col="red")
 
 ### Status/trend: save a record of gapfilling
 ```{r}
-status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_global.csv")) %>%
+status <- read.csv(here("globalprep/spp/v2019/output/sp_status_global.csv")) %>%
   mutate(gapfilled = ifelse(rgn_id == 232, 1, 0)) %>%
   mutate(method = ifelse(rgn_id == 232, "mean of neighbors", NA)) %>%
   dplyr::select(rgn_id, year, gapfilled, method)
-write.csv(status, here("globalprep/spp/v2019/_output/sp_status_global_gf.csv"), row.names=FALSE)          
+write.csv(status, here("globalprep/spp/v2019/output/sp_status_global_gf.csv"), row.names=FALSE)          
 
-trend <- read.csv(here("globalprep/spp/v2019/_output/sp_trend_global.csv")) %>%
+trend <- read.csv(here("globalprep/spp/v2019/output/sp_trend_global.csv")) %>%
   mutate(gapfilled = ifelse(rgn_id == 232, 1, 0)) %>%
   mutate(method = ifelse(rgn_id == 232, "mean of neighbors", NA)) %>%
   dplyr::select(rgn_id, gapfilled, method)
-write.csv(trend, here("globalprep/spp/v2019/_output/sp_trend_global_gf.csv"), row.names=FALSE)          
+write.csv(trend, here("globalprep/spp/v2019/output/sp_trend_global_gf.csv"), row.names=FALSE)          
 
 
 ```
@@ -611,7 +611,7 @@ summary(res_gf)
 filter(res_gf, is.na(spp_status))
 
 # get eez value:
-eez_status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_global.csv")) %>%
+eez_status <- read.csv(here("globalprep/spp/v2019/output/sp_status_global.csv")) %>%
   filter(rgn_id == 19) %>%
   rename(spp_status = score)
 
@@ -631,17 +631,17 @@ resilience <- res_gf %>%
 dim(resilience)  # 220 * 8
 summary(resilience) # should be no NA values
 
-write.csv(resilience, here("globalprep/spp/v2019/_output/sp_status_3nm.csv"), row.names=FALSE)  
+write.csv(resilience, here("globalprep/spp/v2019/output/sp_status_3nm.csv"), row.names=FALSE)  
 
 ```
 
 ### Resilience: save a record of gapfilling
 ```{r}
-res <- read.csv(here("globalprep/spp/v2019/_output/sp_status_3nm.csv")) %>%
+res <- read.csv(here("globalprep/spp/v2019/output/sp_status_3nm.csv")) %>%
   mutate(gapfilled = ifelse(rgn_id == 19, 1, 0)) %>%
   mutate(method = ifelse(rgn_id == 19, "eez scale data used", NA)) %>%
   dplyr::select(rgn_id, year, gapfilled, method)
-write.csv(res, here("globalprep/spp/v2019/_output/sp_status_3nm_gf.csv"), row.names=FALSE)          
+write.csv(res, here("globalprep/spp/v2019/output/sp_status_3nm_gf.csv"), row.names=FALSE)          
 
 
 ```
@@ -653,11 +653,11 @@ Compared to the entire EEZ, most (but not all) coastal areas have lower species 
 ```{r}
 
 # compare to eez values
-eez_status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_global.csv")) %>%
+eez_status <- read.csv(here("globalprep/spp/v2019/output/sp_status_global.csv")) %>%
   filter(year == max(year)) %>%
   dplyr::select(rgn_id, eez_score = score)
 
-status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_3nm.csv")) %>%
+status <- read.csv(here("globalprep/spp/v2019/output/sp_status_3nm.csv")) %>%
   dplyr::select(rgn_id, year, nm3_score = score) %>%
   filter(year == max(year)) %>%
   left_join(eez_status, by = "rgn_id")
@@ -666,7 +666,7 @@ plot(status$nm3_score, status$eez_score)
 abline(0,1)
 
 # compare to last year's values
-status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_3nm.csv")) %>%
+status <- read.csv(here("globalprep/spp/v2019/output/sp_status_3nm.csv")) %>%
   filter(year == max(year))
 
 old_spp <- read.csv(here("globalprep/spp/v2018/output/sp_status_3nm.csv")) %>%
