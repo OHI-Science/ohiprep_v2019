@@ -11,7 +11,6 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -22,14 +21,34 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 library(raster)
-library(data.table)
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
-  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
 library(sf)
+library(fasterize)
+library(dplyr)
+library(rgdal)
+library(here)
+library(ggplot2)
+library(rgeos)
 
-dir_git <- here()
+source(here('workflow/R/common.R'))
 
-source(file.path(dir_git, '_setup/common_fxns.R'))
+goal     <- 'spp'
+scenario <- 'v2019'
+dir_goal <- here('globalprep', goal, scenario)
+
+### goal specific folders and info
+dir_data  <- file.path(dir_goal, '_data')
+dir_setup <- file.path(dir_goal, '_setup')
+dir_anx  <- file.path(dir_M, 'git-annex/globalprep')
+dir_goal_anx <- file.path(dir_anx, goal, scenario, 'spp_risk_dists')
+dir_raw_data_anx <- file.path(dir_anx, '_raw_data')
+dir_spatial <- file.path(dir_goal, '_spatial')
+
+source(file.path(dir_setup, 'common_fxns.R'))
+
+dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2019')
+dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2019')
+  ### in this folder are shapefiles at a taxonomic level, both from
+  ### IUCN spatial data download (version 2019-1)
 
 ```
 
@@ -67,13 +86,13 @@ spp_risk_rgn <- read_csv(file.path(dir_data,
 
 spp_trend <- read_csv(file.path(dir_data, sprintf('iucn_trend_by_spp_%s.csv', api_version)),
                       col_types = 'dccdc') %>%
-  select(iucn_sid, trend_score, iucn_rgn)
+  dplyr::select(iucn_sid, trend_score, iucn_rgn)
 
 ### make a dataframe of species risk, trend, and regional risk
 spp_risk_trend <- spp_risk %>%
   mutate(iucn_rgn = 'global') %>%
   bind_rows(spp_risk_rgn) %>%
-  select(iucn_sid, iucn_rgn, cat_score) %>%
+  dplyr::select(iucn_sid, iucn_rgn, cat_score) %>%
   left_join(spp_trend, by = c('iucn_sid', 'iucn_rgn'))
 
 ### raster for cell IDs
@@ -109,7 +128,7 @@ reload <- FALSE
 for(taxon in taxa) {
   ### taxon <- taxa[16]
   
-  taxon_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
+  taxon_sum_file <- file.path(dir_goal_anx, 'taxa_summaries',
                                    sprintf('%s_cell_sum_comp_%s.csv', tolower(taxon), api_version))
   
   if(!file.exists(taxon_sum_file) | reload == TRUE) {
@@ -142,7 +161,7 @@ for(taxon in taxa) {
                                         FUN = function(x) {
         ### x <- taxon_ids[16]
         ### x <- 6336                            
-        csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+        csv_file <- file.path(dir_goal_anx, 'spp_rasters', 
                               sprintf('iucn_sid_%s.csv', x))
         
         spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%
@@ -179,7 +198,7 @@ for(taxon in taxa) {
         ### select down to main columns; also, if presence == 5 (extinct), 
         ### adjust category and trend scores.
         spp_risk_sum <- spp_risk_map %>%
-          select(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) %>%
+          dplyr::select(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) %>%
           distinct() %>%
           mutate(cat_score   = ifelse(presence == 5, 1, cat_score),        
                    ### fix local extinctions
@@ -227,16 +246,16 @@ for(taxon in taxa) {
   
 ```
 
-### Loop over non-comprehensively-assessed species
+### Loop over non-comprehensively-assessed species 
 
-``` {r examine non-comprehensively assessed, eval = FALSE}
-
+``` {r examine non-comprehensively assessed, eval = FALSE, include = FALSE, echo = FALSE}
+#even though the OHI Global Assessment does not use "non comprehesively assessed species", still run this section. It turns out that two of the spp in 2019's downloaded data that are actually comprehensively assessed, were noted as non comprehensive, Reptiles and Damselfish. 
 x <- spp_maps %>%
   filter(!comp_assessed)
 table(x$max_depth)
 
-area <- read_csv(file.path(dir_data, 'iucn_spp_range_area_2018-1.csv')) %>%
-  select(iucn_sid, range_km2)
+area <- read_csv(file.path(dir_data, 'iucn_spp_range_area_2019-1.csv')) %>%
+  dplyr::select(iucn_sid, range_km2)
 
 y <- x %>%
   left_join(area, by = 'iucn_sid') %>%
@@ -267,7 +286,7 @@ ggplot(y, aes(x = max_depth, y = range_km2)) +
 
 ```
 
-``` {r loop non-comprehensively assessed}}
+``` {r loop non-comprehensively assessed, eval = FALSE}
 
 ### Make a list of taxonomic groups to loop over:
 taxa <- spp_maps %>%
@@ -283,7 +302,7 @@ taxa <- spp_maps %>%
 for(taxon in taxa) {
   ### taxon <- taxa[71]
   
-  taxon_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
+  taxon_sum_file <- file.path(dir_goal_anx, 'taxa_summaries',
                                    sprintf('%s_cell_sum_noncomp_%s.csv', 
                                            tolower(taxon), api_version))
   
@@ -328,7 +347,7 @@ for(taxon in taxa) {
                                           FUN = function(x) {
           ### x <- taxon_ids[16]
           ### x <- 6336                            
-          csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+          csv_file <- file.path(dir_goal_anx, 'spp_rasters', 
                                 sprintf('iucn_sid_%s.csv', x))
           
           spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%
@@ -365,7 +384,7 @@ for(taxon in taxa) {
           ### select down to main columns; also, if presence == 5 (extinct), 
           ### adjust category and trend scores.
           spp_risk_sum <- spp_risk_map %>%
-            select(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) %>%
+            dplyr::select(cell_id, presence, iucn_sid, iucn_rgn, cat_score, trend_score) %>%
             distinct() %>%
             mutate(cat_score   = ifelse(presence == 5, 1, cat_score),        
                      ### fix local extinctions

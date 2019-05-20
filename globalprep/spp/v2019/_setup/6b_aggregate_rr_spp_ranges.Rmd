@@ -11,7 +11,6 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -20,16 +19,35 @@ output:
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
-
 library(raster)
-library(data.table)
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
-  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
 library(sf)
+library(fasterize)
+library(dplyr)
+library(rgdal)
+library(here)
+library(ggplot2)
+library(rgeos)
 
-dir_git <- here()
+source(here('workflow/R/common.R'))
 
-source(file.path(dir_git, '_setup/common_fxns.R'))
+goal     <- 'spp'
+scenario <- 'v2019'
+dir_goal <- here('globalprep', goal, scenario)
+
+### goal specific folders and info
+dir_data  <- file.path(dir_goal, '_data')
+dir_setup <- file.path(dir_goal, '_setup')
+dir_anx  <- file.path(dir_M, 'git-annex/globalprep')
+dir_goal_anx <- file.path(dir_anx, goal, scenario, 'spp_risk_dists')
+dir_raw_data_anx <- file.path(dir_anx, '_raw_data')
+dir_spatial <- file.path(dir_goal, '_spatial')
+
+source(file.path(dir_setup, 'common_fxns.R'))
+
+dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2019')
+dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2019')
+  ### in this folder are shapefiles at a taxonomic level, both from
+  ### IUCN spatial data download (version 2019-1)
 
 ```
 
@@ -88,7 +106,7 @@ if(length(spp_ids) > 0) { ### any more spp to calculate?
                                        FUN = function(i) {
     x <- spp_ids[i]
     cat_msg(i, ': Processing species ', x)
-    spp_map <- read_csv(file.path(dir_o_anx, 'spp_rasters',
+    spp_map <- read_csv(file.path(dir_goal_anx, 'spp_rasters',
                                   sprintf('iucn_sid_%s.csv', x)),
                         col_types = 'di')
     
@@ -106,7 +124,7 @@ if(length(spp_ids) > 0) { ### any more spp to calculate?
 
   spp_range_df <- bind_rows(spp_range_list) %>%
     left_join(spp_maps %>% 
-                select(iucn_sid, sciname, dbf_file) %>%
+                dplyr::select(iucn_sid, sciname, dbf_file) %>%
                 distinct(),
               by = 'iucn_sid')
 } else {
@@ -231,7 +249,7 @@ spp_range <- read_csv(file.path(dir_data,
 spp_risk_trend <- spp_risk %>%
   mutate(iucn_rgn = 'global') %>%
   bind_rows(spp_risk_rgn) %>%
-  select(iucn_sid, iucn_rgn, cat_score) %>%
+  dplyr::select(iucn_sid, iucn_rgn, cat_score) %>%
   left_join(spp_trend, by = c('iucn_sid', 'iucn_rgn')) %>%
   left_join(spp_range, by = 'iucn_sid')
 
@@ -260,7 +278,7 @@ taxa <- spp_maps %>%
   basename() %>% unique() %>%
   str_replace('\\.dbf$', '')
 
-# taxa <- taxa[str_detect(taxa, 'acipenser|bli_marine|TERR|SEAGRASS')]
+# taxa <- taxa[str_detect(taxa, 'acipenser|bli_marine|TERR|SEAGRASS')] #no acipenser in this... not comp assessed? 
 
 reload <- FALSE
 
@@ -268,7 +286,7 @@ for(taxon in taxa) {
   ### taxon <- 'SEAGRASSES'
   ### taxon <- taxa[1]
   
-  taxon_risk_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
+  taxon_risk_sum_file <- file.path(dir_goal_anx, 'taxa_summaries',
                                    sprintf('%s_cell_sum_comp_rrweight_%s.csv', 
                                            tolower(taxon), api_version))
   
@@ -297,9 +315,9 @@ for(taxon in taxa) {
     ### this takes about 30-40 seconds
     taxon_cells_list <- parallel::mclapply(taxon_ids, mc.cores = 24,
                                         FUN = function(x) {
-        ### x <- taxon_ids[11]
-        ### x <- 6336                            
-        csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+       x <- taxon_ids[1]
+        ### x <- 4131                            
+        csv_file <- file.path(dir_goal_anx, 'spp_rasters', 
                               sprintf('iucn_sid_%s.csv', x))
         
         spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%
@@ -337,13 +355,13 @@ for(taxon in taxa) {
         ### if presence == 5 (extinct), adjust category and trend scores.
         spp_risk_map <- spp_risk_map %>%
           # left_join(cell_area_df, by = 'cell_id') %>%
-          select(cell_id, presence, iucn_sid, iucn_rgn, 
+          dplyr::select(cell_id, presence, iucn_sid, iucn_rgn, 
                  cat_score, trend_score, range_km2) %>% # , cell_ocean_area) %>%
           distinct() %>%
           mutate(range_rarity = ifelse(range_km2 > 0, 1 / range_km2, 0),
                  cat_score   = ifelse(presence == 5, 1, cat_score),
                  trend_score = ifelse(presence == 5, NA, trend_score)) %>%
-          select(-range_km2) %>% # , cell_ocean_area) %>%
+          dplyr::select(-range_km2) %>% # , cell_ocean_area) %>%
             ### drop variables no longer needed
           group_by(cell_id, iucn_sid) %>%
           summarize(cat_score   = mean(cat_score, na.rm = TRUE),
@@ -383,7 +401,7 @@ for(taxon in taxa) {
                 mean_trend  = ifelse(is.nan(mean_trend), NA, mean_trend),
                 sr_rr_trend = sum(range_rarity[!is.na(trend_score)]),
                 n_spp = n()) %>%
-      select(-alpha)
+      dplyr::select(-alpha)
     
     cat_msg('...writing file', taxon_risk_sum_file, '...')
     write_csv(taxon_risk_summary, taxon_risk_sum_file)
@@ -410,7 +428,7 @@ for(taxon in taxa) {
   ### taxon <- 'SEAGRASSES'
   ### taxon <- taxa[1]
   
-  taxon_risk_sum_file <- file.path(dir_o_anx, 'taxa_summaries',
+  taxon_risk_sum_file <- file.path(dir_goal_anx, 'taxa_summaries',
                                    sprintf('%s_cell_sum_noncomp_rrweight_%s.csv', 
                                            tolower(taxon), api_version))
   
@@ -452,7 +470,7 @@ for(taxon in taxa) {
                                           FUN = function(x) {
           ### x <- taxon_ids[11]
           ### x <- 6336                            
-          csv_file <- file.path(dir_o_anx, 'spp_rasters', 
+          csv_file <- file.path(dir_goal_anx, 'spp_rasters', 
                                 sprintf('iucn_sid_%s.csv', x))
           
           spp_risk_map <- read_csv(csv_file, col_types = 'di') %>%
@@ -490,13 +508,13 @@ for(taxon in taxa) {
           ### if presence == 5 (extinct), adjust category and trend scores.
           spp_risk_map <- spp_risk_map %>%
             # left_join(cell_area_df, by = 'cell_id') %>%
-            select(cell_id, presence, iucn_sid, iucn_rgn, 
+            dplyr::select(cell_id, presence, iucn_sid, iucn_rgn, 
                    cat_score, trend_score, range_km2) %>% # , cell_ocean_area) %>%
             distinct() %>%
             mutate(range_rarity = ifelse(range_km2 > 0, 1 / range_km2, 0),
                    cat_score   = ifelse(presence == 5, 1, cat_score),
                    trend_score = ifelse(presence == 5, NA, trend_score)) %>%
-            select(-range_km2) %>% # , cell_ocean_area) %>%
+            dplyr::select(-range_km2) %>% # , cell_ocean_area) %>%
               ### drop variables no longer needed
             group_by(cell_id, iucn_sid) %>%
             summarize(cat_score   = mean(cat_score, na.rm = TRUE),
@@ -536,7 +554,7 @@ for(taxon in taxa) {
                   mean_trend  = ifelse(is.nan(mean_trend), NA, mean_trend),
                   sr_rr_trend = sum(range_rarity[!is.na(trend_score)]),
                   n_spp = n()) %>%
-        select(-alpha)
+        dplyr::select(-alpha)
     } ### end of empty set check
     
     cat_msg('...writing file', taxon_risk_sum_file, '...')

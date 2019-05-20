@@ -164,20 +164,34 @@ The `spp_risk_dists/_output` folder contains the rasters of biodiversity risk, s
 In the past, we have used all species with IUCN risk assessments to calculate the species subgoal.  However, some of Casey's work suggests it is better to use the taxa groups that have been comprehensively assessed by IUCN (> 90% of species assessed).  The general concern is that IUCN tends to oversample species in the Atlantic portion of the ocean, relative to other regions.  This is indicated by the larger number of species with IUCN status in this region.  However, the Atlantic falls in line with the other regions when looking at the comprehensively assessed species.  
 
 ```{r}
+#this will be the same for 2019 since we only used comprehesively assessed taxa
+
 library(beyonce)
 cols <- beyonce_palette(129, 100, type = "continuous")
 
-n_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_comp.tif"))
+#2019
+n_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_spp_risk_raster_comp.tif"))
 log_n_comp <- log(n_comp)
 plot(log_n_comp, col=cols)
 
-n_all <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_all.tif"))
+#2018
+#n_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_comp.tif"))
+#log_n_comp <- log(n_comp)
+#plot(log_n_comp, col=cols)
+
+#2019
+n_all <- raster::raster(here("globalprep/spp/v2019/_output/n_spp_risk_raster_all.tif"))
 log_n_all <- log(n_all)
 plot(log_n_all, col=cols)
 
+#2018
+#n_all <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_all.tif"))
+#log_n_all <- log(n_all)
+#plot(log_n_all, col=cols)
+
 prop_comp <- n_comp/n_all
 plot(prop_comp, col=rev(cols))
-
+#this makes sense. For some reason Damselfish and a few reptiles were classified as "non comprehensive", but they are actually comprehensive. 
 ```
 
 
@@ -189,11 +203,11 @@ For each cell, we multiply the average species risk by the number of species in 
 
 ```{r}
 
-mean_risk_comp <- raster::raster(here("globalprep/spp/v2018/_output/mean_risk_raster_comp.tif"))
+mean_risk_comp <- raster::raster(here("globalprep/spp/v2019/_output/mean_risk_raster_comp.tif"))
 
-n_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_comp.tif"))
+n_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_spp_risk_raster_comp.tif"))
 
-regions_ohi <- raster::raster(here("globalprep/spp/v2018/_spatial/eez_rast.tif"))
+regions_ohi <- raster::raster(here("globalprep/spp/v2019/_spatial/eez_rast.tif"))
 
 risk_stack_comp <- stack(regions_ohi, mean_risk_comp, n_comp)
 risk_vals_comp <- values(risk_stack_comp) %>%
@@ -225,11 +239,11 @@ Trend is calculated using the same method as the risk calculation. For each cell
 
 ```{r}
 
-trend_comp <- raster::raster(here("globalprep/spp/v2018/_output/trend_raster_comp.tif"))
+trend_comp <- raster::raster(here("globalprep/spp/v2019/_output/trend_raster_comp.tif"))
 
-n_trend_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_trend_raster_comp.tif"))
+n_trend_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_trend_raster_comp.tif"))
 
-regions_ohi <- raster::raster(here("globalprep/spp/v2018/_spatial/eez_rast.tif"))
+regions_ohi <- raster::raster(here("globalprep/spp/v2019/_spatial/eez_rast.tif"))
 
 trend_stack_comp <- stack(regions_ohi, trend_comp, n_trend_comp)
 trend_vals_comp <- values(trend_stack_comp) %>%
@@ -259,7 +273,7 @@ rgn_trend_comp <- rgn_trend_comp %>%
 We estimate previous risk for each region, using the trend data.  We assume change in risk is linear.  
 
 ```{r}
-assess_years <- 2012:2018
+assess_years <- 2012:2019
 years <- expand.grid(rgn_id = unique(rgn_risk_comp$rgn_id), year=assess_years)
 
 # this is what the trend will be multiplied by to get a risk estimate for each year:
@@ -319,16 +333,19 @@ status <- status_gf %>%
 dim(status)  # 220*length(assess_years)
 summary(status) # should be no NA values
 
-write.csv(status, here("globalprep/spp/v2018/output/sp_status_global.csv"), row.names=FALSE)  
+write.csv(status, here("globalprep/spp/v2019/_output/sp_status_global.csv"), row.names=FALSE)  
 
 ```
 
 ### Status: Compare to last year
 
 ```{r}
-old_spp <- read.csv(here("globalprep/spp_ico/v2017/output/spp_status_global.csv")) %>%
-  mutate(year = 2018) %>%
+status <- read_csv(here("globalprep/spp/v2019/_output/sp_status_global.csv"))
+
+old_spp <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
+  filter(year == max(year)) %>%
   rename(old_score = score) %>%
+  mutate(year = 2019) %>%
   left_join(status) %>%
   rename(new_score = score)
 
@@ -351,7 +368,7 @@ ggplot(old_spp_gather, aes(y=assessment, x=score)) +
 Getting proportional trend requires the status data (trend/status). Proportional trend is multiplied by 5 to get estimated change in five years. 
 ```{r}
 # proportional trend requires status data
-status <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
+status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_global.csv")) %>%
   dplyr::filter(year==max(year)) %>%
   dplyr::select(rgn_id, score)
 
@@ -390,7 +407,7 @@ trend <- trend %>%
 dim(trend) # should be 220
 summary(trend) # should be no NAs
 
-write.csv(trend, here("globalprep/spp/v2018/output/sp_trend_global.csv"), row.names=FALSE)  
+write.csv(trend, here("globalprep/spp/v2019/_output/sp_trend_global.csv"), row.names=FALSE)  
 
 
 ```
@@ -399,32 +416,37 @@ write.csv(trend, here("globalprep/spp/v2018/output/sp_trend_global.csv"), row.na
 We use a very different approach for calculating trend this year. Previously we used proxy data rather than actual change in IUCN status over time.  Our previous method overestimated the magnitude of the trend.  It is not surprising there is poor correlation with trend estimates in previous years, but it is reassuring the the values mainly fall in the same quadrant.  
 ```{r}
 
-trend <- read.csv(here("globalprep/spp/v2018/output/sp_trend_global.csv"))  
+trend <- read.csv(here("globalprep/spp/v2019/_output/sp_trend_global.csv"))  
 
-old_spp <- read.csv(here("globalprep/spp_ico/v2017/output/spp_trend_global.csv")) %>%
+old_spp <- read.csv(here("globalprep/spp/v2018/output/sp_trend_global.csv")) %>%
   rename(old_score = score) %>%
   left_join(trend) 
 
-plot(old_spp$old_score, old_spp$score, xlim=c(-0.35, 0.05))
+plot(old_spp$old_score, old_spp$score)# xlim=c(-0.35, 0.05))
 abline(h=0, col="red")
 abline(v=0, col="red")
+abline(0,1, col="red")
 
+#old_check <- old_spp %>%
+#  mutate(diff = old_score - score) %>%
+#  filter(old_score < -0.02, score > -0.01 )
+#all outliers for this seem to be african nations 
 ```
 
 
 ### Status/trend: save a record of gapfilling
 ```{r}
-status <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
+status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_global.csv")) %>%
   mutate(gapfilled = ifelse(rgn_id == 232, 1, 0)) %>%
   mutate(method = ifelse(rgn_id == 232, "mean of neighbors", NA)) %>%
   dplyr::select(rgn_id, year, gapfilled, method)
-write.csv(status, here("globalprep/spp/v2018/output/sp_status_global_gf.csv"), row.names=FALSE)          
+write.csv(status, here("globalprep/spp/v2019/_output/sp_status_global_gf.csv"), row.names=FALSE)          
 
-trend <- read.csv(here("globalprep/spp/v2018/output/sp_trend_global.csv")) %>%
+trend <- read.csv(here("globalprep/spp/v2019/_output/sp_trend_global.csv")) %>%
   mutate(gapfilled = ifelse(rgn_id == 232, 1, 0)) %>%
   mutate(method = ifelse(rgn_id == 232, "mean of neighbors", NA)) %>%
   dplyr::select(rgn_id, gapfilled, method)
-write.csv(trend, here("globalprep/spp/v2018/output/sp_trend_global_gf.csv"), row.names=FALSE)          
+write.csv(trend, here("globalprep/spp/v2019/_output/sp_trend_global_gf.csv"), row.names=FALSE)          
 
 
 ```
@@ -437,20 +459,23 @@ We use species condition data as a resilience measure as well.  We also calculat
 We reproject the data to have higher resolution in order to more easily extract the data at the 3nm scale.  
 We modify the method a bit from above due to size of the rasters.  
 ```{r, eval=FALSE}
+#3nm raster file
+rgns <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
+plot(rgns)
 
 # relevant species files
-mean_risk_comp <- raster::raster(here("globalprep/spp/v2018/_output/mean_risk_raster_comp.tif"))
-n_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_comp.tif"))
+mean_risk_comp <- raster::raster(here("globalprep/spp/v2019/_output/mean_risk_raster_comp.tif"))
+n_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_spp_risk_raster_comp.tif"))
 
 risk_x_n <- mean_risk_comp*n_comp
 
 # project rasters to moll
-# saved in Mazu:spp/v2018
+# saved in Mazu:spp/v2019
 projectRaster(risk_x_n, rgns, method="ngb", over=TRUE, 
-              filename=file.path(dir_M, "git-annex/globalprep/spp/v2018/int/risk_x_n_comp_mol.tif"),
+              filename=file.path(dir_M, "git-annex/globalprep/spp/v2019/int/risk_x_n_comp_mol.tif"),
               progress="text")
 projectRaster(n_comp, rgns, method="ngb", over=TRUE, 
-              filename=file.path(dir_M, "git-annex/globalprep/spp/v2018/int/n_comp_mol.tif"),
+              filename=file.path(dir_M, "git-annex/globalprep/spp/v2019/int/n_comp_mol.tif"),
               progress="text")
 
 
@@ -466,8 +491,8 @@ Extract species risk data that corresponds to 3nm regions.
 rgns <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
 plot(rgns)
 
-risk_x_n_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2018/int/risk_x_n_comp_mol.tif"))
-n_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2018/int/n_comp_mol.tif"))
+risk_x_n_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2019/int/risk_x_n_comp_mol.tif"))
+n_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2019/int/n_comp_mol.tif"))
 
 risk_stack <- stack(risk_x_n_mol, n_mol)
 
@@ -493,19 +518,19 @@ Trend is calculated using the same method as the risk calculation. For each cell
 We reproject the data to have higher resolution in order to more easily extract the data at the 3nm scale.  
 ```{r, eval=FALSE}
 
-trend_comp <- raster::raster(here("globalprep/spp/v2018/_output/trend_raster_comp.tif"))
+trend_comp <- raster::raster(here("globalprep/spp/v2019/_output/trend_raster_comp.tif"))
 
-n_trend_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_trend_raster_comp.tif"))
+n_trend_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_trend_raster_comp.tif"))
 
 trend_x_n <- trend_comp*n_trend_comp
 
 # project rasters to moll
-# saved in Mazu:spp/v2018
-projectRaster(trend_x_n, rgns_3nm, method="ngb", over=TRUE, 
-              filename=file.path(dir_M, "git-annex/globalprep/spp/v2018/int/trend_x_n_comp_mol.tif"),
+# saved in Mazu:spp/v2019
+projectRaster(trend_x_n, rgns, method="ngb", over=TRUE, 
+              filename=file.path(dir_M, "git-annex/globalprep/spp/v2019/int/trend_x_n_comp_mol.tif"),
               progress="text")
-projectRaster(n_trend_comp, rgns_3nm, method="ngb", over=TRUE, 
-              filename=file.path(dir_M, "git-annex/globalprep/spp/v2018/int/n_trend_comp_mol.tif"),
+projectRaster(n_trend_comp, rgns, method="ngb", over=TRUE, 
+              filename=file.path(dir_M, "git-annex/globalprep/spp/v2019/int/n_trend_comp_mol.tif"),
               progress="text")
 
 ```
@@ -518,8 +543,8 @@ Extract species risk data that corresponds to 3nm regions.
 rgns_3nm <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
 plot(rgns_3nm)
 
-trend_3nm_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2018/int/trend_x_n_comp_mol.tif"))
-n_trend_3nm_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2018/int/n_trend_comp_mol.tif"))
+trend_3nm_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2019/int/trend_x_n_comp_mol.tif"))
+n_trend_3nm_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2019/int/n_trend_comp_mol.tif"))
 
 
 trend_stack <- stack(trend_3nm_mol, n_trend_3nm_mol)
@@ -540,7 +565,7 @@ rgn_3nm_trend <- trend_df %>%
 We estimate previous risk for each region, using the trend data.  We assume change in risk is linear.  
 
 ```{r}
-assess_years <- 2012:2018
+assess_years <- 2012:2019
 years <- expand.grid(rgn_id = unique(rgn_3nm_trend$rgn_id), year=assess_years)
 
 # this is what the trend will be multiplied by to get a risk estimate for each year:
@@ -586,7 +611,7 @@ summary(res_gf)
 filter(res_gf, is.na(spp_status))
 
 # get eez value:
-eez_status <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
+eez_status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_global.csv")) %>%
   filter(rgn_id == 19) %>%
   rename(spp_status = score)
 
@@ -603,36 +628,36 @@ summary(res_gf)
 ```{r}
 resilience <- res_gf %>%
   dplyr::select(rgn_id, year, score = spp_status)
-dim(resilience)  # 220 * 7
+dim(resilience)  # 220 * 8
 summary(resilience) # should be no NA values
 
-write.csv(resilience, here("globalprep/spp/v2018/output/sp_status_3nm.csv"), row.names=FALSE)  
+write.csv(resilience, here("globalprep/spp/v2019/_output/sp_status_3nm.csv"), row.names=FALSE)  
 
 ```
 
 ### Resilience: save a record of gapfilling
 ```{r}
-res <- read.csv(here("globalprep/spp/v2018/output/sp_status_3nm.csv")) %>%
+res <- read.csv(here("globalprep/spp/v2019/_output/sp_status_3nm.csv")) %>%
   mutate(gapfilled = ifelse(rgn_id == 19, 1, 0)) %>%
   mutate(method = ifelse(rgn_id == 19, "eez scale data used", NA)) %>%
   dplyr::select(rgn_id, year, gapfilled, method)
-write.csv(res, here("globalprep/spp/v2018/output/sp_status_3nm_gf.csv"), row.names=FALSE)          
+write.csv(res, here("globalprep/spp/v2019/_output/sp_status_3nm_gf.csv"), row.names=FALSE)          
 
 
 ```
 
 
 ### Resilience: Compare
-Compared to the entire EEZ, most (but not all) coastal areas have lower species condition scores. The correlation with last year isn't that great, but it is similar to what we observed in the EEZ data.
+Compared to the entire EEZ, most (but not all) coastal areas have lower species condition scores. The correlation with last year is better than it was last year. 
 
 ```{r}
 
 # compare to eez values
-eez_status <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
+eez_status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_global.csv")) %>%
   filter(year == max(year)) %>%
   dplyr::select(rgn_id, eez_score = score)
 
-status <- read.csv(here("globalprep/spp/v2018/output/sp_status_3nm.csv")) %>%
+status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_3nm.csv")) %>%
   dplyr::select(rgn_id, year, nm3_score = score) %>%
   filter(year == max(year)) %>%
   left_join(eez_status, by = "rgn_id")
@@ -641,14 +666,15 @@ plot(status$nm3_score, status$eez_score)
 abline(0,1)
 
 # compare to last year's values
-status <- read.csv(here("globalprep/spp/v2018/output/sp_status_3nm.csv")) %>%
+status <- read.csv(here("globalprep/spp/v2019/_output/sp_status_3nm.csv")) %>%
   filter(year == max(year))
 
-old_spp <- read.csv(here("globalprep/spp_ico/v2017/output/spp_status_3nm.csv")) %>%
-  mutate(year = 2018) %>%
+old_spp <- read.csv(here("globalprep/spp/v2018/output/sp_status_3nm.csv")) %>%
+  filter(year == max(year)) %>%
   rename(old_score = score) %>%
+  mutate(year = 2019) %>%
   left_join(status) %>%
-  rename(new_score = score)
+  rename(new_score = score) 
 
 plot(old_spp$old_score, old_spp$new_score)
 abline(0,1, col="red")
@@ -660,6 +686,10 @@ old_spp_gather <- old_spp %>%
 
 ggplot(old_spp_gather, aes(y=assessment, x=score)) + 
   geom_density_ridges()
+
+check_3nm_old <- old_spp %>%
+  filter(new_score > 0.85, old_score > 0.79, old_score <0.87) %>%
+  mutate(diff = old_score - new_score)
 
 ```
 
