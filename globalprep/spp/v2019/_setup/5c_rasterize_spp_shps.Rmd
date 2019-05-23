@@ -11,7 +11,6 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/src/templates/ohara_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -22,20 +21,34 @@ knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
                       echo = TRUE, message = FALSE, warning = FALSE)
 
 library(raster)
-library(rgeos)
-source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')  ###
-  ### includes library(tidyverse); library(stringr); dir_M points to ohi directory
 library(sf)
+library(fasterize)
+library(dplyr)
+library(rgdal)
+library(here)
+library(ggplot2)
+library(rgeos)
 
-dir_git <- here()
+source(here('workflow/R/common.R'))
 
-source(file.path(dir_git, '_setup/common_fxns.R'))
+goal     <- 'spp'
+scenario <- 'v2019'
+dir_goal <- here('globalprep', goal, scenario)
 
-dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2018')
-dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2018-1')
-  ### These are shapefiles directly from IUCN as individual species map files
-  ### (in the unzipped folder).
-  ### in this folder are shapefiles at a taxonomic level.
+### goal specific folders and info
+dir_data  <- file.path(dir_goal, '_data')
+dir_setup <- file.path(dir_goal, '_setup')
+dir_anx  <- file.path(dir_M, 'git-annex/globalprep')
+dir_goal_anx <- file.path(dir_anx, goal, scenario, 'spp_risk_dists')
+dir_raw_data_anx <- file.path(dir_anx, '_raw_data')
+dir_spatial <- file.path(dir_goal, '_spatial')
+
+source(file.path(dir_setup, 'common_fxns.R'))
+
+dir_bli <- file.path(dir_M, 'git-annex/globalprep/_raw_data/birdlife_intl/d2019')
+dir_shp <- file.path(dir_M, 'git-annex/globalprep/_raw_data/iucn_spp/d2019')
+  ### in this folder are shapefiles at a taxonomic level, both from
+  ### IUCN spatial data download (version 2019-1)
 
 
 ```
@@ -80,7 +93,7 @@ rast_base <- raster(file.path(dir_spatial, 'cell_id_rast.tif'))
 
 ### If some species already processed, remove from the list to process.
 if(reload == FALSE) {
-  maps_already_rasterized <- list.files(file.path(dir_o_anx, 'spp_rasters'),
+  maps_already_rasterized <- list.files(file.path(dir_goal_anx, 'spp_rasters'),
                                         pattern = '.csv') %>%
     str_replace_all('iucn_sid_|.csv$', '') %>%
     as.integer()
@@ -123,7 +136,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
   ################################################################.
   shps <- maps_to_rasterize$shp_file %>% unique()
   for(i in seq_along(shps)) {
-    ### i <- 1
+     #i <- 3
     
     shp <- shps[i]
     
@@ -131,7 +144,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
       filter(shp_file == shp)
     
     id_fix <- maps_in_shp %>%
-      select(shp_iucn_sid, iucn_sid, subpop, max_depth) %>%
+      dplyr::select(shp_iucn_sid, iucn_sid, subpop, max_depth) %>%
       distinct()
     
     cat_msg(i, ' of ', length(shps), ': reading ', basename(shp), ' from: \n  ', shp)
@@ -161,7 +174,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
 
     
     polys_match <- polys_all %>%
-      select(shp_iucn_sid = iucn_sid, sciname, subpop, presence, geometry) %>%
+      dplyr::select(shp_iucn_sid = iucn_sid, sciname, subpop, presence, geometry) %>%
       mutate(presence = ifelse(presence == 0, 1, presence),
              subpop   = as.character(subpop)) %>%
       inner_join(id_fix, by = c('shp_iucn_sid', 'subpop')) 
@@ -181,7 +194,7 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
       tmp <- parallel::mclapply(seq_along(spp_ids),
                                 mc.cores = 24, 
                                 FUN = function(x) {
-        ### x <- 1
+         #x <- 81:128
         spp <- spp_ids[x]
         
         cat_msg(x, ' of ', length(spp_ids), ': Processing ', spp, ' in ', basename(shp),
@@ -221,10 +234,10 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
           filter(!is.na(presence))
         
         if(nrow(spp_present) == 0) {
-          cat_msg('Species ID ', spp, ' resulted in a zero-length dataframe.')
+    cat_msg('Species ID ', spp, ' resulted in a zero-length dataframe.')
         }
         
-        write_csv(spp_present, file.path(dir_o_anx, 'spp_rasters',
+        write_csv(spp_present, file.path(dir_goal_anx, 'spp_rasters',
                                          sprintf('iucn_sid_%s.csv', spp)))
         
         return(NA)
@@ -240,14 +253,14 @@ if(nrow(maps_to_rasterize) == 0) { ### all maps accounted for as .csvs
 maps <- read_csv(file.path(dir_data,
                            sprintf('spp_marine_maps_%s.csv', api_version)),
                  col_types = 'ddciccc') %>%
-  select(spp_group = dbf_file, iucn_sid, sciname, subpop) %>%
+  dplyr::select(spp_group = dbf_file, iucn_sid, sciname, subpop) %>%
   mutate(spp_group = str_replace(spp_group, '.dbf', '')) %>%
   distinct()
 
-csvs <- list.files(file.path(dir_o_anx, 'spp_rasters')) %>%
+csvs <- list.files(file.path(dir_goal_anx, 'spp_rasters')) %>%
   str_replace_all('iucn_sid_|.csv', '')
 
-x <- list.files(file.path(dir_o_anx, 'spp_rasters'),
+x <- list.files(file.path(dir_goal_anx, 'spp_rasters'),
                 full.names = TRUE)
 x <- x[str_detect(x, paste0(csvs, collapse = '|'))]
 
@@ -266,9 +279,9 @@ z <- y %>%
   ungroup() %>%
   arrange(desc(csv))
 
-# sum(z$tif * z$n_spp) ### 8,146,818,040:  8.1 GB for 5369 spp (pre depth clip) (some dupes, oops)
-# sum(z$csv * z$n_spp) ### 3,179,096,927:  3.2 GB for 5369 spp (pre depth clip) (some dupes, oops)
-# sum(z$csv * z$n_spp) ### 2,218,041,470:  2.2 GB for 5332 spp (post depth clip) (dupes removed!)
+ #sum(z$tif * z$n_spp) ### 0
+ #sum(z$csv * z$n_spp) ### 3,383,380,232
+ #sum(z$csv * z$n_spp) ### 3,383,380,232
 
 zz <- data.frame(spp_group = 'TOTAL: all available spp maps',
                 n_spp = sum(z$n_spp),
