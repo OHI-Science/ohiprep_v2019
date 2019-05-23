@@ -11,9 +11,11 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: #'../../../src/templates/ohi_hdr.html'
 pdf_document:
   toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 [REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/mar/v2018/mar_prs_pop_dataprep.html)
@@ -165,7 +167,7 @@ foreach(i = raw, .packages = c("raster", "rgdal", "stringr")) %dopar% {
                           filename = file.path(dir_github, sprintf("int/human_density_%s_mol.tif", yr)),
                           overwrite = TRUE)
 } 
-# this line takes a while to run
+# this line takes a while to run - ran for 30+ min and still didn't finish?
 
 stopCluster(cl)
 closeAllConnections()
@@ -195,7 +197,7 @@ yearly_diff <- function(year_min, year_max, density_files = files){
             overwrite = TRUE)
 }
 
-# these functions aren't working
+# these functions aren't working - might be in a package that's not installed?
 yearly_diff(year_min = 2000, year_max = 2005)
 yearly_diff(year_min = 2005, year_max = 2010)
 yearly_diff(year_min = 2010, year_max = 2015)
@@ -213,7 +215,7 @@ yearly_interpolate <- function(year, start_raster, yearly_change){
 ## interpolate missing years
 files <- list.files(file.path(dir_github, "int"), pattern = ".tif$", full = TRUE)
 
-# same error message as 201-205 lines above
+# same error message as 201-205 lines above - what is supposed to be happening here?
 for(i in c(2000, 2005, 2010, 2015)) {
   yearly_interpolate(i, start_raster = files[grep(sprintf("density_%s_mol",i), files)],
                      yearly_change = files[grep(sprintf("change_%s_to_%s", i, i+5), files)])
@@ -264,6 +266,10 @@ closeAllConnections()
 inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
             layer = "EEZ_inland_25mi")
 
+inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"), 
+                      layer = "sp_inland25mi_gcs") %>% select(rgn_id, geometry)
+plot(inland)
+
 # raster
 eez_25mi_inland <- raster(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2018/int/eez_25mi_inland.tif"))
 
@@ -272,6 +278,41 @@ eez_25mi_inland <- raster(file.path(dir_M, "git-annex/globalprep/mar_prs_populat
 plot(eez_25mi_inland) # this doesnt really make sense... what do the numbers mean? need to dig into this 
 
 ```
+
+## Create EEZ + 25-mile Inland Raster
+
+```{r create eez + 25-mile inland raster, eval=FALSE}
+## re-add Fiji which appears to get cut: include all of Fiji land falling within 50 mile boundary
+fiji <- regions %>%
+  dplyr::filter(rgn_type == "land" & rgn_id == 18) %>%
+  dplyr::select(rgn_id, geometry)
+
+## create the 25-mile inland raster and add Fiji
+inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"), 
+                      layer = "sp_inland25mi_gcs") %>% select(rgn_id, geometry)
+inland <- sf::st_transform(inland, st_crs(fiji))
+inland <- rbind(inland, fiji)
+
+## save shapefile for future reference if it doesn't already exist
+if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"))){
+  sf::st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
+           layer = "EEZ_inland_25mi", driver = "ESRI Shapefile")
+}
+
+## create new object merging eez and rasterized 25mile inland buffer
+inland_raster <- fasterize::fasterize(inland, eez_raster, field = 'rgn_id')
+eez_25mi_inland <- raster::merge(eez_raster, inland_raster, 
+                                 filename = file.path(path_mar_prs, "int/eez_25mi_inland.tif"))
+```
+
+
+
+
+
+
+
+
+
 
 ## Append or Extract by OHI Regions
 
