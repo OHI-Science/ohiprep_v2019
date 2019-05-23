@@ -49,6 +49,9 @@ No changes have been made to the data prep methods for this goal, since the 2016
 
 Changes _were_ made in 2018 to the iconic species trend calculation. Trends are now calculated (in ohi-global, `functions.R`) using status values based only on species with two or more IUCN evaluations in the last 20 years. This change was made because including species which have not been re-evaluated for a long time tends to positively bias trend values, or at least dampen the trends by essentially including as zeros, values that are not truely known to be zero... To accommodate this change in the trend calculation, years 1992-present are included in the prepped data as well as in the ohi-global `scenario_data_years.csv`.
 
+In 2019, we stopped using the regions list to merge IUCN and iconic species region IDs and switched to the name_2_rgn() funciton in ohicore. However, this function reports regions that don't have a match in OHI region list, so we report certain reported regions at a higher spatial scale, based on the listed regions in the error message. 
+
+
 ## Future improvements?
 
 * Update list of iconic species... see issue #671 (not 2018 assessment, see previous assesment issues)
