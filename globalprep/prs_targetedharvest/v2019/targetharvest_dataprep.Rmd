@@ -1,0 +1,279 @@
+---
+title: 'OHI 2019 - Targeted harvest pressure'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2017/targetharvest_dataprep.html]
+
+#Summary
+This analysis converts FAO capture production data into the OHI 2019 targeted harvest pressure data.  
+
+
+#Updates from previous assessment
+One more year of data
+
+From v2018: The species2group.csv file was udated: South America Sea Lion is not a cetacean therefore was assigned the pinniped order and excluded from the target list. 
+
+v2019: Adding in here() where appropriate and incorporating read_csv() etc, changed some objects to have more descriptive names
+
+
+***
+
+#Data Source 
+    http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
+     Release date: March 2019 
+FAO Global Capture Production Quantity 1950_2017
+
+**Downloaded**: May 23 2019
+
+**Description**:  Quantity (tonnes) of fisheries capture for each county, species, year.
+
+**Time range**: 1950-2017
+
+***
+
+```{r, eval=FALSE}
+
+# load libraries, set directories
+library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(ggplot2)
+library(plotly)
+library(here)
+library(janitor)
+
+
+### Load FAO-specific user-defined functions
+source('../../../workflow/R/fao_fxn.R') # function for cleaning FAO files (not combined into common.R like most other functions have been at this point)
+source('../../../workflow/R/common.R') # directory locations
+
+
+```
+
+
+# Read in the raw data
+This includes the FAO capture production data and a list of the "target" species.
+
+```{r, eval=FALSE}
+
+## FAO capture production data - all columns being parsed as characters and producing error in one column, but not sure which?
+fis_fao_raw <-  read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_capture/d2019/Global_capture_production_Quantity_1950-2017.csv'))
+
+# fis_fao_old <-  read_csv(file.path(dir_M, #'git-annex/globalprep/_raw_data/FAO_capture/d2018/Global_capture_production_Quantity_1950-2016.#csv'))
+
+# species list - used same raw files from last year
+sp2grp <-  read_csv(here('globalprep/prs_targetedharvest/v2019/raw/species2group.csv')) %>%
+  dplyr::filter(incl_excl == 'include') %>%
+  dplyr::select(target, species); head(sp2grp)
+
+
+```
+
+
+# Clean the FAO data
+
+```{r, eval=FALSE}
+
+# Rename columns and remove unit column
+fao_clean <- fis_fao_csv %>% 
+  dplyr::rename(country = "Country (Country)",
+                species = "Species (ASFIS species)",
+                area = "Fishing area (FAO major fishing area)") %>%
+  select(-"Unit (Unit)")
+
+# Gather by year and value to expand and make each line a single observation for country, species and year (tidy data!) - wonder if these can be combined into one step? 
+fao_clean <- fao_clean %>%
+  tidyr::gather("year", "value", -(1:3)) %>%
+  dplyr::mutate(year = gsub("X", "", year)) %>%
+    fao_clean_data() 
+
+fao_clean <- fao_clean %>%
+  dplyr::mutate(species = as.character(species)) %>%
+  dplyr::mutate(species = ifelse(stringr::str_detect(species, "Henslow.*s swimming crab"), "Henslow's swimming crab", species))
+
+
+```
+
+# Identify the target species
+This analysis only includes target species.  The warning messages need to be checked and, if necessary, changes should be made to the raw/species2group.csv  
+
+```{r, eval=FALSE}
+
+# check for discrepancies in species list
+## seals are no longer included (so these errors can be ignored):
+spgroups <-  sort(as.character(unique(fao_clean$species)))
+groups <-  c('turtle', 'seal', 'whale', 'sea lion', 'dolphin', 'porpoise')
+
+for (group in groups) { #group='dolphin'
+possibles <- spgroups[grep(group, spgroups)]
+d_missing_l <-  setdiff(possibles, sp2grp$species)
+  if (length(d_missing_l)>0){
+    cat(sprintf("\nMISSING in the lookup the following species in target='%s'.\n    %s\n", 
+                group, paste(d_missing_l, collapse='\n    ')))
+  }
+}
+
+# check for species in lookup not found in data
+l_missing_d <-  setdiff(sp2grp$species, spgroups)
+if (length(l_missing_d)>0){
+  cat(sprintf('\nMISSING: These species in the lookup are not found in the FAO data \n'))
+  print(l_missing_d)
+}
+
+
+## filter data to include only target species ----
+target_spp <-  fao_clean %>%
+  dplyr::filter(species %in% sp2grp$species)
+
+unique(target_spp$area) # confirm these are all marine regions
+
+
+```
+
+
+# Summarize data
+
+```{r, eval=FALSE}
+
+# spread wide to expand years
+wide = target_spp %>%
+  tidyr::spread(year, value) %>%
+  dplyr::left_join(sp2grp, by='species'); head(wide)
+
+
+# gather long by target
+long = wide %>%
+  dplyr::select(-area) %>%
+  tidyr::gather(year, value, -country, -species, -target, na.rm=T) %>%
+  dplyr::mutate(year = as.integer(as.character(year))) %>%
+  dplyr::arrange(country, target, year); head(long)
+
+#Temporary note: data for Gabn goes oly to 2009
+
+
+# explore Japan[210]
+long %>% 
+  dplyr::group_by(country, target, year) %>%
+  dplyr::summarize(value = sum(value)) %>% 
+  dplyr::filter(country == 'Japan', target == 'cetacean', year >= 2000) 
+
+# summarize totals per region per year
+sum = long %>%
+  dplyr::group_by(country, year) %>%
+  dplyr::summarize(value = sum(value, na.rm=TRUE)) %>%
+  dplyr::filter(value != 0) %>%
+  dplyr::ungroup(); head(sum) 
+
+```
+
+# Assign country names to OHI regions
+
+```{r, eval=FALSE}
+
+
+sum <- sum %>%
+  dplyr::mutate(country = as.character(country)) %>%
+  dplyr::mutate(country = ifelse(stringr::str_detect(country, "C.*te d'Ivoire"), "Ivory Coast", country))
+
+
+### Function to convert to OHI region ID
+m_sum_rgn <- name_2_rgn(df_in = sum, 
+                       fld_name='country', 
+                       flds_unique=c('year'))
+
+# these are duplicates for the same region
+dplyr::filter(m_sum_rgn, country %in% c("Guadeloupe", "Martinique"))
+
+# They will be summed:
+m_sum_rgn <- m_sum_rgn %>%
+  dplyr::group_by(rgn_id, rgn_name, year) %>%
+  dplyr::summarize(value = sum(value)) %>%
+  dplyr::ungroup()
+
+```
+
+# Scale the data and save files
+Data is rescaled by dividing by the 95th quantile of values across all regions from 2011 to 2014.
+
+```{r, eval=FALSE}
+
+target_harvest <- m_sum_rgn %>%
+  dplyr::mutate(quant_95 = quantile(value[year %in% 2011:2016], 0.95, na.rm = TRUE)) %>%
+  dplyr::mutate(score = value / quant_95) %>% 
+  dplyr::mutate(score = ifelse(score>1, 1, score)) %>%
+  dplyr::select(rgn_id, year, pressure_score = score) %>%
+  dplyr::arrange(rgn_id, year); head(target_harvest); summary(target_harvest)
+  
+#quant_95= 160761
+
+
+  # any regions that did not have a catch should have score = 0 
+rgns <-  rgn_master %>%
+  dplyr::filter(rgn_typ == "eez") %>%
+  dplyr::select(rgn_id = rgn_id_2013) %>%
+  dplyr::filter(rgn_id < 255) %>%
+  base::unique() %>%
+  dplyr::arrange(rgn_id)
+
+# do we want to update this to a rgn list more recent than 2013??
+  
+rgns <- expand.grid(rgn_id = rgns$rgn_id, year = min(target_harvest$year):max(target_harvest$year))
+  
+target_harvest <-  rgns %>%
+  dplyr::left_join(target_harvest) %>%
+  dplyr::mutate(pressure_score = ifelse(is.na(pressure_score), 0, pressure_score)) %>%
+  dplyr::arrange(rgn_id); head(target_harvest); summary(target_harvest)
+
+write_csv(target_harvest, here('globalprep/prs_targetedharvest/v2019/output/fao_targeted.csv', row.names = FALSE)
+
+target_harvest_gf <- target_harvest %>%
+  dplyr::mutate(gapfill = 0) %>%
+  dplyr::select(rgn_id, year, gapfill)
+
+write_csv(target_harvest_gf, here('globalprep/prs_targetedharvest/v2019/output/fao_targeted_gf.csv', row.names = FALSE)
+
+```
+
+# Data check
+The data from last year and this year should be the same unless there were changes to underlying FAO data or the master species list.
+
+In this case, all of the regions looked very similar.
+
+******LEFT OFF HERE!!!******
+
+```{r, eval=FALSE}
+new <- read.csv("output/fao_targeted.csv") %>% 
+  filter(year==2015)
+
+old <- read.csv("../v2017/output/fao_targeted.csv") %>%
+  #mutate(year== year-2) %>% 
+  dplyr::filter(year == 2015) %>%
+  dplyr::select(rgn_id, year, pressure_score_old=pressure_score) %>%
+  dplyr::left_join(new, by=c("rgn_id", "year"))
+old
+
+plot(pressure_score ~ pressure_score_old, data=old)
+abline(0, 1, col="red")
+
+
+compare_plot <- ggplot(data = old, aes(x=pressure_score_old, y= pressure_score, label=rgn_id))+
+  geom_point()+
+  geom_abline(color="red")
+
+plot(compare_plot)
+ggplotly(compare_plot)
+
+```
+
