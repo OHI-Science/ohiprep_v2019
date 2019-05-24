@@ -294,7 +294,7 @@ dev.off()
 ```
 
 
-The regions file with eez (dark blue), fao or high seas (light blue), and antarctica or CCAMLR (green) regions.
+The regions file with land (gray), eez (dark blue), fao or high seas (light blue), and antarctica or CCAMLR (green) regions.
 
 ![](images/regions.png)
 

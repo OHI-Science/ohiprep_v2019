@@ -1,0 +1,78 @@
+---
+title: "25mile_inland_raster"
+output: html_document
+---
+
+Molly noticed some potential weirdness in the 25 mile inland buffer we have been using for the mariculture goal and an intertidal habitat destruction pressure layer.  I am going to improve the spatial file.
+
+
+The raster layer has dimensions of 934.4789 m.  This means that about 43 cells equal about 40 km.  Which corresponds to about 25 miles.  I am going to buffer our ocean raster by 43 cells to obtain 25 miles inland. 
+```{r}
+
+library(raster)
+library(fasterize)
+
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R')
+
+ohi_rasters()
+regions_shape()
+
+tmp <- boundaries(ocean, type="outer", progress="text")
+plot(tmp)
+extent_tmp <- zoom(tmp)
+plot(regions[1], add=TRUE, col=NA)
+
+for(i in 1:43){
+  if(i==1){
+    tmp <- boundaries(ocean, type="outer", progress="text")
+  } else{ 
+tmp <- boundaries(tmp, type="outer", progress="text")}
+# plot(crop(tmp, extent_tmp))
+# plot(regions[1], add=TRUE, col=NA)
+i=i+1
+print(i)
+}
+
+writeRaster(tmp, file.path(dir_M, "git-annex/globalprep/spatial/v2019/tmp/ocean_plus25milebuffer.tif"))
+
+```
+
+
+Next step is to crop out the ocean stuff, leaving only the 25 miles inland area.
+
+```{r}
+
+# outer layer of buffered raster values equal 1 while the other layers are 0, given the
+# boundaries function methods.  Convert the 1 values to zero.
+
+tmp[tmp > 0] <- 0
+
+plot(regions[1], add=TRUE, col=NA)
+
+## create raster of regions so we can ID 
+
+eez_land_raster <- fasterize::fasterize(regions, tmp, field="rgn_ant_id")
+
+# To get ID of inland buffer as well as ocean regions: sum the buffered raster with the eez_land_raster
+# this should eliminate the NA regions
+
+rast_stack <- stack(tmp, eez_land_raster)
+
+calc(rast_stack, fun=sum, 
+     filename = file.path(dir_M, "git-annex/globalprep/spatial/v2019/ocean_plus25mile_inland.tif"),
+     progress="text")
+
+```
+
+Check results. (which look good!)
+```{r}
+
+buffer <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2019/ocean_plus25mile_inland.tif"))
+
+plot(buffer)
+click(buffer)
+plot(crop(tmp, extent_tmp))
+plot(regions[1], add=TRUE, col=NA)
+
+
+```
