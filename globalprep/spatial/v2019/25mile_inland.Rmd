@@ -74,5 +74,14 @@ click(buffer)
 plot(crop(tmp, extent_tmp))
 plot(regions[1], add=TRUE, col=NA)
 
+## One more check (just want to see what the inland raster looks like without the ocean area included)
+regions_land <- regions[regions$rgn_type %in% c("land", "land-disputed"),]
+regions_land_raster <- fasterize::fasterize(regions_land, tmp) 
+
+inland_only <- raster::mask(tmp, regions_land_raster, progress="text")
+plot(rast_stack)
+plot(extent_tmp, add=TRUE)
+plot(crop(rast_stack, extent_tmp))
+plot(regions[1], add=TRUE, col=NA)
 
 ```
