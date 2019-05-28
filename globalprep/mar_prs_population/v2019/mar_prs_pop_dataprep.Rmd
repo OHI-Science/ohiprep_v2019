@@ -138,7 +138,7 @@ raw <- list.files(file.path(dir_server, sprintf("CIESEandCIAT_population/%s", da
                   full.names = TRUE, pattern = "\\.tif$",
                   recursive = TRUE)
 raw <- raw[grep("density", raw)]
-raw # check that this looks correct
+raw # check that this looks correct; what would indicate that it is/is not correct?
 
 ohi_rasters() # loads rasters
 eez_raster <- zones # sourced from ohi_rasters()
@@ -197,7 +197,8 @@ yearly_diff <- function(year_min, year_max, density_files = files){
             overwrite = TRUE)
 }
 
-# these functions aren't working - might be in a package that's not installed?
+# these functions aren't working - am I typing the syntax wrong or is it missing something?? 
+# Error message:  Error in if (x == "" | x == ".") { : argument is of length zero 
 yearly_diff(year_min = 2000, year_max = 2005)
 yearly_diff(year_min = 2005, year_max = 2010)
 yearly_diff(year_min = 2010, year_max = 2015)
@@ -230,6 +231,7 @@ Density data are converted to population by multiplying density times the area o
 
 den_raster <- list.files(file.path(dir_github, "int"), pattern = "density_\\d{4}_mol.tif$", full = TRUE)
 den_raster # check to make sure this looks correct; all and only density tifs in folder
+## currently isn't finding anything; should I move the files over from v2018? 
 
 cl <- makeCluster(5)
 registerDoParallel(cl)
@@ -271,47 +273,12 @@ inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v20
 plot(inland)
 
 # raster
-eez_25mi_inland <- raster(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2018/int/eez_25mi_inland.tif"))
-
+eez_25mi_inland <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2019/ocean_plus25mile_inland.tif"))
 
 # Make sure that the layers make sense!
 plot(eez_25mi_inland) # this doesnt really make sense... what do the numbers mean? need to dig into this 
 
 ```
-
-## Create EEZ + 25-mile Inland Raster
-
-```{r create eez + 25-mile inland raster, eval=FALSE}
-## re-add Fiji which appears to get cut: include all of Fiji land falling within 50 mile boundary
-fiji <- regions %>%
-  dplyr::filter(rgn_type == "land" & rgn_id == 18) %>%
-  dplyr::select(rgn_id, geometry)
-
-## create the 25-mile inland raster and add Fiji
-inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"), 
-                      layer = "sp_inland25mi_gcs") %>% select(rgn_id, geometry)
-inland <- sf::st_transform(inland, st_crs(fiji))
-inland <- rbind(inland, fiji)
-
-## save shapefile for future reference if it doesn't already exist
-if (!file.exists(file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"))){
-  sf::st_write(inland, dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
-           layer = "EEZ_inland_25mi", driver = "ESRI Shapefile")
-}
-
-## create new object merging eez and rasterized 25mile inland buffer
-inland_raster <- fasterize::fasterize(inland, eez_raster, field = 'rgn_id')
-eez_25mi_inland <- raster::merge(eez_raster, inland_raster, 
-                                 filename = file.path(path_mar_prs, "int/eez_25mi_inland.tif"))
-```
-
-
-
-
-
-
-
-
 
 
 ## Append or Extract by OHI Regions
