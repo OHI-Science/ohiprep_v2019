@@ -54,11 +54,11 @@ library(plotly)
 library(here)
 library(janitor)
 
-
 ### Load FAO-specific user-defined functions
 source('../../../workflow/R/fao_fxn.R') # function for cleaning FAO files (not combined into common.R like most other functions have been at this point)
 source('../../../workflow/R/common.R') # directory locations
 
+# Should we establish dir_github here?
 
 ```
 
@@ -87,7 +87,7 @@ sp2grp <-  read_csv(here('globalprep/prs_targetedharvest/v2019/raw/species2group
 ```{r, eval=FALSE}
 
 # Rename columns and remove unit column
-fao_clean <- fis_fao_csv %>% 
+fao_clean <- fis_fao_raw %>% 
   dplyr::rename(country = "Country (Country)",
                 species = "Species (ASFIS species)",
                 area = "Fishing area (FAO major fishing area)") %>%
@@ -116,6 +116,7 @@ This analysis only includes target species.  The warning messages need to be che
 spgroups <-  sort(as.character(unique(fao_clean$species)))
 groups <-  c('turtle', 'seal', 'whale', 'sea lion', 'dolphin', 'porpoise')
 
+# what is this for loop doing? want to add a description here 
 for (group in groups) { #group='dolphin'
 possibles <- spgroups[grep(group, spgroups)]
 d_missing_l <-  setdiff(possibles, sp2grp$species)
@@ -131,7 +132,7 @@ if (length(l_missing_d)>0){
   cat(sprintf('\nMISSING: These species in the lookup are not found in the FAO data \n'))
   print(l_missing_d)
 }
-
+# nothing missing here
 
 ## filter data to include only target species ----
 target_spp <-  fao_clean %>%
@@ -193,10 +194,10 @@ m_sum_rgn <- name_2_rgn(df_in = sum,
                        fld_name='country', 
                        flds_unique=c('year'))
 
-# these are duplicates for the same region
+# Filter out duplicates - are there others we need to consider? How did we know these were duplicates? Didn't change anything in the df (still 2200 x 5)
 dplyr::filter(m_sum_rgn, country %in% c("Guadeloupe", "Martinique"))
 
-# They will be summed:
+# They will be summed: - not sure what this is doing bc the values are still the same as in the prev iteration of this data frame; decreases number of observations and eliminates country name (now rgn_id)
 m_sum_rgn <- m_sum_rgn %>%
   dplyr::group_by(rgn_id, rgn_name, year) %>%
   dplyr::summarize(value = sum(value)) %>%
@@ -236,13 +237,20 @@ target_harvest <-  rgns %>%
   dplyr::mutate(pressure_score = ifelse(is.na(pressure_score), 0, pressure_score)) %>%
   dplyr::arrange(rgn_id); head(target_harvest); summary(target_harvest)
 
-write_csv(target_harvest, here('globalprep/prs_targetedharvest/v2019/output/fao_targeted.csv', row.names = FALSE)
+
+write_csv(target_harvest, 
+          file.path(here('globalprep/prs_targetedharvest/v2019/output/fao_targeted.csv')))
+
+# v2018 used write.csv and used argument row.names = FALSE, do we need this if using write_csv? 
+
 
 target_harvest_gf <- target_harvest %>%
   dplyr::mutate(gapfill = 0) %>%
   dplyr::select(rgn_id, year, gapfill)
+# all zeroes for gapfill column, does that make sense? 
 
-write_csv(target_harvest_gf, here('globalprep/prs_targetedharvest/v2019/output/fao_targeted_gf.csv', row.names = FALSE)
+write_csv(target_harvest_gf,
+          file.path(here('globalprep/prs_targetedharvest/v2019/output/fao_targeted_gf.csv')))
 
 ```
 
@@ -254,10 +262,11 @@ In this case, all of the regions looked very similar.
 ******LEFT OFF HERE!!!******
 
 ```{r, eval=FALSE}
-new <- read.csv("output/fao_targeted.csv") %>% 
+new <- read_csv("output/fao_targeted.csv") %>% 
   filter(year==2015)
+# pull just 2015 data from target_harvest df - should we change this to a more recent year for v2019?
 
-old <- read.csv("../v2017/output/fao_targeted.csv") %>%
+old <- read_csv("../v2018/output/fao_targeted.csv") %>%
   #mutate(year== year-2) %>% 
   dplyr::filter(year == 2015) %>%
   dplyr::select(rgn_id, year, pressure_score_old=pressure_score) %>%
@@ -266,7 +275,6 @@ old
 
 plot(pressure_score ~ pressure_score_old, data=old)
 abline(0, 1, col="red")
-
 
 compare_plot <- ggplot(data = old, aes(x=pressure_score_old, y= pressure_score, label=rgn_id))+
   geom_point()+
