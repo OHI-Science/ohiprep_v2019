@@ -52,13 +52,15 @@ library(stringr)
 library(tidyr)
 library(zoo)  
 library(ggplot2)
-setwd(here::here("globalprep","np","v2018"))
+
+## remove this setwd!
+setwd(here::here("globalprep/np/v2018"))
 
 
 ## Load FAO-specific user-defined functions
-source('../../../src/R/fao_fxn.R') # function for cleaning FAO files
-source('../../../src/R/common.R') # directory locations
-source('R/np_fxn.R')
+source(here('workflow/R/fao_fxn.R') # function for cleaning FAO files
+source(here('workflow/R/common.R')) # directory locations
+source(here('globalprep/np/v2018/R/np_fxn.R'))
 
 ```
 
