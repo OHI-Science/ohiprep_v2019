@@ -137,16 +137,17 @@ if(!file.exists(file.path(dirname(dir_github), 'README.md'))) {
 raw <- list.files(file.path(dir_server, sprintf("CIESEandCIAT_population/%s", data_yr_gpw)),
                   full.names = TRUE, pattern = "\\.tif$",
                   recursive = TRUE)
-raw <- raw[grep("density", raw)]
-raw # check that this looks correct; what would indicate that it is/is not correct?
+raw <- raw[grep("density", raw)] # keep only the files that include the word "density"
+raw # check that this looks correct; can double check with the folder on Mazu server folder
 
 ohi_rasters() # loads rasters
-eez_raster <- zones # sourced from ohi_rasters()
+# eez_raster <- zones # sourced from ohi_rasters()
 
 ## import raw, cleaned UN population data to be wrangled then used to confirm gpw-derived spatial population
 pop <- read.csv(file.path(dir_server, 
                           sprintf("UnitedNations_population/%s/UN_pop_clean.csv", data_yr_un_pop)), 
                 strip.white = TRUE, stringsAsFactors = FALSE)
+
 ```
 
 # Methods and Calculations
@@ -156,21 +157,26 @@ pop <- read.csv(file.path(dir_server,
 Gridded world population densities from CIESE and CIAT are projected into the World Mollweide coordinate reference system and resampled using nearest neighbor method to match the ocean raster which is sourced from spatial_commons.R and has 934.4789 x 934.4789 meter resolution.
 
 ```{r manipulate spatial data, eval=FALSE}
-## convert year to numeric, project raster, resample, and save human_density_year_mol.tifs with these updates
+## Resample resolution and CRS of population data, convert year to numeric, project rasters and save human_density_year_mol.tifs to server with these updates
+# set up a loop to go through raw data frame, convert to a mollweide CRS:
 
-cl <- makeCluster(5)
+cl <- makeCluster(5) # 5 clusters for 5 files being targeted
 registerDoParallel(cl)
 foreach(i = raw, .packages = c("raster", "rgdal", "stringr")) %dopar% {
-  yr <- as.numeric(as.character(str_sub(i, -8, -5)))
-  raster::raster(i) %>%
-    raster::projectRaster(crs = crs(ocean), res = res(ocean), over = TRUE, method = "ngb",
-                          filename = file.path(dir_github, sprintf("int/human_density_%s_mol.tif", yr)),
-                          overwrite = TRUE)
+  # i = raw[1] send this down alone and check to see which file it calls; see if there are any errors in file naming
+  yr <- as.numeric(as.character(str_sub(i, -17, -14))) # counts backwards by character in file name to grab the year digits
+  raster::raster(i) %>% # read in file path to raster
+    raster::projectRaster(crs = crs(ocean), res = res(ocean), over = TRUE, method = "ngb", # convert large grids to small grids using nearest neighbor method
+                          filename = file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, yr)), # write to the server because the files are so large
+                          overwrite = TRUE, progress = "text")
+# raster_check <- raster(file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, yr)))
 } 
-# this line takes a while to run - ran for 30+ min and still didn't finish?
 
 stopCluster(cl)
 closeAllConnections()
+
+# this takes a while to run: ~30-45 min; will generate some warnings 
+
 
 # for(rast in raw){
 #   yr <- as.numeric(as.character(str_sub(rast, -8, -5)))
@@ -188,35 +194,43 @@ GWPv4 data is for years 2005, 2010, 2015, and 2020. Data for missing years must 
 
 ```{r functions for interpolation, eval=FALSE}
 ## define and apply function to calculate yearly change in population density
-files <- list.files(file.path(dir_github, "int"), pattern = "density_\\d{4}_mol.tif$", full = TRUE)
+files <- list.files(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2019/int"), pattern = "human_density_\\d{4}_mol.tif$", full = TRUE)
+# Can I replace v2019 with a %s so this is reproducible next year?
 
+# Create function for average yearly change
 yearly_diff <- function(year_min, year_max, density_files = files){
   rast_diff <- stack(density_files[grep(year_max, density_files)], density_files[grep(year_min, density_files)]) %>%
     overlay(fun = function(x, y){(x - y)/5},
-            filename = file.path(dir_github, sprintf("int/yearly_change_%s_to_%s.tif", year_min, year_max)),
+            filename = file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/yearly_change_%s_to_%s.tif", scenario_yr, year_min, year_max)),
             overwrite = TRUE)
 }
 
-# these functions aren't working - am I typing the syntax wrong or is it missing something?? 
-# Error message:  Error in if (x == "" | x == ".") { : argument is of length zero 
-yearly_diff(year_min = 2000, year_max = 2005)
+
+# Create four rasters for each set of data
+yearly_diff(year_min = 2000, year_max = 2005) # this should save 2001, 2002, 2003, etc to estimate intervening years using a linear model - check to make sure it's being saved in the Mazu directory properly
 yearly_diff(year_min = 2005, year_max = 2010)
 yearly_diff(year_min = 2010, year_max = 2015)
 yearly_diff(year_min = 2015, year_max = 2020)
 
+
 ## define and apply function to interpolate population densities for years between years in dataset
+# Apply the difference to each year, overwrite as new rasters
+# Can double check this by running just one (i = 1)
 yearly_interpolate <- function(year, start_raster, yearly_change){
     for(i in 1:4){
+      # i = 1 send this down to see what the loop produces when i=1 
       raster::overlay(raster::raster(start_raster), raster::raster(yearly_change), fun = function(x, y){(x + i*y)},
-              filename = file.path(dir_github, sprintf("int/human_density_%s_mol.tif", (year+i))),
+              filename = file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, (year+i))),
               overwrite = TRUE)
     }
 }
 
-## interpolate missing years
-files <- list.files(file.path(dir_github, "int"), pattern = ".tif$", full = TRUE)
 
-# same error message as 201-205 lines above - what is supposed to be happening here?
+
+## interpolate missing years
+files <- list.files(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2019/int"), pattern = ".tif$", full = TRUE)
+# Can I replace v2019 with a %s so this is reproducible next year?
+
 for(i in c(2000, 2005, 2010, 2015)) {
   yearly_interpolate(i, start_raster = files[grep(sprintf("density_%s_mol",i), files)],
                      yearly_change = files[grep(sprintf("change_%s_to_%s", i, i+5), files)])
@@ -260,23 +274,25 @@ closeAllConnections()
 # }
 ```
 
-## Load EEZ + 25-mile Inland Raster and Shapefile
+## Load EEZ + 25-mile Inland Raster
 
 ```{r create eez + 25-mile inland raster, eval=FALSE}
 
-# shapefile
-inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/globalprep/spatial/v2017/EEZ_inland_25mi"), 
-            layer = "EEZ_inland_25mi")
-
-inland <- sf::read_sf(dsn = file.path(dir_M, "git-annex/Global/NCEAS-Regions_v2014/data"), 
-                      layer = "sp_inland25mi_gcs") %>% select(rgn_id, geometry)
-plot(inland)
+# No longer using shape files, raster only
 
 # raster
 eez_25mi_inland <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2019/ocean_plus25mile_inland.tif"))
 
 # Make sure that the layers make sense!
-plot(eez_25mi_inland) # this doesnt really make sense... what do the numbers mean? need to dig into this 
+plot(eez_25mi_inland) # will appear to only feature the Antarctic ocean; can check that gray area actually has data. Because we don't include this region in the OHI, the raster has CCAMLR IDs for points in this region, which appear to have high region ID values.
+click(eez_25mi_inland)
+# Click on gray areas on the map and region IDs will pop up - the data are there! 
+
+# Want to make sure we're including 10km inland - zoom in on smaller region using zoom()
+zoom(eez_25mi_inland)
+# Once you select a small area to zoom in on, you can layer the outline of the land and EEZ boundaries to make sure the EEZ goes 10km inland:
+regions_shape()
+plot(regions[1], color = NA, add = TRUE)
 
 ```
 
@@ -287,7 +303,7 @@ Stack rasters of population counts for each year, sum within regions (using eez_
 
 ```{r extract population data from all population layers, eval=FALSE}
 
-pop_stack <- raster::stack(list.files(file.path(dir_github, "int"), pattern = "count_\\d{4}_mol.tif$", full = TRUE)) # stack
+pop_stack <- raster::stack(list.files(file.path(dir_server, "int"), pattern = "count_\\d{4}_mol.tif$", full = TRUE)) # stack
 coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland, fun="sum", progress="text") # sum within zones (regions as specified by eez_25mi_inland)
 
 write.csv(coastal_pop, paste0(scenario_yr, "/int/coastal_pop_zonal_sums.csv"), row.names = FALSE)
