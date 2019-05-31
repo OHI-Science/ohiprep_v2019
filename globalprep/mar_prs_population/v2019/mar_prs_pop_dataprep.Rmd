@@ -235,6 +235,10 @@ for(i in c(2000, 2005, 2010, 2015)) {
   yearly_interpolate(i, start_raster = files[grep(sprintf("density_%s_mol",i), files)],
                      yearly_change = files[grep(sprintf("change_%s_to_%s", i, i+5), files)])
 }
+
+# check a random raster from the mazu folder
+density_2018 <- raster(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2019/int/human_density_2018_mol.tif"))
+plot(density_2018)
 ```
 
 ## Convert Density to Population Counts
@@ -243,35 +247,25 @@ Density data are converted to population by multiplying density times the area o
 
 ```{r convert density data to population count, eval=FALSE}
 
-den_raster <- list.files(file.path(dir_github, "int"), pattern = "density_\\d{4}_mol.tif$", full = TRUE)
-den_raster # check to make sure this looks correct; all and only density tifs in folder
-## currently isn't finding anything; should I move the files over from v2018? 
+den_raster <- list.files(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2019/int"), pattern = "density_\\d{4}_mol.tif$", full = TRUE)
+den_raster # check to make sure this looks correct; should only have human_density tif files for each interpolated year
 
 cl <- makeCluster(5)
 registerDoParallel(cl)
 
 foreach(i = den_raster, .packages = c("raster", "rgdal", "stringr")) %dopar% {
+  # i = den_raster[1] - does i generate the 2000 raster?
   nm <- basename(i)
-  yr <- stringr::str_sub(nm, -12, -9)
+  yr <- stringr::str_sub(nm, -12, -9) # pulls out the year from the file name
   cat(nm)
-  tmp <- raster::raster(i)
-  raster::calc(tmp, fun = function(x){x * (934.4789 * 934.4789 * 0.000001)},
-       filename = file.path(dir_github, sprintf("int/human_count_%s_mol.tif", yr)),
-       overwrite=TRUE)
+  tmp <- raster::raster(i) # reads in raster
+  raster::calc(tmp, fun = function(x){x * (934.4789 * 934.4789 * 0.000001)}, # convert to m2 from km2
+       filename = file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/v2019/int/human_count_%s_mol.tif", yr)),
+       overwrite=TRUE) # writes a human count raster to the intermediate folder
 }
 stopCluster(cl)
 closeAllConnections()
 
-# for(rast in den_raster){
-#   nm <- basename(rast)
-#   yr <- str_sub(nm, -12, -9)
-#   cat(nm)
-#   tmp <- raster(rast)
-#   calc(tmp, fun = function(x){x * (934.4789 * 934.4789 * 0.000001)},
-#        filename = file.path(dir_github, sprintf("int/human_count_%s_mol.tif", yr)),
-#        overwrite = TRUE)
-#   print(file.path(dir_github, sprintf("int/human_count_%s_mol.tif", yr))) # check
-# }
 ```
 
 ## Load EEZ + 25-mile Inland Raster
@@ -303,8 +297,13 @@ Stack rasters of population counts for each year, sum within regions (using eez_
 
 ```{r extract population data from all population layers, eval=FALSE}
 
-pop_stack <- raster::stack(list.files(file.path(dir_server, "int"), pattern = "count_\\d{4}_mol.tif$", full = TRUE)) # stack
+pop_rasters <- list.files(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2019/int"), pattern = "count_\\d{4}_mol.tif$", full = TRUE) # should list all the human_count files in folder
+
+pop_stack <- raster::stack(pop_rasters) # stack rasters
+
 coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland, fun="sum", progress="text") # sum within zones (regions as specified by eez_25mi_inland)
+# right now, eez 25 mi raster doesn't match extent of the pop_rasters - Mel will expand it! 
+
 
 write.csv(coastal_pop, paste0(scenario_yr, "/int/coastal_pop_zonal_sums.csv"), row.names = FALSE)
 

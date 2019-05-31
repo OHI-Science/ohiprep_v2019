@@ -22,8 +22,6 @@ This analysis converts FAO capture production data into the OHI 2019 targeted ha
 #Updates from previous assessment
 One more year of data
 
-From v2018: The species2group.csv file was udated: South America Sea Lion is not a cetacean therefore was assigned the pinniped order and excluded from the target list. 
-
 v2019: Adding in here() where appropriate and incorporating read_csv() etc, changed some objects to have more descriptive names
 
 
@@ -55,10 +53,9 @@ library(here)
 library(janitor)
 
 ### Load FAO-specific user-defined functions
+## add here() to these file paths
 source('../../../workflow/R/fao_fxn.R') # function for cleaning FAO files (not combined into common.R like most other functions have been at this point)
 source('../../../workflow/R/common.R') # directory locations
-
-# Should we establish dir_github here?
 
 ```
 
@@ -68,7 +65,7 @@ This includes the FAO capture production data and a list of the "target" species
 
 ```{r, eval=FALSE}
 
-## FAO capture production data - all columns being parsed as characters and producing error in one column, but not sure which?
+## FAO capture production data - all columns being parsed as characters and producing error in one column, but not sure which? (read.csv might help avoid this error?)
 fis_fao_raw <-  read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_capture/d2019/Global_capture_production_Quantity_1950-2017.csv'))
 
 # fis_fao_old <-  read_csv(file.path(dir_M, #'git-annex/globalprep/_raw_data/FAO_capture/d2018/Global_capture_production_Quantity_1950-2016.#csv'))
@@ -116,7 +113,8 @@ This analysis only includes target species.  The warning messages need to be che
 spgroups <-  sort(as.character(unique(fao_clean$species)))
 groups <-  c('turtle', 'seal', 'whale', 'sea lion', 'dolphin', 'porpoise')
 
-# what is this for loop doing? want to add a description here 
+# Going through FAO data species and seeing if they're in our master list of species
+## do we need to add species that have changed name? 
 for (group in groups) { #group='dolphin'
 possibles <- spgroups[grep(group, spgroups)]
 d_missing_l <-  setdiff(possibles, sp2grp$species)
