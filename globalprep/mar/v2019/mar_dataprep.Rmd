@@ -122,14 +122,13 @@ mar <- mar %>%
 Update species name in the `raw/species_list.csv` file with names in the `mar` dataset (exclude non-food species). I simplified the species_list.  I cut the "species" name columns because it wasn't clear what this was trying to accomplish and created potential error.  
 
 ```{r}
-
 ## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.
-#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-#  select(FAO_name, exclude, alias, Taxon_code)
+mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+  select(FAO_name, exclude, alias, Taxon_code)
 #mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
 #  select(FAO_name, exclude_no_seaweed, alias, Taxon_code)
-mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-  select(FAO_name, exclude_no_nei, alias, Taxon_code)
+#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+#  select(FAO_name, exclude_no_nei, alias, Taxon_code)
 
 new.spp <- setdiff(mar$FAO_name, mar_sp$FAO_name)
 new.spp # check: if dim has 0 rows it means all match
@@ -305,7 +304,7 @@ See how may NA values were converted to 0
 ```{r}
 table(mar_rgn_gf$gap_0_fill)
 ## 3790 of these out of 27810+3790 cases had NA values converted to 0 - 2018 assessment
-## 3763 of these out of 27797+3763 cases had NA values converted to 0 - 2019 assessment
+## 3763 of these out of 27839+3766 cases had NA values converted to 0 - 2019 assessment
 ```
 
 Remove species-region-environment time series with less than four years of mariculture production > 0 tonnes (assume these are not established mariculture programs).
@@ -393,6 +392,7 @@ sus_rgn <- bind_rows(sus_rgn, sus_no_rgn) %>%
 
 ## Make sure same species are spelled the same in the two data tables (e.g. check that there are no extra spaces)
 sort(setdiff(sus_rgn$species_fao, maric$species)) # species that are no longer have mariculture industry or are not included due to being freshwater or non-food
+
 
 sort(setdiff(maric$species, sus_rgn$species_fao)) # FAO species with no Trujillo data - there will probably be a long list
 
