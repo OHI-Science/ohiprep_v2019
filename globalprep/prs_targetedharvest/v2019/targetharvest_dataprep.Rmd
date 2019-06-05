@@ -8,12 +8,13 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../src/templates/ohi_hdr.html' # delete/change this link? 
   pdf_document:
     toc: true
 ---
 
 [REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2017/targetharvest_dataprep.html]
+^ this is old, should we change it to the latest data prep file? 
 
 #Summary
 This analysis converts FAO capture production data into the OHI 2019 targeted harvest pressure data.  
@@ -44,10 +45,7 @@ FAO Global Capture Production Quantity 1950_2017
 
 # load libraries, set directories
 library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
-library(dplyr)
-library(stringr)
-library(tidyr)
-library(ggplot2)
+library(tidyverse)
 library(plotly)
 library(here)
 library(janitor)
@@ -124,13 +122,16 @@ d_missing_l <-  setdiff(possibles, sp2grp$species)
   }
 }
 
+# confused because error message is being printed that says lots of species are missing from each group, but d_missing_l is empty? does this mean that these species don't exist in the sp2grp table?
+
+# Andrew's beaked whale says it is "MISSING in the lookup the following species in target='whale'" - it is present in the fao_clean file but not in the sp2grp table (only 69 spp here)
+
 # check for species in lookup not found in data
 l_missing_d <-  setdiff(sp2grp$species, spgroups)
 if (length(l_missing_d)>0){
   cat(sprintf('\nMISSING: These species in the lookup are not found in the FAO data \n'))
   print(l_missing_d)
 }
-# nothing missing here
 
 ## filter data to include only target species ----
 target_spp <-  fao_clean %>%
