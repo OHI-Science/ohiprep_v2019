@@ -299,7 +299,7 @@ Stack rasters of population counts for each year, sum within regions (using eez_
 
 pop_rasters <- list.files(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2019/int"), pattern = "count_\\d{4}_mol.tif$", full = TRUE) # should list all the human_count files in folder
 
-pop_stack <- raster::stack(pop_rasters) # stack rasters
+pop_stack <- raster::stack(pop_rasters) # stack human_count rasters 2000-2020
 
 coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland, fun="sum", progress="text") # sum within zones (regions as specified by eez_25mi_inland)
 # right now, eez 25 mi raster doesn't match extent of the pop_rasters - Mel will expand it! 
