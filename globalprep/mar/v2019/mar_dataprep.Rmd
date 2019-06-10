@@ -49,7 +49,7 @@ Mariculture Sustainability Index (Trujillo 2008)
 
 Trujillo, Pablo. 2008. “Using a Mariculture Sustainability Index to Rank Countries’ Performance.” In Fisheries Centre Research Reports, edited by Jackie Alder and Daniel Pauly. University of British Columbia, Vancouver, Canada: Fisheries Centre Research Reports. https://circle.ubc.ca/handle/2429/40933. 
 
-Original data table is located in the Trujillo 2008 paper saved in the OHI Zotero database.
+Original data table is located in the Trujillo 2008 paper saved in the OHI Zotero database. Report starts on page 28 of the link provided in the reference. 
 
 **Description**:  
 
@@ -123,16 +123,17 @@ Update species name in the `raw/species_list.csv` file with names in the `mar` d
 
 ```{r}
 ## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.
-mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-  select(FAO_name, exclude, alias, Taxon_code)
+#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+#  select(FAO_name, exclude, alias, Taxon_code)
 #mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
 #  select(FAO_name, exclude_no_seaweed, alias, Taxon_code)
-#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-#  select(FAO_name, exclude_no_nei, alias, Taxon_code)
+mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+  select(FAO_name, exclude_no_nei, alias, Taxon_code)
 
 new.spp <- setdiff(mar$FAO_name, mar_sp$FAO_name)
 new.spp # check: if dim has 0 rows it means all match
-## if there is a list of species, hand check species_list.csv to see whether to keep (exclude seaweeds and species harvested for ornamental/medicinal), check if synonyms match Trujillo names
+## if there is a list of species, hand check species_list.csv to see whether to keep (exclude seaweeds and species harvested for ornamental/medicinal), check if synonyms match Trujillo names. 
+## This is outlined in issue #8 and issue #81 for reference. You need to add the species output from this to species_list.csv and fill out the corresponding information. I.e. add FAO_name, exlude (whether to include in assessment or not. If they are only harvested for medicinal purposes, do not include), alias, and Taxon_code to species_list.csv.
 
 ## REMOVE SPECIES not relevant to mariculuture goal (i.e., non-food species)
 mar <- mar %>% left_join(mar_sp, by="FAO_name") 
@@ -283,7 +284,7 @@ mar_rgn_spread <- spread(mar_rgn, year, value)
 dim(mar_rgn_spread)
 
 ## turn data frame back into long format
-mar_rgn_gf <- gather(mar_rgn_spread, "year", "value", num_range("",1950:2016)) %>%
+mar_rgn_gf <- gather(mar_rgn_spread, "year", "value", num_range("",1950:2017)) %>%
   arrange(rgn_id, species, year, Taxon_code, fao, environment) 
 
 ## NA values are converted to zero.
@@ -304,7 +305,7 @@ See how may NA values were converted to 0
 ```{r}
 table(mar_rgn_gf$gap_0_fill)
 ## 3790 of these out of 27810+3790 cases had NA values converted to 0 - 2018 assessment
-## 3763 of these out of 27839+3766 cases had NA values converted to 0 - 2019 assessment
+## 3763 of these out of 28694+4291 cases had NA values converted to 0 - 2019 assessment
 ```
 
 Remove species-region-environment time series with less than four years of mariculture production > 0 tonnes (assume these are not established mariculture programs).
@@ -396,6 +397,8 @@ sort(setdiff(sus_rgn$species_fao, maric$species)) # species that are no longer h
 
 sort(setdiff(maric$species, sus_rgn$species_fao)) # FAO species with no Trujillo data - there will probably be a long list
 
+## Hand check each of the species output here. I mainly check to make sure there aren't obvious cases when the species is the same, but the names are presented slightly differently in the lists. For example, some species might have an extra space in the name somewhere. If any of these obvious differences exist, we need to go in and change the names to match. 
+## Its not too surprising (unfortunately) that the FAO list has far more species than the sustainability list. But, I like to go over them to make sure that we are getting sustainability scores for as many species as we can.
 ```
 
 # FAO mariculture and sustainability scores
@@ -726,7 +729,7 @@ genEscapes_gf <- tonnes_esc %>%
   group_by(rgn_id, year) %>%
   summarize(genEscapes = weighted.mean(gapfill, tonnes, na.rm=TRUE)) %>%
   ungroup() %>%
-  filter(year==2016) %>%
+  filter(year==2017) %>%
   select(rgn_id, pressures.score=genEscapes) %>%
   mutate(pressures.score=ifelse(pressures.score=="NaN", NA, pressures.score)) %>%
   data.frame()
@@ -793,7 +796,7 @@ mar_old <- read.csv("../v2018/output/MAR_FP_data.csv") %>%
   filter(rgn_id == 73, year == 2016) %>% 
   select(rgn_id, species, fao, old_value = value)
 mar_new <- read.csv("output/MAR_FP_data.csv") %>% 
-  filter(rgn_id == 73, year == 2016) %>% 
+  filter(rgn_id == 73, year == 2017) %>% 
   select(rgn_id, species, fao, value)
 
 yield <- mar_old %>% 
@@ -821,7 +824,7 @@ mar_old <- read.csv("../v2018/output/MAR_FP_data.csv") %>%
   filter(rgn_id == 207, year == 2016) %>% 
   select(rgn_id, species, fao, environment, old_value = value)
 mar_new <- read.csv("output/MAR_FP_data.csv") %>% 
-  filter(rgn_id == 207, year == 2016) %>% 
+  filter(rgn_id == 207, year == 2017) %>% 
   select(rgn_id, species, fao, environment, value)
 
 yield <- mar_old %>% 
@@ -845,15 +848,15 @@ plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
 
 
 ## Compare yield data for Iceland. Atlantic Salmon increased by a lot between 2018 and 2019 assessment years. 
-mar_old <- read.csv("../v2017/output/MAR_FP_data.csv") %>% 
-  filter(rgn_id == 143, year %in% c(2011:2016)) %>% 
-  select(rgn_id, species, fao, environment, year, old_value = value)
+mar_old <- read.csv("../v2018/output/MAR_FP_data.csv") %>% 
+  filter(rgn_id == 143, year == 2016) %>% 
+  select(rgn_id, species, fao, environment, old_value = value)
 mar_new <- read.csv("output/MAR_FP_data.csv") %>% 
-  filter(rgn_id == 143, year %in% c(2011:2016)) %>% 
-  select(rgn_id, species, fao, environment, year, value)
+  filter(rgn_id == 143, year == 2017) %>% 
+  select(rgn_id, species, fao, environment, value)
 
 yield <- mar_old %>% 
-  full_join(mar_new, by = c("rgn_id","species","fao", "environment", "year")); View(yield)
+  full_join(mar_new, by = c("rgn_id","species","fao", "environment")); View(yield)
 
 
 
@@ -875,7 +878,7 @@ mar_old <- read.csv("../v2018/output/MAR_FP_data.csv") %>%
   filter(rgn_id == 164, year == 2016) %>% 
   select(rgn_id, species, fao, old_value = value)
 mar_new <- read.csv("output/MAR_FP_data.csv") %>% 
-  filter(rgn_id == 164, year == 2016) %>% 
+  filter(rgn_id == 164, year == 2017) %>% 
   select(rgn_id, species, fao, value)
 
 yield <- mar_old %>% 
@@ -898,14 +901,14 @@ plot(compare$prs_score_old, compare$pressure_score);abline(0,1,col="red")
 
 ## Compare yield data for France
 mar_old <- read.csv("../v2018/output/MAR_FP_data.csv") %>% 
-  filter(rgn_id == 179) %>% 
-  select(rgn_id, year, species, fao, old_value = value)
+  filter(rgn_id == 179, year == 2016) %>% 
+  select(rgn_id, species, fao, old_value = value)
 mar_new <- read.csv("output/MAR_FP_data.csv") %>% 
-  filter(rgn_id == 179) %>% 
-  select(rgn_id, year, species, fao, value)
+  filter(rgn_id == 179, year == 2017) %>% 
+  select(rgn_id, species, fao, value)
 
 yield <- mar_old %>% 
-  full_join(mar_new, by = c("rgn_id","species","fao","year")); View(yield)
+  full_join(mar_new, by = c("rgn_id","species","fao")); View(yield)
 
 plot(yield$old_value, yield$value);abline(0,1,col="red")
 
@@ -944,18 +947,18 @@ Compare the three exclusion methods for seaweed species.
 
 ## Read in the three different versions of wrangled data
 ## Best Professional Judgement (BPJ)
-exclude <- read.csv("../v2018/output/GenEsc.csv") %>%
-  filter(year == 2016) %>% # compare the most recent shared year between old and new
+exclude <- read.csv("../v2019/output/GenEsc.csv") %>%
+  filter(year == 2017) %>% # compare the most recent shared year between old and new
   select(rgn_id, prs_score_BPJ=pressure_score)
 
 ## Exclude all seaweeds (no seaweed)
-exclude_no_sw <- read.csv("../v2018/test/GenEsc_no_seaweed.csv") %>%
-  filter(year == 2016) %>% # compare the most recent shared year between old and new
+exclude_no_sw <- read.csv("../v2019/test/GenEsc_no_seaweed.csv") %>%
+  filter(year == 2017) %>% # compare the most recent shared year between old and new
   select(rgn_id, prs_score_no_sw=pressure_score)
 
 ## Exclude only nei seaweeds (no nei)
-exclude_no_nei <- read.csv("../v2018/test/GenEsc_no_nei.csv") %>%
-  filter(year == 2016) %>% # compare the most recent shared year between old and new
+exclude_no_nei <- read.csv("../v2019/test/GenEsc_no_nei.csv") %>%
+  filter(year == 2017) %>% # compare the most recent shared year between old and new
   select(rgn_id, prs_score_no_nei=pressure_score)
 
 
