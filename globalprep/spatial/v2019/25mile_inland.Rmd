@@ -11,11 +11,14 @@ The raster layer has dimensions of 934.4789 m.  This means that about 43 cells e
 
 library(raster)
 library(fasterize)
+library(dplyr)
+library(here)
 
 source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R')
 
 ohi_rasters()
 regions_shape()
+region_data()
 
 tmp <- boundaries(ocean, type="outer", progress="text")
 plot(tmp)
@@ -44,6 +47,9 @@ Next step is to crop out the ocean stuff, leaving only the 25 miles inland area.
 
 # outer layer of buffered raster values equal 1 while the other layers are 0, given the
 # boundaries function methods.  Convert the 1 values to zero.
+
+tmp <- raster::raster(file.path(dir_M, "git-annex/globalprep/spatial/v2019/tmp/ocean_plus25milebuffer.tif"))
+
 
 tmp[tmp > 0] <- 0
 
@@ -76,12 +82,38 @@ plot(regions[1], add=TRUE, col=NA)
 
 ## One more check (just want to see what the inland raster looks like without the ocean area included)
 regions_land <- regions[regions$rgn_type %in% c("land", "land-disputed"),]
-regions_land_raster <- fasterize::fasterize(regions_land, tmp) 
+regions_land_raster <- fasterize::fasterize(regions_land, tmp, field = "rgn_id") 
 
 inland_only <- raster::mask(tmp, regions_land_raster, progress="text")
-plot(rast_stack)
-plot(extent_tmp, add=TRUE)
-plot(crop(rast_stack, extent_tmp))
-plot(regions[1], add=TRUE, col=NA)
 
+rast_stack <- stack(inland_only, regions_land_raster)
+
+calc(rast_stack, fun=sum, 
+     filename = file.path(dir_M, "git-annex/globalprep/spatial/v2019/25mile_inland.tif"),
+     progress="text")
+
+inland_only <- raster::raster(file.path(dir_M, "git-annex/globalprep/spatial/v2019/25mile_inland.tif"))
+plot(inland_only)
+
+area_25mi_inland <- freq(inland_only, progress="text")
+area_25mi_inland_format <- data.frame(area_25mi_inland) %>%
+  select(rgn_id = value, raster_cells = count) %>%
+  mutate(area_km2 = raster_cells*0.8732508) %>%
+  select(rgn_id, area_km2)
+  
+write.csv(area_25mi_inland_format, here("globalprep/spatial/v2019/output/area_km2_25mi_inland.csv"), row.names=FALSE)
+
+old_area <- read.csv("globalprep/mar_prs_population/v2018/int/area_km2_25mi.csv") %>%
+  select(rgn_id, old_area_km2 = area_km2)
+area_compare <- left_join(area_25mi_inland_format, old_area, by="rgn_id") %>%
+  filter(rgn_id != 213, 
+         rgn_id <= 250)
+
+library(ggplot2)
+library(plotly)
+compare_plot <- ggplot(area_compare, aes(x=area_km2, y=old_area_km2, text=rgn_id))+
+  geom_point() + 
+  geom_abline(slope=1, intercept=0, color="red")
+
+ggplotly(compare_plot) # 73 (Russia) and 218 (Canada) much higher, this makes sense looking at the previous version of the 25 mile inland data.
 ```
