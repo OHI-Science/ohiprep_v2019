@@ -164,14 +164,19 @@ Gridded world population densities from CIESE and CIAT are projected into the Wo
 cl <- makeCluster(5) # 5 clusters for 5 files being targeted
 registerDoParallel(cl)
 foreach(i = raw, .packages = c("raster", "rgdal", "stringr")) %dopar% {
-  # i = raw[1] send this down alone and check to see which file it calls; see if there are any errors in file naming
+#  i = raw[1] # send this down alone and check to see which file it calls; see if there are any errors in file naming
   yr <- as.numeric(as.character(str_sub(i, -17, -14))) # counts backwards by character in file name to grab the year digits
   raster::raster(i) %>% # read in file path to raster
     raster::projectRaster(crs = crs(ocean), res = res(ocean), over = TRUE, method = "ngb", # convert large grids to small grids using nearest neighbor method
                           filename = file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, yr)), # write to the server because the files are so large
                           overwrite = TRUE, progress = "text")
-# raster_check <- raster(file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, yr)))
+  
+raster::raster(file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, yr))) %>% 
+  raster::resample(ocean, method = 'ngb', overwrite = TRUE, filename = file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, yr)))
 } 
+
+# read in the created resampled raster and make sure it matches the eez_25mi_inland raster (projection and extents)
+
 
 stopCluster(cl)
 closeAllConnections()
@@ -304,9 +309,7 @@ pop_rasters <- list.files(file.path(dir_M, "git-annex/globalprep/mar_prs_populat
 
 pop_stack <- raster::stack(pop_rasters) # stack human_count rasters 2000-2020
 
-eez_25mi_inland_resample <- raster::resample(eez_25mi_inland, pop_stack, method = "ngb", progress="text") # use nearest neighbor approach to find closest cells rather than estimate between them 
-
-coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland_resample, fun="sum", progress="text") # sum within zones (regions as specified by eez_25mi_inland)
+coastal_pop <- raster::zonal(pop_stack, eez_25mi_inland, fun="sum", progress="text") # sum within zones (regions as specified by eez_25mi_inland)
 
 coastal_pop <- as.data.frame(coastal_pop)
 
@@ -327,11 +330,12 @@ write_csv(coastal_pop2, file.path(here("globalprep/mar_prs_population/v2019/outp
 ```
 
 ## Calculate Area of 25mi Inland Buffers
-### WILL DO THIS SECTION LATER... once we have a csv file with inland areas since right now we only have a combined eez+25mi inland raster (only shapefiles are available on Mazu currently)
+
 ```{r calculate area and mar. pressure, eval=FALSE}
 
-# Using the csv created from last year, since we haven't updated area data since 2014: 
-area <- read_csv("globalprep/mar_prs_population/v2018/int/area_km2_25mi.csv")
+# Load in data calculated in spatial folder 
+area <- read_csv(here("globalprep/spatial/v2019/output/area_km2_25mi_inland.csv"))
+
 
 ```
 
@@ -379,62 +383,27 @@ write.csv(mar, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi_gf.csv",
 ### Create `UN_population.csv` for Data-checking
 
 ```{r create un_population.csv, eval=FALSE}
-pop_gather <- pop %>%
-  tidyr::gather("year", "population", starts_with("X")) %>%
-  dplyr::mutate(population = gsub(" ", "", population)) %>%
-  dplyr::mutate(year = gsub("X", "", year)) %>%
-  dplyr::mutate(population = as.numeric(as.character(population)) * 1000)
 
-## ignore Jersey and Guernsey (Channel Islands) for now
-pop_gather_rename <- pop_gather %>%
-  dplyr::mutate(country = ifelse(str_detect(country,"C\\Ste d'Ivoire"), "Cote d'Ivoire", country)) %>%
-  dplyr::mutate(country = ifelse(str_detect(country,"R\\Sunion"), "Reunion", country)) %>%
-  dplyr::mutate(country = ifelse(str_detect(country,"Cura\\Sao"), "Curacao", country)) %>%
-  dplyr::mutate(country = ifelse(country=="China, Taiwan Province of China", "Taiwan", country)) %>%
-  dplyr::mutate(country = ifelse(country=="Dem. People's Republic of Korea", "North Korea", country))
-  
-## organize the data into regions used in OHI, and save
-pop_rgn <- name_2_rgn(df_in = pop_gather_rename, 
-                      fld_name='country', 
-                      flds_unique=c('year'))
+# For v2019, we are using UN Population csv created in v2018 since the data will not be too different from previous years. This is just a data check to make sure we're not off by orders of magnitude! 
 
-## Analysis of name_2_rgn messages (v2019)
+pop_rgn <- read_csv(here('globalprep/mar_prs_population/v2018/output/UN_population.csv'))
 
-# Not matching in v2019: Channel Islands (should we assume these population values are included in the USA population for each year?), Caribbean Netherlands (aka Bonaire, Sint Eustatius and Saba, which are reported separately in OHI), Isle of Man and Palestine (OHI doesn't report these regions). For Caribbean Netherlands, how could we split up the UN population data across the three regions it encompasses? 
-
-# All removed data are from landlocked/disputed regions - looks good 
-
-# Duplicated regions (9): "China", "China, Hong Kong SAR" "China, Macao SAR", "Guadeloupe", "Martinique", "Puerto Rico", "United States Virgin Islands", "Guam", "Northern Mariana Islands" - what does this mean and how do we address this error?
-
-# Also - regions 1-5 aren't included, even though there are population values for them in the pop_rescaled df (was this just to generate pressure scores?)
-
-pop_rgn <- pop_rgn %>%
-  dplyr::group_by(rgn_id, year) %>%
-  dplyr::summarize(population = sum(population)) %>%
-  data.frame()
-
-write.csv(pop_rgn, sprintf("%s/output/UN_population.csv", scenario_yr), row.names = FALSE)
 ```
 
 ### Compare `UN_population` with Calculated Count
 
 ```{r check full calculated population against latest UN population data, eval=FALSE}
-# compare_yr <- substr(scenario_yr, 2, 5) # do we want this to be 2019 even though UN data doesn't go past 2015?
 compare_yr <- 2015 # doing below functions for comparison between raster and UN popn data for 2015
 
 ## sum counts regionally for the scenario year
 pop_rast <- raster(file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_count_%s_mol.tif", scenario_yr, compare_yr)))
 zones <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/regions_land_ocean.tif")) # pulling from 2017 server data
-pop_counts <- zonal(pop_rast, zones, fun = "sum", na.rm = TRUE) # different extent - resample?
-
-zones_resamp <- raster::resample(zones, pop_rast, method = "ngb", progress="text") # use nearest neighbor approach to find closest cells rather than estimate between them 
-pop_counts <- raster::zonal(pop_rast, zones_resamp, fun = "sum", na.rm = TRUE, progress="text") 
+pop_counts <- zonal(pop_rast, zones, fun = "sum", na.rm = TRUE, progress="text") # different extent - resample?
 
 
 pop_UN <- pop_rgn %>%
   dplyr::filter(year == compare_yr) %>%
   dplyr::select(rgn_id, pop_UN = population)
-# data are only going up to 2015? 
 
 ## join filtered UN population and summed calculated counts
 compare_pop <- data.frame(pop_counts) %>%
@@ -442,7 +411,7 @@ compare_pop <- data.frame(pop_counts) %>%
   dplyr::left_join(pop_UN, by="rgn_id") %>% 
   filter(!is.na(pop_UN))
 
-## check plot - should we investigate outliers? 
+## check plot - investigate outliers (post to issue first)
 library(plotly)
 pop_compare_plot <- ggplot(compare_pop) +
   geom_point(aes(pop_rast, pop_UN, label = rgn_id), alpha = .6) +
