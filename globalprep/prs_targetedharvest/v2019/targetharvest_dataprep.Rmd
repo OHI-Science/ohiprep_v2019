@@ -68,7 +68,7 @@ fis_fao_raw <-  read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_ca
 
 # fis_fao_old <-  read_csv(file.path(dir_M, #'git-annex/globalprep/_raw_data/FAO_capture/d2018/Global_capture_production_Quantity_1950-2016.#csv'))
 
-# species list - used same raw files from last year
+# species list - used same raw files from v2018
 sp2grp <-  read_csv(here('globalprep/prs_targetedharvest/v2019/raw/species2group.csv')) %>%
   dplyr::filter(incl_excl == 'include') %>%
   dplyr::select(target, species); head(sp2grp)
@@ -108,12 +108,12 @@ This analysis only includes target species.  The warning messages need to be che
 
 # check for discrepancies in species list
 ## seals are no longer included (so these errors can be ignored):
-spgroups <-  sort(as.character(unique(fao_clean$species)))
-groups <-  c('turtle', 'seal', 'whale', 'sea lion', 'dolphin', 'porpoise')
+spgroups <-  sort(as.character(unique(fao_clean$species))) # species groups in FAO data 
+groups <-  c('turtle', 'seal', 'whale', 'sea lion', 'dolphin', 'porpoise') # if seals aren't included, should we remove them from this vector? 
 
 # Going through FAO data species and seeing if they're in our master list of species
 ## do we need to add species that have changed name? 
-for (group in groups) { #group='dolphin'
+for (group in groups) {# group='dolphin'
 possibles <- spgroups[grep(group, spgroups)]
 d_missing_l <-  setdiff(possibles, sp2grp$species)
   if (length(d_missing_l)>0){
@@ -122,7 +122,7 @@ d_missing_l <-  setdiff(possibles, sp2grp$species)
   }
 }
 
-# confused because error message is being printed that says lots of species are missing from each group, but d_missing_l is empty? does this mean that these species don't exist in the sp2grp table?
+# error message is being printed that says lots of species are missing from each group, but d_missing_l is empty? does this mean that these species don't exist in the sp2grp table?
 
 # Andrew's beaked whale says it is "MISSING in the lookup the following species in target='whale'" - it is present in the fao_clean file but not in the sp2grp table (only 69 spp here)
 
@@ -133,9 +133,12 @@ if (length(l_missing_d)>0){
   print(l_missing_d)
 }
 
+#l_missing_d = 0, does this mean that the species are in the data but missing in lookup?
+# both of these are empty; does that mean it's OK to proceed? 
+
 ## filter data to include only target species ----
 target_spp <-  fao_clean %>%
-  dplyr::filter(species %in% sp2grp$species)
+  dplyr::filter(species %in% sp2grp$species) # this goes from 2144 spp in FAO list to just 69
 
 unique(target_spp$area) # confirm these are all marine regions
 
@@ -147,7 +150,7 @@ unique(target_spp$area) # confirm these are all marine regions
 
 ```{r, eval=FALSE}
 
-# spread wide to expand years
+# widen spread to expand years
 wide = target_spp %>%
   tidyr::spread(year, value) %>%
   dplyr::left_join(sp2grp, by='species'); head(wide)
@@ -164,12 +167,12 @@ long = wide %>%
 
 
 # explore Japan[210]
-long %>% 
+japan <- long %>% 
   dplyr::group_by(country, target, year) %>%
   dplyr::summarize(value = sum(value)) %>% 
   dplyr::filter(country == 'Japan', target == 'cetacean', year >= 2000) 
 
-# summarize totals per region per year
+# summarize totals per region per year - number of individual animals from each spp group? 
 sum = long %>%
   dplyr::group_by(country, year) %>%
   dplyr::summarize(value = sum(value, na.rm=TRUE)) %>%
@@ -216,7 +219,7 @@ target_harvest <- m_sum_rgn %>%
   dplyr::select(rgn_id, year, pressure_score = score) %>%
   dplyr::arrange(rgn_id, year); head(target_harvest); summary(target_harvest)
   
-#quant_95= 160761
+#quant_95= 160761 <- significance of this? 
 
 
   # any regions that did not have a catch should have score = 0 
@@ -227,7 +230,7 @@ rgns <-  rgn_master %>%
   base::unique() %>%
   dplyr::arrange(rgn_id)
 
-# do we want to update this to a rgn list more recent than 2013??
+# This is just a list of rgn IDS - do we want to update it to a rgn list more recent than 2013?
   
 rgns <- expand.grid(rgn_id = rgns$rgn_id, year = min(target_harvest$year):max(target_harvest$year))
   
@@ -239,8 +242,6 @@ target_harvest <-  rgns %>%
 
 write_csv(target_harvest, 
           file.path(here('globalprep/prs_targetedharvest/v2019/output/fao_targeted.csv')))
-
-# v2018 used write.csv and used argument row.names = FALSE, do we need this if using write_csv? 
 
 
 target_harvest_gf <- target_harvest %>%
@@ -258,7 +259,6 @@ The data from last year and this year should be the same unless there were chang
 
 In this case, all of the regions looked very similar.
 
-******LEFT OFF HERE!!!******
 
 ```{r, eval=FALSE}
 new <- read_csv("output/fao_targeted.csv") %>% 
@@ -283,4 +283,13 @@ plot(compare_plot)
 ggplotly(compare_plot)
 
 ```
+
+
+
+
+
+
+
+
+
 
