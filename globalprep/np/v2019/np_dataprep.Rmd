@@ -70,7 +70,7 @@ Simultaneously read and process FAO commodities value and quantity data.
 ## NOTE: This can be run as a loop, but the "value" and "quant" datasets need to be run individually to make sure
 ## there are no problems (after this check, they can be looped for efficiency)
 
-dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2019')
+dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2019') # creates a directory to where files are stored
 
 files <- list.files(dir_fao_data, pattern=glob2rx('*.csv'), full.names=T)
 
@@ -172,7 +172,7 @@ Combining the quantity and value data and a bit of cleaning to remove data prior
 
 h_tonnes <- read.csv('int/tonnes.csv')
 
-h_usd <- read.csv('int/usd.csv') # didn't save a file by this name, where is it coming from?
+h_usd <- read.csv('int/usd.csv')
 
 ## concatenates h_tonnes and h_usd data
 ## h includes rgn_name, rgn_id, commodity, product, year, tonnes, usd.
@@ -183,6 +183,8 @@ h <- h_usd %>%
 
 ## clips out years prior to first reporting year, for each commodity per region
 h <- h %>% np_harvest_preclip
+
+# tonnes and usd values are the same in this df
 
 ```
 
@@ -227,12 +229,17 @@ h <- h %>% np_lowdata_filter()
 ## NOTE: This filter has consequences for the regression, but also has meaning in terms of 
 ## not inflicting a penalty on regions trying, and then stopping, an experimental harvest.
 
+################################
+
 h <- h %>% add_georegion_id()
 ## Melanie's script to add a georegional ID tag based on country keys and IDs.
+# not finding this function; went into np_fxn.R file to investigate and the file it's trying to pull from isn't in the ohi-global/eez/layers folder 
 
+################################
 
 h <- h %>% np_regr_fill(years_back = 10, vars = 'td', scope = 'rgn_id')
 h <- h %>% np_regr_fill(vars = 'tdy', scope = 'georgn_id')
+################# error here: column 'georgn_id' is unknown
 h <- h %>% np_regr_fill(vars = 'tdy', scope = 'global')
 ## np_regr_fill() is a generalized regression gapfill function. Parameters (with defaults):
 ## * years_back=50 (int):     This determines how far back in the time series to include within the regression.
@@ -292,7 +299,7 @@ h_x_usd <- h_comm %>%
   arrange(rgn_name, product, commodity, year) %>%
   spread(year, usd)
 
-## Check a random country and commodity
+## Check a random country and commodity - what are we looking for exactly? 
 australia <- h_x_usd %>% filter(product == "ornamentals", rgn_name == "Australia") 
 australia
 
@@ -631,8 +638,8 @@ abline(0,1, col="red")
 
 
 ## Look at Commodities USD value for a few countries
-new <- read.csv("int/usd.csv")
-old <- read.csv("../v2016/int/usd.csv") # CHANGE YEAR
+new <- read.csv('globalprep/np/v2019/int/usd.csv')
+old <- read.csv('globalprep/np/v2016/int/usd.csv') # CHANGE YEAR
 
 ## Look at Republique du Congo
 new_c <- filter(new, rgn_id==100) %>%
@@ -663,8 +670,8 @@ abline(0,1, col="red")
 
 ## Look at final smoothed tonnes data for Republique du Congo
 ## Rolling average changes values slightly - make sure new data is not too different from previous year
-new <- read.csv('output/np_harvest_tonnes.csv')
-old <- read.csv('../v2016/output/np_harvest_tonnes.csv') # CHANGE YEAR
+new <- read.csv('globalprep/np/v2019/output/np_harvest_tonnes.csv')
+old <- read.csv('globalprep/np/v2016/output/np_harvest_tonnes.csv') # CHANGE YEAR
 
 
 ## Look at 	Republique du Congo
