@@ -159,6 +159,7 @@ Gridded world population densities from CIESE and CIAT are projected into the Wo
 
 ```{r manipulate spatial data, eval=FALSE}
 ## Resample resolution and CRS of population data, convert year to numeric, project rasters and save human_density_year_mol.tifs to server with these updates
+# Use temporary file path name (_tmp.tif) so that R isn't trying to load and write the same file within the loop - MAKE SURE TO DELETE THESE FILES AFTER THE LOOP IS COMPLETE! 
 # set up a loop to go through raw data frame, convert to a mollweide CRS:
 
 cl <- makeCluster(5) # 5 clusters for 5 files being targeted
@@ -168,10 +169,10 @@ foreach(i = raw, .packages = c("raster", "rgdal", "stringr")) %dopar% {
   yr <- as.numeric(as.character(str_sub(i, -17, -14))) # counts backwards by character in file name to grab the year digits
   raster::raster(i) %>% # read in file path to raster
     raster::projectRaster(crs = crs(ocean), res = res(ocean), over = TRUE, method = "ngb", # convert large grids to small grids using nearest neighbor method
-                          filename = file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, yr)), # write to the server because the files are so large
+                          filename = file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol_tmp.tif", scenario_yr, yr)), # write to the server because the files are so large
                           overwrite = TRUE, progress = "text")
   
-raster::raster(file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, yr))) %>% 
+raster::raster(file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol_tmp.tif", scenario_yr, yr))) %>% 
   raster::resample(ocean, method = 'ngb', overwrite = TRUE, filename = file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_density_%s_mol.tif", scenario_yr, yr)))
 } 
 
@@ -201,7 +202,7 @@ GWPv4 data is for years 2005, 2010, 2015, and 2020. Data for missing years must 
 ```{r functions for interpolation, eval=FALSE}
 ## define and apply function to calculate yearly change in population density
 files <- list.files(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2019/int"), pattern = "human_density_\\d{4}_mol.tif$", full = TRUE)
-# Can I replace v2019 with a %s so this is reproducible next year?
+# Can I replace v2019 with a %s so this is reproducible for next year?
 
 # Create function for average yearly change
 yearly_diff <- function(year_min, year_max, density_files = files){
@@ -232,7 +233,6 @@ yearly_interpolate <- function(year, start_raster, yearly_change){
 }
 
 
-
 ## interpolate missing years
 files <- list.files(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2019/int"), pattern = ".tif$", full = TRUE)
 # Can I replace v2019 with a %s so this is reproducible next year?
@@ -242,9 +242,11 @@ for(i in c(2000, 2005, 2010, 2015)) {
                      yearly_change = files[grep(sprintf("change_%s_to_%s", i, i+5), files)])
 }
 
-# check a random raster from the mazu folder
+# if getting a "Cannot create a RasterLayer object from this file" error after running this loop, check that previously-created _tmp.tif files have been deleted from the mazu directory
+# check a random raster from the mazu directory
 density_2018 <- raster(file.path(dir_M, "git-annex/globalprep/mar_prs_population/v2019/int/human_density_2018_mol.tif"))
 plot(density_2018)
+
 ```
 
 ## Convert Density to Population Counts
@@ -283,7 +285,7 @@ closeAllConnections()
 # raster
 eez_25mi_inland <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2019/ocean_plus25mile_inland.tif"))
 
-# Make sure that the layers make sense!
+## Make sure that the layers make sense!
 plot(eez_25mi_inland) # will appear to only feature the Antarctic ocean; can check that gray area actually has data. Because we don't include this region in the OHI, the raster has CCAMLR IDs for points in this region, which appear to have high region ID values.
 click(eez_25mi_inland)
 # Click on gray areas on the map and region IDs will pop up - the data are there! 
@@ -366,16 +368,16 @@ No gapfilling was completed as part of this data prep methodology. Datasets are 
 
 ```{r save prs_pop_density and mar_pop_25mi layers, eval=FALSE}
 
-# v2018 pulled from 2017 data, changed to 2018 data for v2019
-prs <- read.csv("globalprep/mar_prs_population/v2018/output/prs_pop_density.csv") %>%
+# v2018 pulled from 2017 data, changed to 2019 data for v2019
+prs <- read.csv("globalprep/mar_prs_population/v2019/output/prs_pop_density.csv") %>%
   dplyr::mutate(pressure_score = 0)
 
-write.csv(prs, "globalprep/mar_prs_population/v2017/output/prs_pop_density_gf.csv", row.names = FALSE) # wouldn't this overwrite old data? Do we want to save this in 2019 folder?
+write.csv(prs, "globalprep/mar_prs_population/v2019/output/prs_pop_density_gf.csv", row.names = FALSE) # wouldn't this overwrite old data? Do we want to save this in 2019 folder?
 
-mar <- read.csv("globalprep/mar_prs_population/v2017/output/mar_pop_25mi.csv") %>%
+mar <- read.csv("globalprep/mar_prs_population/v2019/output/mar_pop_25mi.csv") %>%
   dplyr::mutate(popsum = 0)
 
-write.csv(mar, "globalprep/mar_prs_population/v2017/output/mar_pop_25mi_gf.csv", row.names = FALSE)
+write.csv(mar, "globalprep/mar_prs_population/v2019/output/mar_pop_25mi_gf.csv", row.names = FALSE)
 ```
 
 ## Data Checks and/or Meta-Analysis
@@ -398,7 +400,7 @@ compare_yr <- 2015 # doing below functions for comparison between raster and UN 
 ## sum counts regionally for the scenario year
 pop_rast <- raster(file.path(dir_M, sprintf("git-annex/globalprep/mar_prs_population/%s/int/human_count_%s_mol.tif", scenario_yr, compare_yr)))
 zones <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2017/regions_land_ocean.tif")) # pulling from 2017 server data
-pop_counts <- zonal(pop_rast, zones, fun = "sum", na.rm = TRUE, progress="text") # different extent - resample?
+pop_counts <- zonal(pop_rast, zones, fun = "sum", na.rm = TRUE, progress="text") 
 
 
 pop_UN <- pop_rgn %>%
@@ -431,11 +433,20 @@ abline(0, 1, col="red")
 ```{r comparison, eval=FALSE}
 prev_scen_yr <- paste0("v", as.numeric(substr(scenario_yr, 2, 5)) -1)
 
-old <- read.csv(paste0(prev_scen_yr, "/output/mar_pop_25mi.csv")) %>%
+old <-  read_csv(here('globalprep/mar_prs_population/v2018/output/mar_pop_25mi.csv')) %>% 
   dplyr::select(rgn_id, year, popsum_old=popsum)
 
 tmp <- coastal_pop2 %>%
   dplyr::left_join(old, by=c("rgn_id", "year"))
+
+years_compare_plot <- ggplot(tmp) +
+  geom_point(aes(log(popsum), log(popsum_old), label = rgn_id), alpha = .6) +
+  geom_abline(slope = 1, intercept = 0, color = 'red') +
+  labs(x = sprintf('Log of Calculated Population %s', scenario_yr),
+       y = sprintf('Log of Calculated Population %s', prev_scen_yr),
+       title = 'Population comparison between assessments')
+ggplotly(years_compare_plot)
+
 
 plot(log(tmp$popsum), log(tmp$popsum_old))
 abline(0, 1, col="red")
@@ -443,15 +454,25 @@ abline(0, 1, col="red")
 
 ```{r check_areas, eval=FALSE}
 ## compare area with that calculated in previous year (should look very similar)
-old_area <- read.csv(paste0(prev_scen_yr, "/rgn_area_inland25mi.csv")) %>%
-  dplyr::select(rgn_name, rgn_id, old_area_km2 = area_km2) %>%
+
+# v2018: old_area <- read.csv(paste0(prev_scen_yr, "/rgn_area_inland25mi.csv")) %>%
+old_area <- read_csv(here('globalprep/mar_prs_population/v2018/int/area_km2_25mi.csv')) %>%
+  rename(old_area_km2 = area_km2) %>%
   dplyr::mutate(old_area_km2 = round(old_area_km2)) %>%
   dplyr::left_join(area, by = "rgn_id")
 
-plot(old_area$old_area_km2, old_area$area_km2)
-abline(0, 1, col = "red")
+area_compare_plot <- ggplot(old_area) +
+  geom_point(aes(area_km2, old_area_km2, label = rgn_id), alpha = .6) +
+  geom_abline(slope = 1, intercept = 0, color = 'red') +
+  labs(x = sprintf('%s Area (km2)', scenario_yr),
+       y = sprintf('%s Area (km2)', prev_scen_yr),
+       title = 'Area Calculation Comparison')
+ggplotly(area_compare_plot)
+
 
 summary(old_area)
 ```
+
+
 
 ***
