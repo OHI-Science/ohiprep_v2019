@@ -1,0 +1,45 @@
+---
+title: 'OHI 2019: Biomass Calculations '
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+# Summary
+This analysis explores the potential use of new data to change the reference level for the mariculture subgoal.
+
+***
+
+# Data Source 
+
+## GPI Phi data
+
+**Reference**:      
+Mapping the Global Potential for Marine Aquaculture (Gentry 2017)
+
+Gentry, Rebecca R. et al. 2017. “Mapping the Global Potential for Marine Aquaculture.” Nature Ecology & Evolution 1(9): 1317–24.
+
+
+Original data table is located in the supplementary information for the research paper, Supplementary Table 3, found here: https://static-content.springer.com/esm/art%3A10.1038%2Fs41559-017-0257-9/MediaObjects/41559_2017_257_MOESM1_ESM.pdf
+
+
+**Description**:  
+
+The data table contains fish and bivalve GPI averages for different countries. 
+
+***
+  
+# Methods
+
+```{r setup, message=FALSE, warning=FALSE}
+
+```
+
