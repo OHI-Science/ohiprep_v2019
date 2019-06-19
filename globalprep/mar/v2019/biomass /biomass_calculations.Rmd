@@ -40,6 +40,12 @@ The data table contains fish and bivalve GPI averages for different countries.
 # Methods
 
 ```{r setup, message=FALSE, warning=FALSE}
+library(tidyverse)
 
+gpi <- read.csv("karakoenig.94.1.csv") %>%
+  select(-X)
 ```
+
+We need to try to come up with an approach taking Phi data and converting it into tons of harvest. Ideally we can calculate in terms of yearly tons of harvest. After obtaining this we will compare the countries that we have that are easy and ignore the more complicated ones in the moment. This will allow us to see what ratio of actual harvest to potential harvest is.
+
 
