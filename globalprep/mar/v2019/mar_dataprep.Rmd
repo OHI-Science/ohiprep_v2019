@@ -122,13 +122,13 @@ mar <- mar %>%
 Update species name in the `raw/species_list.csv` file with names in the `mar` dataset (exclude non-food species). I simplified the species_list.  I cut the "species" name columns because it wasn't clear what this was trying to accomplish and created potential error.  
 
 ```{r}
-## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.
-#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-#  select(FAO_name, exclude, alias, Taxon_code)
+## Commented out 'read.csv' lines are different versions of the dataset, representing the three different seaweed exclusion methods (exclude some seaweed, all seaweed, all seaweed nei). Use at the end for data checking.The first one is the one which is saved to the "output" folder. 
+mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+  select(FAO_name, exclude, alias, Taxon_code)
 #mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
 #  select(FAO_name, exclude_no_seaweed, alias, Taxon_code)
-mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
-  select(FAO_name, exclude_no_nei, alias, Taxon_code)
+#mar_sp <- read.csv('raw/species_list.csv', stringsAsFactors=FALSE) %>%
+#  select(FAO_name, exclude_no_nei, alias, Taxon_code)
 
 new.spp <- setdiff(mar$FAO_name, mar_sp$FAO_name)
 new.spp # check: if dim has 0 rows it means all match
