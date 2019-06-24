@@ -296,9 +296,9 @@ np_regr_fill <- function(h, years_back=50, min_paired_obs=4, scope = 'rgn_id', v
                     georgn_id = c('georgn_id','commodity'),
                     global    =   'commodity')
   gap_flag <- switch(scope,
-                    rgn_id    = c('r1_t_rgn','r1_u_rgn'),
-                    georgn_id = c('r2_t_gr','r2_u_gr'),
-                    global    = c('r3_t_gl','r3_u_gl'),
+                    rgn_id    = c('regr1_t_rgn','regr1_u_rgn'),
+                    georgn_id = c('regr2_t_gr','regr2_u_gr'),
+                    global    = c('regr3_t_gl','regr3_u_gl'),
                     c('rgn_id','commodity'))
   
   h_mdl <- h %>%
@@ -462,7 +462,8 @@ add_georegion_id <- function(k) {
 ### Code from Melanie to attach a georegional id tag to dataframe k.
   
   key <- read_csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv") %>% 
-    rename(cntry_key = eez_iso3)
+    rename(cntry_key = eez_iso3) %>% 
+    select(-rgn_name)
   dups <- key$rgn_id[duplicated(key$rgn_id)]
   key[key$rgn_id %in% dups, ]
   
