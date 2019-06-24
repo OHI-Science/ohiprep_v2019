@@ -33,7 +33,7 @@ Original data table is located in the supplementary information for the research
 
 **Description**:  
 
-The data table contains fish and bivalve GPI averages for different countries. 
+The data table contains fish and bivalve GPI averages for different regions. 
 
 ***
   
@@ -41,11 +41,38 @@ The data table contains fish and bivalve GPI averages for different countries.
 
 ```{r setup, message=FALSE, warning=FALSE}
 library(tidyverse)
+```
 
-gpi <- read.csv("karakoenig.94.1.csv") %>%
+
+```{r}
+#read in Phi value data 
+gpi <- read.csv("CountryProdPotentialLT12.csv") %>%
   select(-X)
 ```
 
 We need to try to come up with an approach taking Phi data and converting it into tons of harvest. Ideally we can calculate in terms of yearly tons of harvest. After obtaining this we will compare the countries that we have that are easy and ignore the more complicated ones in the moment. This will allow us to see what ratio of actual harvest to potential harvest is.
+
+Gapfilling initial data
+```{r}
+## assign NA values to 0. This means that the region has no potential for bivalve production or fish production
+
+gpi_gf <- gpi
+
+gpi_gf$bivalvephiavg_gf <- gpi_gf$bivalvephiavg
+gpi_gf$bivalvephiavg_gf[is.na(gpi_gf$bivalvephiavg_gf)] <- 0
+
+gpi_gf$fishphiavg_gf <- gpi_gf$fishphiavg
+gpi_gf$fishphiavg_gf[is.na(gpi_gf$fishphiavg_gf)] <- 0
+```
+
+```{r}
+#read in Phi value AND cumulative sum of biomass dataset found here: https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+
+
+```
+
+
+
+
 
 
