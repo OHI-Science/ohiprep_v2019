@@ -461,7 +461,8 @@ np_datacheck <- function(h) {
 add_georegion_id <- function(k) {
 ### Code from Melanie to attach a georegional id tag to dataframe k.
   
-  key <- read.csv("../../../../ohi-global/eez/layers/cntry_rgn.csv")
+  key <- read_csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv") %>% 
+    rename(cntry_key = eez_iso3)
   dups <- key$rgn_id[duplicated(key$rgn_id)]
   key[key$rgn_id %in% dups, ]
   
@@ -475,10 +476,11 @@ add_georegion_id <- function(k) {
   
   
   
-  georegion <- read.csv("raw/cntry_georegions.csv")
+  georegion <- read.csv(here("globalprep/np/v2019/raw/cntry_georegions.csv"))
   #   unique(georegion$georgn_id[georegion$level=="r0"])  # 1 level
   #   unique(georegion$georgn_id[georegion$level=="r1"])  # 7 levels
   #   unique(georegion$georgn_id[georegion$level=="r2"])  # 22 levels
+  # # OHI gapfills at level r2, which is the finest granularity. 
   
   georegion <- georegion %>%
     filter(level == "r2")
@@ -490,3 +492,7 @@ add_georegion_id <- function(k) {
       ### cleaning out variables
   return(k1)
 }
+
+
+
+
