@@ -30,11 +30,38 @@ Gentry, Rebecca R. et al. 2017. “Mapping the Global Potential for Marine Aquac
 
 Original data table is located in the supplementary information for the research paper, Supplementary Table 3, found here: https://static-content.springer.com/esm/art%3A10.1038%2Fs41559-017-0257-9/MediaObjects/41559_2017_257_MOESM1_ESM.pdf
 
+Data can be found and downloaded here: https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+
 
 **Description**:  
 
 The data table contains fish and bivalve GPI averages for different regions. 
 
+## Fish Production by Country FAO Summary
+
+**Reference**
+Mapping the Global Potential for Marine Aquaculture (Gentry 2017)
+
+Gentry, Rebecca R. et al. 2017. “Mapping the Global Potential for Marine Aquaculture.” Nature Ecology & Evolution 1(9): 1317–24.
+
+Data can be found and downloaded here: https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+
+**Description**
+
+The data table contains estimates for fish aquaculture production, potential are for aquaculture, and GPI averages for different regions. 
+
+## Bivalve Production by Country FAO Summary
+
+**Reference**
+Mapping the Global Potential for Marine Aquaculture (Gentry 2017)
+
+Gentry, Rebecca R. et al. 2017. “Mapping the Global Potential for Marine Aquaculture.” Nature Ecology & Evolution 1(9): 1317–24.
+
+Data can be found and downloaded here: https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+
+**Description**
+
+The data table contains estimates for bivalve aquaculture production, potential are for aquaculture, and GPI averages for different regions. 
 ***
   
 # Methods
