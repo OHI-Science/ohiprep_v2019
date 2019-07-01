@@ -27,7 +27,7 @@ dir_git  <- path.expand('~/github/ohiprep_v2019')
 dir_goal <- file.path(dir_git, 'globalprep', goal, scenario)
 dir_spatial <- file.path(dir_M, 'git-annex/globalprep/spatial')
 dir_data  <- file.path(dir_M, 'git-annex/globalprep', '_raw_data')
-dir_biomass <- file.path(dir_goal, "biomass")
+#dir_biomass <- file.path(dir_goal, "biomass")
 
 #library(provRmd); prov_setup()
 #reload <- FALSE
@@ -84,7 +84,7 @@ $$x_{MAR} = \frac{x_{finfish} * H_{finfish} + x_{shellfish} * H_{shellfish}}{H_{
 
 ### Convert Phi-prime raster to growth time
 
-* Resample the $\Phi'$ rasters from Gentry/Froehlich 2017 to OHIBC extents, 1 km resolution, and BC Albers projection.
+* Resample the $\Phi'$ rasters from Gentry/Froehlich 2017 
 * Convert $\Phi'$ values to T<sub>b</sub> and T<sub>f</sub> values.
     * Fish: $log(T_F) = 7.68 - 5.82 log(\Phi')$
     * Bivalves: $log(T_B) = 2.99 - 1.66 \Phi'$
@@ -96,23 +96,22 @@ $$x_{MAR} = \frac{x_{finfish} * H_{finfish} + x_{shellfish} * H_{shellfish}}{H_{
 * For both finfish and bivalves, we will calculate upper and lower bounds using +/- 1 standard deviation (interannual variability)
    
 ``` {r resample_phiprime_raster_fish}
-phif_rasts <- c('tf_mean_rast'  = file.path(dir_goal, 'raster/tf_mean_1000m.tif'),
-                'tf_minus_rast' = file.path(dir_goal, 'raster/tf_minus_1000m.tif'))
+####TODO: Didn't make it past here - July 1, 2019 ####
+
+
+phif_rasts <- c('tf_mean_rast'  = file.path(dir_goal, 'raster/tf_mean.tif'),
+                'tf_minus_rast' = file.path(dir_goal, 'raster/tf_minus.tif'))
 dir_aq <- file.path(dir_data, 'aquaculture')
 if(any(!file.exists(phif_rasts)) | reload) {
   
-scenario_bc <- 'v2017'
-dir_git_bc  <- path.expand('~/github/ohibc')
-dir_goal_bc <- file.path(dir_git_bc, 'prep', goal, scenario_bc)
-dir_spatial_bc <- file.path(dir_git_bc, 'prep/_spatial')
-  
-  ohibc_rast <- raster(file.path(dir_spatial_bc, 'raster/ohibc_rgn_raster_1000m.tif'))
   ohi_rast <- raster(file.path(dir_spatial, 'd2014/data/rgn_mol_raster_500m/rgn_eez_mol_500mcell.tif'))
   
-  phif_rast <- raster(file.path(dir_aq, 'FishPhiALLConstraints95LT2.tif')) %>%
-    projectRaster(ohibc_rast)
-  phif_sd_rast <- raster(file.path(dir_aq, 'spp_Phi_sd.tif')) %>%
-    projectRaster(ohibc_rast)
+  phif_rast <- raster(file.path(dir_aq, 'FishPhiALLConstraints95LT2.tif')) #%>%
+   # projectRaster(ohi_rast)
+  phif_sd_rast <- raster(file.path(dir_aq, 'Fish_spp_Phi_sd.tif')) 
+  #%>%
+   # projectRaster(ohibc_rast)
+  phif_sd_rast_b <- resample(phif_sd_rast, phif_rast)
   
   tf_mean_rast  <- exp(7.86 - log(phif_rast) * 5.82)
   tf_minus_rast <- exp(7.86 - log(phif_rast - phif_sd_rast) * 5.82)
@@ -127,7 +126,7 @@ dir_spatial_bc <- file.path(dir_git_bc, 'prep/_spatial')
 ``` {r resample_phiprime_raster_unclipped_bivalve}
 phib_rasts <- c('tb_mean_rast'  = file.path(dir_goal, 'raster/tb_mean_1000m.tif'),
                 'tb_minus_rast' = file.path(dir_goal, 'raster/tb_minus_1000m.tif'))
-dir_aq <- file.path(dir_data_bc, 'aquaculture')
+dir_aq <- file.path(dir_data, 'aquaculture')
 if(any(!file.exists(phib_rasts)) | reload) {
   ohibc_rast <- raster(file.path(dir_spatial, 'raster/ohibc_rgn_raster_1000m.tif'))
     ### base for raster::projectRaster()
