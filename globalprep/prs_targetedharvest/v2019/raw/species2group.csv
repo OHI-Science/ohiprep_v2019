@@ -1,6 +1,7 @@
 target,species,incl_excl
 cetacean,Atlantic spotted dolphin,include
 cetacean,Atlantic white-sided dolphin,include
+cetacean,Andrews' beaked whale,include
 cetacean,Australian snubfin dolphin,include
 cetacean,Baird's beaked whale,include
 cetacean,Baleen whales nei,include

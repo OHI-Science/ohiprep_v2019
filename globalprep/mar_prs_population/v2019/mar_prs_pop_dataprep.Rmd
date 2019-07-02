@@ -93,6 +93,7 @@ library(fasterize)
 ## data wrangling libraries
 library(tidyverse)
 library(here)
+library(plotly)
 
 ## parallel processing libraries
 library(parallel)
@@ -414,7 +415,6 @@ compare_pop <- data.frame(pop_counts) %>%
   filter(!is.na(pop_UN))
 
 ## check plot - investigate outliers (post to issue first)
-library(plotly)
 pop_compare_plot <- ggplot(compare_pop) +
   geom_point(aes(pop_rast, pop_UN, label = rgn_id), alpha = .6) +
   geom_abline(slope = 1, intercept = 0, color = 'red') +
