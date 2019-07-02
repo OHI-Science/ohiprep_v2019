@@ -51,9 +51,8 @@ library(here)
 library(janitor)
 
 ### Load FAO-specific user-defined functions
-## add here() to these file paths
-source('../../../workflow/R/fao_fxn.R') # function for cleaning FAO files (not combined into common.R like most other functions have been at this point)
-source('../../../workflow/R/common.R') # directory locations
+source(here('workflow/R/fao_fxn.R')) # function for cleaning FAO files (not combined into common.R like most other functions have been at this point)
+source(here('workflow/R/common.R')) # directory locations
 
 ```
 
@@ -65,8 +64,6 @@ This includes the FAO capture production data and a list of the "target" species
 
 ## FAO capture production data - all columns being parsed as characters and producing error in one column, but not sure which? (read.csv might help avoid this error?)
 fis_fao_raw <-  read_csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_capture/d2019/Global_capture_production_Quantity_1950-2017.csv'))
-
-# fis_fao_old <-  read_csv(file.path(dir_M, #'git-annex/globalprep/_raw_data/FAO_capture/d2018/Global_capture_production_Quantity_1950-2016.#csv'))
 
 # species list - used same raw files from v2018
 sp2grp <-  read_csv(here('globalprep/prs_targetedharvest/v2019/raw/species2group.csv')) %>%
@@ -88,7 +85,7 @@ fao_clean <- fis_fao_raw %>%
                 area = "Fishing area (FAO major fishing area)") %>%
   select(-"Unit (Unit)")
 
-# Gather by year and value to expand and make each line a single observation for country, species and year (tidy data!) - wonder if these can be combined into one step? 
+# Gather by year and value to expand and make each line a single observation for country, species and year (tidy data!) 
 fao_clean <- fao_clean %>%
   tidyr::gather("year", "value", -(1:3)) %>%
   dplyr::mutate(year = gsub("X", "", year)) %>%
@@ -107,12 +104,12 @@ This analysis only includes target species.  The warning messages need to be che
 ```{r, eval=FALSE}
 
 # check for discrepancies in species list
-## seals are no longer included (so these errors can be ignored):
 spgroups <-  sort(as.character(unique(fao_clean$species))) # species groups in FAO data 
-groups <-  c('turtle', 'seal', 'whale', 'sea lion', 'dolphin', 'porpoise') # if seals aren't included, should we remove them from this vector? 
+groups <-  c('turtle', 'whale', 'dolphin', 'porpoise') # seals and sea lions removed from vector (pinnipeds no longer included) 
 
 # Going through FAO data species and seeing if they're in our master list of species
-## do we need to add species that have changed name? 
+## Looking to see if we need to add species that have changed name
+### v2019: added Andrew's beaked whale to species2group.csv based on error message. Other species in error message are excluded.
 for (group in groups) {# group='dolphin'
 possibles <- spgroups[grep(group, spgroups)]
 d_missing_l <-  setdiff(possibles, sp2grp$species)
@@ -122,9 +119,6 @@ d_missing_l <-  setdiff(possibles, sp2grp$species)
   }
 }
 
-# error message is being printed that says lots of species are missing from each group, but d_missing_l is empty? does this mean that these species don't exist in the sp2grp table?
-
-# Andrew's beaked whale says it is "MISSING in the lookup the following species in target='whale'" - it is present in the fao_clean file but not in the sp2grp table (only 69 spp here)
 
 # check for species in lookup not found in data
 l_missing_d <-  setdiff(sp2grp$species, spgroups)
@@ -133,8 +127,6 @@ if (length(l_missing_d)>0){
   print(l_missing_d)
 }
 
-#l_missing_d = 0, does this mean that the species are in the data but missing in lookup?
-# both of these are empty; does that mean it's OK to proceed? 
 
 ## filter data to include only target species ----
 target_spp <-  fao_clean %>%
@@ -163,10 +155,8 @@ long = wide %>%
   dplyr::mutate(year = as.integer(as.character(year))) %>%
   dplyr::arrange(country, target, year); head(long)
 
-#Temporary note: data for Gabn goes oly to 2009
 
-
-# explore Japan[210]
+# explore Japan[210] as an example
 japan <- long %>% 
   dplyr::group_by(country, target, year) %>%
   dplyr::summarize(value = sum(value)) %>% 
@@ -196,10 +186,10 @@ m_sum_rgn <- name_2_rgn(df_in = sum,
                        fld_name='country', 
                        flds_unique=c('year'))
 
-# Filter out duplicates - are there others we need to consider? How did we know these were duplicates? Didn't change anything in the df (still 2200 x 5)
+# Filter out duplicates based on error message from previous step
 dplyr::filter(m_sum_rgn, country %in% c("Guadeloupe", "Martinique"))
 
-# They will be summed: - not sure what this is doing bc the values are still the same as in the prev iteration of this data frame; decreases number of observations and eliminates country name (now rgn_id)
+# They will be summed:
 m_sum_rgn <- m_sum_rgn %>%
   dplyr::group_by(rgn_id, rgn_name, year) %>%
   dplyr::summarize(value = sum(value)) %>%
@@ -208,21 +198,21 @@ m_sum_rgn <- m_sum_rgn %>%
 ```
 
 # Scale the data and save files
-Data is rescaled by dividing by the 95th quantile of values across all regions from 2011 to 2014.
+Data is rescaled by dividing by the 95th quantile of values across all regions from 2011 to 2017 (most recent year of FAO data).
 
 ```{r, eval=FALSE}
 
 target_harvest <- m_sum_rgn %>%
-  dplyr::mutate(quant_95 = quantile(value[year %in% 2011:2016], 0.95, na.rm = TRUE)) %>%
+  dplyr::mutate(quant_95 = quantile(value[year %in% 2011:2017], 0.95, na.rm = TRUE)) %>%
   dplyr::mutate(score = value / quant_95) %>% 
   dplyr::mutate(score = ifelse(score>1, 1, score)) %>%
   dplyr::select(rgn_id, year, pressure_score = score) %>%
   dplyr::arrange(rgn_id, year); head(target_harvest); summary(target_harvest)
   
-#quant_95= 160761 <- significance of this? 
+# v2019 quant_95 = 3407 
 
 
-  # any regions that did not have a catch should have score = 0 
+# any regions that did not have a catch should have score = 0 
 rgns <-  rgn_master %>%
   dplyr::filter(rgn_typ == "eez") %>%
   dplyr::select(rgn_id = rgn_id_2013) %>%
@@ -247,7 +237,7 @@ write_csv(target_harvest,
 target_harvest_gf <- target_harvest %>%
   dplyr::mutate(gapfill = 0) %>%
   dplyr::select(rgn_id, year, gapfill)
-# all zeroes for gapfill column, does that make sense? 
+# all zeroes for gapfill column; nothing being gapfilled but need to have a record 
 
 write_csv(target_harvest_gf,
           file.path(here('globalprep/prs_targetedharvest/v2019/output/fao_targeted_gf.csv')))
@@ -259,21 +249,16 @@ The data from last year and this year should be the same unless there were chang
 
 In this case, all of the regions looked very similar.
 
-
 ```{r, eval=FALSE}
-new <- read_csv("output/fao_targeted.csv") %>% 
-  filter(year==2015)
+new <- read_csv(here("globalprep/prs_targetedharvest/v2019/output/fao_targeted.csv")) %>% 
+  filter(year==2016)
 # pull just 2015 data from target_harvest df - should we change this to a more recent year for v2019?
 
-old <- read_csv("../v2018/output/fao_targeted.csv") %>%
-  #mutate(year== year-2) %>% 
-  dplyr::filter(year == 2015) %>%
+old <- read_csv(here("globalprep/prs_targetedharvest/v2018/output/fao_targeted.csv")) %>%
+  dplyr::filter(year == 2016) %>%
   dplyr::select(rgn_id, year, pressure_score_old=pressure_score) %>%
   dplyr::left_join(new, by=c("rgn_id", "year"))
-old
 
-plot(pressure_score ~ pressure_score_old, data=old)
-abline(0, 1, col="red")
 
 compare_plot <- ggplot(data = old, aes(x=pressure_score_old, y= pressure_score, label=rgn_id))+
   geom_point()+
