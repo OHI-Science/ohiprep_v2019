@@ -30,11 +30,38 @@ Gentry, Rebecca R. et al. 2017. “Mapping the Global Potential for Marine Aquac
 
 Original data table is located in the supplementary information for the research paper, Supplementary Table 3, found here: https://static-content.springer.com/esm/art%3A10.1038%2Fs41559-017-0257-9/MediaObjects/41559_2017_257_MOESM1_ESM.pdf
 
+Data can be found and downloaded here: https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+
 
 **Description**:  
 
 The data table contains fish and bivalve GPI averages for different regions. 
 
+## Fish Production by Country FAO Summary
+
+**Reference**
+Mapping the Global Potential for Marine Aquaculture (Gentry 2017)
+
+Gentry, Rebecca R. et al. 2017. “Mapping the Global Potential for Marine Aquaculture.” Nature Ecology & Evolution 1(9): 1317–24.
+
+Data can be found and downloaded here: https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+
+**Description**
+
+The data table contains estimates for fish aquaculture production, potential are for aquaculture, and GPI averages for different regions. 
+
+## Bivalve Production by Country FAO Summary
+
+**Reference**
+Mapping the Global Potential for Marine Aquaculture (Gentry 2017)
+
+Gentry, Rebecca R. et al. 2017. “Mapping the Global Potential for Marine Aquaculture.” Nature Ecology & Evolution 1(9): 1317–24.
+
+Data can be found and downloaded here: https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+
+**Description**
+
+The data table contains estimates for bivalve aquaculture production, potential are for aquaculture, and GPI averages for different regions. 
 ***
   
 # Methods
@@ -52,24 +79,35 @@ gpi <- read.csv("CountryProdPotentialLT12.csv") %>%
 
 We need to try to come up with an approach taking Phi data and converting it into tons of harvest. Ideally we can calculate in terms of yearly tons of harvest. After obtaining this we will compare the countries that we have that are easy and ignore the more complicated ones in the moment. This will allow us to see what ratio of actual harvest to potential harvest is.
 
-Gapfilling initial data
-```{r}
-## assign NA values to 0. This means that the region has no potential for bivalve production or fish production
-
-gpi_gf <- gpi
-
-gpi_gf$bivalvephiavg_gf <- gpi_gf$bivalvephiavg
-gpi_gf$bivalvephiavg_gf[is.na(gpi_gf$bivalvephiavg_gf)] <- 0
-
-gpi_gf$fishphiavg_gf <- gpi_gf$fishphiavg
-gpi_gf$fishphiavg_gf[is.na(gpi_gf$fishphiavg_gf)] <- 0
-```
 
 ```{r}
 #read in Phi value AND cumulative sum of biomass dataset found here: https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+fish_prod <- read.csv("FishProdByCountryFAOSummaryHDen.csv")
 
+fish_prod_df <- fish_prod %>%
+  select(-X) %>%
+  rename(fishphiavg1 = averagePhi,
+          maxareafish = MaxDevPerCountry,
+         maxprodfish = MaxProdPerCountry) %>%
+  select(ID, LABEL, maxprodfish, fishphiavg1, maxareafish)
+
+bivalve_prod <- read.csv("BivalveProdByCountryFAOSummary.csv")
+
+bivalve_prod_df <- bivalve_prod %>%
+  select(-X) %>%
+  rename(bivalvephiavg1 = averagePhi,
+         maxareabivalve = MaxDevPerCountry,
+         maxprodbivalve = MaxProdPerCountry) %>%
+  select(ID, LABEL, maxprodbivalve, bivalvephiavg1, maxareabivalve)
+
+full_prod <- full_join(fish_prod_df, bivalve_prod_df)
+
+
+compare <- full_join(full_prod, gpi) %>%
+  select(ID, LABEL, sumareabivalve, maxareabivalve, sumareafish, maxareafish, maxprodbivalve)
 
 ```
+
 
 
 

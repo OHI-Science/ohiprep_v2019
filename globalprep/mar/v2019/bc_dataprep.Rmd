@@ -1,0 +1,715 @@
+---
+title: 'OHIBC data prep: Mariculture'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 3
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+  pdf_document:
+    toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+library(raster)
+library(sf)
+source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
+scenario <- 'v2019'
+goal     <- 'mar'
+dir_git  <- path.expand('~/github/ohiprep_v2019')
+dir_goal <- file.path(dir_git, 'globalprep', goal, scenario)
+dir_spatial <- file.path(dir_M, 'git-annex/globalprep/spatial')
+dir_data  <- file.path(dir_M, 'git-annex/globalprep', '_raw_data')
+#dir_biomass <- file.path(dir_goal, "biomass")
+
+#library(provRmd); prov_setup()
+#reload <- FALSE
+### set up proj4string options: BC Albers and WGS84
+#p4s_bcalb <- c('bcalb' = '+init=epsg:3005')
+p4s_wgs84 <- c('wgs84' = '+init=epsg:4326')
+```
+
+# Summary: OHIBC Mariculture
+
+This script prepares layers (production potential, area targets, harvest values) for Mariculture sub-goal in British Columbia's coastal regions.  
+
+From Halpern et al. (2012) :
+
+>The Status of the Mariculture sub-goal ($x_{MAR}$), was defined as production of strictly marine taxa from both the marine and brackish water FAO categories, excluding aquatic plants such as kelps and seaweeds, which were assumed to contribute predominantly to medicinal and cosmetic uses rather than as a source of food.
+In addition, a sustainability factor is included for the global OHI calculations.
+
+For British Columbia, we will leverage Gentry, Froehlich et al. (2017) to determine aquaculture potential for both shellfish and finfish in BC waters.  For each OHIBC region, the $\Phi'$ value based on a generic portfolio of 120 finfish and 60 bivalves is converted into a time-to-harvest value for each 1-km^2 cell.  These in turn are converted to a potential harvest rate $P_c$ as a function of $\Phi'$.
+
+To determine a reference point, we will create a rescaled harvest potential similar to the $B' = f(B/B_{MSY})$ score for the FIS subgoal.  A score of 1 will reflect a harvest value greater than $\bar{P}(\Phi' - \sigma_{\Phi'})$.  Below the lower bound value, the score tapers linearly to zero (at a harvest of zero) for under-production.  While finfish aquaculture can create environmental problems, we will not impose a sustainability penalty on overproduction as the impact of BC's finfish aquaculture seems to be very low.
+
+The reference point for each region is the product of this rescaled potential harvest rate and the area of existing aquaculture tenures ($A_f$ and $A_s$ for finfish and shellfish respectively) within the region.  Note that MaPP has identified large areas in HG, NC, CC, and NCVI regions for aquaculture, but analogous proposals are not available for WCVI or SG regions.
+
+$$H_{lowR} = \bar{P}(\Phi' - \sigma_{\Phi'}) * A_{tenure}$$
+
+where $H_{lowR}$ is calculated separately for finfish and shellfish aquaculture classes.
+
+Mariculture score $x_c$ for harvest $H_c$, calculated separately for each aquaculture class $c$:
+
+| value           |           | condition |
+|:--------------- |:--------- |:--------- |
+| $x_{shellfish} = H/H_{lowR}$ | when | $0 \leq H_{shellfish} < H_{lowR}$ |
+| $x_{shellfish} = 1$ | when | $H_{shellfish} \geq H_{lowR}$ |
+| $x_{finfish} = H/H_{lowR}$ | when | $0 \leq H_{finfish} < H_{lowR}$ |
+| $x_{finfish} = 1$ | when | $H_{finfish} \geq H_{lowR}$ |
+
+The Mariculture score will be the harvest-weighted average of $x_{finfish}$ and $x_{shellfish}$.
+
+$$x_{MAR} = \frac{x_{finfish} * H_{finfish} + x_{shellfish} * H_{shellfish}}{H_{finfish} + H_{shellfish}}$$
+
+-----
+
+# Data sources
+
+* Aquaculture potential data: Gentry/Froehlich 2017
+* MaPP Aquaculture SMZs
+* DFO Aquaculture tenures
+
+-----
+
+# Methods
+
+## Production potential
+
+### Convert Phi-prime raster to growth time
+
+* Resample the $\Phi'$ rasters from Gentry/Froehlich 2017 
+* Convert $\Phi'$ values to T<sub>b</sub> and T<sub>f</sub> values.
+    * Fish: $log(T_F) = 7.68 - 5.82 log(\Phi')$
+    * Bivalves: $log(T_B) = 2.99 - 1.66 \Phi'$
+* For fish we will use the $\Phi'$ rasters clipped to "acceptable" locations per the paper.
+* For bivalves, we will use the unclipped $\Phi'$ rasters.
+    * Some regions fall below thresholds deemed "unacceptable" in the paper (likely due to insufficient months of chlorophyll productivity).  However, aquaculture is a priority and in some cases already occurs in these locations.  The unclipped rasters provide a way to get a baseline for production potential.
+    * In the `data_explore_mar.Rmd`, we examined the impact of the unclipped rasters on the median used to establish a reference point.  It is relatively small.
+    * For consistency we will use the unclipped values even in regions where clipped values are available.
+* For both finfish and bivalves, we will calculate upper and lower bounds using +/- 1 standard deviation (interannual variability)
+   
+``` {r resample_phiprime_raster_fish}
+####TODO: Didn't make it past here - July 1, 2019 ####
+
+
+phif_rasts <- c('tf_mean_rast'  = file.path(dir_goal, 'raster/tf_mean.tif'),
+                'tf_minus_rast' = file.path(dir_goal, 'raster/tf_minus.tif'))
+dir_aq <- file.path(dir_data, 'aquaculture')
+if(any(!file.exists(phif_rasts)) | reload) {
+  
+  ohi_rast <- raster(file.path(dir_spatial, 'd2014/data/rgn_mol_raster_500m/rgn_eez_mol_500mcell.tif'))
+  
+  phif_rast <- raster(file.path(dir_aq, 'FishPhiALLConstraints95LT2.tif')) #%>%
+   # projectRaster(ohi_rast)
+  phif_sd_rast <- raster(file.path(dir_aq, 'Fish_spp_Phi_sd.tif')) 
+  #%>%
+   # projectRaster(ohibc_rast)
+  phif_sd_rast_b <- resample(phif_sd_rast, phif_rast)
+  
+  tf_mean_rast  <- exp(7.86 - log(phif_rast) * 5.82)
+  tf_minus_rast <- exp(7.86 - log(phif_rast - phif_sd_rast) * 5.82)
+  # tf_plus_rast  <- exp(7.86 - log(2 * phif_rast) * 5.82)
+  
+  writeRaster(tf_mean_rast,  phif_rasts['tf_mean_rast'],  overwrite = TRUE)
+  writeRaster(tf_minus_rast, phif_rasts['tf_minus_rast'], overwrite = TRUE)
+  # writeRaster(tf_plus_rast,  phif_rasts['tf_plus_rast'],  overwrite = TRUE)
+}
+```
+
+``` {r resample_phiprime_raster_unclipped_bivalve}
+phib_rasts <- c('tb_mean_rast'  = file.path(dir_goal, 'raster/tb_mean_1000m.tif'),
+                'tb_minus_rast' = file.path(dir_goal, 'raster/tb_minus_1000m.tif'))
+dir_aq <- file.path(dir_data, 'aquaculture')
+if(any(!file.exists(phib_rasts)) | reload) {
+  ohibc_rast <- raster(file.path(dir_spatial, 'raster/ohibc_rgn_raster_1000m.tif'))
+    ### base for raster::projectRaster()
+  ohibc_poly <- rgdal::readOGR(dir_spatial, 'ohibc_rgns_unclipped')
+    ### polygons for mask()
+  
+  phib_rast <- raster(file.path(dir_aq, 'Bivalve_spp_Phi_mean.tif')) %>%
+    projectRaster(ohibc_rast) %>%
+    mask(mask = ohibc_poly)
+  
+  phib_sd_rast <- raster(file.path(dir_aq, 'Bivalve_spp_Phi_sd.tif')) %>%
+    projectRaster(ohibc_rast) %>%
+    mask(mask = ohibc_poly)
+  
+  tb_mean_rast  <- exp(2.99 - phib_rast * 1.66)
+  tb_minus_rast <- exp(2.99 - (phib_rast - phib_sd_rast) * 1.66)
+  # tb_plus_rast  <- exp(2.99 - (phib_rast + phib_sd_rast) * 1.66)
+  
+  writeRaster(tb_mean_rast,  phib_rasts['tb_mean_rast'], overwrite = TRUE)
+  writeRaster(tb_minus_rast, phib_rasts['tb_minus_rast'], overwrite = TRUE)
+  # writeRaster(tb_plus_rast,  phib_rasts['tb_plus_rast'],  overwrite = TRUE)
+}
+```
+
+### Calculate production biomass
+
+From the growth time, we calculate biomass production based on the following assumptions and calculations:
+
+* For fish, we assume (from Gentry/Froehlich) a cage stocking density (at harvest) of 11 kg/m^3, 9000 m^3 per cage, and 24 cages per km^2.
+    * This results in a harvest per area of 2376 tonnes per km^2.
+    * The rate of harvest is 1 harvest every $1/T_F$ years.
+    * Harvest intensity = $2376 / T_F$ tonnes per year.
+* For bivalves, we assume (from Gentry/Froehlich) 100 long lines per km^2, each of which contains 13,000 feet of fuzzy rope, seeded with 100 bivalves per foot.
+    * This results in a harvest per area of 130e6 bivalves (4 cm) per km^2.
+    * The rate of harvest is 1 harvest every $1/T_B$ years.
+    * Harvest intensity = $130 x 10^6 / T_B$ bivalves per year.
+* Lower bounds will be calculated from the $\mu - \sigma$ on $\Phi'$ values.
+  
+``` {r calc_production_rasters}
+### Get mean and upper/lower bounds for each of the fish rasts
+tf_mean_rast <- raster(file.path(dir_goal, 'raster/tf_mean_1000m.tif'))
+harvest_fmean_rast <- 2376/tf_mean_rast
+tf_minus_rast <- raster(file.path(dir_goal, 'raster/tf_minus_1000m.tif'))
+harvest_fminus_rast <- 2376/tf_minus_rast
+# tf_plus_rast <- raster(file.path(dir_goal, 'raster/tf_plus_1000m.tif'))
+# harvest_fplus_rast <- 2376/tf_plus_rast
+writeRaster(harvest_fmean_rast,  file.path(dir_goal, 'raster/harvest_fmean_1000m.tif'),  overwrite = TRUE)
+writeRaster(harvest_fminus_rast, file.path(dir_goal, 'raster/harvest_fminus_1000m.tif'), overwrite = TRUE)
+# writeRaster(harvest_fplus_rast,  file.path(dir_goal, 'raster/harvest_fplus_1000m.tif'),  overwrite = TRUE)
+### Get mean and upper/lower bounds for each of the fish rasts
+tb_mean_rast <- raster(file.path(dir_goal, 'raster/tb_mean_1000m.tif'))
+harvest_bmean_rast <- 130e6/tb_mean_rast
+tb_minus_rast <- raster(file.path(dir_goal, 'raster/tb_minus_1000m.tif'))
+harvest_bminus_rast <- 130e6/tb_minus_rast
+# tb_plus_rast <- raster(file.path(dir_goal, 'raster/tb_plus_1000m.tif'))
+# harvest_bplus_rast <- 130e6/tb_plus_rast
+writeRaster(harvest_bmean_rast,  file.path(dir_goal, 'raster/harvest_bmean_1000m.tif'),  overwrite = TRUE)
+writeRaster(harvest_bminus_rast, file.path(dir_goal, 'raster/harvest_bminus_1000m.tif'), overwrite = TRUE)
+# writeRaster(harvest_bplus_rast,  file.path(dir_goal, 'raster/harvest_bplus_1000m.tif'),  overwrite = TRUE)
+```
+
+``` {r map_harvest_b_and_f}
+harvest_f_rast <- raster(file.path(dir_goal, 'raster/harvest_fmean_1000m.tif'))
+harvest_b_rast <- raster(file.path(dir_goal, 'raster/harvest_bmean_1000m.tif'), overwrite = TRUE)
+ohibc_sf <- sf::read_sf(dir_spatial, 'ohibc_rgn')
+bc_land_sf <- sf::read_sf(dir_spatial, 'ohibc_land')
+fmap_file <- file.path(dir_goal, 'int/map_harvest_potential_f.png')
+bmap_file <- file.path(dir_goal, 'int/map_harvest_potential_b.png')
+if(any(!file.exists(c(fmap_file, bmap_file))) | reload == TRUE) {
+  harvest_f_map <- tm_shape(bc_land_sf) +
+      tm_fill(col = 'grey40', alpha = 1) +
+    tm_shape(ohibc_sf) +
+      tm_fill(col = 'grey80', alpha = .4) +
+    tm_shape(harvest_f_rast) +
+      tm_raster(title = 'Fish harvest\ntonnes/year') +
+    tm_shape(ohibc_sf) +
+      tm_borders(col = 'grey40', lwd = .25) +
+    tm_legend(bg.alpha = .7, bg.color = 'white', position = c('right', 'top'))
+  
+  save_tmap(harvest_f_map, 
+            filename = fmap_file,
+            height = 5, width = 7.5)
+  
+  harvest_b_map <- tm_shape(bc_land_sf) +
+      tm_fill(col = 'grey40', alpha = 1) +
+    tm_shape(ohibc_sf) +
+      tm_polygons(col = 'grey80', alpha = .4) +
+    tm_shape(harvest_b_rast) +
+      tm_raster(title = 'Bivalve harvest\nunits/yr',
+                palette = 'Blues') +
+    tm_shape(ohibc_sf) +
+      tm_borders(col = 'grey40', lwd = .25) +
+    tm_legend(bg.alpha = .7, bg.color = 'white', position = c('right', 'top'))
+  
+  save_tmap(harvest_b_map, 
+            filename = bmap_file,
+            height = 5, width = 7.5)
+}
+```
+
+![](int/map_harvest_potential_f.png)
+
+![](int/map_harvest_potential_b.png)
+
+### Identify reference harvest targets by region
+
+For each OHIBC region, harvest intensity targets (in tonnes per year per km^2^) will be identified from the mean of the distribution of production potential for both fish and bivalves.  Due to coarseness of production raster, production hot spots do not line up well with tenure locations, so spatially estimating production potential based on tenures is not likely to give reliable results.
+
+* For finfish aquaculture, which occurs primarily in the southern regions, sufficient data points exist in the regions to determine a reasonable cross-section of representative values.  
+* For shellfish aquaculture, we will use the unclipped $Phi'$ data to identify a range of reasonable production values, assuming that producers will figure out a means around the seasonal lack of chlorophyll.
+* For both finfish and shellfish, we will calculate upper and lower bounds based on mean values for $\bar{P} ± \sigma$ to provide a target range of production.  
+    * Above $(\bar{P} + \sigma)$ could be unsustainable in extreme circumstances, and below $(\bar{P} - \sigma)$ seems like room for improvement.
+    * Other quantiles besides the median are estimated in the `data_explore_mar.Rmd` document.
+
+``` {r get_rast_vals_helper_function} 
+get_rast_vals <- function(rast) {
+  raster::extract(rast, ohibc_poly) %>%
+    lapply(FUN = function(x) data.frame(prod_potential = x)) %>%
+    setNames(ohibc_poly$rgn_id) %>%
+    bind_rows(.id = 'rgn_id') %>%
+    mutate(rgn_id = as.integer(rgn_id),
+           prod_potential = round(prod_potential, 3))
+}
+```
+
+``` {r finfish_production_means_per_region}
+harvest_fmean_rast  <- raster(file.path(dir_goal, 'raster/harvest_fmean_1000m.tif'))
+harvest_fminus_rast <- raster(file.path(dir_goal, 'raster/harvest_fminus_1000m.tif'))
+# harvest_fplus_rast  <- raster(file.path(dir_goal, 'raster/harvest_fplus_1000m.tif'))
+### use extract() to get values per region
+ohibc_poly <- rgdal::readOGR(dir_spatial, 'ohibc_rgn')
+f_potential_file <- file.path(dir_goal, 'int/prod_pot_f_range.csv')
+if(!file.exists(f_potential_file) | reload == TRUE) {
+  
+  fmean_vals  <- get_rast_vals(harvest_fmean_rast)
+  fminus_vals <- get_rast_vals(harvest_fminus_rast)
+  # fplus_vals  <- get_rast_vals(harvest_fplus_rast)
+  
+  f_mean <- fmean_vals %>%
+    group_by(rgn_id) %>%
+    summarize(n_tot = n(), n_phi = sum(!is.na(prod_potential)), 
+              mean_prod = mean(prod_potential, na.rm = TRUE),
+              highR_prod = max(prod_potential, na.rm = TRUE)) %>%
+    ungroup()
+  f_lowR <- fminus_vals %>%
+      group_by(rgn_id) %>%
+      summarize(lowR_prod = mean(prod_potential, na.rm = TRUE)) %>%
+      ungroup()
+  
+  f_range_all <- f_mean %>%
+    left_join(f_lowR,  by = 'rgn_id') %>%
+    gather(ref, potential, contains('prod')) %>%
+    left_join(get_rgn_names(), by = 'rgn_id')
+   
+  
+  f_plot <- ggplot(fmean_vals %>%
+                     left_join(get_rgn_names(), by = 'rgn_id'),
+                   aes(x = prod_potential)) + 
+    ggtheme_plot() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    geom_histogram() + 
+    geom_histogram(data = fminus_vals %>%
+                     left_join(get_rgn_names(), by = 'rgn_id'),
+                   fill = 'green', alpha = .3) + 
+    geom_vline(data = f_range_all %>%
+                 filter(ref != 'mean_prod'), 
+               aes(xintercept = potential, color = ref)) +
+    scale_color_manual(values = c('highR_prod' = 'darkblue', 'lowR_prod' = 'darkgreen')) +
+    # xlim(0, NA) +
+    facet_wrap(~ rgn_name, scales = 'free_y') +
+    labs(x = 'Production potential (Finfish tonnes/km^2/year)',
+         y = 'Number of 1 km^2 cells',
+         title = 'Finfish')
+  ggsave(file.path(dir_goal, 'int/histogram_f_potential.png'), width = 7.5, height = 5)
+  
+  write_csv(f_range_all, file.path(dir_goal, 'int/prod_pot_f_range.csv'))
+  
+}
+```
+
+![](int/histogram_f_potential.png)
+
+``` {r bivalve_production_means_per_region}
+harvest_b_rast      <- raster(file.path(dir_goal, 'raster/harvest_bmean_1000m.tif'))
+harvest_bminus_rast <- raster(file.path(dir_goal, 'raster/harvest_bminus_1000m.tif'))
+# harvest_bplus_rast  <- raster(file.path(dir_goal, 'raster/harvest_bplus_1000m.tif'))
+### use extract() to get values per region
+ohibc_poly <- rgdal::readOGR(dir_spatial, 'ohibc_rgn')
+b_potential_file <- file.path(dir_goal, 'int/prod_pot_b_range.csv')
+if(!file.exists(b_potential_file) | reload == TRUE) {
+  
+  bmean_vals      <- get_rast_vals(harvest_b_rast)
+  bminus_vals <- get_rast_vals(harvest_bminus_rast)
+  # bplus_vals  <- get_rast_vals(harvest_bplus_rast)
+  
+  b_mean <- bmean_vals %>%
+    group_by(rgn_id) %>%
+    summarize(n_tot = n(), n_phi = sum(!is.na(prod_potential)), 
+              mean_prod = mean(prod_potential, na.rm = TRUE)) %>%
+    ungroup()
+  b_lowR <- bminus_vals %>%
+      group_by(rgn_id) %>%
+      summarize(lowR_prod = mean(prod_potential, na.rm = TRUE)) %>%
+      ungroup()
+  
+  b_range_all <- b_mean %>%
+    left_join(b_lowR,  by = 'rgn_id') %>%
+    gather(ref, potential, contains('prod')) %>%
+    left_join(get_rgn_names(), by = 'rgn_id')
+   
+  b_plot <- ggplot(b_vals %>%
+                     left_join(get_rgn_names(), by = 'rgn_id'),
+                   aes(x = prod_potential)) + 
+    ggtheme_plot() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    geom_histogram() + 
+    geom_histogram(data = bminus_vals %>%
+                     left_join(get_rgn_names(), by = 'rgn_id'),
+                   fill = 'green', alpha = .3) + 
+    geom_vline(data = b_range_all %>%
+                 filter(ref != 'mean_prod'), 
+               aes(xintercept = potential, color = ref)) +
+    scale_color_manual(values = c('highR_prod' = 'darkblue', 'lowR_prod' = 'darkgreen', 'max_prod' = 'darkred')) +
+    facet_wrap(~ rgn_name, scales = 'free_y') +
+    labs(x = 'Production potential (Bivalve units/km^2/year)',
+         y = 'Number of 1 km^2 cells',
+         title = 'Bivalves')
+  ggsave(file.path(dir_goal, 'int/histogram_b_potential.png'), width = 7.5, height = 5)
+  
+  write_csv(b_range_all, b_potential_file)
+}
+```
+
+![](int/histogram_b_potential.png)
+
+## Aquaculture development area
+
+As aquaculture development targets, we will use MaPP Special Management Zones assigned to aquaculture to represent the goals of the MaPP regions.  For non-MaPP regions, we will use currently allocated aquaculture tenures (active/not, developed/not) to indicate development goals.
+
+### MaPP Special Management Zones for aquaculture
+
+To determine the area allocated to aquaculture/mariculture for the MaPP regions, we will use SMZ proportions of total region ocean area, taken from MaPP region shapefiles. In some cases (e.g. Haida Gwaii west coast north, table 8.21) it appears some non-SMZ areas are noted "acceptable" for aquaculture.  As a conservative estimate, only SMZ areas will be counted.
+
+Note that for North Coast Vancouver Island, the OHIBC region wraps around to the west in addition to the overall MaPP region.  In this case, perhaps we want to include existing aquaculture tenure areas?  For now, these are excluded.
+
+* Haida Gwaii: shellfish only 
+* North Coast: shellfish only (no production in NC 2011-2015)
+* Central coast: not specified but currently (2011-2015) only produces finfish
+* NCVI states (and produces) both, but MaPP regions are explicitly for shellfish.
+
+``` {r get_mapp_plan_aq_areas}
+dir_mapp <- file.path(dir_data_bc, 'mapp/MarineSpatialPlanZones')
+mapp_hg   <- read_sf(dir_mapp, 'HaidaGwaii_Subregion_Oct_2014')
+# "SubRegion"  "Type"       "Management" "Area_Ha"    "Area_Km"    "Objective"  "Name"       
+# "Haida_Name" "Shape_Leng" "Shape_Area"
+# mapp_hg$Management %>% unique()
+# [1] "SMZ - Shellfish Aq" "IUCN - Type Ib"     "IUCN - Type IV"     "IUCN - Type II"    
+# [5] "IUCN - Type III"    "IUCN - Type V"      "IUCN - Type VI"     "SMZ - Alt. Energy" 
+mapp_hg_aq <- mapp_hg %>%
+  filter(Management == 'SMZ - Shellfish Aq') %>%
+  mutate(area = st_area(geometry)) %>%
+  as.data.frame() %>%
+  dplyr::select(name = Name, area, desc = Management) %>%
+  mutate(rgn_id = 2)
+mapp_nc   <- read_sf(dir_mapp, 'NorthCoast_Subregion_June2015')
+# "SubRegion"  "Type"       "Management" "Area_Ha"    "Area_Km"    "Objective"  "AreaDescri" 
+# "Name"       "Unit_No"    "Grouping"   "ZoneType"   "Shape_Leng" "Shape_Area"
+# mapp_nc$Management %>% unique()
+# [1] "II"                                      "IV"                                     
+# [3] "Renewable Energy"                        "Aquaculture"                            
+# [5] "Tourism and Recreation"                  "Areas for future planning consideration"
+# [7] "Ib"                                      "Cultural" 
+mapp_nc_aq <- mapp_nc %>%
+  filter(Management == 'Aquaculture') %>%
+  mutate(area = st_area(geometry)) %>%
+  as.data.frame() %>%
+  dplyr::select(name = Name, area, desc = Management) %>%
+  mutate(rgn_id = 1)
+mapp_cc   <- read_sf(dir_mapp, 'CentralCoast_Subregion_Ver9')
+# "SubRegion"  "Type"       "Area_Ha"    "Area_Km"    "Unit_New"   "Unit"       "Group_"    
+# "IUCN_Categ" "ZoneType"   "Edited"     "Unit_Old"   "AreaDecri"  "Shape_Leng" "Shape_Area"
+# mapp_cc$ZoneType %>% unique()
+# [1] NA                       "Renewable Energy"       "Aquaculture"           
+# [4] "Recreation and Tourism"
+mapp_cc_aq <- mapp_cc %>%
+  filter(ZoneType == 'Aquaculture') %>%
+  mutate(area = st_area(geometry)) %>%
+  as.data.frame() %>%
+  dplyr::select(name = AreaDecri, area, desc = ZoneType) %>%
+  mutate(rgn_id = 3)
+mapp_ncvi <- read_sf(dir_mapp, 'NorthVancouverIsland_Subregion_Oct3_2014')
+# "SubRegion"  "Type"       "Management" "Area_Ha"    "Area_Km"    "AreaDescri" "Name"      
+# "Unit_No"    "Shape_Leng" "Shape_Area"
+# mapp_ncvi$AreaDescri %>% unique()
+mapp_ncvi_aq <- mapp_ncvi %>%
+  filter(str_detect(tolower(AreaDescri), 'aquaculture')) %>%
+  mutate(area = st_area(geometry)) %>%
+  as.data.frame() %>%
+  dplyr::select(name = Name, area, desc = AreaDescri) %>%
+  mutate(rgn_id = 4)
+    # [1] "SMZ Cultural/Economic Emphasis Areas are intended to reinforce their high value to First Nations, on a seasonal and year-round basis, for cultural value protection, Aboriginal economic development opportunities, and food security. This value includes con"
+    #  [2] "Significant ecological values due to major upwelling of nutrients creating a rich, diverse marine ecosystem.  There are key First Nation cultural/economic interests and local resident scenic values. Safeguarding the integrity of this interaction between" 
+    #  [3] "SMZ Recreation/Tourism Emphasis Areas are intended to reinforce their high value to existing commercial tourism operations, particularly during the months of late May to early October. Other uses and activities in SMZ Recreation/Tourism Emphasis Areas sh"
+    #  [4] "SMZ Community Emphasis Areas are intended to reinforce their value for seasonal and year-round uses and activities associated with, required by, and primarily dictated by, adjacent, or nearby communities. The uses and activities in SMZ Community Emphasis"
+    #  [5] "SMZ Shellfish Aquaculture Emphasis Areas are intended to reinforce interest by First Nations in investigation and (if feasible) the development of bottom and off-bottom shellfish aquaculture operations. These areas may be associated with integrated multi"
+    #  [6] "Important species and habitats, including those of cultural importance to First Nations. Significant for seasonal marine harvesting and ecotourism activities by First Nations. It is an important whale and wildlife viewing area. Includes important habitat"
+    #  [7] "Important habitat and species, in particular a significant and unique glass sponge reef formation, which includes a complex ecosystem, enabling a species-rich marine environment that supports the local biodiversity of the area. Contains critical habitat" 
+    #  [8] "The area is representative of shallow sill ecosystems of coral fans, sponges. Several deepwater and/or rare species including the gorgonian coral, the soft goblet sponge, the cloud sponge, the townsend eualid shrimp, and the bigmouth sculpin are found at"
+    #  [9] "Considerable cultural modification by First Nations based on use of important marine species and habitat.  Ongoing practices and teachings, restoration of First Nations’ cultural resources, and their associated marine species and habitats, and for repa"
+    # [10] "Important marine species, habitats, First Nations’ cultural resources such as cultural tourism, loxiwe, shell middens, and former seasonal village/resource processing site."
+    # [11] "High marine recreational values, containing important marine species and habitats including important areas for herring and northern resident killer whales. Area includes First Nations’ cultural resources uses and activities such as cultural tourism, l"  
+    # [12] "A diverse marine ecosystem, with important marine species and habitat. Important recreation and tourism area which includes several scuba diving sites. Includes important areas for humpback and and northern resident killer whales, herring and sea otters."
+    # [13] "Marine species and habitats including those of cultural importance to First Nations. Connects existing conservation and protection areas and provides network/corridor between the Central Coast and NVI marine plans to assist in conservation and protection"
+    # [14] "Important marine species and habitats including herring important areas. Protection of representative marine ecosystems at the confluence of three channels supporting rich intertidal species and habitats."
+mapp_aq_area_df <- bind_rows(mapp_hg_aq, 
+                             mapp_cc_aq, 
+                             mapp_nc_aq, 
+                             mapp_ncvi_aq) %>%
+  mutate(area_km2 = round(area / 1e6, 3)) %>%
+  dplyr::select(-area)
+write_csv(mapp_aq_area_df, file.path(dir_goal, 'int/mapp_aq_smz_areas.csv'))
+```
+
+### DFO Aquaculture tenures
+
+For Strait of Georgia and West Coast Vancouver Island, we will use the total area of designated tenures according to DFO records, split into finfish and shellfish.
+
+Note that for Aristazabal Island OHIBC region, no aquaculture areas (tenures or SMZs) have been identified.
+
+``` {r get_tenure_areas}
+tenure_shps <- list.files(file.path(dir_data_bc, 'dfo_khunter/aquaculture/d2016/TENURES_PNT'),
+                          pattern = '.shp$', full.names = TRUE)
+ohibc_rgn <- read_sf(dir_spatial, 'ohibc_rgns_unclipped')
+tenures_ohibc <- lapply(tenure_shps, FUN = function(x) {
+  ### x <- tenure_shps[1]
+  read_sf(dsn = dirname(x), layer = str_replace(basename(x), '.shp$', '')) %>%
+    mutate(area = st_area(geometry)) %>%
+    st_intersection(ohibc_rgn) %>%
+    as.data.frame() %>%
+    dplyr::select(-geometry)
+}) %>%
+  setNames(str_replace(basename(tenure_shps), '.shp$', '')) %>%
+  bind_rows(.id = 'filename')
+  
+tenure_areas <- tenures_ohibc %>%
+  setNames(tolower(names(.))) %>% 
+  mutate(spp = ifelse(is.na(sp_lic), sp_, sp_lic),
+         area_km2 = round(area / 1e6, 3)) %>%
+  dplyr::select(filename, rgn_id, location, spp, area_km2)
+write_csv(tenure_areas, file.path(dir_goal, 'int/dfo_aq_tenure_areas.csv'))
+```
+
+## Get regional aquaculture harvests
+
+DFO data for aquaculture harvests by PFMA for 2011-2015.  Harvest values are in tonnes?
+
+``` {r read_and_parse_aq_spreadsheets}
+aq_dfo_file <- file.path(dir_data_bc, 'dfo_khunter/aquaculture/d2016',
+                         'Aquaculture_production_PFMA 2011-15.xlsx')
+data_aq_dfo <- readxl::read_excel(aq_dfo_file, skip = 4) %>%
+  setNames(tolower(names(.)) %>%
+             str_replace_all('[^a-z]+', '_'))
+### This file has a number of rows for shellfish, then a number of rows for
+### finfish.  The header row can be detected by looking for non-numeric
+### text in the "year" column.
+start_fish <- which(data_aq_dfo$year %>% str_detect('[a-zA-Z]'))
+aq_shellfish <- data_aq_dfo[1:(min(start_fish) - 1), ] %>%
+  gather(key = 'species', value = 'harvest', -year, -pfma) %>%
+  mutate(aq_type = 'shellfish')
+finfish_hdr  <- as.character(data_aq_dfo[max(start_fish), ]) %>%
+  tolower() %>%
+  str_replace_all('[^a-z]+', '_') %>%
+  .[. != 'na']
+aq_finfish   <- data_aq_dfo[(max(start_fish) + 1):nrow(data_aq_dfo), 1:length(finfish_hdr)] %>%
+  setNames(finfish_hdr) %>%
+  gather(key = 'species', value = 'harvest', -year, -pfma) %>%
+  mutate(aq_type = 'finfish')
+aq_harvest_df <- bind_rows(aq_shellfish, aq_finfish) %>%
+  filter(!is.na(year))
+  
+write_csv(aq_harvest_df, file.path(dir_goal, 'int/dfo_aq_harvest_pfma.csv'))
+```
+
+Since the DFO harvest is provided by PFMA, collapse PFMAs to OHIBC regions.  We have already done this in the FIS goal, so we will use the same table to assign PFMAs here.
+
+``` {r harvest_pfma_to_ohibc_rgn}
+pfma_to_ohibc <- read_csv(file.path(dir_git, 'prep/fis/v2017/int/pfmsa_to_ohibc.csv')) %>%
+  group_by(pfma_id, rgn_id) %>%
+  summarize(area_km2 = sum(area_km2)) %>%
+  group_by(pfma_id) %>%
+  mutate(prop_area = area_km2 / sum(area_km2)) %>%
+  select(pfma = pfma_id, rgn_id, prop_area)
+  
+aq_harvest_ohibc <- read_csv(file.path(dir_goal, 'int/dfo_aq_harvest_pfma.csv')) %>%
+  left_join(pfma_to_ohibc, by = 'pfma') %>%
+  mutate(harvest_rgn = harvest * prop_area) %>%
+  select(year, species, harvest_rgn, aq_type, rgn_id) %>%
+  group_by(year, species, aq_type, rgn_id) %>%
+  summarize(harvest = round(sum(harvest_rgn), 2)) %>%
+  ungroup()
+write_csv(aq_harvest_ohibc, file.path(dir_goal, 'int/dfo_aq_harvest_ohibc.csv'))
+DT::datatable(aq_harvest_ohibc)
+```
+
+``` {r plot_aq_by_rgn}
+aq_plot_df <- aq_harvest_ohibc %>%
+         left_join(get_rgn_names(), by = 'rgn_id') %>%
+  mutate(species = str_replace(species, '_', ' '),
+         species = str_replace(species, '_[a-z_]+', ''),
+         species = ifelse(str_detect(species, 'sable'), 'sablefish', species))
+aq_sum_df <- aq_plot_df %>%
+  group_by(year, rgn_name, aq_type) %>%
+  summarize(harvest = sum(harvest)) %>%
+  ungroup()
+ggplot(aq_plot_df %>%
+         filter(aq_type == 'finfish'),
+       aes(x = year, y = harvest, color = species)) +
+  ggtheme_plot() +
+  geom_line(data = aq_sum_df %>% filter(aq_type == 'finfish'),
+            aes(x = year, y = harvest), 
+            size = 2, color = 'grey80') +
+  geom_point() +
+  geom_line(aes(group = species)) +
+  scale_color_brewer(palette = 'Dark2') +
+  facet_wrap( ~ rgn_name, scale = 'free_y') +
+  labs(title = 'Finfish (grey = total)')
+ggplot(aq_plot_df %>%
+         filter(aq_type == 'shellfish'),
+       aes(x = year, y = harvest, color = species)) +
+  ggtheme_plot() +
+  geom_line(data = aq_sum_df %>% filter(aq_type == 'shellfish'),
+            aes(x = year, y = harvest), 
+            size = 2, color = 'grey80') +
+  geom_point() +
+  geom_line(aes(group = species)) +
+  scale_color_brewer(palette = 'Dark2') +
+  facet_wrap( ~ rgn_name, scale = 'free_y') +
+  labs(title = 'Shellfish (grey = total)')
+```
+
+## Create and write layers
+
+Layers to `~/github/ohibc/prep/mar/v2017/output`:
+
+* Aquaculture development area by region (finfish and shellfish)
+    * Note: CC MaPP area is allocated to finfish, as only finfish have current (2011-2015) production. 
+    * All other MaPP areas are allocated to shellfish by explicit description.
+* Aquaculture mean, lowR, highR, and max productivity by region (finfish and shellfish)
+* Aquaculture harvest by region (finfish and shellfish)
+
+``` {r write_aq_dev_layers}
+mapp_aq_types <- data.frame(rgn_id  = c(1:4),
+                            aq_type = c('shellfish', 'shellfish', 'finfish', 'shellfish'))
+mapp_aq_areas <- read_csv(file.path(dir_goal, 'int/mapp_aq_smz_areas.csv')) %>%
+  group_by(rgn_id, desc) %>%
+  summarize(area_km2 = sum(area_km2)) %>%
+  ungroup() %>%
+  left_join(mapp_aq_types, by = 'rgn_id') %>%
+  select(rgn_id, aq_type, area_km2) %>%
+  mutate(source = 'mapp')
+  
+dfo_aq_areas <- read_csv(file.path(dir_goal, 'int/dfo_aq_tenure_areas.csv')) %>%
+  mutate(aq_type = ifelse(str_detect(filename, 'Finfish'), 'finfish', 'shellfish')) %>%
+  group_by(rgn_id, aq_type) %>%
+  summarize(area_km2 = sum(area_km2)) %>%
+  ungroup() %>%
+  distinct() %>%
+  mutate(source = 'dfo')
+aq_areas <- bind_rows(mapp_aq_areas, dfo_aq_areas) %>%
+  group_by(rgn_id, aq_type) %>%
+  mutate(a_tot_km2 = sum(area_km2)) %>%
+  ungroup()
+  
+write_csv(aq_areas, file.path(dir_goal, 'output/aq_areas.csv'))
+DT::datatable(aq_areas)
+```
+
+To compare potential vs harvest, we need to convert bivalve units to metric tonnes.  Some figures:
+
+* Scallops: [40-50 per kg (~22g ea)](http://www.thefoodcoach.com.au/food/?FoodID=241)
+* Mussels: [15-20 per 1 lb blue (~25g ea)](https://www.pacseafood.com/products/details/seafood,shellfish/mussels/)
+* Oysters: [12-15 per 1 lb (~33g ea) aquaculture halfshell](http://www.mobjackbayseafood.com/products.html)
+* Clams: [20-30 per 1 lb Manila (~18g ea), 8-14 per 1 lb littlenecks (~40g ea)](https://www.pacseafood.com/products/details/seafood,shellfish/clams/)
+
+Averaging these gives about 27.5g per piece.
+
+``` {r write_aq_potential_layer}
+aq_mass_per_pc <- 0.0275 * 1e-3 ### mass of bivalve piece in tonnes
+pot_b <- read_csv(file.path(dir_goal, 'int/prod_pot_b_range.csv')) %>%
+  mutate(potential = potential * aq_mass_per_pc,
+         aq_type = 'shellfish',
+         units   = 'tonnes') %>%
+  select(rgn_id, ref, potential, aq_type, units)
+pot_f <- read_csv(file.path(dir_goal, 'int/prod_pot_f_range.csv')) %>%
+  mutate(aq_type = 'finfish',
+         units   = 'tonnes') %>%
+  select(rgn_id, ref, potential, aq_type, units)
+pot_aq <- bind_rows(pot_b, pot_f)
+write_csv(pot_aq, file.path(dir_goal, 'output/aq_potential.csv'))
+DT::datatable(pot_aq)
+```
+
+``` {r write_aq_harvest_by_rgn}
+harvest_df <- read_csv(file.path(dir_goal, 'int/dfo_aq_harvest_ohibc.csv')) %>%
+  group_by(year, rgn_id, aq_type) %>%
+  summarize(harvest_tonnes = sum(harvest)) %>%
+  ungroup()
+write_csv(harvest_df, file.path(dir_goal, 'output/aq_harvest.csv'))
+DT::datatable(harvest_df)
+```
+
+## Visualize
+
+``` {r data_viz}
+aq_area      <- read_csv(file.path(dir_goal, 'output', 'aq_areas.csv'))
+aq_potential <- read_csv(file.path(dir_goal, 'output', 'aq_potential.csv'))
+aq_harvest   <- read_csv(file.path(dir_goal, 'output', 'aq_harvest.csv'))
+aq_all <- aq_area %>%
+  left_join(aq_potential, by = c('rgn_id', 'aq_type')) %>%
+  left_join(aq_harvest, by = c('rgn_id', 'aq_type')) %>%
+  mutate(ref_pt = area_km2 * potential) %>%
+  left_join(get_rgn_names(), by = 'rgn_id') %>%
+  filter(source == 'dfo')
+aq_f_df <- aq_all %>%
+  filter(aq_type == 'finfish') %>%
+  select(year, rgn_name, harvest_tonnes, ref, ref_pt)
+aq_f_score <- aq_f_df %>%
+  select(-year) %>%
+  group_by(rgn_name, ref, ref_pt) %>%
+  complete(harvest_tonnes = seq(0, ceiling(max(harvest_tonnes)), ceiling(max(harvest_tonnes)/100))) %>%
+  ungroup() %>%
+  spread(key = ref, value = ref_pt) %>%
+  mutate(f_score = harvest_tonnes / lowR_prod,
+         f_score = ifelse(harvest_tonnes > lowR_prod, 1, f_score)) %>%
+  select(rgn_name, f_score, harvest_tonnes)
+  
+aq_f_plot <- ggplot(aq_f_df %>% filter(ref == 'mean_prod'), aes(x = year, y = harvest_tonnes)) +
+  ggtheme_plot() +
+  geom_hline(data = aq_f_score, 
+             size = 2,
+             alpha = 1,
+             aes(yintercept = harvest_tonnes, color = f_score)) +
+  scale_color_distiller(palette = 'RdYlGn', direction = 1) +
+  geom_line(aes(group = rgn_name), size = 1.5, color = 'grey20') +
+  labs(title = 'Finfish harvest',
+       color = 'rescaled score',
+       y = 'Harvest (tonnes)') +
+  facet_wrap( ~ rgn_name, scales = 'free_y') +
+  ylim(0, NA)
+print(aq_f_plot)
+aq_b_df <- aq_all %>%
+  filter(aq_type == 'shellfish') %>%
+  select(year, rgn_name, ref, harvest_tonnes, ref_pt)
+aq_b_score <- aq_b_df %>%
+  select(-year) %>%
+  filter(!is.na(harvest_tonnes) & ref == 'lowR_prod') %>%
+  group_by(rgn_name, ref, ref_pt) %>%
+  complete(harvest_tonnes = seq(0, ceiling(max(c(harvest_tonnes, ref_pt))), ceiling(max(c(harvest_tonnes, ref_pt))/100))) %>%
+  ungroup() %>%
+  spread(key = ref, value = ref_pt) %>%
+  mutate(b_score = harvest_tonnes / lowR_prod,
+         b_score = ifelse(harvest_tonnes > lowR_prod, 1, b_score)) %>%
+  select(rgn_name, b_score, harvest_tonnes)
+  
+aq_b_plot <- ggplot(aq_b_df, aes(x = year, y = harvest_tonnes)) +
+  ggtheme_plot() +
+  geom_hline(data = aq_b_score, 
+             size = 2,
+             alpha = 1,
+             aes(yintercept = harvest_tonnes, color = b_score)) +
+  scale_color_distiller(palette = 'RdYlGn', 
+                        direction = 1) +
+  geom_line(aes(group = rgn_name), size = 1.5, color = 'grey20') +
+  labs(title = 'Shellfish harvest',
+       color = 'rescaled score',
+       y = 'Harvest (tonnes)') +
+  facet_wrap( ~ rgn_name, scales = 'free_y') +
+  ylim(0, NA)
+print(aq_b_plot)
+```
+
+-----
+
+``` {r provenance, results = 'asis'}
+prov_wrapup()
+```

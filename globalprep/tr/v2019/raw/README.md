@@ -12,13 +12,13 @@ Data downloaded:07/06/2018
 
 ## A few notes about getting data:
 
-**For future assessments** It would be worthwhile to see if data can be "scraped" directly from the website into R. This seems possible given the new format of the state department travel warning data.
+**For future assesmentes** It would be worthwhile to see if data can be "scraped" directly from the website into R. This seems possible given the new format of the state department travel warning data.
 
-Copy and paste the data for each country: from https://travel.state.gov/content/passports/en/alertswarnings.html. Paste into an excel file, convert to .csv and upload to raw folder
+Copy and paste the data for each country: from https://travel.state.gov/content/passports/en/alertswarnings.html. Paste into an excel file, convert to .csv and uploade to raw folder
 
 Since v2018, regional warnings are not part of the methods anymore.
 
-See script to identify regions where information can be retrieved from Canada 's Government - Travel Advice and Advisories (See script) and add this region to the csv created with the above information
+See script to identify regions where information can be retrieved from Canada 's Government - Travel Advice and Advisories (See script) and add this region to the csv created witht he above information
 
 
 # CIA data
