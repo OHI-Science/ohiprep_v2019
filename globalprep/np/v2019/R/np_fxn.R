@@ -460,8 +460,8 @@ np_datacheck <- function(h) {
 
 add_georegion_id <- function(k) {
 ### Code from Melanie to attach a georegional id tag to dataframe k.
-  
-  key <- read_csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv") %>% 
+  region_data()
+  key <- rgns_eez %>% 
     rename(cntry_key = eez_iso3) %>% 
     select(-rgn_name)
   dups <- key$rgn_id[duplicated(key$rgn_id)]
@@ -476,20 +476,20 @@ add_georegion_id <- function(k) {
   #MNP (Northern Mariana Islands) and GUM (Guam)
   
   
-  
-  georegion <- read.csv(here("globalprep/np/v2019/raw/cntry_georegions.csv"))
+  UNgeorgn()
+  georegion <- UNgeorgn
   #   unique(georegion$georgn_id[georegion$level=="r0"])  # 1 level
   #   unique(georegion$georgn_id[georegion$level=="r1"])  # 7 levels
   #   unique(georegion$georgn_id[georegion$level=="r2"])  # 22 levels
   # # OHI gapfills at level r2, which is the finest granularity. 
   
   georegion <- georegion %>%
-    filter(level == "r2")
+    select(rgn_id, r2_label)
   
   k1 <- k %>%
     left_join(key, by = 'rgn_id') %>%
-    left_join(georegion, by = 'cntry_key') %>%
-    select(-cntry_key, -level)
+    left_join(georegion, by = 'rgn_id') %>%
+    select(-cntry_key)
       ### cleaning out variables
   return(k1)
 }
