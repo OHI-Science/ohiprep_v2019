@@ -144,17 +144,17 @@ summary(gdppcppp_clean) # 357 NAs
 gdppcppp_val <- gdppcppp_clean %>%
   dplyr::group_by(country) %>%
   dplyr::mutate(value_num = sum(!is.na(value))) %>% # counts the numbers of non-missing values for each country (logical TRUEs regarded as one)
-  dplyr::filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2017
-  dplyr::mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%  # mean() function is just used to get the single value and remove all NAs in that group
+  dplyr::filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2018 (21 regions in v2019)
+  dplyr::mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%  # mean() function is used on regions with one year of data, applies that single value to all NAs for that region (this is only gapfilling one region in v2019)
   dplyr::ungroup() %>%
-  dplyr::mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave it, otherwise gapfill; still have NAs where 13 > value_num > 1
+  dplyr::mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave it, otherwise gapfill; still have NAs where 13 > value_num > 1 ##### confused what's happening here? nothing is changing 
   dplyr::select(country, year, value, value_num)  # select just these columns; to eliminate extraneous value_num_gf column
 
 
 head(gdppcppp_val)
-summary(gdppcppp_val) # now only 50 NAs
+summary(gdppcppp_val) 
 
-check_val <- filter(gdppcppp_val, is.na(value))
+check_val <- filter(gdppcppp_val, is.na(value)) ##### should this be zero?? what are we checking for? still 50 NAs here 
 
 # Predict values using a linear regression with 'year' as an independent variable 
 # Create new column with these predicted values
@@ -167,20 +167,20 @@ gdppcppp_gf <- gdppcppp_val %>%
   }) %>% 
   dplyr::ungroup()
 
-summary(gdppcppp_gf)
+summary(gdppcppp_gf) # still 50 NAs, does that mean the data can't be gapfilled? 
 head(gdppcppp_gf)
 
+
 # Fill in the remaining NA values using the predicted values
-## Are we gap-filling using gap-filled data here? 
 gdppcppp_gf2 <- gdppcppp_gf %>%
-  dplyr::ungroup() %>%
+  dplyr::ungroup() %>% # why would we need to ungroup here?
   dplyr::mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled', if value is currently NA, it will be gapfilled, indicated by a 1 in the gapfill column
   dplyr::mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>% # if value_num is 1 it was gapfilled previously and gets a 1 in the gapfill column
   dplyr::mutate(value = ifelse(is.na(value), value_pred, value)) %>% # if NA in value column, input the value in value_pred column
   dplyr::mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling; this puts message "lm based..." even in some rows gapfilled with one year of data
   dplyr::mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method)) # this overwrites/corrects method "lm based..." for rows actually gapfilled with "one-year of data"" method
   
-summary(gdppcppp_gf2) # no more NAs
+summary(gdppcppp_gf2) # no more NAs because everything has been gap-filled.
 ```
 
 ## Calculate rescaled values
@@ -190,25 +190,21 @@ This is performed by taking the natural log of each value and then dividing by t
 
 # Values at the 95th Quantile or greater are given a rescaled score of '1' (the highest value)
 gdppcppp_rescale <- gdppcppp_gf2 %>%
-  dplyr::mutate(quantile_95 = quantile(value, probs=0.95)) %>% # gives a single value - the 95th quant
+  #filter(year <= 2017) %>% 
+  dplyr::mutate(quantile_95 = quantile(value, probs=0.95)) %>% # gives a single value - the 95th quant (v2019=53582.14)
   dplyr::mutate(value_stand = value/quantile_95) %>% # where does value scale relative to 95th quantile
   dplyr::mutate(value_stand = ifelse(value_stand > 1, 1, value_stand)) %>% 
   dplyr::select(country, year, value, score=value_stand, gapfilled, method) # rename value_stand 'score'
 
+
 summary(gdppcppp_rescale)
 head(gdppcppp_rescale)
 
-##check the data with some plots
+##check the data with some plots 
 plotData <- gdppcppp_rescale %>%
    dplyr::mutate(need = 1-score) %>%
    dplyr::select(country, year, need)
 
-library(googleVis)
- 
-Motion = gvisMotionChart(plotData,idvar="country", timevar="year")
- 
-plot(Motion) # not loading
-print(Motion, file = file.path('ao_need_95q.html'))
 
 # Check to see if scores make sense 
 
@@ -216,6 +212,8 @@ library(plotly)
 rescale_vis <- ggplot(gdppcppp_rescale, aes(x =value , y = score, label = country)) +
    geom_point()
 ggplotly(rescale_vis)
+
+
 ```
 
 
@@ -242,7 +240,7 @@ population_weights <- read.csv('https://raw.githubusercontent.com/OHI-Science/oh
 
 # Weight the `score`, `value`, and `gapfilled` column by population
 d_stand_rgn <- d_stand_rgn %>%
-  dplyr::left_join(population_weights, by="country") %>%
+  dplyr::left_join(population_weights, by="country") %>% # does it make sense to backfill population data with static data?
   dplyr::mutate(population = ifelse(is.na(population), 1, population)) %>% # If no value available, input 1 (these values will not change)
   dplyr::group_by(rgn_id, year, method, gapfilled) %>% 
   dplyr::summarize(score = weighted.mean(score, population), # weight the single score value by pop.
@@ -269,7 +267,7 @@ write_csv(gdppcppp_data, here("globalprep/ao/v2019/intermediate/gdppcppp_ohi.csv
 ```
 
 ## Gapfilling: part 2
-In this case, we gapfill regions with no data using UN geopolitical means.
+In this case, we gapfill regions with no data using means based on UN-designated geopolitical levels.
 
 ```{r, eval=F}
 UNgeorgn() # how is this different from Mel's georegion function in ohicore? 
@@ -277,14 +275,15 @@ head(UNgeorgn)
 summary(UNgeorgn)
 # Create dataframe pairing each UN geopolitical region id with a year from 2005 to current
 
-
+# Assign georegion labels to each region for each level (r0, r1, r2)
 d_stand_gf <- data.frame(year=min(d_stand_rgn$year):max(d_stand_rgn$year)) %>% 
   merge(UNgeorgn, by=NULL) 
 summary(d_stand_gf)
 head(d_stand_gf)
 
 # Combine the two data frames by region id and year
-# Calculate means across different geopolitical levels (e.g. r2, r1)
+# Calculate means across increasing geopolitical levels (e.g. r2, r1), using the highest resolution possible
+## Are we gap-filling using gap-filled data here? 
 d_stand_gf <- d_stand_gf %>%  
   left_join(d_stand_rgn, by = c("rgn_id", "year")) %>%
   group_by(r2_label, year) %>%
@@ -296,7 +295,7 @@ d_stand_gf <- d_stand_gf %>%
   group_by(r0_label, year) %>%
   mutate(r0_value = mean(score, na.rm=TRUE)) %>%
   ungroup()
-summary(d_stand_gf)
+summary(d_stand_gf) 
 
 
 low_pop()
@@ -324,7 +323,7 @@ d_stand_gf <- d_stand_gf %>%
   
 
 d_stand_gf$score[d_stand_gf$rgn_id %in% low_pop_vector] <- NA
-#should now have NA values in score column for low popuation areas!!
+#should now have NA values in score column for low popuation areas
 
 summary(d_stand_gf)  
 
@@ -358,24 +357,22 @@ Use most recent data year shared by current and previous assessment.
 old_gdppppc <- read.csv(here("globalprep/ao/v2018/output/wb_gdppcppp_rescaled.csv")) %>% 
   dplyr::rename(old_value=value) %>% 
   dplyr::filter(year == 2017)
-summary(old_gdppppc) # No NAs here 
+summary(old_gdppppc) # No NAs  
 
-new <- read.csv(here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled.csv")) %>%
+compare <- read.csv(here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled.csv")) %>%
   dplyr::filter(year == 2017) %>% 
   dplyr::left_join(old_gdppppc, by="rgn_id") %>% 
   select(rgn_id, value, old_value)
-summary(new) # still 20 NAs for value? 
+summary(compare) # still 20 NAs - this is because of converting unpopulated/low population regions to NAs
 
-plot(new$value, new$old_value)
-abline(0,1, col="red")
-#identify(new$value, new$old_value, labels = new$rgn_id) # what is this function supposed to do? keeps killing R
+# identify(new$value, new$old_value, labels = new$rgn_id) # what is this function supposed to do? keeps killing R
 
 library(plotly)
-ggplotly(ggplot(new, aes(x = value, y = old_value, labels = rgn_id)) +
+ggplotly(ggplot(compare, aes(x = value, y = old_value, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red")) # if anything was off of abline then something went wrong
 
-#identify(old$old_pressure, old$pressure_score, labels = old$rgn_id)
+# identify(old$old_pressure, old$pressure_score, labels = old$rgn_id)
 
 
 ```
