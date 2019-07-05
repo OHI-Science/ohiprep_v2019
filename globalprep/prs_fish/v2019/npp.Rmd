@@ -1,0 +1,300 @@
+---
+title: 'OHI 2018: Prepping Primary Productivity data for Commerical Fishing Pressure Layers '
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+# Summary
+
+This script calculates log-transformed, mean annual net primary production values globally from 2003 to 2015. This data is used to standardize commercial fishing catch to produce [fishing pressure layers for OHI](https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/prs_fish/v2018/fishing_pressure_layers.html) and Cumulative Human Impacts.
+
+
+***
+
+# Data Source
+
+**Reference**: Behrenfeld, M.J. and Falkowski, P.G., 1997. Photosynthetic rates derived from satellite‐based chlorophyll concentration. Limnology and oceanography, 42(1), pp.1-20.; Standard VGPM. (2018). Ocean Productivity. Retrieved from http://orca.science.oregonstate.edu/2160.by.4320.monthly.xyz.vgpm.m.chl.m.sst.php.
+
+**Downloaded**: July 31, 2018
+
+**Description**:  Monthly Net Primary Production  (mg C / m2 / day)
+
+**Native data resolution**: 0.083 x 0.083 degree grid   
+
+**Time range**: 2002 - 2015, monthly. Only partial data provided for 2002. OHI uses 2003 - 2015.
+
+**Format**:  XYZ format
+
+***
+  
+# Setup
+
+```{r setup, message = FALSE,warning = FALSE, eval=FALSE}
+
+library(fields)
+library(raster)
+library(doParallel)
+library(foreach)
+library(parallel)
+library(RColorBrewer)
+library(dplyr)
+
+source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/common.R")
+source('R/vgpm_func.R')
+
+cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+
+## paths
+#dir_git <- file.path(dir_M,'git-annex/impact_acceleration/stressors/comm_fish/int')
+dir_git <- file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int')
+
+```
+
+# Unzip Files
+
+```{r unzip, eval=F}
+
+tars <- list.files(file.path(dir_M,'git-annex/globalprep/_raw_data/VGPM_primary_productivity/d2018'),full.names = TRUE, pattern = '.tar')
+
+lapply(tars, untar, exdir = file.path(dir_M, 'git-annex/globalprep/_raw_data/VGPM_primary_productivity/d2018/unzipped'))
+
+```
+
+# Convert to Raster (.xyz to .tiff)
+
+This code sources a function, `vgpm.raster` that transforms the raw .xyz files into GeoTIFFs. 
+
+* Raw NPP values are log-transformed in vgpm_func.R
+* Make sure the file path in vgpm_func.R points to the correct folder you want to save it in. May need to change the year.
+
+Approximate time elapsed: 18 minutes
+
+```{r runFunction, eval = F}
+
+files = list.files(file.path(dir_M,'git-annex/globalprep/_raw_data/VGPM_primary_productivity/d2018/unzipped'), full.names=TRUE, pattern = '.gz')
+
+registerDoParallel(4)
+
+foreach (file = files) %dopar%{
+  
+  print(file)
+  vgpm.raster(file, w.lon, e.lon, n.lat, s.lat, log = TRUE, 
+              color = tim.colors(30))
+}
+
+
+```
+
+Take a look at a single raster
+
+NPP values are log-transformed in `vgpm.raster()`.
+
+```{r int, eval = F}
+
+npp <- raster(file.path(dir_M, 'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/rasterized_rawdata/npp_September 2015.tif'))
+plot(npp)
+# click(npp)
+# res(npp) # 0.083 degree cells
+
+```
+
+# Testing `projectRaster` and `resample` Methods
+
+Description: Testing the difference between just using `projectRaster` (method 1) or `projectRaster` and then `resample` (method 2) to convert projection and resolution to match that of the **ocean** raster. 
+
+Note: While method 1 only takes half an hour and method 2 takes over an hour, we may want to use method 2 so that we can convert to mollweide before gapfilling and then divide fisheries catch rasters by the npp rasters before increasing the resolution since the smaller resolution will be faster to process.
+
+```{r, eval=F}
+## Testing
+# ## Calculate mean first
+# allNPPrasters = list.files(file.path(dir_git,'rasterized_rawdata'), pattern=as.character("2014"), full.names=TRUE)  %>% 
+#   .[1:2] %>% 
+#   stack() %>%
+#   calc(fun=function(x){mean(x, na.rm = TRUE)})
+# 
+# ## 1. Just use projectRaster
+# ## Reproject to coordinates and resolution of ocean using method ngb
+# pct <- proc.time()[3]
+# method1 <- allNPPrasters %>%
+#   projectRaster(., to=ocean, method = "ngb", over = TRUE, filename =
+#                   file.path(dir_git,sprintf('annual_npp/annual_mean_npp_2014-1.tif')), overwrite=TRUE)
+# cat("Elapsed time: ", pct - proc.time()[3], " seconds")
+# 
+# ## 2. Use projectRaster then raster
+# ## Reproject to coordiantes of ocean using method ngb
+# method2 <- allNPPrasters %>% 
+#   projectRaster(., crs=crs(ocean), over = TRUE, filename =
+#                   file.path(dir_git,sprintf('annual_npp/annual_mean_npp_2014-2.tif')), overwrite=TRUE) %>% 
+#   resample(., ocean, method='ngb', filename =
+#              file.path(dir_git,sprintf('annual_npp/annual_mean_npp_moll_1km_2014-2.tif')), overwrite=TRUE)
+# 
+# ## Check values for the two outputs
+# crs(method1)
+# crs(method2)
+# cellStats(method1, max)
+# cellStats(method2, max)
+# diff <- method1-method2
+# plot(diff)
+```
+
+# Calculate Mean Annual NPP
+
+Calculate the mean annual Net Primary Production per year and save as rasters.
+
+* Stack all the rasters in a single year and calculate the mean to get the annual average
+* Convert NPP data to the same coordinate system (Mollweide) as the OHI ocean raster
+* Save into prs_fish/v2018/VGPM_primary_productivity/int/annual_npp folder
+
+```{r, eval = F}
+
+## global ocean raster in mollweide projection and 1-km resolution
+ocean = raster(file.path(dir_M,'model/GL-NCEAS-Halpern2008/tmp/ocean.tif'))
+
+registerDoParallel(5)
+getDoParWorkers()
+
+foreach (i = 2003:2015) %dopar%{ #i=2012
+  
+  allNPP = list.files(file.path(dir_git,'rasterized_rawdata'), pattern=as.character(i), full.names=TRUE) %>%
+    stack() %>%
+    calc(fun=function(x){mean(x, na.rm = TRUE)}) %>%
+    projectRaster(., crs=crs(ocean), method="ngb", over = TRUE, filename =
+                    file.path(dir_git,sprintf('annual_npp/annual_mean_npp_moll_%s.tif', i)), overwrite=TRUE)
+  
+}
+
+```
+
+Take a look at the annual 2015 mollweide raster
+
+```{r output, eval = F}
+
+annual_npp <- raster(file.path(dir_M, 'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/annual_npp/annual_mean_npp_moll_2015.tif')) 
+ 
+plot(annual_npp, col=cols, box=FALSE, axes=FALSE, main = 'Mean Net Primary Productivity (mg C/m2/day)')
+
+## Check projection
+# crs(annual_npp)
+# res(annual_npp)
+
+```
+
+# Gapfill NPP Rasters
+
+This is done by averaging the neighboring cells of raster cells with NA values and repeating until all ocean cells are gapfilled. Took code from Mel's create_layers.Rmd
+
+## Read in data
+
+```{r, eval=FALSE}
+
+npp_files <- list.files(file.path(dir_git, "annual_npp"), full.names=TRUE) # Contains years 2003 - 2015
+
+## Just incase, remove any files that contain the string '1km' or '_gf'
+npp_files <- npp_files[!(str_detect(npp_files, "1km"))]
+npp_files <- npp_files[!(str_detect(npp_files, "_gf"))]
+
+```
+
+## Explore Area to be Gapfilled
+
+Previous code saved the rasters into R's temporary memory after `resample()` and `mask()`. In the future, saving it directly into mazu will be faster to process. 
+
+```{r, eval=FALSE}
+
+npp_rast <- raster(npp_files[1]) # check out 2003 NPP raster
+npp_rast[is.na(npp_rast)] <- 999 # Convert NA's to really large number so it's visible on the map
+plot(npp_rast) # NA's are in green
+
+## First make npp raster the same resolution as the ocean raster
+npp_rast_mol <- resample(npp_rast, ocean, method="ngb", filename = file.path(dir_M, 'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/explore_gf.tif'), overwrite=TRUE)
+
+## removes values that are NA's in the ocean raster - so removes land
+npp_rast_mol_mask <- mask(npp_rast_mol, ocean, filename = file.path(dir_M, 'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/explore_gf.tif'), overwrite=TRUE) 
+```
+
+```{r gf, eval = F}
+
+## Explore gapfill raster
+gf <- raster(file.path(dir_M,'git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/explore_gf.tif'))
+
+plot(gf)
+
+```
+
+## Function to Gapfill
+
+Replaces NA cells using mean of surrounding cells
+
+```{r, eval=F}
+
+gf_raster <- function(x){
+  raster::focal(x, w = matrix(1,3,3), fun = mean, na.rm=TRUE, pad = TRUE, NAonly=TRUE)
+  }
+
+```
+
+## Iterative gapfilling for each year of NPP data
+
+```{r, eval=F}
+
+foreach(npp = npp_files, .packages="dplyr") %dopar%{ # file_name = l[1]
+#for (npp in npp_files){ # npp <- npp_files[1]
+
+r <- raster::raster(npp)
+yr <- stringr::str_sub(npp,-8,-5)
+
+## Repeat up to 500 iterations until critical NA cells are filled
+i <- 0
+
+while (i <= 500){
+r <- gf_raster(r)
+i <- i + 1
+print(i)
+}
+
+## take a look at gapfilling
+# r[is.na(r)] <- 999
+# plot(r)
+## check to make sure that relevant cells are gapfilled at final resolution
+# r_mol <- resample(r, ocean, method="ngb")
+# r_mol_mask <- mask(r_mol, ocean)  
+# plot(r_mol_mask)
+# r_mol_mask
+
+raster::writeRaster(r, file.path(dir_M, sprintf("git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/annual_npp/annual_mean_npp_moll_%s_gf.tif", yr)), overwrite=TRUE)
+
+}
+
+```
+
+Check out one of the gapfilled rasters. 
+
+Note: Land has been assigned high values, but eventually will be removed when dividing catch by NPP. This is because the catch rasters have 'NA' values over the continents.
+
+
+```{r npp_gf, eval = F}
+
+checkgf <- raster(file.path(dir_M, "git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/annual_npp/annual_mean_npp_moll_2015_gf.tif"))
+
+plot(checkgf)
+
+```
+
+***
+
+## Citation information  
+Behrenfeld, M.J. and Falkowski, P.G., 1997. Photosynthetic rates derived from satellite‐based chlorophyll concentration. Limnology and oceanography, 42(1), pp.1-20.
+
+Downloaded from http://www.science.oregonstate.edu/ocean.productivity/standard.product.php
