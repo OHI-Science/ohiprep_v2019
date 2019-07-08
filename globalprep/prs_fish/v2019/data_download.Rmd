@@ -1,0 +1,78 @@
+---
+title: "Data Download"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+library(xlsx)
+```
+
+# New Global Fisheries Catch Data
+
+* Industrial Catch (1950 - 2015) - reported, iuu, and discard catch data for each cell location and unique identifier
+* Non-Industrial Catch (1950 - 2015) - reported, iuu, and discard catch data for each cell location and unique identifier
+* Master Index File (Index.csv) - information associated with the unique identifiers. This is split into two files, "IndexInd" (industrial) and "IndexNInd" (non-industrial).
+* DATA CODE DEFINITIONS (gear/taxa/country codes and cell lat/lon references)
+
+```{r}
+
+source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R")
+  
+## Save download url suffixes 
+web_years <- c("Ind1950_1954", "Ind1955_1959", "Ind1960_1964", "Ind1965_1969", 
+               "Ind1970_1974", "Ind1975_1979", "Ind1980_1984", "Ind1985_1989",
+               "Ind1990_1994", "Ind1995_1999", "Ind2000_2004", "Ind2005_2009", 
+               "Ind2010_2014", "Ind2015_2015", "NInd1950_1954", "NInd1955_1959",
+               "NInd1960_1964", "NInd1965_1969", "NInd1970_1974", "NInd1975_1979",
+               "NInd1980_1984", "NInd1985_1989", "NInd1990_1994", "NInd1995_1999", 
+               "NInd2000_2004", "NInd2005_2009", "NInd2010_2014", "NInd2015_2015")
+
+reference <- c("IndexInd", "IndexNInd")
+
+## Download reference data from web and save into mazu
+for(ref in reference){  #ref <- "IndexInd"
+  
+  data <- read.csv(sprintf("https://data.imas.utas.edu.au/attachments/5c4590d3-a45a-4d37-bf8b-ecd145cb356d/%s.csv", ref))
+  
+  write.csv(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/test_IMAS/d2019/%s.csv", ref)), row.names=F)
+}
+
+## Download catch data from web and save into mazu
+for(web_year in web_years){  
+  #web_year <- "Ind1950_1954"
+
+data <- read.csv(sprintf("https://data.imas.utas.edu.au/attachments/5c4590d3-a45a-4d37-bf8b-ecd145cb356d/Catch%s.csv", web_year))
+
+saveRDS(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/test_IMAS/d2019/Catch%s.rds", web_year)))
+
+}
+```
+
+# How to download the data code definitions. 
+
+For this, it is saved as an .xlsx file (Codes.xlsx), which is hard to work with in R. This file has 4 sheets in it which contain meta data that explain columns in the Index files, and one sheet with is "Spatial Cells Reference - contains geospatial information associated wtih the Industrial Catch data". 
+To download this data, go to the IMAS website: http://data.imas.utas.edu.au/portal/search?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0 and dowload it manually. You can then individually copy-and-paste each sheet into its own excel file, and save as a .csv file in Mazu. 
+
+This .xlsx file contains files which you will save as:
+
+* Spatial Cells Reference (Cells.csv) - contains geospatial information associated wtih the Industrial Catch data
+* Gear Reference (Gear.csv) - contains information regarding how different fishing gear is classified in the index datasets.
+* Taxa Reference (Taxa.csv) - contains information regarding how different taxa is classified in the index datasets.
+* Country Reference (Country.csv) - contains informations regarding how different countries are labeled in the index datasets. 
+
+
+
