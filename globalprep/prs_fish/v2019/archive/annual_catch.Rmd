@@ -1,0 +1,443 @@
+---
+title: "Annual Commercial Fisheries Catch"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../ohiprep_v2018/src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+This script combines spatial catch data from [Watson (2017)](https://www.nature.com/articles/sdata201739) with species & gear specific categories defined in [`watson_gear_matching`](https://github.com/OHI-Science/impact_acceleration/blob/master/stressors/comm_fish/watson_gear_matching.Rmd) to create annual catch rasters for each of the five fishing stressor categories:
+
+- demersal destructive  
+- demersal non-destructive high bycatch
+- demersal non-destructive low bycatch
+- pelagic high bycatch
+- pelagic low bycatch
+
+## Overview
+- Raw catch data is combined with `taxa_gear_types.csv` as defined in `watson_gear_matching.Rmd`
+- Data is filtered for every year and catch type, rasterized to half degree cells
+- Missing coastal data is gapfilled
+- Files are saved as a GeoTIFF
+
+```{r setup, message=F,warning=F}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
+
+library(seaaroundus)
+library(raster)
+library(readr)
+library(dplyr)
+library(data.table)
+library(parallel)
+library(foreach)
+library(doParallel)
+library(RColorBrewer)
+library(stringr)
+
+source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/src/R/spatial_common.R")
+
+cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255)) # rainbow color scheme
+
+# setwd("stressors/comm_fish")
+
+# parallel processing
+cl<-makeCluster(5)
+registerDoParallel(cl)
+
+
+```
+
+#Load Data
+
+Load raw catch data and the dataset matching gear and taxon to the five stressor categories.
+
+```{r raw_data_files, eval=FALSE}
+
+watson_data <- list.files(file.path(dir_M, 'git-annex/impact_acceleration/stressors/comm_fish/data/catch'), full.names=TRUE, pattern = '.rds')
+
+#dataset created in watson_gear_matching that assigns each species/gear pair a gear type as defined in Halpern et al. (2008)
+gear_taxa <- read_csv('int/taxa_gear_types.csv')%>%
+            dplyr::select(-X1)%>%
+            rename(Taxonkey = TaxonKey)
+```
+
+#Save annual catch data
+
+The raw data comes with 5 years of data in each file. Here we disaggregate the data by year, join it with the `taxa_gear` data, and save the filtered data as a standalone dataset.
+
+```{r annual_catch_data, eval=FALSE}
+
+registerDoParallel(10) #register cores
+
+foreach(file = watson_data) %dopar% { # file = watson_data[1]
+  
+data <- readRDS(file)
+
+yrs <- unique(data$Year)
+
+for(i in 1:length(yrs)){
+  print(i)
+  
+yr = yrs[i]
+  
+yr_data <- data%>%
+            filter(Year == yr)%>%
+            left_join(gear_taxa, by = c('Taxonkey','TaxonName','CommonName', 'Gear', 'GearName'))
+
+write_rds(yr_data,path = paste0(file.path(dir_M),'/git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data/catch_data_',yr,'.rds'))
+
+}
+}
+
+```
+
+#Map annual catch
+
+## List annual catch files
+
+To use the datasets just created we define a list of all annual catch datasets.
+
+```{r}
+annual_files <- list.files(file.path(dir_M, 'git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data'), full.names=TRUE)
+
+```
+
+
+## Get base raster
+
+Using the [searoundus R package](https://github.com/ropensci/seaaroundus), we create a raster with cell values set equal to cell IDs in the data, which are defined in the column `Seq`.
+
+```{r}
+
+  #get template raster for SAUP data with cell values equal to CellID
+
+   saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
+
+   saup_rast <- raster(ncol=720, nrow=360)
+   saup_rast[] <- saup_cells
+
+   plot(saup_rast, col=cols, main = "SAUP Cell IDs")
+   
+```
+
+
+## Create a buffer to gapfill shoreline NA values
+
+The ocean mask is used to create a buffer to identify shoreline values that will be gapfilled, but first our ocean raster needs to be resampled and reprojected to have the same resolution and CRS as the fisheries data.  
+
+The following creates an ocean buffer (1 cell inland and 2 cells offshore) at resolution that matches fisheries data.  Cells that fall in this buffer and have no recorded catch records are gapfilled, these are the cells that were cut due to mismatches in resolution and ocean boundaries.  The following saves a file indicating the location of gapfilled cells.
+```{r ocean_low_res, eval=FALSE}
+ 
+saup_rast_mol <- projectRaster(saup_rast, crs=crs(ocean), over=TRUE)
+ saup_rast_mol[saup_rast_mol>=0] <- 1
+ plot(saup_rast_mol)
+ 
+ocean_low_res = resample(ocean, saup_rast_mol, method="ngb")
+
+# this creates a buffer that extends one raster cell inland and 2 raster cells offshore
+buffer1 <- boundaries(ocean_low_res, type="inner", asNA=TRUE, progress="text") 
+buffer2 <- boundaries(buffer1, type="outer", asNA=FALSE, progress="text") 
+buffer2[buffer2==0] <- 1 
+coastal_buffer <- subs(buffer2, data.frame(id=c(NA,1), v=c(0,NA)))
+plot(coastal_buffer)
+#zoom(coastal_buffer)
+
+
+file = annual_files[65]
+
+  data <- readRDS(file) %>%
+      rowwise() %>%
+      mutate(catch = sum(LSF_CR, SSF_CR, IUU_CR, Discards_CR, na.rm=TRUE)) %>%
+                  group_by(Seq) %>%  #group by cell number
+                  summarise(cell_catch = sum(catch)) %>%
+    data.frame()#summing up all types of catch rates (units: tonnes/km2)
+
+  
+  #rasterize catch by swapping cell ids with 
+
+ catch_gf <- raster::subs(saup_rast, data, by = 1, which = 2) %>%
+        projectRaster(crs=crs(ocean), method="ngb", over = TRUE)
+
+catch_gf[is.na(catch_gf)] <- 9999 
+plot(catch_gf)
+
+
+# limit gapfilling to shoreline
+coastal_catch_gf <- overlay(catch_gf, coastal_buffer, fun = function(x,y){ifelse(x %in% 9999 & is.na(y), 9999, NA)})
+
+## save gf raster
+catch_gf_mol <- resample(coastal_catch_gf, ocean, method="ngb")
+
+catch_gf_mol_mask <- mask(catch_gf_mol, ocean)  
+
+writeRaster(catch_gf_mol_mask, file.path(dir_M,'/git-annex/impact_acceleration/stressors/comm_fish/int/comm_fish_gf.tif'), overwrite=TRUE)
+
+
+```
+
+#### Create a function to gapfill missing catch data located along the coastline
+
+Cells that should be gapfilled are identified and then estimated using the average of nearest neighbors. 
+```{r, eval=FALSE}
+
+fish_gf <- function(catch_path, file_name, yr){
+
+rast <-  raster(file.path(dir_M, catch_path, file_name, paste0(file_name, "_", yr, ".tif"))) 
+#plot(rast)
+
+# convert NA values to 0
+rast[is.na(rast)] <- 0
+
+# for cells in the coastal buffer with no catch data, convert from zero to NA values
+fis_gf <- overlay(rast, coastal_catch_gf, fun = function(x,y){ifelse(y %in% 9999, NA, x)})
+#plot(fis_gf)
+
+# now make land NA (don't want to gapfill using land 0 values)
+fis_gf <- overlay(fis_gf, ocean_low_res, fun = function(x,y){ifelse(x %in% 0 & is.na(y), NA, x)})
+# plot(fis_gf)
+# fis_gf
+
+## Function to gapfill NA cells using mean of surrounding cells
+gf_raster <- function(x){focal(x, w = matrix(1,3,3), fun = mean, na.rm=TRUE, pad = TRUE, NAonly=TRUE)}
+
+## Iterative gapfilling for each year of NPP data
+## Repeat until critical NA cells are filled
+i <- 0
+
+while (i <= 50){
+fis_gf <- gf_raster(fis_gf)
+i <- i + 1
+#print(i)
+}
+
+#plot(fis_gf)
+writeRaster(fis_gf, file.path(dir_M, catch_path, file_name, paste0(file_name, "_", yr, "_gf", ".tif")), overwrite=TRUE)
+
+}
+
+```
+
+
+## Create rasters of individual gapfilled catch data for each commercial category.
+
+Annual commercial catch rasters are created by filtering the appropriate catch data based on gear type and other parameters.
+
+### Demersal destructive
+```{r map,eval=F}
+
+foreach(file = annual_files, .packages="dplyr") %dopar%{ # file = annual_files[65]
+  
+  yr <- stringr::str_sub(file, -8, -5)
+  
+  data <- readRDS(file) %>%
+      dplyr::filter(destruction == 'destructive',
+             fish_type == 'demersal') %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE)) %>%
+      dplyr::ungroup() %>%
+                  dplyr::group_by(Seq) %>%  #group by cell number
+                  dplyr::summarise(cell_catch = sum(catch)) %>%
+    data.frame()#summing up all types of catch rates (units: tonnes/km2)
+
+  
+  #rasterize catch by swapping cell ids with 
+
+      raster::subs(saup_rast, data, by = 1, which = 2) %>%
+        raster::projectRaster(crs=raster::crs(ocean), method="ngb", over = TRUE,
+                      filename = file.path(dir_M, sprintf('git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters/dem_dest/dem_dest_%s.tif', yr)), overwrite=TRUE)
+
+}
+
+## apply gapfill function to each of the above rasters
+for(year_catch in 1950:2014){ # year = 2014
+fish_gf(catch_path="git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters",
+        file_name = "dem_dest",
+        yr = year_catch)
+}
+
+```
+
+
+### Demersal non destructive high bycatch
+```{r dem_nd_hb, eval=F}
+
+foreach(file = annual_files, .packages="dplyr") %dopar%{
+  
+  yr <- stringr::str_sub(file, -8, -5)
+  
+  data <- readRDS(file)%>%
+      dplyr::filter(destruction == 'non-destructive',
+             fish_type == 'demersal',
+             bycatch   == 'high')%>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE)) %>%
+     dplyr::ungroup() %>%
+                  dplyr::group_by(Seq) %>%  #group by cell number
+                  dplyr::summarise(cell_catch = sum(catch))
+  
+     raster::subs(saup_rast, data, by = 1, which = 2) %>%
+       raster::projectRaster(crs=raster::crs(ocean), method = "ngb", over=TRUE, 
+                     filename = file.path(dir_M,  sprintf('git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters/dem_nondest_hb/dem_nondest_hb_%s.tif', yr)), overwrite=TRUE)
+}
+     
+## apply gapfill function to each of the above rasters
+for(year_catch in 1950:2014){ # year = 1950
+fish_gf(catch_path="git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters",
+        file_name = "dem_nondest_hb",
+        yr = year_catch)
+} 
+     
+```
+
+
+### Demersal non destructive low bycatch
+```{r dem_nd_lb, eval=F}
+
+foreach(file = annual_files, .packages="dplyr") %dopar%{
+  
+    yr <- stringr::str_sub(file, -8, -5)
+  
+  data <- readRDS(file) %>%
+      dplyr::filter(destruction == 'non-destructive',
+             fish_type == 'demersal',
+             bycatch   == 'low') %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE)) %>%
+      dplyr::ungroup() %>%
+                  dplyr::group_by(Seq) %>%  #group by cell number
+                  dplyr::summarise(cell_catch = sum(catch)) %>%
+    data.frame()
+
+     raster::subs(saup_rast, data, by = 1, which = 2) %>%
+       raster::projectRaster(crs=raster::crs(ocean), method= "ngb", over = TRUE,
+                    filename = file.path(dir_M, sprintf('git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters/dem_nondest_lb/dem_nondest_lb_%s.tif', yr)), overwrite=TRUE)
+}
+
+## apply gapfill function to each of the above rasters
+for(year_catch in 1950:2014){ # year = 1950
+fish_gf(catch_path="git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters",
+        file_name = "dem_nondest_lb",
+        yr = year_catch)
+} 
+
+```
+
+
+### Pelagic low bycatch
+
+```{r pel_lb,eval=F}
+
+foreach(file = annual_files, .packages="dplyr") %dopar%{
+  
+    yr <- stringr::str_sub(file, -8, -5)
+  
+  data <- readRDS(file) %>%
+      dplyr::filter(fish_type == 'pelagic',
+             bycatch   == 'low') %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE)) %>%
+                  group_by(Seq)%>%  #group by cell number
+                  summarise(cell_catch = sum(catch)) %>%
+    data.frame()
+  
+     raster::subs(saup_rast, data, by = 1, which = 2) %>%
+       raster::projectRaster(crs=raster::crs(ocean), method = "ngb", over = TRUE,
+                     filename =  file.path(dir_M, sprintf('git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters/pel_lb/pel_lb_%s.tif', yr)), overwrite=TRUE)
+
+}
+
+## apply gapfill function to each of the above rasters
+for(year_catch in 1950:2014){ # year = 1950
+fish_gf(catch_path="git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters",
+        file_name = "pel_lb",
+        yr = year_catch)
+} 
+
+```
+
+### Pelagic high bycatch
+
+```{r pel_hb, eval=F}
+
+foreach(file = annual_files, .packages="dplyr") %dopar%{
+  
+    yr <- stringr::str_sub(file, -8, -5)
+  
+  data <- readRDS(file) %>%
+      dplyr::filter(fish_type == 'pelagic',
+             bycatch   == 'high') %>%
+      dplyr::rowwise() %>%
+      dplyr::mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE)) %>%
+     dplyr::ungroup() %>%
+                  dplyr::group_by(Seq) %>%  #group by cell number
+                  dplyr::summarise(cell_catch = sum(catch)) %>%
+    data.frame()
+  
+     raster::subs(saup_rast, data, by = 1, which = 2) %>%
+       raster::projectRaster(crs=raster::crs(ocean), method = "ngb", over=TRUE, 
+                     filename =  file.path(dir_M, sprintf('git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters/pel_hb/pel_hb_%s.tif', yr)), overwrite=TRUE)
+
+}
+
+## apply gapfill function to each of the above rasters
+for(year_catch in 1950:2014){ # year = 1950
+fish_gf(catch_path="git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters",
+        file_name = "pel_hb",
+        yr = year_catch)
+} 
+
+```
+
+# Check results
+
+If we add the 5 layers it should equal the total catch for that year.
+
+```{r}
+
+#for 2014
+
+#stack the 5 layers and add
+
+r <- list.files(file.path(dir_M, 'git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_rasters'), pattern = '2014.tif', full.names = TRUE, recursive = TRUE) %>% 
+  stack() %>% 
+  sum(., na.rm = TRUE)
+
+
+#all 0 cells set to NA mainly to remove land
+r[r==0] <- NA
+
+plot(log(r+1), col=cols)
+
+#create single raster for 2014 from the data
+
+data <- readRDS("/home/shares/ohi/git-annex/impact_acceleration/stressors/comm_fish/int/catch_annual_data/catch_data_2014.rds")%>%
+      rowwise() %>%
+      mutate(catch = sum(LSF_CR, IUU_CR, Discards_CR, na.rm=TRUE)) %>%
+                  group_by(Seq) %>%  #group by cell number
+                  summarise(cell_catch = sum(catch))
+  
+ras_2014 <-raster::subs(saup_rast, data, by = 1, which = 2, subsWithNA=TRUE) %>%
+  projectRaster(r, over=TRUE, method="ngb")
+
+plot(log(ras_2014+1), col=cols)
+
+#check the difference
+
+diff = ras_2014 - r
+plot(diff, col=cols)
+#click(diff)
+ras_2014
+r
+## very small differences...looks good!
+```
