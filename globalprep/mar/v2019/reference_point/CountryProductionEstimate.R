@@ -32,24 +32,26 @@ library(here)
 ## some OHI files
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 
-
+## MRF: is this extra stuff...if unnecessary cut from script
 ###this it output file that corresponds to this analysis (from the original paper)
 # takes all constraints into consideration
 PhiAreaChlDF<-read.csv(here("globalprep/mar/v2019/reference_point/TableDataOutputs/FinalNoHypox/CountryProdPotentialLT12.csv"))
 head(PhiAreaChlDF)
 str(PhiAreaChlDF)
 
+
+
 ## Variables needed to get from PHI to tonnes of production
 ## MRF: assumes 1 farm is 1km2  ##
 # (seems easier to just units of km2, rather than farm)
 
-F_estCoef=c(7.6792, (-5.8198)) #from regression estimated in VBGF_Fish_Final.r
-B_estCoef=c(2.9959,(-1.6659)) #from regression estimate in VBGF_Bivalves.r
-density=20 #juveniles per m3
-cagesize=9000 #m3
-cagesperfarm=24 #located atleast 1 km apart...MRF: seems like units should be cagesperkm2
-bivperfarm=130000000 #MRF: again, should units should be bivperkm2?
-weight35cm= 554.8  ## in grams see VBGF_Fish_Final  
+F_estCoef <- c(7.6792, (-5.8198)) #from regression estimated in VBGF_Fish_Final.r
+B_estCoef <- c(2.9959,(-1.6659)) #from regression estimate in VBGF_Bivalves.r
+density <- 20 #juveniles per m3
+cagesize <- 9000 #m3
+cagesperfarm <- 24 #located atleast 1 km apart...MRF: seems like units should be cagesperkm2
+bivperfarm <- 130000000 #MRF: again, should units should be bivperkm2?
+weight35cm <- 554.8  ## in grams see VBGF_Fish_Final  
 
 
 ## Global tiff file of PHI estimates
