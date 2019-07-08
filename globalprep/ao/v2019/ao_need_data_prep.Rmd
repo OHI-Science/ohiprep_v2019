@@ -121,14 +121,73 @@ write.csv(gdppcppp_raw, here('globalprep/ao/v2019/raw/raw_gdppcppp.csv'), row.na
 
 ## Gapfilling 1: Linear Regression within a country's data
 
-When a country has some values (but not a complete series), a within country regression model is used to predict the missing values.
+When a country has some values (but not a complete series), a within-country regression model is used to predict the missing values.
 
 ```{r, eval=F}
 
+######################################################################
+### v2019 data exploration - will delete later 
+
+gdppcppp_v2016 <- read.csv(here('globalprep/ao/v2016/raw/raw_gdppcppp.csv')) %>% 
+    dplyr::select(country, value_2016=NY.GDP.PCAP.PP.KD, year) %>%
+  dplyr::filter(year >= 2005) %>%
+  tidyr::spread(year, value_2016) %>%
+    # spread to fill in potentially missing values with NA
+  data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
+  tidyr::gather(year, value_2016, starts_with("X")) %>%
+  dplyr::mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
+  dplyr::mutate(year = as.numeric(year)) 
+  
+gdppcppp_v2017 <- read.csv(here('globalprep/ao/v2017/raw/raw_gdppcppp.csv')) %>% 
+    dplyr::select(country, value_2017=NY.GDP.PCAP.PP.KD, year) %>%
+  dplyr::filter(year >= 2005) %>%
+  dplyr::filter(year < 2016) %>% 
+  tidyr::spread(year, value_2017) %>%
+    # spread to fill in potentially missing values with NA
+  data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
+  tidyr::gather(year, value_2017, starts_with("X")) %>%
+  dplyr::mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
+  dplyr::mutate(year = as.numeric(year))
+
+gdppcppp_v2018 <- read.csv(here('globalprep/ao/v2018/raw/raw_gdppcppp.csv')) %>% 
+  dplyr::select(country, value_2018=NY.GDP.PCAP.PP.KD, year) %>%
+  dplyr::filter(year >= 2005) %>%
+  dplyr::filter(year < 2016) %>% 
+  tidyr::spread(year, value_2018) %>%
+    # spread to fill in potentially missing values with NA
+  data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
+  tidyr::gather(year, value_2018, starts_with("X")) %>%
+  dplyr::mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
+  dplyr::mutate(year = as.numeric(year))
+
+raw_comp_1617 <- gdppcppp_v2016 %>% 
+  full_join(gdppcppp_v2017, by=c('country', 'year')) %>% 
+  mutate(difference = value_2017-value_2016)
+
+sign_comp_1617 <- as.data.frame(table(sign(raw_comp_1617$difference)))
+  
+raw_comp_1718 <- gdppcppp_v2017 %>% 
+  full_join(gdppcppp_v2018, by=c('country', 'year')) %>% 
+  mutate(difference = value_2018-value_2017)
+
+sign_comp_1718 <- as.data.frame(table(sign(raw_comp_1718$difference)))
+
+raw_comp_1819 <- gdppcppp_v2018 %>% 
+  full_join(gdppcppp_clean, by=c('country', 'year')) %>% 
+  mutate(difference = value-value_2018) %>% 
+  select(country, year, value, value_2018, difference)
+
+sign_comp_1819 <- as.data.frame(table(sign(raw_comp_1819$difference)))
+
+
+###################################################################
+
 # Reorganize to create cells for countries that have missing values for some years
+
 gdppcppp_clean <- read.csv(here('globalprep/ao/v2019/raw/raw_gdppcppp.csv')) %>%
   dplyr::select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   dplyr::filter(year >= 2005) %>%
+#  dplyr::filter(year < 2016) %>% ###### delete later! 
   tidyr::spread(year, value) %>%
     # spread to fill in potentially missing values with NA
   data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
@@ -190,8 +249,8 @@ This is performed by taking the natural log of each value and then dividing by t
 
 # Values at the 95th Quantile or greater are given a rescaled score of '1' (the highest value)
 gdppcppp_rescale <- gdppcppp_gf2 %>%
-  #filter(year <= 2017) %>% 
-  dplyr::mutate(quantile_95 = quantile(value, probs=0.95)) %>% # gives a single value - the 95th quant (v2019=53582.14)
+# filter(year <= 2017) %>% 
+  dplyr::mutate(quantile_95 = quantile(value, probs=0.95)) %>% # gives a single value - the 95th quant (v2019=53582.14; without current year of data quant95=53208.67)
   dplyr::mutate(value_stand = value/quantile_95) %>% # where does value scale relative to 95th quantile
   dplyr::mutate(value_stand = ifelse(value_stand > 1, 1, value_stand)) %>% 
   dplyr::select(country, year, value, score=value_stand, gapfilled, method) # rename value_stand 'score'
@@ -199,11 +258,6 @@ gdppcppp_rescale <- gdppcppp_gf2 %>%
 
 summary(gdppcppp_rescale)
 head(gdppcppp_rescale)
-
-##check the data with some plots 
-plotData <- gdppcppp_rescale %>%
-   dplyr::mutate(need = 1-score) %>%
-   dplyr::select(country, year, need)
 
 
 # Check to see if scores make sense 
@@ -354,13 +408,13 @@ write.csv(final_gf, here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled_gf.csv
 ## Compare data to previous year
 Use most recent data year shared by current and previous assessment.
 ```{r, eval=F}
-old_gdppppc <- read.csv(here("globalprep/ao/v2018/output/wb_gdppcppp_rescaled.csv")) %>% 
+old_gdppppc <- read.csv(here("globalprep/ao/v2016/output/wb_gdppcppp_rescaled.csv")) %>% 
   dplyr::rename(old_value=value) %>% 
-  dplyr::filter(year == 2017)
+  dplyr::filter(year == 2010)
 summary(old_gdppppc) # No NAs  
 
-compare <- read.csv(here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled.csv")) %>%
-  dplyr::filter(year == 2017) %>% 
+compare <- read.csv(here("globalprep/ao/v2018/output/wb_gdppcppp_rescaled.csv")) %>%
+  dplyr::filter(year == 2010) %>% 
   dplyr::left_join(old_gdppppc, by="rgn_id") %>% 
   select(rgn_id, value, old_value)
 summary(compare) # still 20 NAs - this is because of converting unpopulated/low population regions to NAs
@@ -375,5 +429,19 @@ ggplotly(ggplot(compare, aes(x = value, y = old_value, labels = rgn_id)) +
 # identify(old$old_pressure, old$pressure_score, labels = old$rgn_id)
 
 
+
+
+
+
+
+years_compared <- c("2016-17", "2017-18", "2018-19")
+
+negative_diff <- c(1095, 595, 900)
+
+zero_diff <- c(96, 818, 214)
+
+positive_diff <- c(1350, 1164, 1460)
+
+assessment_comp <- cbind(years_compared, negative_diff, zero_diff, positive_diff)
 ```
 
