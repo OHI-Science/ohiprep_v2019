@@ -229,6 +229,7 @@ Step 2: Wrangle and clean the new data
 warn_raw <- read.csv(here('globalprep/tr/v2019/raw/tr_travelwarning_2019_raw.csv'), na.strings = " ") %>% 
   mutate(country = as.character(country)) 
 
+# Count the number of warnings per country so that those with only regional-based warnings are not removed in the next step
 warn_count <- warn_raw %>% 
   group_by(country) %>% 
   tally() %>% 
