@@ -216,7 +216,7 @@ For some regions, a specific species can be altered so that it matches more gene
 
 (Will explore this in the future, but will not implement this year).
 
-```{r, }
+```{r}
 # ## based on looking at the list, make a few name changes to match the regions Trujillo data
 # # Chile name modification
 # mar_rgn$species[mar_rgn$rgn_id==224 & mar_rgn$species == "Red abalone"] <- "Abalones nei"
