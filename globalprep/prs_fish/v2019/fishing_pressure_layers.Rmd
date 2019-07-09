@@ -101,7 +101,7 @@ master <- indexInd %>%
    full_join(indexNInd, by = c("ID","IYear", "CNumber", "Taxonkey", "Gear", "FGearCode", "NumCells"))  %>%
   left_join(country, by = c("CNumber" = "Country")) %>%
   left_join(taxa, by = c("Taxonkey" = "TaxonKey")) %>%
-    select(ID, Year = IYear, CountryName = FAO.name, TaxonName, CommonName, IndReported = Reported.x, IndIUU = IUUTotal.x, IndDiscards = Discards.x, NIndReported = Reported.y, NIndIUU = IUUTotal.y, NIndDiscards = Discards.y )
+    dplyr::select(ID, Year = IYear, CountryName = FAO.name, TaxonName, CommonName, IndReported = Reported.x, IndIUU = IUUTotal.x, IndDiscards = Discards.x, NIndReported = Reported.y, NIndIUU = IUUTotal.y, NIndDiscards = Discards.y )
 
 master[is.na(master)] <- 0 #replace NA values with 0
 
@@ -119,6 +119,7 @@ DT::datatable(head(spatialCells))
 data <- readRDS(file.path(rawFolder,"CatchInd1950_1954.rds"))
 DT::datatable(head(data))
 
+#data_ly <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018", "CatchInd_1950_1954.rds"))
 ```
 
 Test to see whether the values for **IndReported**, **IndIUU**, and **IndDiscards** in the Master Index File are sum totals of Abalones in the Mexico in year 1953.
@@ -249,7 +250,6 @@ Note: Annual catch per cell contains values in units of kg per km^2^. Since valu
 
 1. Setup 
 ```{r annRasters, eval=FALSE}
-###TODO Stopped here on July 5###
 library(tidyverse)
 library(parallel)
 library(foreach)
@@ -317,7 +317,8 @@ rast_prefx <- list(comm = "comm", artisanal = "artisanal")
 ## Function for totalling landings/discards and saves raster files 
 catch2raster <- function(raw_suffx,rast_prefx){
   
-foreach(yr = years) %dopar% { #yr = 2003
+foreach(yr = years) %dopar% { 
+ # yr = 2003
   
   ## find file path of the respective year of data
   yr <- as.character(yr)
@@ -325,13 +326,20 @@ foreach(yr = years) %dopar% { #yr = 2003
   dataname <- str_subset(annual_files, paste0(raw_suffx,"*.",yr))
   ## read in raw data
   raw_data <- readRDS(dataname)
- 
+ #raw_data <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/prs_fish/v2019/int/annual_catch/CatchInd_2003.rds"))
   ## Total Landings per Cell
   landings <- raw_data %>%
     dplyr::mutate(Landings_CR = (Landings * 1000)/OceanAreasqkm) %>% # convert to catch rate (kg/km^2)
     dplyr::group_by(Cell) %>%
     dplyr::summarise(cell_catch = sum(Landings_CR, na.rm=TRUE)) %>% # usually no NAs, but just in case
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    data.frame()
+  
+#test what is occurring with cells in v4.0
+#landings_test <- landings %>%
+#  dplyr::arrange(Cell) %>%
+#  dplyr::mutate(lag = lag(Cell)) %>%
+#  dplyr::mutate(difference = Cell - lag)
 
   ## Total Discards per Cell
   discards <- raw_data %>%
@@ -349,9 +357,29 @@ foreach(yr = years) %dopar% { #yr = 2003
   }
 }
 
+#rast_test <- raster::subs(saup_rast, landings, by = "Cell", which = "cell_catch", subsWithNA=TRUE)
+
 ## Applies catch2raster function on commercial (industrial) then artisanal (non-industrial) files
 create_rast <- map2(raw_suffx, rast_prefx, catch2raster)
 
+
+#Check compared to last years... looks very different 
+#raw_data1 <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_2003.rds"))
+# landings1 <- raw_data1 %>%
+#    dplyr::mutate(Landings_CR = (Landings * 1000)/Area) %>% # convert to catch rate (kg/km^2)
+#    dplyr::group_by(Cell) %>%
+#    dplyr::summarise(cell_catch = sum(Landings_CR, na.rm=TRUE)) %>% # usually no NAs, but just in case
+#    dplyr::ungroup()
+
+
+#raw_data1 <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchInd_2003.rds"))
+# landings1 <- raw_data1 %>%
+#    dplyr::mutate(Landings_CR = (Landings * 1000)/Area) %>% # convert to catch rate (kg/km^2)
+#    dplyr::group_by(Cell) %>%
+#    dplyr::summarise(cell_catch = sum(Landings_CR, na.rm=TRUE)) %>% # usually no NAs, but just in case
+#    dplyr::ungroup()]
+
+#rast_test <- raster::subs(saup_rast, landings1, by = "Cell", which = "cell_catch", subsWithNA=TRUE)
 ```
 
 ## Check Rasters against Watson Fig
@@ -371,16 +399,29 @@ catch <- raster(commercial[17])
 plot(catch)
 res(catch) # 0.5 degree cells
 
+#Compare to last year
+#commercial_ly <- list.files(paste0(file.path("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/int/"), "comm_landings"), full.names = TRUE)
+#commercial_ly <- commercial_ly[!(str_detect(commercial_ly, "mean_catch"))] # remove files with 'mean_catch' in file path
+#commercial_ly <- commercial_ly[!(str_detect(commercial_ly, "corr"))]
+#catch_ly <- raster(commercial_ly[17])
+#plot(catch_ly)
+#res(catch_ly) # 0.5 degree cells
+
+
 ## Compare 2000-2015 industrial catch (log-transformed) to Watson figure
 ## create a raster stack from the input raster files (exclude 1999 which is commercial[1])
 allRasters <- raster::stack(commercial[2:17])
+#allRasters_ly <- raster::stack(commercial_ly[2:17])
 
 ## run the sum function on the raster stack - i.e. add (non-cumulatively) the rasters together
 tot_Catch <- sum(allRasters)
+#tot_Catch_ly <- sum(allRasters_ly)
 
 ## apply log to adjust for really large values
 log_Catch <- raster::calc(tot_Catch, function(x){log(x+1)},
              filename = paste0(rastFolder,"datacheck/commLand_2000_2015_log.tif"), overwrite=TRUE)
+#log_Catch_ly <- raster::calc(tot_Catch_ly, function(x){log(x+1)})
+
 
 ## Plot & Save raster
 png(filename="figs/log_IndCatch_2000_2015.png")
@@ -391,6 +432,10 @@ dev.off()
 plot(log_Catch, col=cols, alpha=1)
 click(log_Catch)
 zoom(log_Catch)
+
+#plot(log_Catch_ly, col=cols, alpha=1)
+#click(log_Catch_ly)
+#zoom(log_Catch_ly)
 
 #########STOPPED HERE JULY 5#########
 ```
