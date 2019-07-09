@@ -75,20 +75,24 @@ emp_file <- wttc_files[str_detect(wttc_files, 'empd')]
 
 ## some region complications
 # Sudan and South Sudan : actually two of our regions, but will consider as Sudan here
+# Côte d'Ivoire reported as Ivory Coast in OHI
+
 # Former Netherlands Antilles : considered 6 regions by OHI: all will get the same score (gapfilling)
 
 empd <- empd %>%
   mutate(rgn_name = as.character(rgn_name)) %>%
-  mutate(rgn_name = ifelse(rgn_name == "Sudan and South Sudan", "Sudan", rgn_name))
+  mutate(rgn_name = ifelse(rgn_name == "Sudan and South Sudan", "Sudan", rgn_name)) %>% 
+  mutate(rgn_name = ifelse(rgn_name == "Côte d'Ivoire", "Ivory Coast", rgn_name))
 
 names <- data.frame(rgn_name = unique(empd$rgn_name), new_rgn_name = unique(empd$rgn_name)) %>%
   filter(rgn_name != "Former Netherlands Antilles") %>%
   rbind(data.frame(rgn_name = "Former Netherlands Antilles", new_rgn_name = c("Bonaire", "Curacao", "Sint Eustatius", "Saba", "Sint Maarten")))
-   # Aruba is also considered the "Former Netherlands Antilles, but it is reported separately in the data
+   # Aruba is also considered the "Former Netherlands Antilles", but it is reported separately in the data
 
 empd <- empd %>%
   left_join(names, by='rgn_name') %>%
   select(rgn_name=new_rgn_name, year, jobs_ct, jobs_pct)
+  
 
 ### Prep direct and total employment data with name_to_rgn function
 empd_rgn <- name_2_rgn(df_in = empd, 
@@ -106,7 +110,9 @@ empd_rgn <- name_2_rgn(df_in = empd,
   
 ### write csvs to github in intermediate location.
 # v2018: write_csv(empd_rgn, 'intermediate/wttc_empd_rgn.csv')
-write_csv(empd_rgn, here('globalprep/tr/v2019/intermediate/wttc_empd_rgn.csv'))
+# alternate: write_csv(empd_rgn, here('globalprep/tr/v2019/intermediate/wttc_empd_rgn.csv'))
+write_csv(empd_rgn, file.path(dir_github, sprintf("intermediate/wttc_empd_rgn.csv")))
+
 
 ##### v2019: changed this filepath to match the current working directory 
 ### using here(), but need to switch to programatic method for future use

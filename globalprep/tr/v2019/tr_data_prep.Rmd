@@ -35,7 +35,7 @@ Xtr = tr/90th quantile across regions
 The following data are used:
 
 * Tourism sustainability: Travel and Tourism Competitiveness Index (TTCI) from World Economic Forum (WEF)
-* Proportion of workforce directly employed in tourism: World Travel & Tourism Council (WTTC)
+* Proportion of workforce directly employed in tourism: World Travel & Tourism Council ([WTTC](https://www.wttc.org/datagateway))
 * Travel warnings: (U.S. State Department)
 * Per capita GDP: (World Bank with gaps filled using CIA data), used to gapfill missing values in Tourism sustainability
 
@@ -50,16 +50,15 @@ The TTCI data is available to download in an excel file directly from the source
 
 We were able to update the following data:
 * Tourism Sustainability - TTCI form WEF - No updates
-* Proportion of jobs in tourism - WTTC data reported until 2017 and unclear if 2018 is actual data or prediction so we used 2017 as the data_year (downloaded: 07/12/2018)
-* Travel warnings for 2018 (downloaded: U.S State Department 06/28/2018)
+* Proportion of jobs in tourism - WTTC data reported until 2017 and unclear if 2018 is actual data or prediction so we used 2017 as the data_year (downloaded: 07/08/2019)
+**** should we be using 2018 as the most recent data year? e.g. should this be standard practice? *****
+* Travel warnings for 2018 (downloaded: U.S State Department 07/02/2019)
 
 
 
-# Some code to set everything up
+# Initial set-up code
 
 ```{r setup, message=FALSE, warning=FALSE}
-#setwd("~/github/ohiprep_v2018/globalprep/tr/v2018") #comment out when knitting
-#setwd("globalprep/tr/v2018")
 
 #library(devtools)
 #devtools::install_github("ohi-science/ohicore@dev")
@@ -82,27 +81,29 @@ source(here("globalprep/tr/v2019/R/tr_fxns.R"))
 
 # Ep: Proportion of workforce directly employed in tourism
 
-These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/d2018/README.md for instructions on obtaining data). The data extend to 2028, but these values are projections.  The actual data goes to 2019.
+These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/d2019/README.md for instructions on obtaining data). The data extend to 2029, but these values are projections.  The actual data goes to 2019.
 
 These data are cleaned and formatted using the R/process_WTTC.R script. Missing values are gapfilled using the UN georegion information.
 
 ```{r wttc prop tourism, eval=FALSE}
 
 ## describe where the raw data are located:
-dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2019/raw')
+scenario_yr <- "v2019"
+dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2019/raw') # what is this used for?
+dir_github <- here("globalprep/tr", scenario_yr)
 
 ## processing script that formats the WTTC for OHI, saves the following: intermediate/wttc_empd_rgn
 ## v2018: source('R/process_WTTC.R', local = TRUE)
 source(here("globalprep/tr/v2019/R/process_WTTC.R"))
-##### v2019: Need to account for Côte d'Ivoire, + duplicates (Guadeloupe/Martinique, PR/VI, China) + didn't create a new file? see notes written at the end of the function script! 
+##### v2019: Duplicates (Guadeloupe/Martinique, PR/VI, China) + didn't create a new file? see notes written at the end of the function script! 
 
 ## read in the dataset created by above function:
-tr_jobs_pct_tour <- read.csv('intermediate/wttc_empd_rgn.csv', stringsAsFactors = FALSE) %>%
+tr_jobs_pct_tour <- read_csv(here('globalprep/tr/v2019/intermediate/wttc_empd_rgn.csv')) %>% 
  dplyr::select(rgn_id, year, jobs_pct)
 ### change to here() even if its reading the correct file? 
 
 ## format data to have complete years/regions and convert percentage of jobs to proportion of jobs
-rgn_names <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv', stringsAsFactors = FALSE) %>%
+rgn_names <- read_csv('https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv') %>%
     dplyr::select(rgn_id)
 
 # create data frame with a row for each combination of region id and year
@@ -110,13 +111,17 @@ rgn_names <- expand.grid(rgn_id = rgn_names$rgn_id,
                              year= min(tr_jobs_pct_tour$year):max(tr_jobs_pct_tour$year)) 
       
 tr_data_raw <- rgn_names %>%
-    full_join(tr_jobs_pct_tour %>%
+  full_join(tr_jobs_pct_tour %>%
                 rename(Ep = jobs_pct) %>%
                 mutate(Ep = Ep/100) %>%
                 mutate(Ep = ifelse(Ep > 1, NA, Ep)),
-              by = c('rgn_id', 'year')) 
-# v2018: Some regions (rgn_ids 32, 52 and 140 in the 2018 assesment) appear to have an error bteween some years, Ep value > 100%. This line makes this values NA
-## v2019: Should we be tracking NAs here? 
+              by = c('rgn_id', 'year')) %>%
+  filter(!rgn_id == 213) %>% 
+  filter(!rgn_id == 255) # ditch disputed regions and Antarctica
+
+# v2018: Some regions (rgn_ids 32, 52 and 140 in the 2018 assesment) appear to have an error bteween some years, Ep value > 100%. This line makes this values NA (v2019: Ep all <0.5)
+## v2019: Should we be tracking NAs here? >2500 in Ep column
+# summary(tr_data_raw)
 
 
 ## gapfill missing data using UN georegion data:
@@ -126,8 +131,7 @@ georegion_labels <- georegion_labels
 tr_data_raw <- tr_data_raw %>%
   left_join(georegions, by = 'rgn_id') %>%
   left_join(georegion_labels, by = 'rgn_id') %>%
-  select(-r0) %>%
-  filter(rgn_id != c(255, 213)) # ditch disputed regions and Antarctica
+  select(-r0)
 ## what do values in r1, r2 columns mean? # of levels for that identifier? 
 
 # Calculate two different gapfill columns using r2 and r1
@@ -148,7 +152,7 @@ tr_data_raw_gf <- tr_data_raw_gf %>%
   mutate(method = ifelse(is.na(Ep) & !is.na(Ep_pred_r2), "UN georegion (r2)", NA)) %>%
   mutate(method = ifelse(is.na(Ep) & is.na(Ep_pred_r2) & !is.na(Ep_pred_r1), "UN georegion (r1)", method)) 
 
-# save the data
+# save the gapfill report data
 tr_data_gf <- tr_data_raw_gf %>%
   select(rgn_id, year, gapfilled, method) 
 
@@ -159,7 +163,7 @@ tr_data <- tr_data_raw_gf %>%
 
 # v2018: write.csv(tr_data, "output/tr_jobs_pct_tourism.csv", row.names=FALSE) -- where was this saving???
 write_csv(tr_data, here("globalprep/tr/v2019/output/tr_jobs_pct_tourism.csv"))
-## 262 NaNs - should we be concerned about this? 
+## 245 NAs - should we be concerned about this? 
 
 ## A quick check to make sure last year's values aren't too crazy different
 ## (NOTE: the source data has been updated, so there are some changes, but they shouldn't be super different)
@@ -178,8 +182,22 @@ ggplotly(ggplot(new, aes(x = Ep, y = ep_old, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
+## investigate outliers
 
-## investigate outliers? 
+new_diff <- new %>%
+  mutate(difference = ep_old-Ep) %>% 
+  filter(!is.na(ep_old)) %>% 
+  filter(!is.na(Ep))
+
+outliers <- tr_data_raw %>% 
+  filter(rgn_id %in% c(15,116,117,118,119,122,125,127,173,250)) %>% 
+  filter(year == 2018) %>% 
+  select(rgn_id, rgn_label) %>% 
+  left_join(new, by = "rgn_id", "year") %>% 
+  mutate(difference = Ep-ep_old) %>% 
+  mutate(avg_diff = mean(new_diff$difference))
+
+### v2019: These outliers can be explained by changes in the source data. Compared raw data from v2018 and all of these regions have large changes in the % share of total employment reported for the year 2018. WTTC likely backfills and adjusts their data on a yearly basis.  
 ```
 
 # Tw: Travel warnings
@@ -198,7 +216,7 @@ Previously, we identified subregional warnings and modified the penalty based on
 
 **For future assessments** It would be worthwhile to see if data can be "scraped" directly from the website into R. This seems possible given the new format of the state department travel warning data.
 
-#### Getting data for 2018 assessment
+#### Getting data for 2019 assessment
 The following code is used transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
 
 Step 1: Copy and paste the data for each country: from https://travel.state.gov/content/passports/en/alertswarnings.html (for 2019 evalute scraping data directly from website). Paste into an excel file, convert to .csv and uploade to raw folder
@@ -206,14 +224,40 @@ Step 1: Copy and paste the data for each country: from https://travel.state.gov/
 Step 2: Wrangle and clean the new data
 
 ```{r, eval=FALSE}
-##Reading and wrangling 2018 data
+##Reading and wrangling 2019 warning data
 
 warn_raw <- read.csv(here('globalprep/tr/v2019/raw/tr_travelwarning_2019_raw.csv'), na.strings = " ") %>% 
-  mutate(country = as.character(country)) %>% 
+  mutate(country = as.character(country)) 
+
+warn_count <- warn_raw %>% 
+  group_by(country) %>% 
+  tally() %>% 
+  ungroup()
+
+warn_raw <- warn_raw %>% 
   mutate(level = as.numeric(str_extract(level, '[1,2,3,4]'))) %>% 
-  filter(!(regional %in% 1)) %>% # no longer relevant because we are not adjusting penalty based on subregional information
+  left_join(.,warn_count, by = "country") %>% 
+  filter(!(regional == 1 & n >1)) %>% # remove regions that have regional warnings in addition to country wide warnings, but retain those where country warning level is based on regional information
   select(assess_year, level, country) %>% 
   rename(year= assess_year)
+
+test <- count(warn_raw, country)
+test2 <- warn_raw %>% 
+  filter(is.na(regional)) %>% 
+  group_by(country) %>%
+  tally()
+
+
+
+### v2018: 
+#warn_raw <- read.csv(here('globalprep/tr/v2019/raw/tr_travelwarning_2019_raw.csv'), na.strings = " ") %>% 
+#  mutate(country = as.character(country)) %>% 
+#  mutate(level = as.numeric(str_extract(level, '[1,2,3,4]'))) %>% 
+#  filter(!(regional %in% 1)) %>% # no longer relevant because we are not adjusting penalty based on subregional information
+#  ##### ^ this might not be the best way to do this, as it removes regions that only have one line of data (country warning level is based on regional information)
+#  select(assess_year, level, country) %>% 
+#  rename(year= assess_year)
+
  
 ##Correct regions that are reported together
 ### v2019: guadeloupe and martinique being reported together and separately; need to compress? 
@@ -267,7 +311,7 @@ warn_improved <- warn_improved %>%
   dplyr::mutate(country = ifelse(stringr::str_detect(country,"U.S. Virgin Islands"), "Puerto Rico and Virgin Islands of the United States", country)) %>%
     dplyr::mutate(country = ifelse(stringr::str_detect(country,"Puerto Rico"), "Puerto Rico and Virgin Islands of the United States", country))
 
-##NOTE: Puerto Rico and Virgin Islands are reported by the Canadian Goverment Travel Advisory (SEE BELOW befre runnig the script)
+##NOTE: Puerto Rico and Virgin Islands are reported by the Canadian Goverment Travel Advisory (SEE BELOW befre runnig the script) ??
 
 ```
 
@@ -280,17 +324,20 @@ In 2018 we adjusted the data for provious years and saved the complete warning l
 We should be able to skip this section in the 2019 OHI assessment.
 ```{r, eval=FALSE}
 
-apply_level = data.frame(warning = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"), level = c(1, 2, 3, 4, 4)) 
 
-## v2018: deleted a couple regions that were duplicated (2016 Haiti and 2017 Kenya)
 ## v2019: for this year I think we dont need to use gather as the data are being reported differently; added in str_extract to remove text indicating detail about level
 
 warn_old <- read.csv(here('globalprep/tr/v2019/raw/tr_travelwarning_2018_raw.csv')) %>%
   select(year = assess_year, country, regional, level) %>% 
   mutate(level = as.numeric(str_extract(level, "\\-*\\d+\\.*\\d*")))
 
+# some countries will be duplicated here because of regional warnings; removed below 
 
+
+
+## v2018: deleted a couple regions that were duplicated (2016 Haiti and 2017 Kenya)
 # v2018 import: 
+# apply_level = data.frame(warning = c("inform", "risk", "avoid_nonessential", "avoid_all", "gtfo"), level = c(1, 2, 3, 4, 4)) 
 # warn_old <- read.csv(here('globalprep/tr/v2019/raw/tr_travelwarning_2018_raw.csv')) %>% 
 #select(year = assess_year, country=rgn_name, inform, risk, avoid_nonessential, avoid_all, gtfo, regional) %>%
 #  gather("warning", "n", 3:7)  %>%
@@ -302,7 +349,6 @@ warn_old <- read.csv(here('globalprep/tr/v2019/raw/tr_travelwarning_2018_raw.csv
 
 ## The old data does not always have data for the larger region when there was a "regional" warning.
 ## Adding that data here:
-### not sure this is needed for v2019?
 
 warn_old_add_rgns <- warn_old %>%
   rowwise() %>%
@@ -317,13 +363,12 @@ warn_old_add_rgns <- filter(warn_old_add_rgns, region_data==0) %>%
   mutate(level = 1) %>%
   select(year, country, level)
 
-### v2019: this df doesn't have any data 
+### v2019: this df doesn't have any data
 
 ## exclude subregion data from old data
 warn_old_no_subs <- filter(warn_old, !(regional %in% 1)) %>%
-  select(year, country, level) 
-
-warn_old_no_subs$country <- as.character(warn_old_no_subs$country)
+  select(year, country, level) %>% 
+  mutate(country = as.character(country))
 
 
 #binding old and new data
