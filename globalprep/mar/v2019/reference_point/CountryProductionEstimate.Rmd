@@ -1,13 +1,41 @@
 ---
-title: "CountryProductionEstimate"
-author: "Gage Clawson"
-date: "7/8/2019"
-output: html_document
+title: "OHI 2019: Aquaculture Country Production Estimate"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+  pdf_document:
+    toc: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+[REFERENCE RMD FILE: https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/globalprep/mar/v2019/reference_point/CountryProductionEstimate.Rmd]
 
+# Summary
+This analysis produces potential tonnes of aquaculture from growth potential estimates of finfish and bivalves. These aquaculture numbers will be used for the reference point for the mariculture subgoal. 
+
+***
+
+# Data Source 
+
+## Growth Potential (Phi) data 
+
+**Reference**:      
+https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+Rebecca Gentry, Halley Froehlich, Dietmar Grimm, Peter Kareiva, Michael Parke, et al. SNAPP - Mapping the Global Potential for Marine Aquaculture. Knowledge Network for Biocomplexity. doi:10.5063/F1CF9N69. 
+
+**Downloaded**: 7/3/2019
+
+**Description**: Growth Potential estimate raster for global cells 
+
+***
+  
+# Methods
+```{r setup, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(eval=FALSE)
 #######regression inputs from VBGF_Fish.r
 
 # This is a heavily modified script from KNB:
@@ -41,15 +69,7 @@ library(here)
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 ```
 
-```{r}
-## MRF: is this extra stuff...if unnecessary cut from script
-###this it output file that corresponds to this analysis (from the original paper)
-# takes all constraints into consideration
-PhiAreaChlDF<-read.csv(here("globalprep/mar/v2019/reference_point/TableDataOutputs/FinalNoHypox/CountryProdPotentialLT12.csv"))
-head(PhiAreaChlDF)
-str(PhiAreaChlDF)
-```
-
+## Establish variables and coefficients
 ```{r}
 ## Variables needed to get from PHI to tonnes of production
 ## MRF: assumes 1 farm is 1km2  ##
@@ -64,10 +84,9 @@ bivperfarm <- 130000000 #MRF: again, should units should be bivperkm2?  (100 lon
 weight35cm <- 554.8  ## in grams see VBGF_Fish_Final. Paper reports 548 grams 
 ```
 
-
+## Finfish Production
 ```{r}
-## Global tiff file of PHI estimates
-
+## Global tiff file of PHI (Growth Potential) estimates
 FishPhiALLConstraints <- raster(file.path(dir_M, "git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/FishPhiALLConstraints95LT2.tiff"))
 plot(FishPhiALLConstraints)
 FishPhiVector=getValues(FishPhiALLConstraints)
@@ -94,14 +113,10 @@ FishYearsVector=getValues(FishYears)
 
 ## call spatial file from sourced file
 regions_shape()
-
 OHIcountries <- regions %>%
   filter(type_w_ant == "eez")
-
 OHIcountries <- st_transform(OHIcountries, crs(FishPhiALLConstraints))
-
 OHIcountries_raster <- fasterize(OHIcountries, FishPhiALLConstraints, field="rgn_id")  
-
 CountryVector=getValues(OHIcountries_raster)
 
 
@@ -109,11 +124,7 @@ CountryVector=getValues(OHIcountries_raster)
 
 ### area of each cell (each cell is different given lat/long coordinate reference system)
 areaPerCell <- area(FishPhiALLConstraints, weights=FALSE, na.rm=TRUE)
-
 areaPerCellVector <- getValues(areaPerCell)
-
-#productionStack <- raster::stack(OHIcountries_raster, areaPerCell, FishPhiALLConstraints, FishYears)
-#productionVector <- getValues(productionStack)
 
 ### Make a dataframe with raster values that includes cells: Country, area, Phi, and Years to Harvest
 productionDF <- data.frame(CellID = 1:933120000,
@@ -138,7 +149,8 @@ productionDFFishCells <- productionDF %>%
   mutate(YieldCumSum = cumsum(F_yieldpercellperyear)) %>%
   mutate(AreaCumSum = cumsum(AreaKM2))
 
-#write.csv(productionDFFishCells, file.path(dir_M, "git-annex/globalprep/mar/v2019/int/productionDFFishCells.csv"))
+write.csv(productionDFFishCells, file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/productionDFFishCells.csv"))
+productionDFFishCells <- read.csv(file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/productionDFFishCells.csv"))
 
 head(productionDFFishCells)
 summary(productionDFFishCells)
@@ -167,6 +179,8 @@ productionByCountryFishDF <- productionDFFishCells %>%
   mutate(MaxProdPerCountry = max(CountryYieldCumSum)) %>% 
   mutate(OnePercentDevPerCountry = .01*max(CountryAreaCumSum)) #calculating 1 percent of area
 
+write.csv(productionByCountryFishDF,file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell.csv"))
+productionByCountryFishDF <- read.csv(file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell"))
 
 ## MRF: For each area identify amount of area that corresponds to 1% of production area, 
 ## MRF: assume maximum production within the country for the 1% of area
@@ -177,6 +191,9 @@ CountryProdSummary <- productionByCountryFishDF %>%
   filter(CountryAreaCumSum <= OnePercentDevPerCountry) %>%
   mutate(ProdPerCountryOnePercent = max(CountryYieldCumSum)) %>%
   slice(1)
+
+write.csv(CountryProdSummary, file.path(dir_M, "git-annex/globalprep/mar/v2019/output/FishProdByCountrySummary.csv"))
+
 
 # MRF: get fasted YearsToHarvest for each country
 CountryProdSummaryNop <- productionByCountryFishDF %>%
@@ -201,33 +218,18 @@ CountryProdSummaryFAO <- CountryProdSummary %>%
   dplyr::select(ID:ProdPerCountryOnePercent) %>%
   full_join(CountryLabel, by= "ID")
 
-#write.csv(CountryProdSummaryFAO, file.path(dir_M, "git-annex/globalprep/mar/v2019/int/CountryProdSummaryFAO_Fish.csv"))
+write.csv(CountryProdSummaryFAO, file.path(dir_M, "git-annex/globalprep/mar/v2019/output/FishCountryProdSummaryFAO.csv"))
 ```
 
 
-```{r}
-###how much space would be needed to replace all capture fisheries 2014
-###(93.4 million tonnes according to the SWFA 2016)
-
-spaceFishRep <- productionDFFishCells %>%
-  filter(YieldCumSum>93400000)
-
-#area sum is 53,135 km2
-## ocean area is  361.9 million square kilometers
-
-53135/361900000
-#= less than 0.015% of ocean area to produce the amount captured by wild capture fisheries
-```
-
-
-
+## Bivalve Production
 ```{r}
 ## MRF: didn't run the bivalve portion, but this needs to be done.....
 ##Now for Bivalves 
 BivalvePhiALLConstraints=raster(file.path(dir_M, "git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalvePhiALLConstraints95LT1.tif"))
 
 plot(BivalvePhiALLConstraints)
-BivalvePhiVector=getValues(BivalvePhiALLConstraints)
+BivalvePhiVector <- getValues(BivalvePhiALLConstraints)
 
 
 
@@ -243,7 +245,7 @@ OHIcountries <- st_transform(OHIcountries, crs(FishPhiALLConstraints))
 
 OHIcountries_raster <- fasterize(OHIcountries, FishPhiALLConstraints, field="rgn_id")  
 
-CountryVector=getValues(OHIcountries_raster)
+CountryVector <- getValues(OHIcountries_raster)
 
 
 #OHI2012 Countries
@@ -259,7 +261,7 @@ CountryVector=getValues(OHIcountries_raster)
 #  mutate(B_estyears4cm=exp(B_estLogyears4cm))
 
 #make the value of each cell the years it takes to grow a 4 cm bivlave
-LogBivalveYears=calc(BivalvePhiALLConstraints, fun=function(x){B_estCoef[1]+B_estCoef[2]*(x)})
+LogBivalveYears <- calc(BivalvePhiALLConstraints, fun = function(x){B_estCoef[1] + B_estCoef[2]*(x)})
 LogBivalveYears
 plot(LogBivalveYears)
 
@@ -269,9 +271,9 @@ BivalveYears
 plot(BivalveYears)
 writeRaster(BivalveYears,file.path(dir_M, "git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalveYearsByCell.tif"), overwrite=TRUE)
 
-BivalveYears=raster(file.path(dir_M, "git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalveYearsByCell.tif"))
+BivalveYears <- raster(file.path(dir_M, "git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalveYearsByCell.tif"))
 
-BivalveYearsVector=getValues(BivalveYears)
+BivalveYearsVector <- getValues(BivalveYears)
 
 
 ###now load in area values for each cell
@@ -282,7 +284,7 @@ areaPerCell
 areaPerCellVector=getValues(areaPerCell)
 
 
-productionDFBiv=data.frame(CellID=1:933120000,
+productionDFBiv <- data.frame(CellID=1:933120000,
                            Country=CountryVector,
                            AreaKM2=areaPerCellVector,
                            PhiPrime=BivalvePhiVector, 
@@ -298,82 +300,54 @@ productionDFBivCells <- productionDFBiv %>%
   mutate(YieldCumSum = cumsum(B_yieldpercellperyear)) %>%
   mutate(AreaCumSum = cumsum(AreaKM2))
 
-
-## calculate production for each cell
-#productionDFFishCells <- productionDF %>%
-#  filter(!is.na(YearsToHarvest)) %>%
-#  mutate(F_yieldperfarmMT = (weight35cm * density * cagesize * cagesperfarm)/1000000) %>%  # MRF: units yieldperkm2? 554.8 grams * 20 juv/m3 * 9000 m3 * 24 cages/km2 = grams/km2
-#  mutate(F_yieldpercellperyear = (F_yieldperfarmMT/YearsToHarvest) * AreaKM2) %>%
-#  arrange(YearsToHarvest) %>%
-#  mutate(YieldCumSum = cumsum(F_yieldpercellperyear)) %>%
-#  mutate(AreaCumSum = cumsum(AreaKM2))
-
-head(productionDFBivCells)
-write.csv(productionDFBivCells, file.path(dir_M, "/git-annex/globalprep/mar/v2019/int/productionDFBivCells.csv"))          
-productionDFBivCells=read.csv("~/TableDataOutputs/BivProdByCell")
-
 head(productionDFBivCells)
 summary(productionDFBivCells)
 str(productionDFBivCells)
-#####STOPPED HERE JULY 8#####
-productionByCountryBivDF=productionDFBivCells%>%
-  filter(!is.na(Country))%>%
-  dplyr::select(-YieldCumSum)%>%
-  dplyr::select(-AreaCumSum)%>%
-  arrange(YearsToHarvest)%>%
-  mutate(ID=Country)%>%
-  dplyr::arrange(ID)%>%
-  group_by(ID)%>%
-  mutate(CountryYieldCumSum=cumsum(B_yieldpercellperyear))%>%
-  mutate(CountryAreaCumSum=cumsum(AreaKM2))%>%
-  mutate(MaxPhi=max(PhiPrime))%>%
-  mutate(averagePhi=mean(PhiPrime))%>%
-  mutate(averageWeightedPhi=sum(PhiPrime*AreaKM2)/(max(CountryAreaCumSum)))%>%
-  mutate(MaxDevPerCountry=max(CountryAreaCumSum)) %>%
-  mutate(MaxProdPerCountry=max(CountryYieldCumSum))%>%
-  mutate(OnePercentDevPerCountry=.01*max(CountryAreaCumSum))
+
+write.csv(productionDFBivCells, file.path(dir_M, "/git-annex/globalprep/mar/v2019/int/productionDFBivCells.csv"))          
+productionDFBivCells <- read.csv(file.path(dir_M, "/git-annex/globalprep/mar/v2019/int/productionDFBivCells.csv"))
+
+productionByCountryBivDF <- productionDFBivCells %>%
+  filter(!is.na(Country)) %>%
+  dplyr::select(-YieldCumSum, -X) %>%
+  dplyr::select(-AreaCumSum) %>%
+  arrange(YearsToHarvest) %>%
+  mutate(ID = Country) %>%
+  dplyr::arrange(ID) %>%
+  group_by(ID) %>%
+  mutate(CountryYieldCumSum = cumsum(B_yieldpercellperyear)) %>%
+  mutate(CountryAreaCumSum = cumsum(AreaKM2)) %>%
+  mutate(MaxPhi = max(PhiPrime)) %>%
+  mutate(averagePhi = mean(PhiPrime)) %>%
+  mutate(averageWeightedPhi = sum(PhiPrime*AreaKM2)/(max(CountryAreaCumSum))) %>%
+  mutate(MaxDevPerCountry = max(CountryAreaCumSum)) %>%
+  mutate(MaxProdPerCountry = max(CountryYieldCumSum)) %>%
+  mutate(OnePercentDevPerCountry = .01*max(CountryAreaCumSum))
 
 
 head(productionByCountryBivDF)
-write.csv(productionByCountryBivDF,file="~/TableDataOutputs/BivProdByCountryByCell.csv")
-
-
+write.csv(productionByCountryBivDF,file.path(dir_M, "git-annex/globalprep/mar/v2019/int/bivalve/BivProdByCountryByCell.csv"))
 
 CountryProdSummary=productionByCountryBivDF%>%
   filter(CountryAreaCumSum<=OnePercentDevPerCountry) %>%
   mutate(ProdPerCountryOnePercent=max(CountryYieldCumSum)) %>%
   slice(1)
 
-write.csv(CountryProdSummary,file="~/TableDataOutputs/Final/BivalveProdByCountrySummary.csv")
+write.csv(CountryProdSummary,file.path(dir_M, "git-annex/globalprep/mar/v2019/output/BivalveProdByCountrySummary.csv"))
 
-
-CountryProdPhiFAO= read.csv("~/TableDataOutputs/FinalNoHypox/CountryProdPhiFAOLT12.csv")
-head(CountryProdPhiFAO)
-
-CountryLabel=CountryProdPhiFAO%>%
-  dplyr::select(ID:LABEL, MarFishProdMT, MarMolluscProdMT)
+region_data()
+CountryLabel <- rgns_eez %>%
+  dplyr::select(ID = rgn_id, rgn_name)
 
 head(CountryLabel)
 
-CountryProdSummaryFAO=CountryProdSummary%>%
-  ungroup%>%
-  dplyr::select(ID:ProdPerCountryOnePercent)%>%
-  full_join(CountryLabel, by= "ID")
+## I think the relevant value we want for the reference point is in this table:  ProdPerCountryOnePercent. Indonesia number for bivalves is higher than the paper, however the paper does use the phrase "over 3.9*10^11 tonnes". Data says 4.7 * 10^11 million tonnes of bivalves if 1% of aquaculture potential developed, which is greater than 3.9 * 10^11 tonnes.  
+CountryProdSummaryFAO <- CountryProdSummary %>%
+  ungroup %>%
+  dplyr::select(ID:ProdPerCountryOnePercent) %>%
+  full_join(CountryLabel, by = "ID")
 
-write.csv(CountryProdSummaryFAO,file="~/TableDataOutputs/Final/BivalveProdByCountryFAOSummary.csv")
-
-
-###making stats for paper.
-#ocean area is 360 million square kilometers
-#current wild landings (including both sea and fresh water and 93.4 million MT)
-
-
-
-
-#Calculate Average years for each country
-#FishYearsAveragebyCountry=zonal(FishYears,OHIcountriesLatLong,fun='mean',na.rm=TRUE)
-#head(FishYearsAveragebyCountry)
-#colnames(FishYearsAveragebyCountry)= c("ID", "fishyearsavg")
-###this doesnt make sense because each cell is not the same size
+write.csv(CountryProdSummaryFAO, file.path(dir_M, "git-annex/globalprep/mar/v2019/output/BivalveProdByCountryFAOSummary.csv"))
 
 ```
+
