@@ -12,6 +12,28 @@ output:
     toc: true
 ---
 
+[REFERENCE RMD FILE: https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/globalprep/mar/v2019/reference_point/CountryProductionEstimate.Rmd]
+
+# Summary
+This analysis produces potential tonnes of aquaculture from growth potential estimates of finfish and bivalves. These aquaculture numbers will be used for the reference point for the mariculture subgoal. 
+
+***
+
+# Data Source 
+
+## Growth Potential (Phi) data 
+
+**Reference**:      
+https://knb.ecoinformatics.org/view/doi:10.5063/F1CF9N69
+Rebecca Gentry, Halley Froehlich, Dietmar Grimm, Peter Kareiva, Michael Parke, et al. SNAPP - Mapping the Global Potential for Marine Aquaculture. Knowledge Network for Biocomplexity. doi:10.5063/F1CF9N69. 
+
+**Downloaded**: 7/3/2019
+
+**Description**: Growth Potential estimate raster for global cells 
+
+***
+  
+# Methods
 ```{r setup, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(eval=FALSE)
 #######regression inputs from VBGF_Fish.r
@@ -47,15 +69,6 @@ library(here)
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 ```
 
-```{r}
-## MRF: is this extra stuff...if unnecessary cut from script
-###this it output file that corresponds to this analysis (from the original paper)
-# takes all constraints into consideration
-PhiAreaChlDF<-read.csv(here("globalprep/mar/v2019/reference_point/TableDataOutputs/FinalNoHypox/CountryProdPotentialLT12.csv"))
-head(PhiAreaChlDF)
-str(PhiAreaChlDF)
-```
-
 ## Establish variables and coefficients
 ```{r}
 ## Variables needed to get from PHI to tonnes of production
@@ -73,8 +86,7 @@ weight35cm <- 554.8  ## in grams see VBGF_Fish_Final. Paper reports 548 grams
 
 ## Finfish Production
 ```{r}
-## Global tiff file of PHI estimates
-
+## Global tiff file of PHI (Growth Potential) estimates
 FishPhiALLConstraints <- raster(file.path(dir_M, "git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/FishPhiALLConstraints95LT2.tiff"))
 plot(FishPhiALLConstraints)
 FishPhiVector=getValues(FishPhiALLConstraints)
@@ -101,14 +113,10 @@ FishYearsVector=getValues(FishYears)
 
 ## call spatial file from sourced file
 regions_shape()
-
 OHIcountries <- regions %>%
   filter(type_w_ant == "eez")
-
 OHIcountries <- st_transform(OHIcountries, crs(FishPhiALLConstraints))
-
 OHIcountries_raster <- fasterize(OHIcountries, FishPhiALLConstraints, field="rgn_id")  
-
 CountryVector=getValues(OHIcountries_raster)
 
 
@@ -116,7 +124,6 @@ CountryVector=getValues(OHIcountries_raster)
 
 ### area of each cell (each cell is different given lat/long coordinate reference system)
 areaPerCell <- area(FishPhiALLConstraints, weights=FALSE, na.rm=TRUE)
-
 areaPerCellVector <- getValues(areaPerCell)
 
 ### Make a dataframe with raster values that includes cells: Country, area, Phi, and Years to Harvest
