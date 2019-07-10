@@ -235,19 +235,13 @@ warn_count <- warn_raw %>%
   tally() %>% 
   ungroup()
 
+# Remove text information from level, join with warning counts, and filter duplicates
 warn_raw <- warn_raw %>% 
   mutate(level = as.numeric(str_extract(level, '[1,2,3,4]'))) %>% 
   left_join(.,warn_count, by = "country") %>% 
-  filter(!(regional == 1 & n >1)) %>% # remove regions that have regional warnings in addition to country wide warnings, but retain those where country warning level is based on regional information
+  filter(!(regional %in% 1 & n >1)) %>% # remove regions that have regional warnings in addition to country wide warnings, but retain those where country warning level is based on regional information
   select(assess_year, level, country) %>% 
-  rename(year= assess_year)
-
-test <- count(warn_raw, country)
-test2 <- warn_raw %>% 
-  filter(is.na(regional)) %>% 
-  group_by(country) %>%
-  tally()
-
+  rename(year = assess_year)
 
 
 ### v2018: 
@@ -309,10 +303,12 @@ warn_improved <- warn_improved %>%
   dplyr::mutate(country = ifelse(stringr::str_detect(country,"Sao Tome"), "Sao Tome and Principe", country)) %>%
   dplyr::mutate(country = ifelse(stringr::str_detect(country,"Turks and Caicos"), "Turks and Caicos Islands", country)) %>%
   dplyr::mutate(country = ifelse(stringr::str_detect(country,"United Arab Emirates"), "United Arab Emirates", country)) %>% 
-  dplyr::mutate(country = ifelse(stringr::str_detect(country,"U.S. Virgin Islands"), "Puerto Rico and Virgin Islands of the United States", country)) %>%
+  dplyr::mutate(country = ifelse(stringr::str_detect(country,"U.S. Virgin Islands"), "Puerto Rico and Virgin Islands of the United States", country)) %>% # creates duplicate of PR/VI
     dplyr::mutate(country = ifelse(stringr::str_detect(country,"Puerto Rico"), "Puerto Rico and Virgin Islands of the United States", country))
 
 ##NOTE: Puerto Rico and Virgin Islands are reported by the Canadian Goverment Travel Advisory (SEE BELOW befre runnig the script) ??
+
+#v2019: Guadeloupe + Guadeloupe and Martinique are duplicated here; same with PR/VI ; plus there are a couple of NAs. Put in a line here to remove duplicates and NAs? 
 
 ```
 
@@ -376,7 +372,7 @@ warn_old_no_subs <- filter(warn_old, !(regional %in% 1)) %>%
 warn_complete <- warn_improved %>% #2019 data
   bind_rows(warn_old_no_subs) %>% #old with no regional
   bind_rows(warn_old_add_rgns)  #old with regional warning transformed into a level 1 for the whole country
-
+# looks like this is still missing 2019 data for some countries (Algeria, Antigua & Barbuda + more)
 
 ##Save warn_complete. This file will be the one that needs to be combined with the new warnings in 2019. -- wasn't it already at this point?
 
