@@ -68,7 +68,7 @@ library(here)
 
 ## some OHI files
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
-dir_git_ref <- file.path(here(), "/globalprep/mar/v2019/reference_point")
+dir_git_ref <- file.path(here(), "globalprep/mar/v2019/reference_point")
 ```
 
 ## Establish variables and coefficients
@@ -392,5 +392,8 @@ pot_aq_final <- pot_aq_int %>%
   arrange(rgn_id) %>%
   dplyr::select(rgn_id, potential_mar_tonnes)
 
+write_csv(pot_aq, file.path(dir_git_ref, 'production_output/aq_potential_final.csv'))
+
 DT::datatable(pot_aq_final)
 ```
+
