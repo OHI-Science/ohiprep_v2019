@@ -312,7 +312,7 @@ d_stand_gf <- d_stand_gf %>%
 d_stand_gf$score[d_stand_gf$rgn_id %in% low_pop_vector] <- NA
 #should now have NA values in score column for low popuation areas
 
-summary(d_stand_gf)  
+summary(d_stand_gf)
 
 ```
 
