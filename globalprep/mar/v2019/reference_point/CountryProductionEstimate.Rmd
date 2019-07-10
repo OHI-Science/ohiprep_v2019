@@ -392,8 +392,22 @@ pot_aq_final <- pot_aq_int %>%
   arrange(rgn_id) %>%
   dplyr::select(rgn_id, potential_mar_tonnes)
 
-write_csv(pot_aq, file.path(dir_git_ref, 'production_output/aq_potential_final.csv'))
+write_csv(pot_aq_final, file.path(dir_git_ref, 'production_output/aq_potential_final.csv'))
 
 DT::datatable(pot_aq_final)
+
+## make gapfilling dataset 
+pot_aq_final_gf <- pot_aq_final %>%
+  mutate(gapfilled = case_when(
+    potential_mar_tonnes == 0 ~ 1,
+    potential_mar_tonnes > 0 ~ 0
+  ), 
+  method = case_when(
+    potential_mar_tonnes == 0 ~ "missing regions given 0 value",
+    potential_mar_tonnes > 0 ~ ""
+  )) %>%
+  dplyr::select(rgn_id, gapfilled, method)
+
+write_csv(pot_aq_final_gf, file.path(dir_git_ref, "/production_output/aq_potential_gf.csv"))
 ```
 
