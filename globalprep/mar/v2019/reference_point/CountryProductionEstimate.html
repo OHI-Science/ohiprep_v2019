@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Tue Jul 9 14:37:23 2019 by sgclawson" />
+<meta name="author" content="Compiled on Wed Jul 10 14:06:05 2019 by sgclawson" />
 
 
 <title>OHI 2019: Aquaculture Country Production Estimate</title>
@@ -427,7 +427,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">OHI 2019: Aquaculture Country Production Estimate</h1>
-<h4 class="author"><em>Compiled on Tue Jul 9 14:37:23 2019 by sgclawson</em></h4>
+<h4 class="author"><em>Compiled on Wed Jul 10 14:06:05 2019 by sgclawson</em></h4>
 
 </div>
 
@@ -441,6 +441,7 @@ $(document).ready(function () {
 <li><a href="#establish-variables-and-coefficients"><span class="toc-section-number">3.1</span> Establish variables and coefficients</a></li>
 <li><a href="#finfish-production"><span class="toc-section-number">3.2</span> Finfish Production</a></li>
 <li><a href="#bivalve-production"><span class="toc-section-number">3.3</span> Bivalve Production</a></li>
+<li><a href="#unit-conversion-and-gap-filling"><span class="toc-section-number">3.4</span> Unit Conversion and Gap Filling</a></li>
 </ul></li>
 </ul>
 </div>
@@ -477,25 +478,26 @@ $(document).ready(function () {
 <a class="sourceLine" id="cb1-11" title="11"><span class="co">### libraries useful for data wrangling</span></a>
 <a class="sourceLine" id="cb1-12" title="12"><span class="kw">library</span>(dplyr)</a>
 <a class="sourceLine" id="cb1-13" title="13"><span class="kw">library</span>(tidyr)</a>
-<a class="sourceLine" id="cb1-14" title="14"></a>
-<a class="sourceLine" id="cb1-15" title="15"><span class="co">## libraries useful for spatial data</span></a>
-<a class="sourceLine" id="cb1-16" title="16"><span class="kw">library</span>(raster)       </a>
-<a class="sourceLine" id="cb1-17" title="17"><span class="kw">library</span>(rgdal)        </a>
-<a class="sourceLine" id="cb1-18" title="18"><span class="kw">library</span>(sf)         </a>
-<a class="sourceLine" id="cb1-19" title="19"><span class="kw">library</span>(fasterize)</a>
-<a class="sourceLine" id="cb1-20" title="20"></a>
-<a class="sourceLine" id="cb1-21" title="21"><span class="co">## data visualization</span></a>
-<a class="sourceLine" id="cb1-22" title="22"><span class="kw">library</span>(RColorBrewer)</a>
-<a class="sourceLine" id="cb1-23" title="23"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb1-24" title="24"><span class="kw">library</span>(rasterVis)    </a>
-<a class="sourceLine" id="cb1-25" title="25"><span class="kw">library</span>(maps)</a>
-<a class="sourceLine" id="cb1-26" title="26"></a>
-<a class="sourceLine" id="cb1-27" title="27"><span class="co">## path management</span></a>
-<a class="sourceLine" id="cb1-28" title="28"><span class="kw">library</span>(here)</a>
-<a class="sourceLine" id="cb1-29" title="29"></a>
+<a class="sourceLine" id="cb1-14" title="14"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb1-15" title="15"></a>
+<a class="sourceLine" id="cb1-16" title="16"><span class="co">## libraries useful for spatial data</span></a>
+<a class="sourceLine" id="cb1-17" title="17"><span class="kw">library</span>(raster)       </a>
+<a class="sourceLine" id="cb1-18" title="18"><span class="kw">library</span>(rgdal)        </a>
+<a class="sourceLine" id="cb1-19" title="19"><span class="kw">library</span>(sf)         </a>
+<a class="sourceLine" id="cb1-20" title="20"><span class="kw">library</span>(fasterize)</a>
+<a class="sourceLine" id="cb1-21" title="21"></a>
+<a class="sourceLine" id="cb1-22" title="22"><span class="co">## data visualization</span></a>
+<a class="sourceLine" id="cb1-23" title="23"><span class="kw">library</span>(RColorBrewer)</a>
+<a class="sourceLine" id="cb1-24" title="24"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb1-25" title="25"><span class="kw">library</span>(rasterVis)    </a>
+<a class="sourceLine" id="cb1-26" title="26"><span class="kw">library</span>(maps)</a>
+<a class="sourceLine" id="cb1-27" title="27"></a>
+<a class="sourceLine" id="cb1-28" title="28"><span class="co">## path management</span></a>
+<a class="sourceLine" id="cb1-29" title="29"><span class="kw">library</span>(here)</a>
 <a class="sourceLine" id="cb1-30" title="30"></a>
-<a class="sourceLine" id="cb1-31" title="31"><span class="co">## some OHI files</span></a>
-<a class="sourceLine" id="cb1-32" title="32"><span class="kw">source</span>(<span class="st">&#39;http://ohi-science.org/ohiprep_v2019/workflow/R/common.R&#39;</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb1-31" title="31"></a>
+<a class="sourceLine" id="cb1-32" title="32"><span class="co">## some OHI files</span></a>
+<a class="sourceLine" id="cb1-33" title="33"><span class="kw">source</span>(<span class="st">&#39;http://ohi-science.org/ohiprep_v2019/workflow/R/common.R&#39;</span>)</a></code></pre></div>
 <pre><code>## This file makes it easier to process data for the OHI global assessment
 ##  by creating the following objects:
 ## 
@@ -507,282 +509,323 @@ $(document).ready(function () {
 ##  * rgn_syns() = function to load dataframe of region synonyms (used to convert country names to OHI regions)
 ##  * low_pop() = function to load dataframe of regions with low and no human population
 ##  * UNgeorgn = function to load dataframe of UN geopolitical designations used to gapfill missing data</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">dir_git_ref &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="kw">here</span>(), <span class="st">&quot;/globalprep/mar/v2019/reference_point&quot;</span>)</a></code></pre></div>
 <div id="establish-variables-and-coefficients" class="section level2">
 <h2><span class="header-section-number">3.1</span> Establish variables and coefficients</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co">## Variables needed to get from PHI to tonnes of production</span></a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="co">## MRF: assumes 1 farm is 1km2  ##</span></a>
-<a class="sourceLine" id="cb3-3" title="3"><span class="co"># (seems easier to just units of km2, rather than farm)</span></a>
-<a class="sourceLine" id="cb3-4" title="4"></a>
-<a class="sourceLine" id="cb3-5" title="5">F_estCoef &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">7.6792</span>, (<span class="op">-</span><span class="fl">5.8198</span>)) <span class="co">#from regression estimated in VBGF_Fish_Final.r</span></a>
-<a class="sourceLine" id="cb3-6" title="6">B_estCoef &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">2.9959</span>,(<span class="op">-</span><span class="fl">1.6659</span>)) <span class="co">#from regression estimate in VBGF_Bivalves.r</span></a>
-<a class="sourceLine" id="cb3-7" title="7">density &lt;-<span class="st"> </span><span class="dv">20</span> <span class="co">#juveniles per m3</span></a>
-<a class="sourceLine" id="cb3-8" title="8">cagesize &lt;-<span class="st"> </span><span class="dv">9000</span> <span class="co">#m3</span></a>
-<a class="sourceLine" id="cb3-9" title="9">cagesperfarm &lt;-<span class="st"> </span><span class="dv">24</span> <span class="co">#located atleast 1 km apart...MRF: seems like units should be cagesperkm2</span></a>
-<a class="sourceLine" id="cb3-10" title="10">bivperfarm &lt;-<span class="st"> </span><span class="dv">130000000</span> <span class="co">#MRF: again, should units should be bivperkm2?  (100 longlines/km2) * 4 km * (100 bivalves seeded/0.0003 km) = 133333333 bivalve/km2</span></a>
-<a class="sourceLine" id="cb3-11" title="11">weight35cm &lt;-<span class="st"> </span><span class="fl">554.8</span>  <span class="co">## in grams see VBGF_Fish_Final. Paper reports 548 grams </span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co">## Variables needed to get from PHI to tonnes of production</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co">## MRF: assumes 1 farm is 1km2  ##</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co"># (seems easier to just units of km2, rather than farm)</span></a>
+<a class="sourceLine" id="cb4-4" title="4"></a>
+<a class="sourceLine" id="cb4-5" title="5">F_estCoef &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">7.6792</span>, (<span class="op">-</span><span class="fl">5.8198</span>)) <span class="co">#from regression estimated in VBGF_Fish_Final.r</span></a>
+<a class="sourceLine" id="cb4-6" title="6">B_estCoef &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">2.9959</span>,(<span class="op">-</span><span class="fl">1.6659</span>)) <span class="co">#from regression estimate in VBGF_Bivalves.r</span></a>
+<a class="sourceLine" id="cb4-7" title="7">density &lt;-<span class="st"> </span><span class="dv">20</span> <span class="co">#juveniles per m3</span></a>
+<a class="sourceLine" id="cb4-8" title="8">cagesize &lt;-<span class="st"> </span><span class="dv">9000</span> <span class="co">#m3</span></a>
+<a class="sourceLine" id="cb4-9" title="9">cagesperfarm &lt;-<span class="st"> </span><span class="dv">24</span> <span class="co">#located atleast 1 km apart.. cagesperkm2</span></a>
+<a class="sourceLine" id="cb4-10" title="10">bivperfarm &lt;-<span class="st"> </span><span class="dv">130000000</span> <span class="co">#(100 longlines/km2) * 4 km * (100 bivalves seeded/0.0003 km) = 133333333 bivalve/km2</span></a>
+<a class="sourceLine" id="cb4-11" title="11">weight35cm &lt;-<span class="st"> </span><span class="fl">554.8</span>  <span class="co">## in grams see VBGF_Fish_Final. Paper reports 548 grams </span></a></code></pre></div>
 </div>
 <div id="finfish-production" class="section level2">
 <h2><span class="header-section-number">3.2</span> Finfish Production</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co">## Global tiff file of PHI (Growth Potential) estimates</span></a>
-<a class="sourceLine" id="cb4-2" title="2">FishPhiALLConstraints &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/FishPhiALLConstraints95LT2.tiff&quot;</span>))</a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="kw">plot</span>(FishPhiALLConstraints)</a>
-<a class="sourceLine" id="cb4-4" title="4">FishPhiVector=<span class="kw">getValues</span>(FishPhiALLConstraints)</a>
-<a class="sourceLine" id="cb4-5" title="5"></a>
-<a class="sourceLine" id="cb4-6" title="6"></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="co">## Convert Phi raster to number of years it takes to grow a 35 cm fish</span></a>
-<a class="sourceLine" id="cb4-8" title="8"></a>
-<a class="sourceLine" id="cb4-9" title="9">LogFishYears &lt;-<span class="st"> </span><span class="kw">calc</span>(FishPhiALLConstraints, <span class="dt">fun=</span><span class="cf">function</span>(x){F_estCoef[<span class="dv">1</span>]<span class="op">+</span>F_estCoef[<span class="dv">2</span>]<span class="op">*</span><span class="kw">log</span>(x)})</a>
-<a class="sourceLine" id="cb4-10" title="10">LogFishYears</a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="kw">plot</span>(LogFishYears)</a>
-<a class="sourceLine" id="cb4-12" title="12"></a>
-<a class="sourceLine" id="cb4-13" title="13">FishYears &lt;-<span class="st"> </span><span class="kw">calc</span>(LogFishYears, <span class="dt">fun=</span><span class="cf">function</span>(x){<span class="kw">exp</span>(x)})</a>
-<a class="sourceLine" id="cb4-14" title="14"></a>
-<a class="sourceLine" id="cb4-15" title="15">FishYears</a>
-<a class="sourceLine" id="cb4-16" title="16"><span class="kw">plot</span>(FishYears)</a>
-<a class="sourceLine" id="cb4-17" title="17"><span class="kw">writeRaster</span>(FishYears,<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/FishYearsbyCell.tif&quot;</span>), <span class="dt">overwrite=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb4-18" title="18"></a>
-<a class="sourceLine" id="cb4-19" title="19">FishYears &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/FishYearsbyCell.tif&quot;</span>))</a>
-<a class="sourceLine" id="cb4-20" title="20">FishYearsVector=<span class="kw">getValues</span>(FishYears)</a>
-<a class="sourceLine" id="cb4-21" title="21"></a>
-<a class="sourceLine" id="cb4-22" title="22"></a>
-<a class="sourceLine" id="cb4-23" title="23"></a>
-<a class="sourceLine" id="cb4-24" title="24"><span class="co">#OHI 2018 regions (original analysis used older regions file)</span></a>
-<a class="sourceLine" id="cb4-25" title="25"></a>
-<a class="sourceLine" id="cb4-26" title="26"><span class="co">## call spatial file from sourced file</span></a>
-<a class="sourceLine" id="cb4-27" title="27"><span class="kw">regions_shape</span>()</a>
-<a class="sourceLine" id="cb4-28" title="28">OHIcountries &lt;-<span class="st"> </span>regions <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-29" title="29"><span class="st">  </span><span class="kw">filter</span>(type_w_ant <span class="op">==</span><span class="st"> &quot;eez&quot;</span>)</a>
-<a class="sourceLine" id="cb4-30" title="30">OHIcountries &lt;-<span class="st"> </span><span class="kw">st_transform</span>(OHIcountries, <span class="kw">crs</span>(FishPhiALLConstraints))</a>
-<a class="sourceLine" id="cb4-31" title="31">OHIcountries_raster &lt;-<span class="st"> </span><span class="kw">fasterize</span>(OHIcountries, FishPhiALLConstraints, <span class="dt">field=</span><span class="st">&quot;rgn_id&quot;</span>)  </a>
-<a class="sourceLine" id="cb4-32" title="32">CountryVector=<span class="kw">getValues</span>(OHIcountries_raster)</a>
-<a class="sourceLine" id="cb4-33" title="33"></a>
-<a class="sourceLine" id="cb4-34" title="34"></a>
-<a class="sourceLine" id="cb4-35" title="35"></a>
-<a class="sourceLine" id="cb4-36" title="36"></a>
-<a class="sourceLine" id="cb4-37" title="37"><span class="co">### area of each cell (each cell is different given lat/long coordinate reference system)</span></a>
-<a class="sourceLine" id="cb4-38" title="38">areaPerCell &lt;-<span class="st"> </span><span class="kw">area</span>(FishPhiALLConstraints, <span class="dt">weights=</span><span class="ot">FALSE</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb4-39" title="39">areaPerCellVector &lt;-<span class="st"> </span><span class="kw">getValues</span>(areaPerCell)</a>
-<a class="sourceLine" id="cb4-40" title="40"></a>
-<a class="sourceLine" id="cb4-41" title="41"><span class="co">### Make a dataframe with raster values that includes cells: Country, area, Phi, and Years to Harvest</span></a>
-<a class="sourceLine" id="cb4-42" title="42">productionDF &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">CellID =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">933120000</span>,</a>
-<a class="sourceLine" id="cb4-43" title="43">                           <span class="dt">Country =</span> CountryVector,</a>
-<a class="sourceLine" id="cb4-44" title="44">                           <span class="dt">AreaKM2 =</span> areaPerCellVector,</a>
-<a class="sourceLine" id="cb4-45" title="45">                           <span class="dt">PhiPrime =</span> FishPhiVector, </a>
-<a class="sourceLine" id="cb4-46" title="46">                           <span class="dt">YearsToHarvest =</span> FishYearsVector)</a>
-<a class="sourceLine" id="cb4-47" title="47"></a>
-<a class="sourceLine" id="cb4-48" title="48"><span class="kw">head</span>(productionDF)</a>
-<a class="sourceLine" id="cb4-49" title="49"></a>
-<a class="sourceLine" id="cb4-50" title="50"><span class="kw">summary</span>(FishYearsVector)</a>
-<a class="sourceLine" id="cb4-51" title="51"><span class="kw">summary</span>(areaPerCellVector) <span class="co">##they seem to match</span></a>
-<a class="sourceLine" id="cb4-52" title="52"></a>
-<a class="sourceLine" id="cb4-53" title="53"></a>
-<a class="sourceLine" id="cb4-54" title="54"></a>
-<a class="sourceLine" id="cb4-55" title="55"><span class="co">## calculate production for each cell</span></a>
-<a class="sourceLine" id="cb4-56" title="56">productionDFFishCells &lt;-<span class="st"> </span>productionDF <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-57" title="57"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(YearsToHarvest)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-58" title="58"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">F_yieldperfarmMT =</span> (weight35cm <span class="op">*</span><span class="st"> </span>density <span class="op">*</span><span class="st"> </span>cagesize <span class="op">*</span><span class="st"> </span>cagesperfarm)<span class="op">/</span><span class="dv">1000000</span>) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># MRF: units yieldperkm2? 554.8 grams * 20 juv/m3 * 9000 m3 * 24 cages/km2 = grams/km2</span></a>
-<a class="sourceLine" id="cb4-59" title="59"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">F_yieldpercellperyear =</span> (F_yieldperfarmMT<span class="op">/</span>YearsToHarvest) <span class="op">*</span><span class="st"> </span>AreaKM2) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-60" title="60"><span class="st">  </span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-61" title="61"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">YieldCumSum =</span> <span class="kw">cumsum</span>(F_yieldpercellperyear)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-62" title="62"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">AreaCumSum =</span> <span class="kw">cumsum</span>(AreaKM2))</a>
-<a class="sourceLine" id="cb4-63" title="63"></a>
-<a class="sourceLine" id="cb4-64" title="64"><span class="kw">write.csv</span>(productionDFFishCells, <span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/fish/productionDFFishCells.csv&quot;</span>))</a>
-<a class="sourceLine" id="cb4-65" title="65">productionDFFishCells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/fish/productionDFFishCells.csv&quot;</span>))</a>
-<a class="sourceLine" id="cb4-66" title="66"></a>
-<a class="sourceLine" id="cb4-67" title="67"><span class="kw">head</span>(productionDFFishCells)</a>
-<a class="sourceLine" id="cb4-68" title="68"><span class="kw">summary</span>(productionDFFishCells)</a>
-<a class="sourceLine" id="cb4-69" title="69"><span class="kw">str</span>(productionDFFishCells)</a>
-<a class="sourceLine" id="cb4-70" title="70"><span class="co">##cumsum area is 11,402,629 km2 -  # matches the paper </span></a>
-<a class="sourceLine" id="cb4-71" title="71"><span class="co">##cumprod is 15,950,000,000MT -   </span></a>
-<a class="sourceLine" id="cb4-72" title="72"></a>
-<a class="sourceLine" id="cb4-73" title="73"><span class="co">### how many of these cells are not in a country?</span></a>
-<a class="sourceLine" id="cb4-74" title="74"><span class="kw">sum</span>(<span class="kw">is.na</span>(productionDFFishCells<span class="op">$</span>Country))</a>
-<a class="sourceLine" id="cb4-75" title="75"><span class="kw">dim</span>(productionDFFishCells)</a>
-<a class="sourceLine" id="cb4-76" title="76"></a>
-<a class="sourceLine" id="cb4-77" title="77"><span class="co">##293,702 are not in a country out of 15,639,851 total.  that is 1.9%</span></a>
-<a class="sourceLine" id="cb4-78" title="78"><span class="co">## MRF: with new OHI regions: 544,569 are not in a country..probably a lot are in conflicted areas</span></a>
-<a class="sourceLine" id="cb4-79" title="79"></a>
-<a class="sourceLine" id="cb4-80" title="80"></a>
-<a class="sourceLine" id="cb4-81" title="81"><span class="co">## Calculate production if 1% of top production area is used:</span></a>
-<a class="sourceLine" id="cb4-82" title="82">productionByCountryFishDF &lt;-<span class="st"> </span>productionDFFishCells <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-83" title="83"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(Country)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-84" title="84"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>YieldCumSum, <span class="op">-</span>AreaCumSum) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-85" title="85"><span class="st">  </span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-86" title="86"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ID =</span> Country) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-87" title="87"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(ID) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-88" title="88"><span class="st">  </span><span class="kw">group_by</span>(ID) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-89" title="89"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">CountryYieldCumSum =</span> <span class="kw">cumsum</span>(F_yieldpercellperyear)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-90" title="90"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">CountryAreaCumSum =</span> <span class="kw">cumsum</span>(AreaKM2)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-91" title="91"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">MaxProdPerCountry =</span> <span class="kw">max</span>(CountryYieldCumSum)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-92" title="92"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">OnePercentDevPerCountry =</span> <span class="fl">.01</span><span class="op">*</span><span class="kw">max</span>(CountryAreaCumSum)) <span class="co">#calculating 1 percent of area</span></a>
-<a class="sourceLine" id="cb4-93" title="93"></a>
-<a class="sourceLine" id="cb4-94" title="94"><span class="kw">write.csv</span>(productionByCountryFishDF,<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell.csv&quot;</span>))</a>
-<a class="sourceLine" id="cb4-95" title="95">productionByCountryFishDF &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell&quot;</span>))</a>
-<a class="sourceLine" id="cb4-96" title="96"></a>
-<a class="sourceLine" id="cb4-97" title="97"><span class="co">## MRF: For each area identify amount of area that corresponds to 1% of production area, </span></a>
-<a class="sourceLine" id="cb4-98" title="98"><span class="co">## MRF: assume maximum production within the country for the 1% of area</span></a>
-<a class="sourceLine" id="cb4-99" title="99">CountryProdSummary &lt;-<span class="st"> </span>productionByCountryFishDF <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-100" title="100"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-101" title="101"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(ID) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-102" title="102"><span class="st">  </span><span class="kw">group_by</span>(ID) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-103" title="103"><span class="st">  </span><span class="kw">filter</span>(CountryAreaCumSum <span class="op">&lt;=</span><span class="st"> </span>OnePercentDevPerCountry) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-104" title="104"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ProdPerCountryOnePercent =</span> <span class="kw">max</span>(CountryYieldCumSum)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-105" title="105"><span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-106" title="106"></a>
-<a class="sourceLine" id="cb4-107" title="107"><span class="kw">write.csv</span>(CountryProdSummary, <span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/output/FishProdByCountrySummary.csv&quot;</span>))</a>
-<a class="sourceLine" id="cb4-108" title="108"></a>
-<a class="sourceLine" id="cb4-109" title="109"></a>
-<a class="sourceLine" id="cb4-110" title="110"><span class="co"># MRF: get fasted YearsToHarvest for each country</span></a>
-<a class="sourceLine" id="cb4-111" title="111">CountryProdSummaryNop &lt;-<span class="st"> </span>productionByCountryFishDF <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-112" title="112"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-113" title="113"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(ID) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-114" title="114"><span class="st">  </span><span class="kw">group_by</span>(ID) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-115" title="115"><span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-116" title="116"></a>
-<a class="sourceLine" id="cb4-117" title="117"></a>
-<a class="sourceLine" id="cb4-118" title="118"></a>
-<a class="sourceLine" id="cb4-119" title="119"><span class="co"># Add country names</span></a>
-<a class="sourceLine" id="cb4-120" title="120"></a>
-<a class="sourceLine" id="cb4-121" title="121"><span class="kw">region_data</span>()</a>
-<a class="sourceLine" id="cb4-122" title="122">CountryLabel &lt;-<span class="st"> </span>rgns_eez <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-123" title="123"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="dt">ID =</span> rgn_id, rgn_name)</a>
-<a class="sourceLine" id="cb4-124" title="124"></a>
-<a class="sourceLine" id="cb4-125" title="125"></a>
-<a class="sourceLine" id="cb4-126" title="126"><span class="co">## Final data</span></a>
-<a class="sourceLine" id="cb4-127" title="127"><span class="co">## I think the relevant value we want for the reference point is in this table:  ProdPerCountryOnePercent. Indonesia number for fish matches up with paper. &gt; 24 million tonnes of fish if 1% of aquaculture potential developed. </span></a>
-<a class="sourceLine" id="cb4-128" title="128">CountryProdSummaryFAO &lt;-<span class="st"> </span>CountryProdSummary <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-129" title="129"><span class="st">  </span>ungroup <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-130" title="130"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(ID<span class="op">:</span>ProdPerCountryOnePercent) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-131" title="131"><span class="st">  </span><span class="kw">full_join</span>(CountryLabel, <span class="dt">by=</span> <span class="st">&quot;ID&quot;</span>)</a>
-<a class="sourceLine" id="cb4-132" title="132"></a>
-<a class="sourceLine" id="cb4-133" title="133"><span class="kw">write.csv</span>(CountryProdSummaryFAO, <span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/output/FishCountryProdSummaryFAO.csv&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="co">## Global tiff file of PHI (Growth Potential) estimates</span></a>
+<a class="sourceLine" id="cb5-2" title="2">FishPhiALLConstraints &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/FishPhiALLConstraints95LT2.tiff&quot;</span>))</a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="kw">plot</span>(FishPhiALLConstraints)</a>
+<a class="sourceLine" id="cb5-4" title="4">FishPhiVector=<span class="kw">getValues</span>(FishPhiALLConstraints)</a>
+<a class="sourceLine" id="cb5-5" title="5"></a>
+<a class="sourceLine" id="cb5-6" title="6"></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="co">## Convert Phi raster to number of years it takes to grow a 35 cm fish</span></a>
+<a class="sourceLine" id="cb5-8" title="8"></a>
+<a class="sourceLine" id="cb5-9" title="9">LogFishYears &lt;-<span class="st"> </span><span class="kw">calc</span>(FishPhiALLConstraints, <span class="dt">fun=</span><span class="cf">function</span>(x){F_estCoef[<span class="dv">1</span>]<span class="op">+</span>F_estCoef[<span class="dv">2</span>]<span class="op">*</span><span class="kw">log</span>(x)})</a>
+<a class="sourceLine" id="cb5-10" title="10">LogFishYears</a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="kw">plot</span>(LogFishYears)</a>
+<a class="sourceLine" id="cb5-12" title="12"></a>
+<a class="sourceLine" id="cb5-13" title="13">FishYears &lt;-<span class="st"> </span><span class="kw">calc</span>(LogFishYears, <span class="dt">fun=</span><span class="cf">function</span>(x){<span class="kw">exp</span>(x)})</a>
+<a class="sourceLine" id="cb5-14" title="14"></a>
+<a class="sourceLine" id="cb5-15" title="15">FishYears</a>
+<a class="sourceLine" id="cb5-16" title="16"><span class="kw">plot</span>(FishYears)</a>
+<a class="sourceLine" id="cb5-17" title="17"><span class="kw">writeRaster</span>(FishYears,<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/FishYearsbyCell.tif&quot;</span>), <span class="dt">overwrite=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb5-18" title="18"></a>
+<a class="sourceLine" id="cb5-19" title="19">FishYears &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/FishYearsbyCell.tif&quot;</span>))</a>
+<a class="sourceLine" id="cb5-20" title="20">FishYearsVector=<span class="kw">getValues</span>(FishYears)</a>
+<a class="sourceLine" id="cb5-21" title="21"></a>
+<a class="sourceLine" id="cb5-22" title="22"></a>
+<a class="sourceLine" id="cb5-23" title="23"></a>
+<a class="sourceLine" id="cb5-24" title="24"><span class="co">#OHI 2018 regions (original analysis used older regions file)</span></a>
+<a class="sourceLine" id="cb5-25" title="25"></a>
+<a class="sourceLine" id="cb5-26" title="26"><span class="co">## call spatial file from sourced file</span></a>
+<a class="sourceLine" id="cb5-27" title="27"><span class="kw">regions_shape</span>()</a>
+<a class="sourceLine" id="cb5-28" title="28">OHIcountries &lt;-<span class="st"> </span>regions <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-29" title="29"><span class="st">  </span><span class="kw">filter</span>(type_w_ant <span class="op">==</span><span class="st"> &quot;eez&quot;</span>)</a>
+<a class="sourceLine" id="cb5-30" title="30">OHIcountries &lt;-<span class="st"> </span><span class="kw">st_transform</span>(OHIcountries, <span class="kw">crs</span>(FishPhiALLConstraints))</a>
+<a class="sourceLine" id="cb5-31" title="31">OHIcountries_raster &lt;-<span class="st"> </span><span class="kw">fasterize</span>(OHIcountries, FishPhiALLConstraints, <span class="dt">field=</span><span class="st">&quot;rgn_id&quot;</span>)  </a>
+<a class="sourceLine" id="cb5-32" title="32">CountryVector=<span class="kw">getValues</span>(OHIcountries_raster)</a>
+<a class="sourceLine" id="cb5-33" title="33"></a>
+<a class="sourceLine" id="cb5-34" title="34"></a>
+<a class="sourceLine" id="cb5-35" title="35"></a>
+<a class="sourceLine" id="cb5-36" title="36"></a>
+<a class="sourceLine" id="cb5-37" title="37"><span class="co">### area of each cell (each cell is different given lat/long coordinate reference system)</span></a>
+<a class="sourceLine" id="cb5-38" title="38">areaPerCell &lt;-<span class="st"> </span><span class="kw">area</span>(FishPhiALLConstraints, <span class="dt">weights=</span><span class="ot">FALSE</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb5-39" title="39">areaPerCellVector &lt;-<span class="st"> </span><span class="kw">getValues</span>(areaPerCell)</a>
+<a class="sourceLine" id="cb5-40" title="40"></a>
+<a class="sourceLine" id="cb5-41" title="41"><span class="co">### Make a dataframe with raster values that includes cells: Country, area, Phi, and Years to Harvest</span></a>
+<a class="sourceLine" id="cb5-42" title="42">productionDF &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">CellID =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">933120000</span>,</a>
+<a class="sourceLine" id="cb5-43" title="43">                           <span class="dt">Country =</span> CountryVector,</a>
+<a class="sourceLine" id="cb5-44" title="44">                           <span class="dt">AreaKM2 =</span> areaPerCellVector,</a>
+<a class="sourceLine" id="cb5-45" title="45">                           <span class="dt">PhiPrime =</span> FishPhiVector, </a>
+<a class="sourceLine" id="cb5-46" title="46">                           <span class="dt">YearsToHarvest =</span> FishYearsVector)</a>
+<a class="sourceLine" id="cb5-47" title="47"></a>
+<a class="sourceLine" id="cb5-48" title="48"><span class="kw">head</span>(productionDF)</a>
+<a class="sourceLine" id="cb5-49" title="49"></a>
+<a class="sourceLine" id="cb5-50" title="50"><span class="kw">summary</span>(FishYearsVector)</a>
+<a class="sourceLine" id="cb5-51" title="51"><span class="kw">summary</span>(areaPerCellVector) <span class="co">##they seem to match</span></a>
+<a class="sourceLine" id="cb5-52" title="52"></a>
+<a class="sourceLine" id="cb5-53" title="53"></a>
+<a class="sourceLine" id="cb5-54" title="54"></a>
+<a class="sourceLine" id="cb5-55" title="55"><span class="co">## calculate production for each cell</span></a>
+<a class="sourceLine" id="cb5-56" title="56">productionDFFishCells &lt;-<span class="st"> </span>productionDF <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-57" title="57"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(YearsToHarvest)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-58" title="58"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">F_yieldperfarmMT =</span> (weight35cm <span class="op">*</span><span class="st"> </span>density <span class="op">*</span><span class="st"> </span>cagesize <span class="op">*</span><span class="st"> </span>cagesperfarm)<span class="op">/</span><span class="dv">1000000</span>) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># MRF: units yieldperkm2? 554.8 grams * 20 juv/m3 * 9000 m3 * 24 cages/km2 = grams/km2</span></a>
+<a class="sourceLine" id="cb5-59" title="59"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">F_yieldpercellperyear =</span> (F_yieldperfarmMT<span class="op">/</span>YearsToHarvest) <span class="op">*</span><span class="st"> </span>AreaKM2) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-60" title="60"><span class="st">  </span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-61" title="61"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">YieldCumSum =</span> <span class="kw">cumsum</span>(F_yieldpercellperyear)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-62" title="62"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">AreaCumSum =</span> <span class="kw">cumsum</span>(AreaKM2))</a>
+<a class="sourceLine" id="cb5-63" title="63"></a>
+<a class="sourceLine" id="cb5-64" title="64"><span class="kw">write.csv</span>(productionDFFishCells, <span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/fish/productionDFFishCells.csv&quot;</span>)) <span class="co">#save to mazu because so large. This is functionally a raster file. </span></a>
+<a class="sourceLine" id="cb5-65" title="65"></a>
+<a class="sourceLine" id="cb5-66" title="66">productionDFFishCells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/fish/productionDFFishCells.csv&quot;</span>))</a>
+<a class="sourceLine" id="cb5-67" title="67"></a>
+<a class="sourceLine" id="cb5-68" title="68"><span class="kw">head</span>(productionDFFishCells)</a>
+<a class="sourceLine" id="cb5-69" title="69"><span class="kw">summary</span>(productionDFFishCells)</a>
+<a class="sourceLine" id="cb5-70" title="70"><span class="kw">str</span>(productionDFFishCells)</a>
+<a class="sourceLine" id="cb5-71" title="71"><span class="co">##cumsum area is 11,402,629 km2 -  # matches the paper </span></a>
+<a class="sourceLine" id="cb5-72" title="72"><span class="co">##cumprod is 15,950,000,000MT -   # matches the paper </span></a>
+<a class="sourceLine" id="cb5-73" title="73"></a>
+<a class="sourceLine" id="cb5-74" title="74"><span class="co">### how many of these cells are not in a country?</span></a>
+<a class="sourceLine" id="cb5-75" title="75"><span class="kw">sum</span>(<span class="kw">is.na</span>(productionDFFishCells<span class="op">$</span>Country))</a>
+<a class="sourceLine" id="cb5-76" title="76"><span class="kw">dim</span>(productionDFFishCells)</a>
+<a class="sourceLine" id="cb5-77" title="77"></a>
+<a class="sourceLine" id="cb5-78" title="78"><span class="co">## MRF: with new OHI regions: 544,569 are not in a country..probably a lot are in conflicted areas</span></a>
+<a class="sourceLine" id="cb5-79" title="79"></a>
+<a class="sourceLine" id="cb5-80" title="80"></a>
+<a class="sourceLine" id="cb5-81" title="81"><span class="co">## Calculate production if 1% of top production area is used:</span></a>
+<a class="sourceLine" id="cb5-82" title="82">productionByCountryFishDF &lt;-<span class="st"> </span>productionDFFishCells <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-83" title="83"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(Country)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-84" title="84"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>YieldCumSum, <span class="op">-</span>AreaCumSum, <span class="op">-</span>X) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-85" title="85"><span class="st">  </span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-86" title="86"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ID =</span> Country) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-87" title="87"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(ID) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-88" title="88"><span class="st">  </span><span class="kw">group_by</span>(ID) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-89" title="89"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">CountryYieldCumSum =</span> <span class="kw">cumsum</span>(F_yieldpercellperyear)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-90" title="90"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">CountryAreaCumSum =</span> <span class="kw">cumsum</span>(AreaKM2)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-91" title="91"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">MaxProdPerCountry =</span> <span class="kw">max</span>(CountryYieldCumSum)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-92" title="92"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">OnePercentDevPerCountry =</span> <span class="fl">.01</span><span class="op">*</span><span class="kw">max</span>(CountryAreaCumSum)) <span class="co">#calculating 1 percent of area</span></a>
+<a class="sourceLine" id="cb5-93" title="93"></a>
+<a class="sourceLine" id="cb5-94" title="94"><span class="kw">write.csv</span>(productionByCountryFishDF,<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell.csv&quot;</span>), <span class="dt">row.names =</span> <span class="ot">FALSE</span>) <span class="co">#save to mazu because so large. This is functionally a raster file. </span></a>
+<a class="sourceLine" id="cb5-95" title="95"></a>
+<a class="sourceLine" id="cb5-96" title="96">productionByCountryFishDF &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell.csv&quot;</span>))</a>
+<a class="sourceLine" id="cb5-97" title="97"></a>
+<a class="sourceLine" id="cb5-98" title="98"><span class="co">## MRF: For each area identify amount of area that corresponds to 1% of production area, </span></a>
+<a class="sourceLine" id="cb5-99" title="99"><span class="co">## MRF: assume maximum production within the country for the 1% of area</span></a>
+<a class="sourceLine" id="cb5-100" title="100">CountryProdSummary &lt;-<span class="st"> </span>productionByCountryFishDF <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-101" title="101"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-102" title="102"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(ID) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-103" title="103"><span class="st">  </span><span class="kw">group_by</span>(ID) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-104" title="104"><span class="st">  </span><span class="kw">filter</span>(CountryAreaCumSum <span class="op">&lt;=</span><span class="st"> </span>OnePercentDevPerCountry) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-105" title="105"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ProdPerCountryOnePercent =</span> <span class="kw">max</span>(CountryYieldCumSum)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-106" title="106"><span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb5-107" title="107"></a>
+<a class="sourceLine" id="cb5-108" title="108"></a>
+<a class="sourceLine" id="cb5-109" title="109"><span class="kw">write.csv</span>(CountryProdSummary, <span class="kw">file.path</span>(dir_git_ref, <span class="st">&quot;/production_int/FishProdByCountrySummary.csv&quot;</span>), <span class="dt">row.names =</span> <span class="ot">FALSE</span>) <span class="co">#save to github</span></a>
+<a class="sourceLine" id="cb5-110" title="110"></a>
+<a class="sourceLine" id="cb5-111" title="111">CountryProdSummary &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_git_ref, <span class="st">&quot;production_int/FishProdByCountrySummary.csv&quot;</span>))</a>
+<a class="sourceLine" id="cb5-112" title="112"></a>
+<a class="sourceLine" id="cb5-113" title="113"><span class="co"># MRF: get fasted YearsToHarvest for each country</span></a>
+<a class="sourceLine" id="cb5-114" title="114">CountryProdSummaryNop &lt;-<span class="st"> </span>productionByCountryFishDF <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-115" title="115"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-116" title="116"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(ID) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-117" title="117"><span class="st">  </span><span class="kw">group_by</span>(ID) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-118" title="118"><span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb5-119" title="119"></a>
+<a class="sourceLine" id="cb5-120" title="120"></a>
+<a class="sourceLine" id="cb5-121" title="121"></a>
+<a class="sourceLine" id="cb5-122" title="122"><span class="co"># Add country names</span></a>
+<a class="sourceLine" id="cb5-123" title="123"></a>
+<a class="sourceLine" id="cb5-124" title="124"><span class="kw">region_data</span>()</a>
+<a class="sourceLine" id="cb5-125" title="125">CountryLabel &lt;-<span class="st"> </span>rgns_eez <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-126" title="126"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="dt">ID =</span> rgn_id, rgn_name)</a>
+<a class="sourceLine" id="cb5-127" title="127"></a>
+<a class="sourceLine" id="cb5-128" title="128"></a>
+<a class="sourceLine" id="cb5-129" title="129"><span class="co">## Final data</span></a>
+<a class="sourceLine" id="cb5-130" title="130"><span class="co">## I think the relevant value we want for the reference point is in this table:  ProdPerCountryOnePercent. Indonesia number for fish matches up with paper. &gt; 24 million tonnes of fish if 1% of aquaculture potential developed. </span></a>
+<a class="sourceLine" id="cb5-131" title="131">CountryProdSummaryFAO &lt;-<span class="st"> </span>CountryProdSummary <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-132" title="132"><span class="st">  </span>ungroup <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-133" title="133"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(ID<span class="op">:</span>ProdPerCountryOnePercent) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-134" title="134"><span class="st">  </span><span class="kw">full_join</span>(CountryLabel, <span class="dt">by=</span> <span class="st">&quot;ID&quot;</span>)</a>
+<a class="sourceLine" id="cb5-135" title="135"></a>
+<a class="sourceLine" id="cb5-136" title="136"><span class="kw">write.csv</span>(CountryProdSummaryFAO, <span class="kw">file.path</span>(dir_git_ref, <span class="st">&quot;/production_int/FishProdByCountrySummaryFAO.csv&quot;</span>), <span class="dt">row.names =</span> <span class="ot">FALSE</span>) <span class="co">#save to github</span></a>
+<a class="sourceLine" id="cb5-137" title="137"></a>
+<a class="sourceLine" id="cb5-138" title="138"><span class="kw">sum</span>(CountryProdSummaryFAO<span class="op">$</span>MaxProdPerCountry, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb5-139" title="139"><span class="co">#15451023277 number matches paper. &gt; 15 billion tonnes </span></a></code></pre></div>
 </div>
 <div id="bivalve-production" class="section level2">
 <h2><span class="header-section-number">3.3</span> Bivalve Production</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="co">## MRF: didn&#39;t run the bivalve portion, but this needs to be done.....</span></a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="co">##Now for Bivalves </span></a>
-<a class="sourceLine" id="cb5-3" title="3">BivalvePhiALLConstraints=<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalvePhiALLConstraints95LT1.tif&quot;</span>))</a>
-<a class="sourceLine" id="cb5-4" title="4"></a>
-<a class="sourceLine" id="cb5-5" title="5"><span class="kw">plot</span>(BivalvePhiALLConstraints)</a>
-<a class="sourceLine" id="cb5-6" title="6">BivalvePhiVector &lt;-<span class="st"> </span><span class="kw">getValues</span>(BivalvePhiALLConstraints)</a>
-<a class="sourceLine" id="cb5-7" title="7"></a>
-<a class="sourceLine" id="cb5-8" title="8"></a>
-<a class="sourceLine" id="cb5-9" title="9"></a>
-<a class="sourceLine" id="cb5-10" title="10"><span class="co">#OHI 2018 regions (original analysis used older regions file)</span></a>
-<a class="sourceLine" id="cb5-11" title="11"></a>
-<a class="sourceLine" id="cb5-12" title="12"><span class="co">## call spatial file from sourced file</span></a>
-<a class="sourceLine" id="cb5-13" title="13"><span class="kw">regions_shape</span>()</a>
-<a class="sourceLine" id="cb5-14" title="14"></a>
-<a class="sourceLine" id="cb5-15" title="15">OHIcountries &lt;-<span class="st"> </span>regions <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-16" title="16"><span class="st">  </span><span class="kw">filter</span>(type_w_ant <span class="op">==</span><span class="st"> &quot;eez&quot;</span>)</a>
-<a class="sourceLine" id="cb5-17" title="17"></a>
-<a class="sourceLine" id="cb5-18" title="18">OHIcountries &lt;-<span class="st"> </span><span class="kw">st_transform</span>(OHIcountries, <span class="kw">crs</span>(FishPhiALLConstraints))</a>
-<a class="sourceLine" id="cb5-19" title="19"></a>
-<a class="sourceLine" id="cb5-20" title="20">OHIcountries_raster &lt;-<span class="st"> </span><span class="kw">fasterize</span>(OHIcountries, FishPhiALLConstraints, <span class="dt">field=</span><span class="st">&quot;rgn_id&quot;</span>)  </a>
-<a class="sourceLine" id="cb5-21" title="21"></a>
-<a class="sourceLine" id="cb5-22" title="22">CountryVector &lt;-<span class="st"> </span><span class="kw">getValues</span>(OHIcountries_raster)</a>
-<a class="sourceLine" id="cb5-23" title="23"></a>
-<a class="sourceLine" id="cb5-24" title="24"></a>
-<a class="sourceLine" id="cb5-25" title="25"><span class="co">#OHI2012 Countries</span></a>
-<a class="sourceLine" id="cb5-26" title="26"><span class="co">#OHIcountries=raster(&quot;~/Spatial_Data/country data/OHI2012/regions.tif&quot;)</span></a>
-<a class="sourceLine" id="cb5-27" title="27"><span class="co">#OHIcountries</span></a>
-<a class="sourceLine" id="cb5-28" title="28"><span class="co">#OHIcountriesLatLong = projectRaster(OHIcountries,FishPhiALLConstraints)</span></a>
-<a class="sourceLine" id="cb5-29" title="29"></a>
-<a class="sourceLine" id="cb5-30" title="30"><span class="co">#OHIcountriesLatLong</span></a>
-<a class="sourceLine" id="cb5-31" title="31"></a>
-<a class="sourceLine" id="cb5-32" title="32"><span class="co">#CountryVector=getValues(OHIcountriesLatLong)</span></a>
-<a class="sourceLine" id="cb5-33" title="33"></a>
-<a class="sourceLine" id="cb5-34" title="34"><span class="co">#mutate(B_estLogyears4cm=B_estCoef[1]+B_estCoef[2]*bivalvephiavg)%&gt;%</span></a>
-<a class="sourceLine" id="cb5-35" title="35"><span class="co">#  mutate(B_estyears4cm=exp(B_estLogyears4cm))</span></a>
-<a class="sourceLine" id="cb5-36" title="36"></a>
-<a class="sourceLine" id="cb5-37" title="37"><span class="co">#make the value of each cell the years it takes to grow a 4 cm bivlave</span></a>
-<a class="sourceLine" id="cb5-38" title="38">LogBivalveYears &lt;-<span class="st"> </span><span class="kw">calc</span>(BivalvePhiALLConstraints, <span class="dt">fun =</span> <span class="cf">function</span>(x){B_estCoef[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>B_estCoef[<span class="dv">2</span>]<span class="op">*</span>(x)})</a>
-<a class="sourceLine" id="cb5-39" title="39">LogBivalveYears</a>
-<a class="sourceLine" id="cb5-40" title="40"><span class="kw">plot</span>(LogBivalveYears)</a>
-<a class="sourceLine" id="cb5-41" title="41"></a>
-<a class="sourceLine" id="cb5-42" title="42">BivalveYears=<span class="kw">calc</span>(LogBivalveYears,<span class="dt">fun=</span><span class="cf">function</span>(x){<span class="kw">exp</span>(x)})</a>
-<a class="sourceLine" id="cb5-43" title="43"></a>
-<a class="sourceLine" id="cb5-44" title="44">BivalveYears</a>
-<a class="sourceLine" id="cb5-45" title="45"><span class="kw">plot</span>(BivalveYears)</a>
-<a class="sourceLine" id="cb5-46" title="46"><span class="kw">writeRaster</span>(BivalveYears,<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalveYearsByCell.tif&quot;</span>), <span class="dt">overwrite=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb5-47" title="47"></a>
-<a class="sourceLine" id="cb5-48" title="48">BivalveYears &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalveYearsByCell.tif&quot;</span>))</a>
-<a class="sourceLine" id="cb5-49" title="49"></a>
-<a class="sourceLine" id="cb5-50" title="50">BivalveYearsVector &lt;-<span class="st"> </span><span class="kw">getValues</span>(BivalveYears)</a>
-<a class="sourceLine" id="cb5-51" title="51"></a>
-<a class="sourceLine" id="cb5-52" title="52"></a>
-<a class="sourceLine" id="cb5-53" title="53"><span class="co">###now load in area values for each cell</span></a>
-<a class="sourceLine" id="cb5-54" title="54"><span class="co">#areaPerCell=raster(&quot;Spatial_Data/MiddleFiles/AreaBivalveLT1.grd&quot;)</span></a>
-<a class="sourceLine" id="cb5-55" title="55">areaPerCell &lt;-<span class="st"> </span><span class="kw">area</span>(BivalvePhiALLConstraints, <span class="dt">weights=</span><span class="ot">FALSE</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb5-56" title="56">areaPerCell</a>
-<a class="sourceLine" id="cb5-57" title="57"></a>
-<a class="sourceLine" id="cb5-58" title="58">areaPerCellVector=<span class="kw">getValues</span>(areaPerCell)</a>
-<a class="sourceLine" id="cb5-59" title="59"></a>
-<a class="sourceLine" id="cb5-60" title="60"></a>
-<a class="sourceLine" id="cb5-61" title="61">productionDFBiv &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">CellID=</span><span class="dv">1</span><span class="op">:</span><span class="dv">933120000</span>,</a>
-<a class="sourceLine" id="cb5-62" title="62">                           <span class="dt">Country=</span>CountryVector,</a>
-<a class="sourceLine" id="cb5-63" title="63">                           <span class="dt">AreaKM2=</span>areaPerCellVector,</a>
-<a class="sourceLine" id="cb5-64" title="64">                           <span class="dt">PhiPrime=</span>BivalvePhiVector, </a>
-<a class="sourceLine" id="cb5-65" title="65">                           <span class="dt">YearsToHarvest=</span>BivalveYearsVector)</a>
-<a class="sourceLine" id="cb5-66" title="66"></a>
-<a class="sourceLine" id="cb5-67" title="67"><span class="kw">head</span>(productionDFBiv)</a>
-<a class="sourceLine" id="cb5-68" title="68"></a>
-<a class="sourceLine" id="cb5-69" title="69">productionDFBivCells &lt;-<span class="st"> </span>productionDFBiv <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-70" title="70"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(YearsToHarvest)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-71" title="71"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">B_yieldperfarmInd =</span> bivperfarm) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-72" title="72"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">B_yieldpercellperyear =</span> (B_yieldperfarmInd <span class="op">/</span><span class="st"> </span>YearsToHarvest) <span class="op">*</span><span class="st"> </span>AreaKM2) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-73" title="73"><span class="st">  </span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-74" title="74"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">YieldCumSum =</span> <span class="kw">cumsum</span>(B_yieldpercellperyear)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-75" title="75"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">AreaCumSum =</span> <span class="kw">cumsum</span>(AreaKM2))</a>
-<a class="sourceLine" id="cb5-76" title="76"></a>
-<a class="sourceLine" id="cb5-77" title="77"><span class="kw">head</span>(productionDFBivCells)</a>
-<a class="sourceLine" id="cb5-78" title="78"><span class="kw">summary</span>(productionDFBivCells)</a>
-<a class="sourceLine" id="cb5-79" title="79"><span class="kw">str</span>(productionDFBivCells)</a>
-<a class="sourceLine" id="cb5-80" title="80"></a>
-<a class="sourceLine" id="cb5-81" title="81"><span class="kw">write.csv</span>(productionDFBivCells, <span class="kw">file.path</span>(dir_M, <span class="st">&quot;/git-annex/globalprep/mar/v2019/int/productionDFBivCells.csv&quot;</span>))          </a>
-<a class="sourceLine" id="cb5-82" title="82">productionDFBivCells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;/git-annex/globalprep/mar/v2019/int/productionDFBivCells.csv&quot;</span>))</a>
-<a class="sourceLine" id="cb5-83" title="83"></a>
-<a class="sourceLine" id="cb5-84" title="84">productionByCountryBivDF &lt;-<span class="st"> </span>productionDFBivCells <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-85" title="85"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(Country)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-86" title="86"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>YieldCumSum, <span class="op">-</span>X) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-87" title="87"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>AreaCumSum) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-88" title="88"><span class="st">  </span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-89" title="89"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ID =</span> Country) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-90" title="90"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(ID) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-91" title="91"><span class="st">  </span><span class="kw">group_by</span>(ID) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-92" title="92"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">CountryYieldCumSum =</span> <span class="kw">cumsum</span>(B_yieldpercellperyear)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-93" title="93"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">CountryAreaCumSum =</span> <span class="kw">cumsum</span>(AreaKM2)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-94" title="94"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">MaxPhi =</span> <span class="kw">max</span>(PhiPrime)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-95" title="95"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">averagePhi =</span> <span class="kw">mean</span>(PhiPrime)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-96" title="96"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">averageWeightedPhi =</span> <span class="kw">sum</span>(PhiPrime<span class="op">*</span>AreaKM2)<span class="op">/</span>(<span class="kw">max</span>(CountryAreaCumSum))) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-97" title="97"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">MaxDevPerCountry =</span> <span class="kw">max</span>(CountryAreaCumSum)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-98" title="98"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">MaxProdPerCountry =</span> <span class="kw">max</span>(CountryYieldCumSum)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-99" title="99"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">OnePercentDevPerCountry =</span> <span class="fl">.01</span><span class="op">*</span><span class="kw">max</span>(CountryAreaCumSum))</a>
-<a class="sourceLine" id="cb5-100" title="100"></a>
-<a class="sourceLine" id="cb5-101" title="101"></a>
-<a class="sourceLine" id="cb5-102" title="102"><span class="kw">head</span>(productionByCountryBivDF)</a>
-<a class="sourceLine" id="cb5-103" title="103"><span class="kw">write.csv</span>(productionByCountryBivDF,<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/bivalve/BivProdByCountryByCell.csv&quot;</span>))</a>
-<a class="sourceLine" id="cb5-104" title="104"></a>
-<a class="sourceLine" id="cb5-105" title="105">CountryProdSummary=productionByCountryBivDF<span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-106" title="106"><span class="st">  </span><span class="kw">filter</span>(CountryAreaCumSum<span class="op">&lt;=</span>OnePercentDevPerCountry) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-107" title="107"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ProdPerCountryOnePercent=</span><span class="kw">max</span>(CountryYieldCumSum)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-108" title="108"><span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb5-109" title="109"></a>
-<a class="sourceLine" id="cb5-110" title="110"><span class="kw">write.csv</span>(CountryProdSummary,<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/output/BivalveProdByCountrySummary.csv&quot;</span>))</a>
-<a class="sourceLine" id="cb5-111" title="111"></a>
-<a class="sourceLine" id="cb5-112" title="112"><span class="kw">region_data</span>()</a>
-<a class="sourceLine" id="cb5-113" title="113">CountryLabel &lt;-<span class="st"> </span>rgns_eez <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-114" title="114"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="dt">ID =</span> rgn_id, rgn_name)</a>
-<a class="sourceLine" id="cb5-115" title="115"></a>
-<a class="sourceLine" id="cb5-116" title="116"><span class="kw">head</span>(CountryLabel)</a>
-<a class="sourceLine" id="cb5-117" title="117"></a>
-<a class="sourceLine" id="cb5-118" title="118"><span class="co">## I think the relevant value we want for the reference point is in this table:  ProdPerCountryOnePercent. Indonesia number for bivalves is higher than the paper, however the paper does use the phrase &quot;over 3.9*10^11 tonnes&quot;. Data says 4.7 * 10^11 million tonnes of bivalves if 1% of aquaculture potential developed, which is greater than 3.9 * 10^11 tonnes.  </span></a>
-<a class="sourceLine" id="cb5-119" title="119">CountryProdSummaryFAO &lt;-<span class="st"> </span>CountryProdSummary <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-120" title="120"><span class="st">  </span>ungroup <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-121" title="121"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(ID<span class="op">:</span>ProdPerCountryOnePercent) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-122" title="122"><span class="st">  </span><span class="kw">full_join</span>(CountryLabel, <span class="dt">by =</span> <span class="st">&quot;ID&quot;</span>)</a>
-<a class="sourceLine" id="cb5-123" title="123"></a>
-<a class="sourceLine" id="cb5-124" title="124"><span class="kw">write.csv</span>(CountryProdSummaryFAO, <span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/output/BivalveProdByCountryFAOSummary.csv&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">##Now for Bivalves </span></a>
+<a class="sourceLine" id="cb6-2" title="2">BivalvePhiALLConstraints=<span class="kw">raster</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalvePhiALLConstraints95LT1.tif&quot;</span>))</a>
+<a class="sourceLine" id="cb6-3" title="3"></a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="kw">plot</span>(BivalvePhiALLConstraints)</a>
+<a class="sourceLine" id="cb6-5" title="5">BivalvePhiVector &lt;-<span class="st"> </span><span class="kw">getValues</span>(BivalvePhiALLConstraints)</a>
+<a class="sourceLine" id="cb6-6" title="6"></a>
+<a class="sourceLine" id="cb6-7" title="7"></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="co">#OHI 2018 regions (original analysis used older regions file)</span></a>
+<a class="sourceLine" id="cb6-9" title="9"></a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="co">## call spatial file from sourced file</span></a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="kw">regions_shape</span>()</a>
+<a class="sourceLine" id="cb6-12" title="12"></a>
+<a class="sourceLine" id="cb6-13" title="13">OHIcountries &lt;-<span class="st"> </span>regions <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-14" title="14"><span class="st">  </span><span class="kw">filter</span>(type_w_ant <span class="op">==</span><span class="st"> &quot;eez&quot;</span>)</a>
+<a class="sourceLine" id="cb6-15" title="15"></a>
+<a class="sourceLine" id="cb6-16" title="16">OHIcountries &lt;-<span class="st"> </span><span class="kw">st_transform</span>(OHIcountries, <span class="kw">crs</span>(FishPhiALLConstraints))</a>
+<a class="sourceLine" id="cb6-17" title="17"></a>
+<a class="sourceLine" id="cb6-18" title="18">OHIcountries_raster &lt;-<span class="st"> </span><span class="kw">fasterize</span>(OHIcountries, FishPhiALLConstraints, <span class="dt">field=</span><span class="st">&quot;rgn_id&quot;</span>)  </a>
+<a class="sourceLine" id="cb6-19" title="19"></a>
+<a class="sourceLine" id="cb6-20" title="20">CountryVector &lt;-<span class="st"> </span><span class="kw">getValues</span>(OHIcountries_raster)</a>
+<a class="sourceLine" id="cb6-21" title="21"></a>
+<a class="sourceLine" id="cb6-22" title="22"><span class="co">#make the value of each cell the years it takes to grow a 4 cm bivlave</span></a>
+<a class="sourceLine" id="cb6-23" title="23">LogBivalveYears &lt;-<span class="st"> </span><span class="kw">calc</span>(BivalvePhiALLConstraints, <span class="dt">fun =</span> <span class="cf">function</span>(x){B_estCoef[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>B_estCoef[<span class="dv">2</span>]<span class="op">*</span>(x)})</a>
+<a class="sourceLine" id="cb6-24" title="24">LogBivalveYears</a>
+<a class="sourceLine" id="cb6-25" title="25"><span class="kw">plot</span>(LogBivalveYears)</a>
+<a class="sourceLine" id="cb6-26" title="26"></a>
+<a class="sourceLine" id="cb6-27" title="27">BivalveYears=<span class="kw">calc</span>(LogBivalveYears,<span class="dt">fun=</span><span class="cf">function</span>(x){<span class="kw">exp</span>(x)})</a>
+<a class="sourceLine" id="cb6-28" title="28"></a>
+<a class="sourceLine" id="cb6-29" title="29">BivalveYears</a>
+<a class="sourceLine" id="cb6-30" title="30"><span class="kw">plot</span>(BivalveYears)</a>
+<a class="sourceLine" id="cb6-31" title="31"></a>
+<a class="sourceLine" id="cb6-32" title="32"><span class="kw">writeRaster</span>(BivalveYears,<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalveYearsByCell.tif&quot;</span>), <span class="dt">overwrite=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb6-33" title="33"></a>
+<a class="sourceLine" id="cb6-34" title="34">BivalveYears &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalveYearsByCell.tif&quot;</span>))</a>
+<a class="sourceLine" id="cb6-35" title="35"></a>
+<a class="sourceLine" id="cb6-36" title="36">BivalveYearsVector &lt;-<span class="st"> </span><span class="kw">getValues</span>(BivalveYears)</a>
+<a class="sourceLine" id="cb6-37" title="37"></a>
+<a class="sourceLine" id="cb6-38" title="38"></a>
+<a class="sourceLine" id="cb6-39" title="39"><span class="co">###now load in area values for each cell</span></a>
+<a class="sourceLine" id="cb6-40" title="40"><span class="co">#areaPerCell=raster(&quot;Spatial_Data/MiddleFiles/AreaBivalveLT1.grd&quot;)</span></a>
+<a class="sourceLine" id="cb6-41" title="41">areaPerCell &lt;-<span class="st"> </span><span class="kw">area</span>(BivalvePhiALLConstraints, <span class="dt">weights=</span><span class="ot">FALSE</span>, <span class="dt">na.rm=</span><span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb6-42" title="42">areaPerCell</a>
+<a class="sourceLine" id="cb6-43" title="43"></a>
+<a class="sourceLine" id="cb6-44" title="44">areaPerCellVector=<span class="kw">getValues</span>(areaPerCell)</a>
+<a class="sourceLine" id="cb6-45" title="45"></a>
+<a class="sourceLine" id="cb6-46" title="46"></a>
+<a class="sourceLine" id="cb6-47" title="47">productionDFBiv &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">CellID=</span><span class="dv">1</span><span class="op">:</span><span class="dv">933120000</span>,</a>
+<a class="sourceLine" id="cb6-48" title="48">                           <span class="dt">Country=</span>CountryVector,</a>
+<a class="sourceLine" id="cb6-49" title="49">                           <span class="dt">AreaKM2=</span>areaPerCellVector,</a>
+<a class="sourceLine" id="cb6-50" title="50">                           <span class="dt">PhiPrime=</span>BivalvePhiVector, </a>
+<a class="sourceLine" id="cb6-51" title="51">                           <span class="dt">YearsToHarvest=</span>BivalveYearsVector)</a>
+<a class="sourceLine" id="cb6-52" title="52"></a>
+<a class="sourceLine" id="cb6-53" title="53"><span class="kw">head</span>(productionDFBiv)</a>
+<a class="sourceLine" id="cb6-54" title="54"></a>
+<a class="sourceLine" id="cb6-55" title="55">productionDFBivCells &lt;-<span class="st"> </span>productionDFBiv <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-56" title="56"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(YearsToHarvest)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-57" title="57"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">B_yieldperfarmInd =</span> bivperfarm) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-58" title="58"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">B_yieldpercellperyear =</span> (B_yieldperfarmInd <span class="op">/</span><span class="st"> </span>YearsToHarvest) <span class="op">*</span><span class="st"> </span>AreaKM2) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-59" title="59"><span class="st">  </span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-60" title="60"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">YieldCumSum =</span> <span class="kw">cumsum</span>(B_yieldpercellperyear)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-61" title="61"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">AreaCumSum =</span> <span class="kw">cumsum</span>(AreaKM2))</a>
+<a class="sourceLine" id="cb6-62" title="62"></a>
+<a class="sourceLine" id="cb6-63" title="63"><span class="kw">head</span>(productionDFBivCells)</a>
+<a class="sourceLine" id="cb6-64" title="64"><span class="kw">summary</span>(productionDFBivCells)</a>
+<a class="sourceLine" id="cb6-65" title="65"><span class="kw">str</span>(productionDFBivCells)</a>
+<a class="sourceLine" id="cb6-66" title="66"></a>
+<a class="sourceLine" id="cb6-67" title="67"><span class="kw">write.csv</span>(productionDFBivCells, <span class="kw">file.path</span>(dir_M, <span class="st">&quot;/git-annex/globalprep/mar/v2019/int/productionDFBivCells.csv&quot;</span>)) <span class="co">#save to mazu because so large. This is functionally a raster file. </span></a>
+<a class="sourceLine" id="cb6-68" title="68"></a>
+<a class="sourceLine" id="cb6-69" title="69">productionDFBivCells &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;/git-annex/globalprep/mar/v2019/int/bivalve/productionDFBivCells.csv&quot;</span>))</a>
+<a class="sourceLine" id="cb6-70" title="70"></a>
+<a class="sourceLine" id="cb6-71" title="71">productionByCountryBivDF &lt;-<span class="st"> </span>productionDFBivCells <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-72" title="72"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(Country)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-73" title="73"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>YieldCumSum, <span class="op">-</span>X) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-74" title="74"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>AreaCumSum) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-75" title="75"><span class="st">  </span><span class="kw">arrange</span>(YearsToHarvest) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-76" title="76"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ID =</span> Country) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-77" title="77"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(ID) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-78" title="78"><span class="st">  </span><span class="kw">group_by</span>(ID) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-79" title="79"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">CountryYieldCumSum =</span> <span class="kw">cumsum</span>(B_yieldpercellperyear)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-80" title="80"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">CountryAreaCumSum =</span> <span class="kw">cumsum</span>(AreaKM2)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-81" title="81"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">MaxPhi =</span> <span class="kw">max</span>(PhiPrime)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-82" title="82"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">averagePhi =</span> <span class="kw">mean</span>(PhiPrime)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-83" title="83"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">averageWeightedPhi =</span> <span class="kw">sum</span>(PhiPrime<span class="op">*</span>AreaKM2)<span class="op">/</span>(<span class="kw">max</span>(CountryAreaCumSum))) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-84" title="84"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">MaxDevPerCountry =</span> <span class="kw">max</span>(CountryAreaCumSum)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-85" title="85"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">MaxProdPerCountry =</span> <span class="kw">max</span>(CountryYieldCumSum)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-86" title="86"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">OnePercentDevPerCountry =</span> <span class="fl">.01</span><span class="op">*</span><span class="kw">max</span>(CountryAreaCumSum))</a>
+<a class="sourceLine" id="cb6-87" title="87"></a>
+<a class="sourceLine" id="cb6-88" title="88"><span class="kw">head</span>(productionByCountryBivDF)</a>
+<a class="sourceLine" id="cb6-89" title="89"></a>
+<a class="sourceLine" id="cb6-90" title="90"><span class="kw">write.csv</span>(productionByCountryBivDF,<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/bivalve/BivProdByCountryByCell.csv&quot;</span>), <span class="dt">row.names =</span> <span class="ot">FALSE</span>) <span class="co">#save to mazu because so large. This is functionally a raster file. </span></a>
+<a class="sourceLine" id="cb6-91" title="91"></a>
+<a class="sourceLine" id="cb6-92" title="92">productionByCountryBivDF &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">file.path</span>(dir_M, <span class="st">&quot;git-annex/globalprep/mar/v2019/int/bivalve/BivProdByCountryByCell.csv&quot;</span>)) </a>
+<a class="sourceLine" id="cb6-93" title="93"></a>
+<a class="sourceLine" id="cb6-94" title="94"></a>
+<a class="sourceLine" id="cb6-95" title="95">CountryProdSummary &lt;-<span class="st"> </span>productionByCountryBivDF <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-96" title="96"><span class="st">  </span><span class="kw">filter</span>(CountryAreaCumSum <span class="op">&lt;=</span><span class="st"> </span>OnePercentDevPerCountry) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-97" title="97"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ProdPerCountryOnePercent =</span> <span class="kw">max</span>(CountryYieldCumSum)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-98" title="98"><span class="st">  </span><span class="kw">slice</span>(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb6-99" title="99"></a>
+<a class="sourceLine" id="cb6-100" title="100"><span class="kw">write.csv</span>(CountryProdSummary,<span class="kw">file.path</span>(dir_git_ref, <span class="st">&quot;production_int/BivalveProdByCountrySummary.csv&quot;</span>), <span class="dt">row.names =</span> <span class="ot">FALSE</span>) <span class="co">#save to github</span></a>
+<a class="sourceLine" id="cb6-101" title="101"></a>
+<a class="sourceLine" id="cb6-102" title="102"></a>
+<a class="sourceLine" id="cb6-103" title="103"><span class="kw">region_data</span>()</a>
+<a class="sourceLine" id="cb6-104" title="104">CountryLabel &lt;-<span class="st"> </span>rgns_eez <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-105" title="105"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="dt">ID =</span> rgn_id, rgn_name)</a>
+<a class="sourceLine" id="cb6-106" title="106"></a>
+<a class="sourceLine" id="cb6-107" title="107"><span class="kw">head</span>(CountryLabel)</a>
+<a class="sourceLine" id="cb6-108" title="108"></a>
+<a class="sourceLine" id="cb6-109" title="109"><span class="co">## I think the relevant value we want for the reference point is in this table:  ProdPerCountryOnePercent. Indonesia number for bivalves is higher than the paper, however the paper does use the phrase &quot;over 3.9*10^11 tonnes&quot;. Data says 4.7 * 10^11 million tonnes of bivalves if 1% of aquaculture potential developed, which is greater than 3.9 * 10^11 tonnes.  </span></a>
+<a class="sourceLine" id="cb6-110" title="110">CountryProdSummaryFAO &lt;-<span class="st"> </span>CountryProdSummary <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-111" title="111"><span class="st">  </span>ungroup <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-112" title="112"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(ID<span class="op">:</span>ProdPerCountryOnePercent) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-113" title="113"><span class="st">  </span><span class="kw">full_join</span>(CountryLabel, <span class="dt">by =</span> <span class="st">&quot;ID&quot;</span>)</a>
+<a class="sourceLine" id="cb6-114" title="114"></a>
+<a class="sourceLine" id="cb6-115" title="115"><span class="kw">write.csv</span>(CountryProdSummaryFAO, <span class="kw">file.path</span>(dir_git_ref, <span class="st">&quot;production_int/BivalveProdByCountrySummaryFAO.csv&quot;</span>), <span class="dt">row.names =</span> <span class="ot">FALSE</span>) <span class="co">#save to github </span></a>
+<a class="sourceLine" id="cb6-116" title="116"></a>
+<a class="sourceLine" id="cb6-117" title="117"><span class="kw">sum</span>(CountryProdSummaryFAO<span class="op">$</span>MaxDevPerCountry, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb6-118" title="118"><span class="co">#1491404 km2. Matches paper ~1,500,000 km2</span></a></code></pre></div>
+</div>
+<div id="unit-conversion-and-gap-filling" class="section level2">
+<h2><span class="header-section-number">3.4</span> Unit Conversion and Gap Filling</h2>
+<p>To compare potential vs harvest, we need to convert bivalve units to metric tonnes, they are currently in units of individual bivalves. Some figures:</p>
+<ul>
+<li>Scallops: <a href="http://www.thefoodcoach.com.au/food/?FoodID=241">40-50 per kg (~22g ea)</a></li>
+<li>Mussels: <a href="https://www.pacseafood.com/products/details/seafood,shellfish/mussels/">15-20 per 1 lb blue (~25g ea)</a></li>
+<li>Oysters: <a href="http://www.mobjackbayseafood.com/products.html">12-15 per 1 lb (~33g ea) aquaculture halfshell</a></li>
+<li>Clams: <a href="https://www.pacseafood.com/products/details/seafood,shellfish/clams/">20-30 per 1 lb Manila (~18g ea), 8-14 per 1 lb littlenecks (~40g ea)</a></li>
+</ul>
+<p>Averaging these gives about 27.5g per piece.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">aq_mass_per_pc &lt;-<span class="st"> </span><span class="fl">0.0275</span> <span class="op">*</span><span class="st"> </span><span class="fl">1e-3</span> <span class="co">### mass of bivalve piece in tonnes</span></a>
+<a class="sourceLine" id="cb7-2" title="2"></a>
+<a class="sourceLine" id="cb7-3" title="3">pot_b &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git_ref, <span class="st">&#39;production_int/BivalveProdByCountrySummaryFAO.csv&#39;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">potential_prod_one_percent_b =</span> ProdPerCountryOnePercent <span class="op">*</span><span class="st"> </span>aq_mass_per_pc,</a>
+<a class="sourceLine" id="cb7-5" title="5">         <span class="dt">potential_prod_max_b =</span> MaxProdPerCountry <span class="op">*</span><span class="st"> </span>aq_mass_per_pc,</a>
+<a class="sourceLine" id="cb7-6" title="6">         <span class="dt">aq_type =</span> <span class="st">&#39;shellfish&#39;</span>,</a>
+<a class="sourceLine" id="cb7-7" title="7">         <span class="dt">units   =</span> <span class="st">&#39;tonnes&#39;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="st">&quot;rgn_id&quot;</span> =<span class="st"> &quot;ID&quot;</span>, rgn_name, potential_prod_one_percent_b, potential_prod_max_b)</a>
+<a class="sourceLine" id="cb7-9" title="9"></a>
+<a class="sourceLine" id="cb7-10" title="10">pot_f &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_git_ref, <span class="st">&#39;production_int/FishProdByCountrySummaryFAO.csv&#39;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">aq_type =</span> <span class="st">&#39;finfish&#39;</span>,</a>
+<a class="sourceLine" id="cb7-12" title="12">         <span class="dt">units   =</span> <span class="st">&#39;tonnes&#39;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-13" title="13"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="st">&quot;rgn_id&quot;</span> =<span class="st"> &quot;ID&quot;</span>, rgn_name, <span class="st">&quot;potential_prod_one_percent_f&quot;</span> =<span class="st"> &quot;ProdPerCountryOnePercent&quot;</span>, <span class="st">&quot;potential_prod_max_f&quot;</span> =<span class="st"> &quot;MaxProdPerCountry&quot;</span>)</a>
+<a class="sourceLine" id="cb7-14" title="14"></a>
+<a class="sourceLine" id="cb7-15" title="15">pot_aq_int &lt;-<span class="st"> </span><span class="kw">full_join</span>(pot_b, pot_f) <span class="co">## makes sense. 1% of potential AREA... not 1% of potential PRODUCTION</span></a>
+<a class="sourceLine" id="cb7-16" title="16"></a>
+<a class="sourceLine" id="cb7-17" title="17"><span class="kw">write_csv</span>(pot_aq, <span class="kw">file.path</span>(dir_git_ref, <span class="st">&#39;production_int/aq_potential_int.csv&#39;</span>)) <span class="co">##intermediate file that might come in handy in the future</span></a>
+<a class="sourceLine" id="cb7-18" title="18"></a>
+<a class="sourceLine" id="cb7-19" title="19">DT<span class="op">::</span><span class="kw">datatable</span>(pot_aq_int)</a>
+<a class="sourceLine" id="cb7-20" title="20"></a>
+<a class="sourceLine" id="cb7-21" title="21"></a>
+<a class="sourceLine" id="cb7-22" title="22">pot_aq_final &lt;-<span class="st"> </span>pot_aq_int <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-23" title="23"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">potential_prod_one_percent_b =</span> <span class="kw">replace_na</span>(potential_prod_one_percent_b, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb7-24" title="24">         <span class="dt">potential_prod_one_percent_f =</span> <span class="kw">replace_na</span>(potential_prod_one_percent_f, <span class="dv">0</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-25" title="25"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">potential_mar_tonnes =</span> potential_prod_one_percent_b <span class="op">+</span><span class="st"> </span>potential_prod_one_percent_f) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-26" title="26"><span class="st">  </span><span class="kw">arrange</span>(rgn_id) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb7-27" title="27"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, potential_mar_tonnes)</a>
+<a class="sourceLine" id="cb7-28" title="28"></a>
+<a class="sourceLine" id="cb7-29" title="29">DT<span class="op">::</span><span class="kw">datatable</span>(pot_aq_final)</a></code></pre></div>
 </div>
 </div>
 

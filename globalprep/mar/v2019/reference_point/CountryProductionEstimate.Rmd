@@ -48,6 +48,7 @@ knitr::opts_chunk$set(eval=FALSE)
 ### libraries useful for data wrangling
 library(dplyr)
 library(tidyr)
+library(tidyverse)
 
 ## libraries useful for spatial data
 library(raster)       
@@ -67,6 +68,7 @@ library(here)
 
 ## some OHI files
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
+dir_git_ref <- file.path(here(), "/globalprep/mar/v2019/reference_point")
 ```
 
 ## Establish variables and coefficients
@@ -79,8 +81,8 @@ F_estCoef <- c(7.6792, (-5.8198)) #from regression estimated in VBGF_Fish_Final.
 B_estCoef <- c(2.9959,(-1.6659)) #from regression estimate in VBGF_Bivalves.r
 density <- 20 #juveniles per m3
 cagesize <- 9000 #m3
-cagesperfarm <- 24 #located atleast 1 km apart...MRF: seems like units should be cagesperkm2
-bivperfarm <- 130000000 #MRF: again, should units should be bivperkm2?  (100 longlines/km2) * 4 km * (100 bivalves seeded/0.0003 km) = 133333333 bivalve/km2
+cagesperfarm <- 24 #located atleast 1 km apart.. cagesperkm2
+bivperfarm <- 130000000 #(100 longlines/km2) * 4 km * (100 bivalves seeded/0.0003 km) = 133333333 bivalve/km2
 weight35cm <- 554.8  ## in grams see VBGF_Fish_Final. Paper reports 548 grams 
 ```
 
@@ -149,27 +151,27 @@ productionDFFishCells <- productionDF %>%
   mutate(YieldCumSum = cumsum(F_yieldpercellperyear)) %>%
   mutate(AreaCumSum = cumsum(AreaKM2))
 
-write.csv(productionDFFishCells, file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/productionDFFishCells.csv"))
+write.csv(productionDFFishCells, file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/productionDFFishCells.csv")) #save to mazu because so large. This is functionally a raster file. 
+
 productionDFFishCells <- read.csv(file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/productionDFFishCells.csv"))
 
 head(productionDFFishCells)
 summary(productionDFFishCells)
 str(productionDFFishCells)
 ##cumsum area is 11,402,629 km2 -  # matches the paper 
-##cumprod is 15,950,000,000MT -   
+##cumprod is 15,950,000,000MT -   # matches the paper 
 
 ### how many of these cells are not in a country?
 sum(is.na(productionDFFishCells$Country))
 dim(productionDFFishCells)
 
-##293,702 are not in a country out of 15,639,851 total.  that is 1.9%
 ## MRF: with new OHI regions: 544,569 are not in a country..probably a lot are in conflicted areas
 
 
 ## Calculate production if 1% of top production area is used:
 productionByCountryFishDF <- productionDFFishCells %>%
   filter(!is.na(Country)) %>%
-  dplyr::select(-YieldCumSum, -AreaCumSum) %>%
+  dplyr::select(-YieldCumSum, -AreaCumSum, -X) %>%
   arrange(YearsToHarvest) %>%
   mutate(ID = Country) %>%
   dplyr::arrange(ID) %>%
@@ -179,8 +181,9 @@ productionByCountryFishDF <- productionDFFishCells %>%
   mutate(MaxProdPerCountry = max(CountryYieldCumSum)) %>% 
   mutate(OnePercentDevPerCountry = .01*max(CountryAreaCumSum)) #calculating 1 percent of area
 
-write.csv(productionByCountryFishDF,file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell.csv"))
-productionByCountryFishDF <- read.csv(file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell"))
+write.csv(productionByCountryFishDF,file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell.csv"), row.names = FALSE) #save to mazu because so large. This is functionally a raster file. 
+
+productionByCountryFishDF <- read.csv(file.path(dir_M, "git-annex/globalprep/mar/v2019/int/fish/FishProdByCountryByCell.csv"))
 
 ## MRF: For each area identify amount of area that corresponds to 1% of production area, 
 ## MRF: assume maximum production within the country for the 1% of area
@@ -192,8 +195,10 @@ CountryProdSummary <- productionByCountryFishDF %>%
   mutate(ProdPerCountryOnePercent = max(CountryYieldCumSum)) %>%
   slice(1)
 
-write.csv(CountryProdSummary, file.path(dir_M, "git-annex/globalprep/mar/v2019/output/FishProdByCountrySummary.csv"))
 
+write.csv(CountryProdSummary, file.path(dir_git_ref, "/production_int/FishProdByCountrySummary.csv"), row.names = FALSE) #save to github
+
+CountryProdSummary <- read.csv(file.path(dir_git_ref, "production_int/FishProdByCountrySummary.csv"))
 
 # MRF: get fasted YearsToHarvest for each country
 CountryProdSummaryNop <- productionByCountryFishDF %>%
@@ -218,19 +223,20 @@ CountryProdSummaryFAO <- CountryProdSummary %>%
   dplyr::select(ID:ProdPerCountryOnePercent) %>%
   full_join(CountryLabel, by= "ID")
 
-write.csv(CountryProdSummaryFAO, file.path(dir_M, "git-annex/globalprep/mar/v2019/output/FishCountryProdSummaryFAO.csv"))
+write.csv(CountryProdSummaryFAO, file.path(dir_git_ref, "/production_int/FishProdByCountrySummaryFAO.csv"), row.names = FALSE) #save to github
+
+sum(CountryProdSummaryFAO$MaxProdPerCountry, na.rm = TRUE)
+#15451023277 number matches paper. > 15 billion tonnes 
 ```
 
 
 ## Bivalve Production
 ```{r}
-## MRF: didn't run the bivalve portion, but this needs to be done.....
 ##Now for Bivalves 
 BivalvePhiALLConstraints=raster(file.path(dir_M, "git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalvePhiALLConstraints95LT1.tif"))
 
 plot(BivalvePhiALLConstraints)
 BivalvePhiVector <- getValues(BivalvePhiALLConstraints)
-
 
 
 #OHI 2018 regions (original analysis used older regions file)
@@ -247,19 +253,6 @@ OHIcountries_raster <- fasterize(OHIcountries, FishPhiALLConstraints, field="rgn
 
 CountryVector <- getValues(OHIcountries_raster)
 
-
-#OHI2012 Countries
-#OHIcountries=raster("~/Spatial_Data/country data/OHI2012/regions.tif")
-#OHIcountries
-#OHIcountriesLatLong = projectRaster(OHIcountries,FishPhiALLConstraints)
-
-#OHIcountriesLatLong
-
-#CountryVector=getValues(OHIcountriesLatLong)
-
-#mutate(B_estLogyears4cm=B_estCoef[1]+B_estCoef[2]*bivalvephiavg)%>%
-#  mutate(B_estyears4cm=exp(B_estLogyears4cm))
-
 #make the value of each cell the years it takes to grow a 4 cm bivlave
 LogBivalveYears <- calc(BivalvePhiALLConstraints, fun = function(x){B_estCoef[1] + B_estCoef[2]*(x)})
 LogBivalveYears
@@ -269,6 +262,7 @@ BivalveYears=calc(LogBivalveYears,fun=function(x){exp(x)})
 
 BivalveYears
 plot(BivalveYears)
+
 writeRaster(BivalveYears,file.path(dir_M, "git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalveYearsByCell.tif"), overwrite=TRUE)
 
 BivalveYears <- raster(file.path(dir_M, "git-annex/globalprep/mar/v2019/Spatial_Data/NewLayersWOHypoxia/BivalveYearsByCell.tif"))
@@ -304,8 +298,9 @@ head(productionDFBivCells)
 summary(productionDFBivCells)
 str(productionDFBivCells)
 
-write.csv(productionDFBivCells, file.path(dir_M, "/git-annex/globalprep/mar/v2019/int/productionDFBivCells.csv"))          
-productionDFBivCells <- read.csv(file.path(dir_M, "/git-annex/globalprep/mar/v2019/int/productionDFBivCells.csv"))
+write.csv(productionDFBivCells, file.path(dir_M, "/git-annex/globalprep/mar/v2019/int/productionDFBivCells.csv")) #save to mazu because so large. This is functionally a raster file. 
+
+productionDFBivCells <- read.csv(file.path(dir_M, "/git-annex/globalprep/mar/v2019/int/bivalve/productionDFBivCells.csv"))
 
 productionByCountryBivDF <- productionDFBivCells %>%
   filter(!is.na(Country)) %>%
@@ -324,16 +319,20 @@ productionByCountryBivDF <- productionDFBivCells %>%
   mutate(MaxProdPerCountry = max(CountryYieldCumSum)) %>%
   mutate(OnePercentDevPerCountry = .01*max(CountryAreaCumSum))
 
-
 head(productionByCountryBivDF)
-write.csv(productionByCountryBivDF,file.path(dir_M, "git-annex/globalprep/mar/v2019/int/bivalve/BivProdByCountryByCell.csv"))
 
-CountryProdSummary=productionByCountryBivDF%>%
-  filter(CountryAreaCumSum<=OnePercentDevPerCountry) %>%
-  mutate(ProdPerCountryOnePercent=max(CountryYieldCumSum)) %>%
+write.csv(productionByCountryBivDF,file.path(dir_M, "git-annex/globalprep/mar/v2019/int/bivalve/BivProdByCountryByCell.csv"), row.names = FALSE) #save to mazu because so large. This is functionally a raster file. 
+
+productionByCountryBivDF <- read.csv(file.path(dir_M, "git-annex/globalprep/mar/v2019/int/bivalve/BivProdByCountryByCell.csv")) 
+
+
+CountryProdSummary <- productionByCountryBivDF %>%
+  filter(CountryAreaCumSum <= OnePercentDevPerCountry) %>%
+  mutate(ProdPerCountryOnePercent = max(CountryYieldCumSum)) %>%
   slice(1)
 
-write.csv(CountryProdSummary,file.path(dir_M, "git-annex/globalprep/mar/v2019/output/BivalveProdByCountrySummary.csv"))
+write.csv(CountryProdSummary,file.path(dir_git_ref, "production_int/BivalveProdByCountrySummary.csv"), row.names = FALSE) #save to github
+
 
 region_data()
 CountryLabel <- rgns_eez %>%
@@ -347,7 +346,51 @@ CountryProdSummaryFAO <- CountryProdSummary %>%
   dplyr::select(ID:ProdPerCountryOnePercent) %>%
   full_join(CountryLabel, by = "ID")
 
-write.csv(CountryProdSummaryFAO, file.path(dir_M, "git-annex/globalprep/mar/v2019/output/BivalveProdByCountryFAOSummary.csv"))
+write.csv(CountryProdSummaryFAO, file.path(dir_git_ref, "production_int/BivalveProdByCountrySummaryFAO.csv"), row.names = FALSE) #save to github 
 
+sum(CountryProdSummaryFAO$MaxDevPerCountry, na.rm = TRUE)
+#1491404 km2. Matches paper ~1,500,000 km2
 ```
 
+
+## Unit Conversion and Gap Filling
+To compare potential vs harvest, we need to convert bivalve units to metric tonnes, they are currently in units of individual bivalves.  Some figures:
+
+* Scallops: [40-50 per kg (~22g ea)](http://www.thefoodcoach.com.au/food/?FoodID=241)
+* Mussels: [15-20 per 1 lb blue (~25g ea)](https://www.pacseafood.com/products/details/seafood,shellfish/mussels/)
+* Oysters: [12-15 per 1 lb (~33g ea) aquaculture halfshell](http://www.mobjackbayseafood.com/products.html)
+* Clams: [20-30 per 1 lb Manila (~18g ea), 8-14 per 1 lb littlenecks (~40g ea)](https://www.pacseafood.com/products/details/seafood,shellfish/clams/)
+
+Averaging these gives about 27.5g per piece.
+
+``` {r}
+aq_mass_per_pc <- 0.0275 * 1e-3 ### mass of bivalve piece in tonnes
+
+pot_b <- read_csv(file.path(dir_git_ref, 'production_int/BivalveProdByCountrySummaryFAO.csv')) %>%
+  mutate(potential_prod_one_percent_b = ProdPerCountryOnePercent * aq_mass_per_pc,
+         potential_prod_max_b = MaxProdPerCountry * aq_mass_per_pc,
+         aq_type = 'shellfish',
+         units   = 'tonnes') %>%
+  dplyr::select("rgn_id" = "ID", rgn_name, potential_prod_one_percent_b, potential_prod_max_b)
+
+pot_f <- read_csv(file.path(dir_git_ref, 'production_int/FishProdByCountrySummaryFAO.csv')) %>%
+  mutate(aq_type = 'finfish',
+         units   = 'tonnes') %>%
+  dplyr::select("rgn_id" = "ID", rgn_name, "potential_prod_one_percent_f" = "ProdPerCountryOnePercent", "potential_prod_max_f" = "MaxProdPerCountry")
+
+pot_aq_int <- full_join(pot_b, pot_f) ## makes sense. 1% of potential AREA... not 1% of potential PRODUCTION
+
+write_csv(pot_aq, file.path(dir_git_ref, 'production_int/aq_potential_int.csv')) ##intermediate file that might come in handy in the future
+
+DT::datatable(pot_aq_int)
+
+
+pot_aq_final <- pot_aq_int %>%
+  mutate(potential_prod_one_percent_b = replace_na(potential_prod_one_percent_b, 0),
+         potential_prod_one_percent_f = replace_na(potential_prod_one_percent_f, 0)) %>%
+  mutate(potential_mar_tonnes = potential_prod_one_percent_b + potential_prod_one_percent_f) %>%
+  arrange(rgn_id) %>%
+  dplyr::select(rgn_id, potential_mar_tonnes)
+
+DT::datatable(pot_aq_final)
+```
