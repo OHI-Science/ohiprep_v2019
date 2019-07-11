@@ -1,9 +1,17 @@
 ---
-title: "compare_reference"
-author: "Gage Clawson"
-date: "7/11/2019"
-output: html_document
+title: "OHI 2019: Old vs New Reference Point Methods"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+  pdf_document:
+    toc: true
 ---
+
 ```{r setup, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(eval=FALSE)
 
@@ -33,12 +41,11 @@ source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
 dir_git_ref <- file.path(here(), "globalprep/mar/v2019/reference_point")
 ```
 
-## Reference Point/ Status Comparison
+# Reference Point/ Status Comparison
 
 ```{r}
 
 # read in data
-
 scores_2019 <- read_csv(file.path(dir_git_ref, "/check/scores.csv"))
 
 mar_status_v2019 <- scores_2019 %>%
@@ -58,7 +65,8 @@ harvest_tonnes_v2019 <- read_csv("/home/sgclawson/github/ohiprep_v2019/globalpre
   #sustainability_score <-
   #  AlignDataYears(layer_nm = "mar_sustainability_score", layers_obj = layers)
 
-sustainability_score_v2019 <- read_csv("/home/sgclawson/github/ohiprep_v2019/globalprep/mar/v2019/output/mar_sustainability.csv")
+sustainability_score_v2019 <- read_csv("/home/sgclawson/github/ohiprep_v2019/globalprep/mar/v2019/output/mar_sustainability.csv") %>%
+  dplyr::select(-year)
   
 pot_aq_final <- read_csv(file.path(dir_git_ref, "/production_output/aq_potential_final.csv"))
   
@@ -67,20 +75,20 @@ mar_pop_25mi_v2019 <- read_csv(file.path("/home/sgclawson/github/ohiprep_v2019/g
 ```
 
 
-## Calculate scores the OLD WAY -- ALL WRONG...
+## Calculate scores the OLD WAY
 ```{r}
-scen_year <- 2012:2019  
 
   rky_old <-  harvest_tonnes_v2019 %>%
     dplyr::left_join(sustainability_score_v2019,
-              by = c('rgn_id', 'taxa_code', 'year')) %>%
+              by = c('rgn_id', 'taxa_code')) %>%
     dplyr::select(rgn_id, year, taxa_code, taxa_group, tonnes, sust_coeff)
+  summary(rky_old)
   
   # fill in gaps with no data
   rky_old <- tidyr::spread(rky_old, year, tonnes)
   rky_old <- tidyr::gather(rky_old, "year", "tonnes",-(1:4)) %>%
     dplyr::mutate(year = as.numeric(year))
-  
+  summary(rky_old)
   
   # adjustment for seaweeds based on protein content
   rky_old <- rky_old %>%
@@ -94,13 +102,12 @@ scen_year <- 2012:2019
     dplyr::mutate(sm_tonnes = zoo::rollapply(tonnes, 4, mean, na.rm = TRUE, partial =
                                         TRUE, align = "right")) %>%
     dplyr::ungroup()
-  
+  summary(m_old)
   
   # smoothed mariculture harvest * sustainability coefficient
   m_old <- m_old %>%
     dplyr::mutate(sust_tonnes = sust_coeff * sm_tonnes)
-  
-  
+  summary(m_old)
   # aggregate all weighted timeseries per region, and divide by coastal human population
   ry_old = m_old %>%
     dplyr::group_by(rgn_id, year) %>%
@@ -108,27 +115,18 @@ scen_year <- 2012:2019
     dplyr::left_join(mar_pop_25mi_v2019, by = c('rgn_id', 'year')) %>%
     dplyr::mutate(mar_pop = sust_tonnes_sum / popsum) %>%
     dplyr::ungroup()
-  
+  summary(ry_old)
+  tail(ry_old)
   # get reference quantile based on argument years
   
   ref_95pct_old <- quantile(ry_old$mar_pop, 0.95, na.rm = TRUE)
  
-  ## Reference Point Accounting
-    #ry_ref_old = ry_old %>%
-    #dplyr::arrange(mar_pop) %>%
-    #dplyr::filter(mar_pop >= ref_95pct_old)
-    
-     #  WriteRefPoint(
-    #goal = "MAR",
-    #method = "spatial 95th quantile",
-    #ref_pt = paste0("region id: ", ry_ref$rgn_id[1], ' value: ', ref_95pct))
-    
     
 ry_old = ry_old %>%
     dplyr::mutate(status = ifelse(mar_pop / ref_95pct_old > 1,
                            1,
                            mar_pop / ref_95pct_old)) 
-
+summary(ry_old)
 
   ## Add all other regions/countries with no mariculture production to the data table
   ## Uninhabited or low population countries that don't have mariculture, should be given a NA since they are too small to ever be able to produce and sustain a mariculture industry.
@@ -138,6 +136,7 @@ georegions <- ohicore::georegions
   all_rgns_old <- expand.grid(rgn_id = georegions$rgn_id, year = min(ry_old$year):max(ry_old$year))
   
   all_rgns_old <- all_rgns_old[!(all_rgns_old$rgn_id %in% ry_old$rgn_id),]
+  table(all_rgns_old$rgn_id)
   
   uninhabited_old <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/rgn_uninhabited_islands.csv")
   
@@ -149,26 +148,26 @@ georegions <- ohicore::georegions
     dplyr::mutate(status = 0) %>% 
     dplyr::mutate(status = ifelse(rgn_id %in% uninhabited_old$rgn_id, NA, status)) %>% 
     dplyr::bind_rows(ry_old) %>% 
-    dplyr::arrange(rgn_id)
-  
+    dplyr::arrange(rgn_id) 
+ summary(ry_all_rgns_old) 
   
   status_old <- ry_all_rgns_old %>%
-    dplyr::filter(year %in% scen_year) %>%
+    dplyr::filter(year == 2017) %>%
     dplyr::mutate(dimension = "status") %>%
     dplyr::select(region_id = rgn_id, score = status, dimension, year) %>%
     dplyr::mutate(score = round(score * 100, 2))
 
+  summary(status_old)
+
+  #in this case, 2019 in the ohi global scores we already calculated is actually 2017...
 ```
 
 
 ## Calculate scores the NEW WAY -- probably not right either
 ```{r}
-   scen_year <- c(2012:2019)
-
-  
   rky_new <-  harvest_tonnes_v2019 %>%
     dplyr::left_join(sustainability_score_v2019,
-              by = c('rgn_id', 'taxa_code', 'year')) %>%
+              by = c('rgn_id', 'taxa_code')) %>%
     dplyr::select(rgn_id, year, taxa_code, taxa_group, tonnes, sust_coeff)
   
   # fill in gaps with no data
@@ -202,29 +201,17 @@ georegions <- ohicore::georegions
     dplyr::left_join(pot_aq_final, by = c('rgn_id')) %>%
        # dplyr::mutate(mar_pop = sust_tonnes_sum / popsum) %>%
     dplyr::ungroup()
-  
-  
-    # get reference quantile based on argument years
-  
-  #ref_95pct_old <- quantile(ry_old$mar_pop, 0.95, na.rm = TRUE)
- 
-  ## Reference Point Accounting
-    #ry_ref_old = ry_old %>%
-    #dplyr::arrange(mar_pop) %>%
-    #dplyr::filter(mar_pop >= ref_95pct_old)
-    
-     #  WriteRefPoint(
-    #goal = "MAR",
-    #method = "spatial 95th quantile",
-    #ref_pt = paste0("region id: ", ry_ref$rgn_id[1], ' value: ', ref_95pct))
-  
+  summary(ry_new)
   
   ry_new = ry_new %>%
     dplyr::mutate(status = ifelse(sust_tonnes_sum / potential_mar_tonnes  > 1,
                            1,
-                           sust_tonnes_sum / potential_mar_tonnes))
+                           sust_tonnes_sum / potential_mar_tonnes)) %>%
+    dplyr::mutate(status = ifelse(is.na(status),
+                                  0,
+                                  status)) ## correct for R making 0/0 = NA. 
   
-  
+ summary(ry_new) 
   
   
   ## Add all other regions/countries with no mariculture production to the data table
@@ -247,13 +234,22 @@ georegions <- ohicore::georegions
     dplyr::mutate(status = ifelse(rgn_id %in% uninhabited$rgn_id, NA, status)) %>% 
     dplyr::bind_rows(ry_new) %>% 
     dplyr::arrange(rgn_id)
-  
+  summary(ry_all_rgns_new)
   
   status_new <- ry_all_rgns_new %>%
-    dplyr::filter(year %in% scen_year) %>%
+    dplyr::filter(year == 2017) %>%
     dplyr::mutate(dimension = "status") %>%
     dplyr::select(region_id = rgn_id, score = status, dimension, year) %>%
     dplyr::mutate(score = round(score * 100, 2))
 
 ```
+
+## Compare New and Old Scores
+
+```{r}
+plot(status_new$score, status_old$score)
+
+
+```
+
 
