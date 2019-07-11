@@ -160,6 +160,8 @@ georegions <- ohicore::georegions
   summary(status_old)
 
   #in this case, 2019 in the ohi global scores we already calculated is actually 2017...
+  
+  write_csv(status_old, file.path(dir_git_ref, "/check/status_old_ref.csv"))
 ```
 
 
@@ -242,14 +244,45 @@ georegions <- ohicore::georegions
     dplyr::select(region_id = rgn_id, score = status, dimension, year) %>%
     dplyr::mutate(score = round(score * 100, 2))
 
+  write_csv(status_new, file.path(dir_git_ref, "/check/status_new_ref.csv"))
 ```
 
 ## Compare New and Old Scores
 
-```{r}
-plot(status_new$score, status_old$score)
+```{r, eval = TRUE, warning = FALSE}
+status_new <- read_csv(file.path(dir_git_ref, "/check/status_new_ref.csv"))
+status_old <- read_csv(file.path(dir_git_ref, "/check/status_old_ref.csv"))
 
+compare <- status_old %>%
+  full_join(status_new, by = "region_id") %>%
+  rename(old_score = score.x, new_score = score.y)
 
+compare_stats <- compare %>%
+  mutate(score_diff = old_score - new_score) %>%
+  mutate(score_diff_abs = abs(score_diff))
+
+sum(compare_stats$score_diff > 0, na.rm = TRUE) # 81 scores got better
+sum(compare_stats$score_diff < 0, na.rm = TRUE) # 25 scores got worse 
+sum(compare_stats$score_diff == 0 & (compare_stats$new_score != 0|compare_stats$old_score != 0), na.rm = TRUE) # 3 scores didn't change that were not already 0
+sum(compare_stats$score_diff == 0 & (compare_stats$new_score == 0|compare_stats$old_score == 0), na.rm = TRUE)# 91 scores didn't change that were already 0. 
+sum(is.na(compare_stats$score_diff)) # 20 NAs
+mean(compare_stats$score_diff > 0, na.rm = TRUE)
+mean(compare_stats$score_diff < 0, na.rm = TRUE)
 ```
+
+```{r, eval=TRUE}
+library(plotly)
+library(ggplot2)
+p <- ggplot(compare, aes(x=old_score, y=new_score)) +
+  geom_point(aes(text = paste0("rgn = ", region_id)), shape=19) +
+  geom_abline(slope=1, intercept=0) +
+  theme_bw()
+
+#ggsave(file.path(dir_git_ref, "/check/compare_reference_graph.png"), p)
+
+plotly_fig <- plotly::ggplotly(p)
+plotly_fig
+```
+
 
 
