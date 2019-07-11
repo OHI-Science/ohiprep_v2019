@@ -111,8 +111,5 @@ empd_rgn <- name_2_rgn(df_in = empd,
 ### write csvs to github in intermediate location.
 # v2018: write_csv(empd_rgn, 'intermediate/wttc_empd_rgn.csv')
 # alternate: write_csv(empd_rgn, here('globalprep/tr/v2019/intermediate/wttc_empd_rgn.csv'))
-write_csv(empd_rgn, file.path(dir_github, sprintf("intermediate/wttc_empd_rgn.csv")))
+write_csv(empd_rgn, file.path(dir_github, "intermediate/wttc_empd_rgn.csv"))
 
-
-##### v2019: changed this filepath to match the current working directory 
-### using here(), but need to switch to programatic method for future use

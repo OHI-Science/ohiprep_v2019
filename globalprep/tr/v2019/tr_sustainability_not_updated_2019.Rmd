@@ -1,0 +1,407 @@
+---
+title: 'OHI 2019 - Tourism and Recreation '
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2017/tr_dataprep.html]
+
+###### need to update this link, not working ^^
+
+# Summary
+This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2018 global assessment.
+
+The general calculation is:
+tr = Ep * Sr * Tw
+and
+Xtr = tr/90th quantile across regions
+
+* Ep = Proportion of workforce directly employed in tourism
+* Sr = (S-1)/5; Sustainability of tourism
+* Tw = A penalty applied to regions with travel warnings from the US State Department (or Canada's Government Travel Advise and Advisory)
+
+The following data are used:
+
+* Tourism sustainability: Travel and Tourism Competitiveness Index (TTCI) from World Economic Forum (WEF)
+* Proportion of workforce directly employed in tourism: World Travel & Tourism Council ([WTTC](https://www.wttc.org/datagateway))
+* Travel warnings: (U.S. State Department)
+* Per capita GDP: (World Bank with gaps filled using CIA data), used to gapfill missing values in Tourism sustainability
+
+# Updates from previous assessment
+In 2017 we discovered that the WEF-Economics Global Competitiveness Index data used to estimate sustainability is not compatible across years.  New methods are used each year and previous year's of data are not recalculated using the updated methods. Consequently, we use the most recent data for all scenario years.
+
+Travel Warning data form the U.S State department has updated the way data is reported. This year all countries have a travel warning that ranges from level 1 (normal precautions) to level 4 (do not travel). Within each general warning for a country there are regional warnings that are obtain by clicking in each country.
+In past assessment we identified subregional warnings and modified the penalty based on this information. This year, because the new way of reporting the data, we will no longer apply this method. We eliminated the "subregion" information/penalties and modified past data to be consistent with our new approach. Future data should be collected without including this information. More information on how to obtain the data in the travel_warning section (scroll down).
+
+
+The TTCI data is available to download in an excel file directly from the source. File was download on 07/12/2018 and saved in Mazu as a csv. No changes in data.
+
+We were able to update the following data:
+* Tourism Sustainability - TTCI form WEF - No updates
+* Proportion of jobs in tourism - WTTC data reported until 2017 and unclear if 2018 is actual data or prediction so we used 2017 as the data_year (downloaded: 07/08/2019)
+**** should we be using 2018 as the most recent data year? e.g. should this be standard practice? *****
+* Travel warnings for 2018 (downloaded: U.S State Department 07/02/2019)
+
+
+
+# Initial set-up code
+
+```{r setup, message=FALSE, warning=FALSE}
+
+#library(devtools)
+#devtools::install_github("ohi-science/ohicore@dev")
+library(ohicore)
+library(tidyverse)
+library(stringr)
+library(WDI)
+library(here)
+
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R')
+
+## maximum year of wttc data:
+year_max <- 2019
+
+source(here("globalprep/tr/v2019/R/tr_fxns.R"))
+
+
+```
+
+# Ts: Tourism sustainability
+
+These data are from the World Economic Forum's "Travel and Tourism Competitiveness Report" (http://reports.weforum.org/travel-and-tourism-competitiveness-report-2017/downloads/) See mazu: _raw_data/WEF-Economics/ for more details and the raw data.
+
+These data are not compatible across years, so only the most recent year of data is across scenarios.
+
+These data are gapfilled using gdppcppp and UN georegion information (see next section for obtaining and preparing these data).
+
+v2019: Skipping over this part as the WEC hasn't updated the data for 2019 yet. 
+### put this in a different R markdown for just sustainability data (since it won't be updated every year)
+```{r WEF processing, eval=FALSE}
+
+# read in files
+ttci_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WEF-Economics/d2018/WEF_TTCR17_data_for_download.csv")) %>%
+  dplyr::filter(row_number() %in% c(2,598)) %>% #Identified rows and colums of interest
+  dplyr::select(11:156) %>% 
+  t() %>%
+  data.frame() %>% 
+  remove_rownames() %>%
+  rename(country = "X1", score= "X2") %>% 
+  mutate(score = as.numeric(as.character(score))) %>% 
+  mutate(country = as.character(country))
+  
+#Checking the imported data is the same than in 2017! 
+ttci_v2017 <-read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WEF-Economics/d2017/wef_ttci.csv")) %>% 
+  rename(score_old= score) %>%
+  arrange(country) %>% 
+  left_join(ttci_raw)
+
+plot(ttci_v2017$score, ttci_v2017$score_old)
+abline(0,1, col="red") #Yes! This means data has not been updated. The only difference is that now we are importing the raw data from an excel file instead of a pdf
+
+
+#Changing names that are not recognized by ohicore
+ttci <- ttci_raw %>%
+    mutate(country = ifelse(country == "Congo, Democratic Rep.", "Democratic Republic of the Congo", country)) %>%
+    mutate(country = ifelse(str_detect(country, "Ivoire"), "Ivory Coast", country))
+  
+  
+ttci_rgn <- name_2_rgn(df_in = ttci, 
+                       fld_name='country')
+
+##Duplicated regions weighted mean
+weight_data <- data.frame(country = c("China", "Hong Kong SAR"),
+                          population = c(1379000000, 7347000))
+
+ttci_rgn <- ttci_rgn %>%
+  arrange(country) %>%
+  left_join(weight_data, by = "country") %>%
+  mutate(population = ifelse(is.na(population), 1, population)) %>%
+  group_by(rgn_id, rgn_name) %>%
+  summarize(score = weighted.mean(score, population)) %>%
+  select(rgn_id, rgn_name, score)
+
+head(ttci_rgn, 10)
+
+### Save TTCI data file
+write_csv(ttci_rgn, 'intermediate/wef_ttci.csv')
+
+```
+
+## Preparing the gdppcppp data:
+These data are used to gapfill missing values in tourism sustainability.  Most of the data are from the World Bank, but CIA data fill some gaps (CIA data is available for only the most recent year).
+
+The Artisanal Opportunities goal uses gdppcppp data, so we will get the data that was processed for that goal. (NOTE: Update the Artisanal Opportunities goal prior to preparing these data)
+
+
+```{r worldbank, eval=FALSE}
+wb <- read.csv("../../ao/v2018/intermediate/gdppcppp_ohi.csv") %>%
+  dplyr::select(rgn_id, year, value)
+
+```
+
+CIA data are used to fill in missing gaps in the gdppcppp data (https://www.cia.gov/library/publications/the-world-factbook/rankorder/2004rank.html)
+
+Downloaded: 7/16/2018
+
+See README on the raw forlder for instructions on how to download this data. 
+Note: for next year assesment, evaluate the option of scraping directly from the source website.
+
+The following code is used to prepare these data for OHI:
+
+```{r cia gdp, eval=FALSE}
+
+cia_gdp <- read.csv('raw/cia_gdp_pc_ppp.csv', stringsAsFactors = FALSE, header = FALSE) %>% 
+  separate(V1, c("number", "other"), sep = " ", extra = "merge") %>% 
+  separate(other, c("country", "gdppcppp"), sep = "\\$") %>%
+  mutate(country = str_trim(country, side = "both")) %>% 
+  mutate(country = noquote(country)) %>% 
+  mutate(country = as.character(country)) %>% 
+  mutate(gdppcppp = as.numeric(gsub(",", "", gdppcppp))) %>% 
+  select(-number) %>% 
+  data.frame()
+
+##Data reported in a lower resolution than OHI regions
+splits <- data.frame(country = "Saint Helena, Ascension, and Tristan da Cunha", country2 = c("Saint Helena",                                                                "Ascension","Tristan da Cunha")) %>%
+  mutate(country = as.character(country),
+         country2 = as.character(country2))
+
+cia_gdp <- cia_gdp %>%
+  left_join(splits, by='country') %>%
+  mutate(country2 = ifelse(is.na(country2), country, country2)) %>%
+  select(country=country2, pcgdp_cia = gdppcppp)
+
+
+cia_gdp_rgn <- name_2_rgn(df_in = cia_gdp, 
+                       fld_name='country')
+
+### Duplicated regions: Collapse regions after weighting by population (regions we include as a single region) - 
+
+population_weights <- data.frame(country = c("Virgin Islands", "Puerto Rico",
+                                             "China", "Hong Kong", "Macau",
+                                             "Guam", "Northern Mariana Islands"),
+                                 population = c(106405, 3725789,
+                                         1339724852, 7071576, 636200,
+                                         162896, 55023))
+
+cia_gdp_rgn <- cia_gdp_rgn %>%
+  left_join(population_weights, by="country") %>%
+  mutate(population = ifelse(is.na(population), 1, population)) %>%
+  group_by(rgn_id) %>%
+  summarize(pcgdp_cia = weighted.mean(pcgdp_cia, population)) %>%
+  ungroup() %>%
+  filter(rgn_id <= 250) %>%
+  select(rgn_id, pcgdp_cia)
+
+write.csv(cia_gdp_rgn, "intermediate/wb_rgn_cia_GDPPCPPP.csv", row.names=FALSE)
+
+```
+
+The following code combines the two gdp datasets and gapfills missing regions using UN georegions.
+
+If there is no World Bank gdppcppp data (pcgdp), the CIA data is used (pcgdp_cia).  The pcgdp2 variable includes both the World Bank and CIA data (with CIA data only used if there is not World Bank data).  The remaining data are estimated using UN geopolitical regions.  Ideally, the mean gdppcppp value is calculated at the r2 scale (gdp_pred_r2) using regions within each class with gdppcppp data.  If there were not enough regions with data at the r2 scale, the average at the r1 scale was used (gdp_pred_r1). The gdp_all variable combines all estimates using the following heirarchy:  World Bank -> CIA -> estimated using mean from r2 UN geopolitical regions -> estimated using mean from r1 UN geopolitical regions.    
+
+```{r gapfill gdp, eval=FALSE}
+
+### world bank gdp data
+gdppcppp <- wb %>%
+  select(rgn_id, year, pcgdp = value)
+
+### cia gdp data
+gdppcppp2 <- read.csv('intermediate/wb_rgn_cia_GDPPCPPP.csv')
+
+
+### Use WB data, but if missing, use pcgdp_cia.
+### combine with UN georegion data
+years <- data.frame(year = min(gdppcppp$year):max(gdppcppp$year))
+
+georegions <- ohicore::georegions
+
+regions <- georegions %>%
+  left_join(georegion_labels, by = 'rgn_id')
+
+gdp_raw <- merge(years, regions, by=NULL) %>%
+   left_join(gdppcppp, by = c('rgn_id', 'year')) %>%
+  left_join(gdppcppp2, by = c("rgn_id")) 
+
+## quick compare to make sure the CIA and World Bank data are compatible
+plot(gdp_raw$pcgdp[gdp_raw$year==2017], gdp_raw$pcgdp_cia[gdp_raw$year==2017])
+abline(0,1, col="red")
+# a bit of scatter for a few regions, but overall looks good
+
+gdp_raw <- gdp_raw %>%
+  mutate(pcgdp2 = ifelse(is.na(pcgdp), pcgdp_cia, pcgdp))
+
+##Calculating the means across different geopolitical levels (e.g. r2, r1)
+gdp_raw <- gdp_raw %>%
+  group_by(r2, year) %>%
+  mutate(gdp_pred_r2 = mean(pcgdp2, na.rm=TRUE)) %>%
+  ungroup() %>%
+  group_by(r1, year) %>%
+  mutate(gdp_pred_r1 = mean(pcgdp2, na.rm=TRUE)) %>%
+  ungroup() 
+
+gdp_raw_gf <- gdp_raw %>%
+  mutate(gdp_all = ifelse(is.na(pcgdp2), gdp_pred_r2, pcgdp2)) %>%
+  mutate(gdp_all = ifelse(is.na(gdp_all), gdp_pred_r1, gdp_all)) %>%
+  mutate(gapfilled = ifelse(is.na(pcgdp2) & !is.na(gdp_all), "gapfilled", NA)) %>%
+  mutate(method = ifelse(is.na(pcgdp2) & !is.na(gdp_pred_r2), "UN georegion (r2)", NA)) %>%
+  mutate(method = ifelse(is.na(pcgdp2) & is.na(gdp_pred_r2) & !is.na(gdp_pred_r1), "UN georegion (r1)", method)) 
+
+write_csv(gdp_raw_gf, "intermediate/gdp_raw_gf.csv")
+
+gdp_data_gf <- gdp_raw_gf %>%
+  select(rgn_id, year, gapfilled, method) 
+
+write_csv(gdp_data_gf, "intermediate/gdp_gf.csv")
+
+gdp_data <- gdp_raw_gf %>%
+  select(rgn_id, year, pcgdp = gdp_all)
+
+write_csv(gdp_data, "intermediate/gdp.csv")
+
+```
+
+
+The final step is gapfilling the Sustainability data using a linear model with gdppcppp and UN geopolitical regions as predictor variables.  
+
+```{r, eval=FALSE}
+
+sust  <- read.csv('intermediate/wef_ttci.csv', stringsAsFactors = FALSE)
+
+### don't need to gapfill data without tourism data:
+## Most recent tourism data is 2018.  
+
+ep_gf <- read.csv("output/tr_jobs_pct_tourism.csv") %>%
+  filter(year == 2017) %>%
+  select(rgn_id, Ep) %>%
+  filter(!is.na(Ep))
+
+# gdp dataframe prepared above (World Bank, CIA, and gapfilled gdp data)
+gdp_raw_gf <- read.csv("intermediate/gdp_raw_gf.csv", stringsAsFactors = FALSE) %>% 
+  filter(year == 2017) %>%
+  select(rgn_id, r0_label, r1_label, r2_label, rgn_label, pcgdp, pcgdp_cia, pcgdp2, gdp_all) 
+
+tr_sust <- gdp_raw_gf %>%
+           left_join(sust, by = c("rgn_id")) %>%
+          left_join(ep_gf, by = c("rgn_id")) %>%  
+          rename(S_score = score) %>%
+          filter(rgn_id != 213)
+
+### Add gapfill flag variable 
+##Reminder:
+## pcgdp2: includes both the World Bank and CIA data (with CIA data only used if there is not World Bank data)
+## Ep: Proportion of workforce directly employed in tourism
+##S_score: tourism sustainability score
+
+tr_sust_gf <- tr_sust %>%
+  mutate(gapfilled = ifelse(is.na(S_score) & !is.na(Ep), "gapfilled", NA)) %>%
+  mutate(method = ifelse(is.na(S_score) & !is.na(Ep) & is.na(pcgdp2), "lm georegion + gdppcppp, with est. gdppcppp", NA)) %>%
+  mutate(method = ifelse(is.na(S_score) & !is.na(Ep) & !is.na(pcgdp2), "lm georegion + gdppcppp", method)) %>%
+  select(rgn_id, gapfilled, method)
+
+write.csv(tr_sust_gf, "output/tr_sustainability_gf.csv", row.names=FALSE)
+
+```
+  
+
+### Gapfilling
+Linear models using gdppcppp and UN geopolitical regions as predictor variables. However if there is no gdppc data we estimate the gdppc using the UN georegions and then used in the linear model to gapfill the sustainability score.
+
+```{r, eval=FALSE}
+
+### Gapfill S using r1 and/or r2 regional data and PPP-adjusted per-capita GDP
+### Looked at models with a year variable, but wasn't significant and decided to exclude
+
+mod3 <- lm(S_score ~ as.factor(r2_label) + gdp_all, data=tr_sust, na.action = na.exclude)
+summary(mod3)
+anova(mod3)
+
+mod4 <- lm(S_score ~ as.factor(r1_label) + gdp_all, data=tr_sust, na.action = na.exclude)
+summary(mod4)
+anova(mod4)
+
+plot(predict(mod3), tr_sust$S_score)
+abline(0,1)
+plot(predict(mod4), tr_sust$S_score)
+abline(0,1)
+
+
+## Estimate missing data and gapfill
+# Some of the r1 levels do not have data and consequently causes a fail. This chink of code  drop these levels so an NA is returned
+
+# Select only r2 column
+new_data <- tr_sust %>% 
+  dplyr::select(r2_label, gdp_all)
+
+unique(tr_sust$r2_label)
+
+r2_w_data <- unique(tr_sust$r2_label[!is.na(tr_sust$S_score)])
+  
+new_data_r2 <- new_data %>%
+  mutate(r2_label = ifelse(r2_label %in% r2_w_data, r2_label, NA))
+
+# Predict sustainability scores using linear model 3 (using r2 data)
+tr_sust <- tr_sust %>% 
+  dplyr::mutate(S_score_pred_r2 = predict(mod3, newdata = new_data_r2))
+
+
+# Select only r1 column
+new_data <- tr_sust %>% 
+  dplyr::select(r1_label, gdp_all)
+
+unique(tr_sust$r1_label)
+
+r1_w_data <- unique(tr_sust$r1_label[!is.na(tr_sust$S_score)])
+
+new_data_r1 <- new_data %>%
+  mutate(r1_label = ifelse(r1_label %in% r1_w_data, r1_label, NA))
+
+# Predict sustainability scores using linear model 4 (using r1 data)
+tr_sust <- tr_sust %>% 
+  dplyr::mutate(S_score_pred_r1 = predict(mod4, newdata = new_data_r1))
+
+
+
+## some are missing the r1 predictions, but none of these have Ep scores, so not relevant
+filter(tr_sust, is.na(S_score_pred_r1))
+
+tr_sust <- tr_sust %>%
+  mutate(S_score_2 = ifelse(is.na(S_score), S_score_pred_r2, S_score)) %>%
+  mutate(S_score_2 = ifelse(is.na(S_score_2), S_score_pred_r1, S_score_2)) %>%
+  mutate(year = '2018') %>%
+#  filter(!is.na(Ep)) %>%
+  select(rgn_id, year, S_score=S_score_2)
+
+summary(tr_sust)
+
+write_csv(tr_sust, "output/tr_sustainability.csv")
+```
+
+
+## Compare with previous year of data 
+
+```{r, eval=FALSE}
+
+compare <- read.csv("../v2017/output/tr_sustainability.csv") %>% # change year
+  select(rgn_id, old_S_score = S_score) %>%
+  left_join(tr_sust, by = "rgn_id") %>%
+  mutate(dif = old_S_score - S_score)
+
+plot(compare$S_score, compare$old_S_score)
+abline(0, 1, col="red")
+#looks reasonable 
+
+```
+
