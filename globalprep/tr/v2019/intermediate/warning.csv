@@ -1,0 +1,234 @@
+year,country,multiplier
+2019,Afghanistan,0
+2019,Albania,1
+2019,Algeria,1
+2019,American Samoa,1
+2019,Andorra,1
+2019,Angola,1
+2019,Anguilla,1
+2019,Antarctica,1
+2019,Antigua and Barbuda,1
+2019,Argentina,1
+2019,Armenia,1
+2019,Aruba,1
+2019,Australia,1
+2019,Austria,1
+2019,Azerbaijan,1
+2019,Azores,1
+2019,Bahrain,1
+2019,Bangladesh,1
+2019,Barbados,1
+2019,Belarus,1
+2019,Belgium,1
+2019,Belize,1
+2019,Benin,1
+2019,Bermuda,1
+2019,Bhutan,1
+2019,Bolivia,1
+2019,Bonaire,1
+2019,Bosnia and Herzegovina,1
+2019,Botswana,1
+2019,Brazil,1
+2019,British Virgin Islands,1
+2019,Brunei,1
+2019,Bulgaria,1
+2019,Burkina Faso,0.25
+2019,Burundi,0.25
+2019,Cabo Verde,1
+2019,Cambodia,1
+2019,Cameroon,1
+2019,Canada,1
+2019,Canary Islands,1
+2019,Cayman Islands,1
+2019,Central African Republic,0
+2019,Chad,0.25
+2019,Chile,1
+2019,China,1
+2019,Colombia,1
+2019,Comoros,1
+2019,Cook Islands,1
+2019,Costa Rica,1
+2019,Cote d'Ivoire,1
+2019,Croatia,1
+2019,Cuba,1
+2019,Curacao,1
+2019,Cyprus,1
+2019,Czech Republic,1
+2019,Democratic Republic of the Congo,0.25
+2019,Denmark,1
+2019,Djibouti,1
+2019,Dominica,1
+2019,Dominican Republic,1
+2019,Ecuador,1
+2019,Egypt,1
+2019,El Salvador,0.25
+2019,Equatorial Guinea,1
+2019,Eritrea,1
+2019,Estonia,1
+2019,Eswatini,1
+2019,Ethiopia,1
+2019,Falkland Islands,1
+2019,Fiji,1
+2019,Finland,1
+2019,France,1
+2019,French Guiana,1
+2019,French Polynesia,1
+2019,Gabon,1
+2019,Georgia,1
+2019,Germany,1
+2019,Ghana,1
+2019,Gibraltar,1
+2019,Greece,1
+2019,Greenland,1
+2019,Grenada,1
+2019,Guadeloupe and Martinique,1
+2019,Guatemala,1
+2019,Guinea,1
+2019,Guinea-Bissau,0.25
+2019,Guyana,1
+2019,Haiti,0.25
+2019,Honduras,0.25
+2019,Hong Kong,1
+2019,Hungary,1
+2019,Iceland,1
+2019,India,1
+2019,Indonesia,1
+2019,Iran,0
+2019,Iraq,0
+2019,Ireland,1
+2019,Israel,1
+2019,Italy,1
+2019,Jamaica,1
+2019,Japan,1
+2019,Jordan,1
+2019,Kazakhstan,1
+2019,Kenya,1
+2019,Kiribati,1
+2019,Kosovo,1
+2019,Kuwait,1
+2019,Kyrgyzstan,1
+2019,Laos,1
+2019,Latvia,1
+2019,Lebanon,0.25
+2019,Lesotho,1
+2019,Liberia,1
+2019,Libya,0
+2019,Liechtenstein,1
+2019,Line Group,1
+2019,Lithuania,1
+2019,Luxembourg,1
+2019,Macau,1
+2019,Madagascar,1
+2019,Malawi,1
+2019,Malaysia,1
+2019,Maldives,1
+2019,Mali,0
+2019,Malta,1
+2019,Marshall Islands,1
+2019,Mauritania,0.25
+2019,Mauritius,1
+2019,Mayotte,1
+2019,Mexico,1
+2019,Micronesia,1
+2019,Moldova,1
+2019,Monaco,1
+2019,Mongolia,1
+2019,Montenegro,1
+2019,Montserrat,1
+2019,Morocco,1
+2019,Mozambique,1
+2019,Myanmar,1
+2019,Namibia,1
+2019,Nauru,1
+2019,Nepal,1
+2019,Netherlands,1
+2019,New Caledonia,1
+2019,New Zealand,1
+2019,Nicaragua,0.25
+2019,Niger,0.25
+2019,Nigeria,0.25
+2019,Niue,1
+2019,North Korea,0
+2019,North Macedonia,1
+2019,Northern Mariana Islands and Guam,1
+2019,Northern Saint-Martin,1
+2019,Norway,1
+2019,Oman,1
+2019,Pakistan,0.25
+2019,Palau,1
+2019,Panama,1
+2019,Papua New Guinea,1
+2019,Paraguay,1
+2019,Peru,1
+2019,Philippines,1
+2019,Phoenix Group,1
+2019,Poland,1
+2019,Portugal,1
+2019,Puerto Rico and Virgin Islands of the United States,1
+2019,Qatar,1
+2019,Republique du Congo,1
+2019,Reunion,1
+2019,Romania,1
+2019,Russia,1
+2019,Rwanda,1
+2019,Saba,1
+2019,Saint Kitts and Nevis,1
+2019,Saint Lucia,1
+2019,Saint Pierre and Miquelon,1
+2019,Saint Vincent and the Grenadines,1
+2019,Saint-Barth<e9>lemy,1
+2019,Samoa,1
+2019,San Marino,1
+2019,Sao Tome and Principe,1
+2019,Saudi Arabia,1
+2019,Senegal,1
+2019,Serbia,1
+2019,Seychelles,1
+2019,Sierra Leone,1
+2019,Singapore,1
+2019,Sint Eustatius,1
+2019,Sint Maarten,1
+2019,Slovakia,1
+2019,Slovenia,1
+2019,Solomon Islands,1
+2019,Somalia,0
+2019,South Africa,1
+2019,South Korea,1
+2019,South Sudan,0
+2019,Spain,1
+2019,Sri Lanka,1
+2019,Sudan,0
+2019,Suriname,1
+2019,Sweden,1
+2019,Switzerland,1
+2019,Syria,0
+2019,Taiwan,1
+2019,Tajikistan,1
+2019,Tanzania,1
+2019,Thailand,1
+2019,The Bahamas,1
+2019,The Gambia,1
+2019,The Kyrgyz Republic,1
+2019,Timor-Leste,1
+2019,Togo,1
+2019,Tokelau,1
+2019,Tonga,1
+2019,Trinidad and Tobago,1
+2019,Tunisia,1
+2019,Turkey,0.25
+2019,Turkmenistan,1
+2019,Turks and Caicos Islands,1
+2019,Tuvalu,1
+2019,Uganda,1
+2019,Ukraine,1
+2019,United Arab Emirates,1
+2019,United Kingdom,1
+2019,United States,1
+2019,Uruguay,1
+2019,Uzbekistan,1
+2019,Vanuatu,1
+2019,Venezuela,0
+2019,Vietnam,1
+2019,Yemen,0
+2019,Zambia,1
+2019,Zimbabwe,1
