@@ -30,7 +30,7 @@ setwd(here::here("globalprep","prs_fish","v2019"))
 
 source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R")
 
-rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/test_IMAS/d2019")
+rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandingsv4/d2019")
 rastFolder <- paste0(dir_M,"/git-annex/globalprep/prs_fish/v2019/int/")
 
 ```
@@ -93,9 +93,16 @@ ind_plot <- master_compare_gather %>%
   ggplot(aes(x = Year, y = catch, color = type)) +
   geom_line() +
   facet_wrap(~version) +
-  theme_classic()
+  theme_classic() +
+  labs(x = "Year", y = "Landings", title = "Global Fisheries Landings") +
+  scale_color_discrete(name = "", labels = c("Commericial", "Artisanal", "Combined"))
 ind_plot
 
 ggplotly(ind_plot)
+
+sum(master_compare_gather$catch[master_compare_gather$version == "v3" & master_compare_gather$type == "overall"]) #v3 total landings = 677930536
+sum(master_compare_gather$catch[master_compare_gather$version == "v4" & master_compare_gather$type == "overall"]) #v4 total landings = 588168717
+# v3 has 89761819 more landings (IUU and Reported) than v4
+
 ```
 

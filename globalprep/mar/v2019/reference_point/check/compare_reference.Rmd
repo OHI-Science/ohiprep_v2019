@@ -331,7 +331,12 @@ library(knitr)
   #pretty table
   print(kable(less_100000))
 
-
+  status_new_check <- ry_all_rgns_new %>%
+    dplyr::filter(year == 2017) %>%
+    dplyr::mutate(dimension = "status") %>%
+    dplyr::select(region_id = rgn_id, sust_tonnes_sum, potential_mar_tonnes, score = status, dimension, year) %>%
+    dplyr::mutate(score = round(score * 100, 2)) %>% 
+    filter(score == 100, potential_mar_tonnes == 0)
 ```
 
 
