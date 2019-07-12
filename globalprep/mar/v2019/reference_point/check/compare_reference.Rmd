@@ -250,27 +250,45 @@ georegions <- ohicore::georegions
 ## Compare New and Old Scores
 
 ```{r, eval = TRUE, warning = FALSE}
-status_new <- read_csv(file.path(dir_git_ref, "/check/status_new_ref.csv"))
-status_old <- read_csv(file.path(dir_git_ref, "/check/status_old_ref.csv"))
+status_new <- read_csv(file.path(dir_git_ref, "/check/status_new_ref.csv")) %>%
+  left_join(rgns_eez, by = c("region_id" = "rgn_id")) %>%
+  select(region_id:rgn_name)
+status_old <- read_csv(file.path(dir_git_ref, "/check/status_old_ref.csv")) %>%
+  left_join(rgns_eez, by = c("region_id" = "rgn_id")) %>%
+  select(region_id:rgn_name)
 
 compare <- status_old %>%
-  full_join(status_new, by = "region_id") %>%
+  full_join(status_new, by = c("region_id", "rgn_name")) %>%
   rename(old_score = score.x, new_score = score.y)
 
 compare_stats <- compare %>%
   mutate(score_diff = old_score - new_score) %>%
-  mutate(score_diff_abs = abs(score_diff))
+  mutate(score_diff_abs = abs(score_diff)) %>%
+  select(-dimension.x, -dimension.y, -year.x, -year.y)
 
-sum(compare_stats$score_diff > 0, na.rm = TRUE) # 81 scores got better
-sum(compare_stats$score_diff < 0, na.rm = TRUE) # 25 scores got worse 
+sum(compare_stats$score_diff > 0, na.rm = TRUE) # 81 scores got worse
+sum(compare_stats$score_diff < 0, na.rm = TRUE) # 25 scores got better 
 sum(compare_stats$score_diff == 0 & (compare_stats$new_score != 0|compare_stats$old_score != 0), na.rm = TRUE) # 3 scores didn't change that were not already 0
 sum(compare_stats$score_diff == 0 & (compare_stats$new_score == 0|compare_stats$old_score == 0), na.rm = TRUE)# 91 scores didn't change that were already 0. 
 sum(is.na(compare_stats$score_diff)) # 20 NAs
 mean(compare_stats$score_diff > 0, na.rm = TRUE)
 mean(compare_stats$score_diff < 0, na.rm = TRUE)
+
+
+top_10_old <- status_old %>%
+  arrange(-score) %>%
+  select(region_id, rgn_name, score)
+DT::datatable(top_10_old)
+
+top_10_new <- status_new %>%
+  arrange(-score) %>%
+  select(region_id, rgn_name, score)
+DT::datatable(top_10_new)
 ```
 
 ```{r, eval=TRUE}
+##explore the aquaculture data
+
 library(plotly)
 library(ggplot2)
 p <- ggplot(compare, aes(x=old_score, y=new_score)) +
@@ -282,6 +300,38 @@ p <- ggplot(compare, aes(x=old_score, y=new_score)) +
 
 plotly_fig <- plotly::ggplotly(p)
 plotly_fig
+
+
+bw <- 2 * IQR(pot_aq_final$potential_mar_tonnes) / length(pot_aq_final$potential_mar_tonnes)^(1/3)
+
+ggplot(pot_aq_final, aes(x = potential_mar_tonnes)) +
+  geom_histogram(binwidth = bw) +
+  theme_bw() +
+  scale_x_continuous(expand = c(0,0), breaks = seq(0, 40000000, by  = 2500000)) +
+  scale_y_continuous(expand = c(0,0)) +
+  theme(axis.text.x = element_text(angle = -45, hjust = 1))
+
+ggplot(filter(pot_aq_final, potential_mar_tonnes <= 100000), aes(x = potential_mar_tonnes)) +
+  geom_histogram() +
+  theme_bw() +
+  scale_x_continuous(breaks = seq(0, 100000, by  = 5000)) +
+  theme(axis.text.x = element_text(angle = -45, hjust = 1))
+
+summary(pot_aq_final)
+
+less_100000 <- pot_aq_final %>%
+  filter(potential_mar_tonnes <= 100000) %>%
+  left_join(rgns_eez, by = "rgn_id") %>%
+  select(rgn_id, rgn_name, potential_mar_tonnes) %>%
+  arrange(-potential_mar_tonnes)
+
+
+
+library(knitr)
+  #pretty table
+  print(kable(less_100000))
+
+
 ```
 
 
