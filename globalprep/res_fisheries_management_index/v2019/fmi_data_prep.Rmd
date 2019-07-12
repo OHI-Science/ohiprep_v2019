@@ -1,0 +1,55 @@
+---
+title: 'OHI 2019 - Fisheries Management Index (Resilience)'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+# Summary
+This document describes the steps for obtaining and wrangling the data used to calculate the fisheries management index resilience layer for the 2019 global assessment.
+
+The following data are used:
+
+* [Fisheries Management Index](https://oursharedseas.com/2019-update/fisheries/#highchart-fisheries-fmindex)
+
+**Date retreived:** 12 July 2019
+
+**Method:** Data are not accessible in csv format from website, so points were manually entered into excel and saved as a csv (found in v2019/raw)
+
+# Updates from previous assessment
+These data have not been updated since 2013
+
+
+
+# Initial set-up code
+
+```{r setup, message=FALSE, warning=FALSE}
+
+#library(devtools)
+#devtools::install_github("ohi-science/ohicore@dev")
+library(ohicore)
+library(tidyverse)
+library(stringr)
+library(WDI)
+library(here)
+library(janitor)
+library(plotly)
+
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R')
+
+
+
+
+```
+
