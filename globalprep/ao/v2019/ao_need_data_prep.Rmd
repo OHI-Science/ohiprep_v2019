@@ -360,7 +360,7 @@ ggplotly(ggplot(compare, aes(x = value, y = old_value, labels = rgn_id)) +
 
 
 
-####### Investigating outlier
+####### Investigating outlier (v2019)
 old_220 <- old_gdppcppp %>% 
   filter(rgn_id == 220) 
 
