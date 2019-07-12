@@ -63,7 +63,7 @@ setwd(here::here("globalprep","prs_fish","v2019"))
 
 source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R")
 
-rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/test_IMAS/d2019")
+rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandingsv4/d2019")
 rastFolder <- paste0(dir_M,"/git-annex/globalprep/prs_fish/v2019/int/")
 
 ```
@@ -119,7 +119,8 @@ DT::datatable(head(spatialCells))
 data <- readRDS(file.path(rawFolder,"CatchInd1950_1954.rds"))
 DT::datatable(head(data))
 
-#data_ly <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018", "CatchInd_1950_1954.rds"))
+data_ly <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018", "CatchInd_1950_1954.rds"))
+DT::datatable(head(data_ly))
 ```
 
 Test to see whether the values for **IndReported**, **IndIUU**, and **IndDiscards** in the Master Index File are sum totals of Abalones in the Mexico in year 1953.
@@ -147,6 +148,7 @@ Let's do another test. Test to see whether the values for **NIndReported**, **NI
 ```{r, eval=FALSE}
 
 data2 <- readRDS(file.path(rawFolder,"CatchNInd1950_1954.rds"))
+data2_ly <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018", "CatchNInd_1950_1954.rds"))
 
 jap_sail <- data2 %>% 
   filter(ID == 	125429) %>% 
@@ -216,7 +218,7 @@ Create list of industrial catch file names and apply the `combine_fis` function 
 
 ```{r, eval=FALSE}
 
-ind_files <- dir(file.path(dir_M,"git-annex/globalprep/_raw_data/test_IMAS/d2019"), pattern ="CatchInd", full.names=TRUE)
+ind_files <- dir(file.path(dir_M,"git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandingsv4/d2019"), pattern ="CatchInd", full.names=TRUE)
 
 
 ## Wrangle and Save Each Year of Data Separately
@@ -232,7 +234,7 @@ Create list of non-industrial catch file names and apply the `combine_fis` funct
 
 ```{r, eval=FALSE}
 
-nind_files <- dir(file.path(dir_M,"git-annex/globalprep/_raw_data/test_IMAS/d2019"), pattern ="CatchNInd", full.names=TRUE)
+nind_files <- dir(file.path(dir_M,"git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandingsv4/d2019"), pattern ="CatchNInd", full.names=TRUE)
 
 ## Wrangle and Save Each Year of Data Separately
 nindCatch <- map_df(nind_files, combine_fis)
