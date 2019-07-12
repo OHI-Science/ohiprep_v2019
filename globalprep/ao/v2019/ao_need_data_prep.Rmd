@@ -30,7 +30,7 @@ Uninhabited and low population regions now given an NA value (vs. a gapfilled va
 ***
 ## Data Source 
 
-**Downloaded**: 7/02/2019
+**Downloaded**: 7/10/2019
 
 **Description**:  
 GDP adjusted per capita by PPP (ppppcgdp)
@@ -71,7 +71,7 @@ source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/wor
 ```
 
 ## Download and save data
-
+*Skip if you have already downloaded data.*
 ```{r load_data,eval=F}
 
 # check website to see what years are available
@@ -97,20 +97,21 @@ gdppcppp_raw <-  WDI(country = "all",
 summary(gdppcppp_raw)
 
 # check if 'raw', 'intermediate', and 'final' folders exist in the current assessment folder, if not, then create the folder in the working directory
-if (!file.exists("raw")){
-  dir.create("raw")
+if (!file.exists(here("globalprep/ao/v2019/raw"))){
+  dir.create(here("globalprep/ao/v2019/raw"))
 } 
 
-if (!file.exists("intermediate")){
-  dir.create("intermediate")
-} 
+if (!file.exists(here("globalprep/ao/v2019/intermediate"))){
+  dir.create(here("globalprep/ao/v2019/intermediate"))
+}
 
-if (!file.exists("output")){
-  dir.create("output")
-} 
+if (!file.exists(here("globalprep/ao/v2019/output"))){
+  dir.create(here("globalprep/ao/v2019/output"))
+}
+
 
 #Save the file into the raw folder
-write.csv(gdppcppp_raw, here('globalprep/ao/v2019/raw/raw_gdppcppp_10Jul2019.csv'), row.names=FALSE) # Save file with date, as WDI data changes over even short periods of time. For instance, the Mauritania GDP data changed by an order of magnitude over the course of a week. We want to preserve the date it was downloaded so that data is not being overwritten everytime we run the script. 
+write_csv(gdppcppp_raw, here('globalprep/ao/v2019/raw/raw_gdppcppp_10Jul2019.csv')) # Save file with date, as WDI data changes over even short periods of time. For instance, the Mauritania GDP data changed by an order of magnitude over the course of a week. We want to preserve the date it was downloaded so that data is not being overwritten everytime we run the script. 
 
 ```
 
@@ -123,7 +124,7 @@ When a country has some values (but not a complete series), a within-country reg
 
 # Reorganize to create cells for countries that have missing values for some years
 
-gdppcppp_clean <- read.csv(here('globalprep/ao/v2019/raw/raw_gdppcppp_2Jul2019.csv')) %>% # change date here also to match filename above 
+gdppcppp_clean <- read_csv(here('globalprep/ao/v2019/raw/raw_gdppcppp_10Jul2019.csv')) %>% # change date here also to match filename above 
   dplyr::select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   dplyr::filter(year >= 2005) %>%
   tidyr::spread(year, value) %>%
@@ -132,7 +133,7 @@ gdppcppp_clean <- read.csv(here('globalprep/ao/v2019/raw/raw_gdppcppp_2Jul2019.c
   tidyr::gather(year, value, starts_with("X")) %>%
   dplyr::mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
   dplyr::mutate(year = as.numeric(year)) #convert the year column into a numeric format
-  
+
 head(gdppcppp_clean)
 summary(gdppcppp_clean) # 357 NAs
 
@@ -341,14 +342,14 @@ write_csv(final_gf, here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled_gf.csv
 ## Compare data to previous year
 Use most recent data year shared by current and previous assessment.
 ```{r, eval=F}
-old_gdppppc <- read.csv(here("globalprep/ao/v2018/output/wb_gdppcppp_rescaled.csv")) %>% 
+old_gdppcppp <- read.csv(here("globalprep/ao/v2018/output/wb_gdppcppp_rescaled.csv")) %>% 
   dplyr::rename(old_value=value) %>% 
   dplyr::filter(year == 2017)
-summary(old_gdppppc) # No NAs  
+summary(old_gdppcppp) # No NAs  
 
 compare <- read.csv(here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled.csv")) %>%
   dplyr::filter(year == 2017) %>% 
-  dplyr::left_join(old_gdppppc, by="rgn_id") %>% 
+  dplyr::left_join(old_gdppcppp, by="rgn_id") %>% 
   select(rgn_id, value, old_value)
 summary(compare) # still 20 NAs - this is because of converting unpopulated/low population regions to NAs
 
@@ -358,5 +359,23 @@ ggplotly(ggplot(compare, aes(x = value, y = old_value, labels = rgn_id)) +
   geom_abline(slope = 1, intercept = 0, color = "red")) # if anything was off of abline then something went wrong; however in v2019 data were positively skewed and we attributed this to source data changes. 
 
 
+
+####### Investigating outlier
+old_220 <- old_gdppcppp %>% 
+  filter(rgn_id == 220) 
+
+new_220 <- d_stand_gf %>%
+  filter(rgn_id == 220) %>%
+  filter(year < 2018) %>% 
+  rename(new_value = score) %>% 
+  select(rgn_id, year, gapfilled, method, new_value)
+
+old_gf_220 <- read_csv(here("globalprep/ao/v2018/output/wb_gdppcppp_rescaled_gf.csv")) %>% 
+  filter(rgn_id == 220) %>%
+  left_join(old_220, by = c("rgn_id", "year"))
+
+
+#### Result: looks like v2018 gapfilled all of the data for rgn 220, and v2019 only gapfilled for a few years of data, thus causing the score to change.
+  
 ```
 
