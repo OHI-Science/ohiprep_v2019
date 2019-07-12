@@ -91,13 +91,13 @@ These data are cleaned and formatted using the R/process_WTTC.R script. Missing 
 
 ## describe where the raw data are located:
 scenario_yr <- "v2019"
-dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2019/raw') # what is this used for?
+dir_wttc <- file.path(dir_M, 'git-annex/globalprep/_raw_data/WTTC/d2019/raw')
 dir_github <- here("globalprep/tr", scenario_yr)
 
 ## processing script that formats the WTTC for OHI, saves the following: intermediate/wttc_empd_rgn
 ## v2018: source('R/process_WTTC.R', local = TRUE)
 source(here("globalprep/tr/v2019/R/process_WTTC.R"))
-##### v2019: Duplicates (Guadeloupe/Martinique, PR/VI, China) + see notes on file creation written at the end of the function script! 
+##### v2019: Duplicates (Guadeloupe/Martinique, PR/VI, China) - are these being accounted for in the script? (not duplicated in the imported file below)
 
 ## read in the dataset created by above function:
 tr_jobs_pct_tour <- read_csv(here('globalprep/tr/v2019/intermediate/wttc_empd_rgn.csv')) %>% 
@@ -146,7 +146,6 @@ tr_data_raw_gf <- tr_data_raw %>%
   ungroup()
 
 # first gapfill with r2, if no value available use r1; create column indicating whether value was gapfilled and if so, by what method.
-##### note to self: might want to use this same method for natural products gapfilling? should we standardize programatic gapfilling procedure?  
 tr_data_raw_gf <- tr_data_raw_gf %>%
   mutate(Ep_all = ifelse(is.na(Ep), Ep_pred_r2, Ep)) %>%
   mutate(Ep_all = ifelse(is.na(Ep_all), Ep_pred_r1, Ep_all)) %>% 
