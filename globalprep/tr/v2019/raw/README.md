@@ -1,13 +1,13 @@
 # Travel warnings
 
 Information from U.S State department here: https://travel.state.gov/content/passports/en/alertswarnings.html
-Data downloaded: 06/28/2018
+Data downloaded: 07/02/2019
 
 
 Canada's Government - Travel Advice and Advisories here:
 (https://travel.gc.ca/travelling/advisories)
 
-Data downloaded:07/06/2018
+Data downloaded:07/02/2019
 
 
 ## A few notes about getting data:

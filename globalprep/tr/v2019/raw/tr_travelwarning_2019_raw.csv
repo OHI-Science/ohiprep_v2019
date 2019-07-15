@@ -1,377 +1,378 @@
 data_source,assess_year,country,level,date,regional,location,risk_factor
-US,2019,Afghanistan,Level 4: Do Not Travel,4/9/2019,,,"crime, terrorism, civil unrest, kidnapping, and armed conflict. "
-US,2019,Albania,Level 2: Exercise Increased Caution,6/27/2019,1,The southern town of Lazarat,crime
-US,2019,Algeria,Level 2: Exercise Increased Caution,4/9/2019,,,Terrorism
-US,2019,Algeria,Level 4: Do Not Travel,4/9/2019,1,Eastern and southern borders,"Terrorism and criminal activities, including kidnapping."
-US,2019,Algeria,Level 4: Do Not Travel,4/9/2019,1,Sahara Desert,"Terrorism and criminal activities, including kidnapping."
-US,2019,Andorra,Level 1: Exercise Normal Precautions,8/28/2018,,,
-US,2019,Angola,Level 1: Exercise Normal Precautions,4/9/2019,,,crime and kidnapping
-US,2019,Anguilla,Level 1: Exercise Normal Precautions,5/7/2019,,,
-US,2019,Antarctica,Level 2: Exercise Increased Caution,1/10/2019,,,extreme and unpredictable weather
-US,2019,Antigua and Barbuda,Level 1: Exercise Normal Precautions,2/26/2019,,,
-US,2019,Antigua and Barbuda,Level 1: Exercise Normal Precautions,2/26/2019,1,Island of Barbuda ,aftermath of natural disaster 
-US,2019,Argentina,Level 1: Exercise Normal Precautions,12/3/2018,,,
-US,2019,Armenia,Level 1: Exercise Normal Precautions,12/13/2018,,,
-US,2019,Armenia,Level 4: Do Not Travel,12/13/2018,1,Nagorno-Karabakh,armed conflict 
-US,2019,Aruba,Level 1: Exercise Normal Precautions,1/8/2019,,,
-US,2019,Australia,Level 1: Exercise Normal Precautions,12/6/2018,,,
-US,2019,Austria,Level 1: Exercise Normal Precautions,11/16/2018,,,
-US,2019,Azerbaijan,Level 2: Exercise Increased Caution,12/13/2018,,,
-US,2019,Azerbaijan,Level 4: Do Not Travel,12/13/2018,1,Nagorno-Karabakh,armed conflict 
-US,2019,Bahrain,Level 1: Exercise Normal Precautions,5/17/2019,,,
-US,2019,Bangladesh,Level 2: Exercise Increased Caution,4/9/2019,,,
-US,2019,Bangladesh,Level 3: Reconsider Travel,4/9/2019,1,Southeast Bangladesh,kidnapping
-US,2019,Bangladesh,Level 3: Reconsider Travel,4/9/2019,1,Dhaka,crime
-US,2019,Barbados,Level 1: Exercise Normal Precautions,3/7/2019,,,
-US,2019,Barbados,4: Do not travel,1/10/2018,1,"Crab Hill, St. Lucy",crime
-US,2019,Barbados,4: Do not travel,1/10/2018,1,"Ivy, St. Michael",crime
-US,2019,Barbados,4: Do not travel,1/10/2018,1,"Nelson Street, Bridgetown",crime
-US,2019,Barbados,4: Do not travel,1/10/2018,1,"Wellington Street, Bridgetown",crime
-US,2019,Barbados,4: Do not travel,1/10/2018,1,Jolly Roger and Buccaneer Cruises,crime
-US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/2018,1,Black Rock,crime
-US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/2018,1,Deacons,crime
-US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/2018,1,Carrington Village,crime
-US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/2018,1,Green Fields,crime
-US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/2018,1,New Orleans,crime
-US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/2018,1,Pine,crime
-US,2019,Belarus,Level 1: Exercise Normal Precautions,6/18/2018,,,
-US,2019,Belgium,Level 2: Exercise Increased Caution,12/21/2018,,,terrorism
-US,2019,Belize,Level 2: Exercise Increased Caution,1/4/2019,,,crime
-US,2019,Benin,Level 1: Exercise Normal Precautions,5/23/2019,,,
-US,2019,Benin,Level 3: Reconsider Travel,5/23/2019,1,"Park Pendjari, Park W and Adjacent Hunting Zones",terrorism and kidnapping
-US,2019,Benin,Level 2: Exercise Increased Caution,5/23/2019,1,Urban Areas ,crime
-US,2019,Bermuda,Level 1: Exercise Normal Precautions,1/8/2019,,,
-US,2019,Bhutan,Level 1: Exercise Normal Precautions,1/25/2019,,,
-US,2019,Bolivia,Level 1: Exercise Normal Precautions,5/8/2019,,,
-US,2019,"Bonaire, Sint Eustatius and Saba",Level 1: Exercise Normal Precautions,1/8/2019,,,
-US,2019,Bosnia and Herzegovina,Level 2: Exercise Increased Caution,6/25/2019,,,terrorism and land mines
-US,2019,Botswana,Level 1: Exercise Normal Precautions,12/14/2018,,,
-US,2019,Brazil,Level 2: Exercise Increased Caution,2/6/2019,,,
-US,2019,Brazil,4: Do not travel,2/6/2019,1,"150 km of Brazil's land borders with Venezuela, Colombia, Peru, Bolivia, Guyana, Suriname, French Guiana, and Paraguay",crime
-US,2019,Brazil,4: Do not travel,2/6/2019,1,Do not use public buses in and around Recife.,cirme
-US,2019,Brazil,4: Do not travel,2/6/2019,1,"Informal housing developments (commonly referred to in Brazil as favelas, vilas, communidades, and/or conglomerados), at any time of day due to crime",crime
-US,2019,Brazil,4: Do not travel,2/6/2019,1,"Brasilia’s administrative regions (commonly known as “satellite cities”) of Ceilandia, Santa Maria, Sao Sebastiao, and Paranoa during non-daylight hours due to crime",crime
-US,2019,Brazil,4: Do not travel,2/6/2019,1,Recife’s Pina Beach from Dona Benvinda de Farias Street to the Brasilia Teimosa neighborhood after dark due to crime,crime
-US,2019,British Virgin Islands,Level 1: Exercise Normal Precautions,5/7/2019,,,
-US,2019,Brunei,Level 1: Exercise Normal Precautions,10/17/2018,,,
-US,2019,Bulgaria,Level 1: Exercise Normal Precautions,10/17/2018,,,
-US,2019,Burkina Faso,Level 3: Reconsider Travel,6/3/2019,,,
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Boucle du Mouhoun,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Cascades,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Centre-Est,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Centre-Nord,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Centre-Ouest,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Centre-Sud,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Est ,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Hauts-Bassins,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Nord,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Sahel,"crime, terrorism, and kidnapping"
-US,2019,Burkina Faso,4: Do not travel,6/3/2019,1,Sud-Ouest,"crime, terrorism, and kidnapping"
-US,2019,Burma (Myanmar),Level 2: Exercise Increased Caution,6/18/2019,,,
-US,2019,Burundi,Level 3: Reconsider Travel,6/12/2019,,,
-US,2019,Cabo Verde,Level 1: Exercise Normal Precautions,12/4/2018,,,crime and political violence
-US,2019,Cambodia,Level 1: Exercise Normal Precautions,1/7/2019,,,
-US,2019,Cambodia,Level 2: Exercise Increased Caution,1/7/2019,1,Phnom Penh,crime
-US,2019,Cambodia,Level 2: Exercise Increased Caution,1/7/2019,1,"Battambang, Banteay Meanchey, Pursat, Siem Reap, Pailin, and Kampong Thom provinces",land mines
-US,2019,Cameroon,Level 2: Exercise Increased Caution,4/9/2019,,,
-US,2019,Cameroon,Level 4: Do Not Travel,4/9/2019,1,"North, Far North, Northwest, and Southwest Regions, Parts of East and Adamawa Regions",crime and kidnapping
-US,2019,Cameroon,Level 4: Do Not Travel,4/9/2019,1,Far North,Terrorism
-US,2019,Cameroon,Level 4: Do Not Travel,4/9/2019,1,Northwest and Southwest ,armed conflict 
-US,2019,Canada,Level 1: Exercise Normal Precautions,1/9/2019,,,
-US,2019,Cayman Islands,Level 1: Exercise Normal Precautions,1/8/2019,,,
-US,2019,Central African Republic,Level 4: Do Not Travel,4/9/2019,,,"crime, civil unrest, and kidnapping "
-US,2019,Chad,Level 3: Reconsider Travel,1/30/2019,,,"crime, terrorism, and minefields"
-US,2019,Chile,Level 1: Exercise Normal Precautions,8/27/2018,,,
-US,2019,China,Level 2: Exercise Increased Caution,1/3/2019,,,arbitrary enforcement of local laws as well as special restrictions on dual U.S.-Chinese nationals.
-US,2019,Colombia,Level 2: Exercise Increased Caution,4/9/2019,,,
-US,2019,Colombia,Level 4: Do Not Travel,4/9/2019,1,"Arauca, Cauca, Chocó, Nariño and Norte de Santander Departments ",crime
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Antioquia department north of Medellin,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Caquetá department,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Casanare department,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Cesar department outside of Valledupar,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Cordoba department outside of Montería,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Guainía department,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Guaviare department,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Meta department,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Putumayo department,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Valle del Cauca department outside of Cali and Palmira area,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Vaupes department,crime and terrorism
-US,2019,Colombia,Level 3: Reconsider Travel,4/9/2019,1,Vichada department,crime and terrorism
-US,2019,Comoros,Level 1: Exercise Normal Precautions,5/2/2019,,,
-US,2019,Costa Rica,Level 1: Exercise Normal Precautions,9/4/2018,,,
-US,2019,Cote d'Ivoire,Level 2: Exercise Increased Caution,12/11/2018,,,crime and terrorism
-US,2019,Croatia,Level 1: Exercise Normal Precautions,1/2/2019,,,
-US,2019,Cuba,Level 2: Exercise Increased Caution,8/23/2018,,,
-US,2019,Curacao,Level 1: Exercise Normal Precautions,1/8/2019,,,
-US,2019,Cyprus,Level 1: Exercise Normal Precautions,6/18/2018,,,
-US,2019,Czech Republic,Level 1: Exercise Normal Precautions,6/26/2019,,,
-US,2019,Democratic Republic of the Congo,Level 3: Reconsider Travel,4/9/2019,,,
-US,2019,Democratic Republic of the Congo,Level 4: Do Not Travel,4/9/2019,1,North Kivu and Ituri Proviences ,"crime, Ebola, and kidnapping."
-US,2019,Democratic Republic of the Congo,Level 4: Do Not Travel,4/9/2019,1,The Eastern DRC Region and the Three Kasai Provinces,armed conflict 
-US,2019,Denmark,Level 2: Exercise Increased Caution,6/25/2019,,,Terrorism
-US,2019,Djibouti,Level 1: Exercise Normal Precautions,12/12/2018,,,
-US,2019,Dominica,Level 1: Exercise Normal Precautions,5/7/2019,,,
-US,2019,Dominican Republic,Level 2: Exercise Increased Caution,4/15/2019,,,crime
-US,2019,Ecuador,Level 2: Exercise Increased Caution,4/9/2019,,,crime
-US,2019,Ecuador,Level 4: Do Not Travel,4/9/2019,1,"Carchi, Sucumbíos, and northern Esmeraldas Provinces",crime
-US,2019,Egypt,Level 2: Exercise Increased Caution,2/6/2019,,,
-US,2019,Egypt,Level 4: Do Not Travel,2/6/2019,1,Sinai Peninsula,Terrorism
-US,2019,Egypt,Level 4: Do Not Travel,2/6/2019,1,Western Desert,Terrorism
-US,2019,El Salvador,Level 3: Reconsider Travel,1/29/2019,,,crime
-US,2019,Equatorial Guinea,Level 1: Exercise Normal Precautions,12/10/2018,,,
-US,2019,Eritrea,Level 2: Exercise Increased Caution,2/25/2019,,,
-US,2019,Estonia,Level 1: Exercise Normal Precautions,8/17/2018,,,
-US,2019,Eswatini,Level 1: Exercise Normal Precautions,12/14/2018,,,
-US,2019,Ethiopia,Level 2: Exercise Increased Caution,5/13/2019,,,
-US,2019,Ethiopia,level 4: Do Not Travel,5/13/2019,1,Somali Regional State,"civil unrest, terrorism, kidnapping, and landmines"
-US,2019,Ethiopia,level 3: Reconsider Travel,5/13/2019,1,The East Hararge Region and Guji Zone of Oromia State,armed conflict and civil unrest
-US,2019,Ethiopia,level 3: Reconsider Travel,5/13/2019,1,Benishangul Gumuz and the western part of Oromia State,armed conflict and civil unrest.
-US,2019,Ethiopia,level 3: Reconsider Travel,5/13/2019,1,"Border Areas with Kenya, Sudan, South Sudan, and Eritrea","crime, armed conflict, and civil unrest."
-US,2019,Fiji,Level 1: Exercise Normal Precautions,12/18/2018,,,
-US,2019,Finland,Level 1: Exercise Normal Precautions,9/27/2018,,,
-US,2019,France,Level 2: Exercise Increased Caution,4/1/2019,,,terrorism and civil unrest
-US,2019,French Guiana,Level 1: Exercise Normal Precautions,10/24/2018,,,
-US,2019,French Polynesia,Level 1: Exercise Normal Precautions,3/25/2019,,,
-US,2019,French West Indies,Level 1: Exercise Normal Precautions,2/25/2019,,,
-US,2019,Gabon,Level 1: Exercise Normal Precautions,1/10/2019,,,
-US,2019,Georgia,Level 1: Exercise Normal Precautions,4/9/2019,,,
-US,2019,Germany,Level 2: Exercise Increased Caution,6/19/2019,,,terrorism
-US,2019,Ghana,Level 1: Exercise Normal Precautions,2/12/2019,,,
-US,2019,Greece,Level 1: Exercise Normal Precautions,7/10/2018,,,
-US,2019,Grenada,Level 1: Exercise Normal Precautions,2/25/2019,,,
-US,2019,Guatemala,Level 2: Exercise Increased Caution,2/28/2019,,,crime
-US,2019,Guatemala,Level 3: Reconsider Travel,2/28/2019,1,Guatemala Department,crime
-US,2019,Guatemala,Level 3: Reconsider Travel,2/28/2019,1,Escuintla Department,crime
-US,2019,Guatemala,Level 3: Reconsider Travel,2/28/2019,1,Chiquimula Department,crime
-US,2019,Guatemala,Level 3: Reconsider Travel,2/28/2019,1,Quetzaltenango Department,crime
-US,2019,Guatemala,Level 3: Reconsider Travel,2/28/2019,1,Izabal Department,crime
-US,2019,Guatemala,Level 3: Reconsider Travel,2/28/2019,1,Petén Department ,crime
-US,2019,Guinea,Level 2: Exercise Increased Caution,1/31/2019,,,civil unrest 
-US,2019,Guinea-Bissau,Level 3: Reconsider Travel,4/25/2019,,,crime and civil unrest
-US,2019,Guyana,Level 2: Exercise Increased Caution,5/30/2019,,,crime
-US,2019,Haiti,Level 3: Reconsider Travel,6/11/2019,,,"crime, civil unrest, and kidnapping "
-US,2019,Honduras,Level 3: Reconsider Travel,6/24/2019,,,
-US,2019,Honduras,Level 4: Do Not Travel,6/24/2019,1,Gracias a Dios Department,crime
-US,2019,Hong Kong,Level 1: Exercise Normal Precautions,12/31/2018,,,
-US,2019,Hungary,Level 1: Exercise Normal Precautions,8/17/2018,,,
-US,2019,Iceland,Level 1: Exercise Normal Precautions,6/20/2019,,,
-US,2019,India,Level 2: Exercise Increased Caution,3/8/2019,,,
-US,2019,India,Level 4: Do Not Travel,3/8/2019,1,State of Jammu and Kashmir,terrorism and civil unrest
-US,2019,India,Level 4: Do Not Travel,3/8/2019,1,Within 10 km of the India-Pakistan border,potential for armed conflict
-US,2019,Indonesia,Level 2: Exercise Increased Caution,1/3/2019,,,
-US,2019,Indonesia,level 3: Reconsider Travel,1/3/2019,1,Central Sulawesi and Papua,civil unrest 
-US,2019,Iran,Level 4: Do Not Travel,4/9/2019,,,
-US,2019,Iraq,Level 4: Do Not Travel,5/15/2019,,,
-US,2019,Ireland,Level 1: Exercise Normal Precautions,11/6/2018,,,
-US,2019,"Israel, The West Bank and Gaza",Level 2: Exercise Increased Caution,12/28/2018,,,
-US,2019,"Israel, The West Bank and Gaza",Level 4: Do Not Travel,12/28/2018,1,Gaza,"terrorism, civil unrest, and armed conflict"
-US,2019,"Israel, The West Bank and Gaza",Level 3: Reconsider Travel,12/28/2018,1,West Bank,"terrorism, potentially violent civil unrest, and the potential for armed conflict"
-US,2019,Italy,Level 2: Exercise Increased Caution,12/31/2018,,,terrorism
-US,2019,Jamaica,Level 2: Exercise Increased Caution,4/15/2019,,,
-US,2019,Jamaica,Level 4: Do Not Travel,4/15/2019,1,Some areas of Kingston,crime
-US,2019,Jamaica,Level 4: Do Not Travel,4/15/2019,1,Some areas of Montego Bay,crime
-US,2019,Jamaica,Level 4: Do Not Travel,4/15/2019,1,Spanish Town,crime
-US,2019,Japan,Level 1: Exercise Normal Precautions,12/20/2018,,,
-US,2019,Jordan,Level 2: Exercise Increased Caution,12/12/2018,,,
-US,2019,Jordan,Level 4: Do Not Travel,12/12/2018,1,The border with Syria and Iraq,terrorism and armed conflict
-US,2019,Kazakhstan,Level 1: Exercise Normal Precautions,4/3/2019,,,
-US,2019,Kenya,Level 2: Exercise Increased Caution,4/9/2019,,,
-US,2019,Kenya,Level 4: Do Not Travel,4/9/2019,1,Kenya-Somalia Border Counties and Coastal Areas,terrorism
-US,2019,Kenya,Level 4: Do Not Travel,4/9/2019,1,Kenya-Somalia Border Counties ,terrorism
-US,2019,Kenya,Level 4: Do Not Travel,4/9/2019,1,Coastal Areas,crime
-US,2019,Kenya,Level 4: Do Not Travel,4/9/2019,1,Turkana County,crime 
-US,2019,Kenya,Level 3: Reconsider Travel,4/9/2019,1,Nairobi neighborhoods of Eastleigh and Kibera,crime and kidnapping
-US,2019,Kiribati,Level 1: Exercise Normal Precautions,10/18/2018,,,
-US,2019,Kosovo,Level 2: Exercise Increased Caution,5/31/2019,,,
-US,2019,Kosovo,Level 3: Reconsider Travel,5/31/2019,1,"North Mitrovica, Leposavic, Zubin Potok, and Zvecan",civil unrest
-US,2019,Kuwait,Level 1: Exercise Normal Precautions,5/17/2019,,,
-US,2019,Laos,Level 1: Exercise Normal Precautions,7/11/2018,,,
-US,2019,Latvia,Level 1: Exercise Normal Precautions,7/30/2018,,,
-US,2019,Lebanon,Level 3: Reconsider Travel,4/9/2019,,,"crime, terrorism, kidnapping, and armed conflict"
-US,2019,Lebanon,Level 4: Do Not Travel,4/9/2019,1,Border with Syria,terrorism and armed conflict
-US,2019,Lebanon,Level 4: Do Not Travel,4/9/2019,1,Border with Israel,the potential for armed conflict
-US,2019,Lebanon,Level 4: Do Not Travel,4/9/2019,1,Refugee Settlements,the potential for armed conflict
-US,2019,Lesotho,Level 1: Exercise Normal Precautions,12/18/2018,,,
-US,2019,Liberia,Level 1: Exercise Normal Precautions,1/7/2019,,,
-US,2019,Libya,Level 4: Do Not Travel,4/9/2019,,,"crime, terrorism, civil unrest, kidnapping, and armed conflict."
-US,2019,Lithuania,Level 1: Exercise Normal Precautions,6/4/2019,,,
-US,2019,Luxembourg,Level 1: Exercise Normal Precautions,1/2/2019,,,
-US,2019,Macau,Level 1: Exercise Normal Precautions,12/31/2018,,,
-US,2019,Madagascar,Level 2: Exercise Increased Caution,7/31/2018,,,civil unrest and crime
-US,2019,Malawi,Level 1: Exercise Normal Precautions,12/18/2018,,,
-US,2019,Malaysia,Level 1: Exercise Normal Precautions,4/9/2019,,,
-US,2019,Maldives,Level 2: Exercise Increased Caution,5/2/2019,,,terrorism
-US,2019,Mali,Level 4: Do Not Travel,4/9/2019,,,"crime, terrorism, and kidnapping"
-US,2019,Malta,Level 1: Exercise Normal Precautions,7/1/2019,,,
-US,2019,Marshall Islands,Level 1: Exercise Normal Precautions,12/10/2018,,,
-US,2019,Mauritania,Level 3: Reconsider Travel,11/29/2018,,,crime and terrorism
-US,2019,Mauritius,Level 1: Exercise Normal Precautions,12/26/2018,,,
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,,,
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Aguascalientes state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Baja California state ,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Baja California Sur state ,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Campeche state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Chiapas state ,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Chihuahua state,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Coahuila state,crime
-US,2019,Mexico,Level 4: Do Not Travel,4/9/2019,1,Colima state,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Durango state,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Estado de Mexico state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Guanajuato state,crime
-US,2019,Mexico,Level 4: Do Not Travel,4/9/2019,1,Guerrero state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Hildago state,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Jalisco state,crime 
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Mexico City,crime
-US,2019,Mexico,Level 4: Do Not Travel,4/9/2019,1,Michoacan state,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Morelos state,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Nayarit state ,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Nuevo Leon state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Oaxaca state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Puebla state ,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Queretaro state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Quintana Roo state,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,San Luis Potosi state,crime
-US,2019,Mexico,Level 4: Do Not Travel,4/9/2019,1,Sinaloa state ,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Sonora state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Tabasco state ,crime and kidnapping
-US,2019,Mexico,Level 4: Do Not Travel,4/9/2019,1,Tamaulipas state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Tlaxcala state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Veracruz state,crime
-US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/2019,1,Yucatan state,crime
-US,2019,Mexico,Level 3: Reconsider Travel,4/9/2019,1,Zacatecas state,crime
-US,2019,Micronesia,Level 1: Exercise Normal Precautions,11/30/2018,,,
-US,2019,Moldova,Level 1: Exercise Normal Precautions,7/10/2018,,,
-US,2019,Mongolia,Level 1: Exercise Normal Precautions,1/9/2019,,,
-US,2019,Montenegro,Level 1: Exercise Normal Precautions,12/31/2018,,,
-US,2019,Montserrat,Level 1: Exercise Normal Precautions,2/26/2019,,,
-US,2019,Morocco,Level 2: Exercise Increased Caution,4/2/2019,,,terrorism
-US,2019,Mozambique,Level 1: Exercise Normal Precautions,2/6/2019,,,
-US,2019,Namibia,Level 1: Exercise Normal Precautions,12/17/2018,,,
-US,2019,Nauru,Level 1: Exercise Normal Precautions,4/2/2019,,,
-US,2019,Nepal,Level 2: Exercise Increased Caution,1/8/2019,,,isolated political violence
-US,2019,Netherlands,Level 2: Exercise Increased Caution,9/28/2018,,,terrorism
-US,2019,New Caledonia,Level 1: Exercise Normal Precautions,4/1/2019,,,
-US,2019,New Zealand,Level 1: Exercise Normal Precautions,11/15/2018,,,
-US,2019,Nicaragua,Level 3: Reconsider Travel,4/3/2019,,,"civil unrest, crime, limited healthcare availability, and arbitrary enforcement of laws"
-US,2019,Niger,Level 3: Reconsider Travel,4/9/2019,,,"crime, terrorism, and kidnapping"
-US,2019,Nigeria,Level 3: Reconsider Travel,4/9/2019,,,"crime, terrorism, civil unrest, kidnapping and piracy."
-US,2019,Nigeria,Level 4: Do Not Travel,4/9/2019,1,Borno and Yobe States and Northern Adamawa State,terrorism
-US,2019,North Korea (Democratic People's Republic of Korea),Level 4: Do Not Travel,12/19/2018,,,serious risk of arrest and long-term detention of U.S. nationals. 
-US,2019,North Macedonia,Level 1: Exercise Normal Precautions,12/26/2018,,,
-US,2019,Norway,Level 1: Exercise Normal Precautions,9/13/2018,,,
-US,2019,Oman,Level 1: Exercise Normal Precautions,5/17/2019,,,
-US,2019,Pakistan,Level 3: Reconsider Travel,4/9/2019,,,
-US,2019,Pakistan,Level 4: Do Not Travel,4/9/2019,1,Balochistan Province,terrorism and kidnapping
-US,2019,Pakistan,Level 4: Do Not Travel,4/9/2019,1,"KPK Province, including the former FATA",terrorism and kidnapping
-US,2019,Pakistan,Level 4: Do Not Travel,4/9/2019,1,Azad Kashmir ,terrorism and armed conflict
-US,2019,Pakistan,Level 4: Do Not Travel,4/9/2019,1,India-Pakistan Border,terrorism and armed conflict
-US,2019,Palau,Level 1: Exercise Normal Precautions,12/17/2018,,,
-US,2019,Panama,Level 1: Exercise Normal Precautions,5/3/2019,,,
-US,2019,Papua New Guinea,Level 2: Exercise Increased Caution,4/9/2019,,,
-US,2019,Papua New Guinea,Level 3: Reconsider Travel,4/9/2019,1,Areas Near the Panguna Mine,civil unrest
-US,2019,Papua New Guinea,Level 3: Reconsider Travel,4/9/2019,1,The Highlands Region ,natural disaster and civil unrest
-US,2019,Paraguay,Level 1: Exercise Normal Precautions,1/22/2019,,,
-US,2019,Peru,Level 1: Exercise Normal Precautions,7/11/2018,,,
-US,2019,Philippines,Level 2: Exercise Increased Caution,4/9/2019,,,
-US,2019,Philippines,Level 4: Do Not Travel,4/9/2019,1,The Sulu Archipelago and Sulu Sea,"crime, terrorism, civil unrest, and kidnapping"
-US,2019,Philippines,Level 4: Do Not Travel,4/9/2019,1,Marawi City in Mindanao,terrorism and civil unrest
-US,2019,Philippines,Level 3: Reconsider Travel,4/9/2019,1,Mindanao ,"crime, terrorism, civil unrest, and kidnapping"
-US,2019,Poland,Level 1: Exercise Normal Precautions,12/27/2018,,,
-US,2019,Portugal,Level 1: Exercise Normal Precautions,5/28/2019,,,
-US,2019,Qatar,Level 1: Exercise Normal Precautions,5/17/2019,,,
-US,2019,Republic of the Congo,Level 2: Exercise Increased Caution,4/18/2019,,,crime and  civil unrest
-US,2019,Republic of the Congo,Level 4: Do Not Travel,4/18/2019,1,The Southern and Western Districts of the Pool Region,crime and  civil unrest
-US,2019,Romania,Level 1: Exercise Normal Precautions,8/3/2018,,,
-US,2019,Russia,Level 2: Exercise Increased Caution,4/9/2019,,,"terrorism, harassment, and the arbitrary enforcement of local laws"
-US,2019,Russia,Level 4: Do Not Travel,4/9/2019,1,North Caucasus (including Chechnya and Mount Elbrus),"terrorism, kidnapping, and civil unrest"
-US,2019,Russia,Level 4: Do Not Travel,4/9/2019,1,Crimea,abuses by its occupying authorities
-US,2019,Rwanda,Level 1: Exercise Normal Precautions,2/19/2019,,,
-US,2019,Saint Kitts and Nevis,Level 1: Exercise Normal Precautions,5/7/2019,,,
-US,2019,Saint Lucia,Level 1: Exercise Normal Precautions,4/15/2019,,,
-US,2019,Saint Vincent and The Grenadines,Level 1: Exercise Normal Precautions,2/26/2019,,,
-US,2019,Samoa,Level 1: Exercise Normal Precautions,12/13/2018,,,
-US,2019,Sao Tome and Principe,Level 1: Exercise Normal Precautions,1/10/2019,,,
-US,2019,Saudi Arabia,Level 2: Exercise Increased Caution,6/25/2019,,,terrorism and the threat of missile and drone attacks on civilian targets.
-US,2019,Saudi Arabia,Level 4: Do Not Travel,6/25/2019,1,Yemen Border,terrorism and armed conflict
-US,2019,Senegal,Level 1: Exercise Normal Precautions,4/25/2019,,,
-US,2019,Serbia,Level 2: Exercise Increased Caution,12/31/2018,,,crime
-US,2019,Seychelles,Level 1: Exercise Normal Precautions,12/12/2018,,,
-US,2019,Sierra Leone,Level 2: Exercise Increased Caution,12/4/2018,,,crime
-US,2019,Singapore,Level 1: Exercise Normal Precautions,12/20/2018,,,
-US,2019,Sint Maarten,Level 1: Exercise Normal Precautions,1/8/2019,,,
-US,2019,Slovakia,Level 1: Exercise Normal Precautions,12/27/2018,,,
-US,2019,Slovenia,Level 1: Exercise Normal Precautions,12/28/2018,,,
-US,2019,Solomon Island,Level 1: Exercise Normal Precautions,2/22/2019,,,
-US,2019,Somalia,Level 4: Do Not Travel,4/9/2019,,,"crime, terrorism, kidnapping and piracy."
-US,2019,South Africa,Level 2: Exercise Increased Caution,10/19/2018,,,"crime, civil unrest, and drought."
-US,2019,South Korea,Level 1: Exercise Normal Precautions,12/19/2018,,,
-US,2019,South Sudan,Level 4: Do Not Travel,4/9/2019,,,"crime, kidnapping, and armed conflict."
-US,2019,Spain,Level 2: Exercise Increased Caution,3/18/2019,,,terrorism
-US,2019,Sri Lanka,Level 2: Exercise Increased Caution,6/24/2019,,,terrorism
-US,2019,Sudan,Level 4: Do Not Travel,4/11/2019,,,"crime, terrorism, civil unrest, kidnapping, and armed conflict. "
-US,2019,Suriname,Level 1: Exercise Normal Precautions,10/19/2018,,,
-US,2019,Sweden,Level 1: Exercise Normal Precautions,3/29/2019,,,
-US,2019,Switzerland,Level 1: Exercise Normal Precautions,9/18/2018,,,
-US,2019,Syria,Level 4: Do Not Travel,4/9/2019,,,"terrorism, civil unrest, kidnapping, and armed conflict."
-US,2019,Taiwan,Level 1: Exercise Normal Precautions,1/2/2019,,,
-US,2019,Tajikistan,Level 2: Exercise Increased Caution,8/3/2018,,,terrorism
-US,2019,Tanzania,Level 2: Exercise Increased Caution,2/25/2019,,,"crime, terrorism, and targeting of LGBTI persons"
-US,2019,Thailand,Level 1: Exercise Normal Precautions,1/29/2019,,,
-US,2019,The Bahamas,Level 2: Exercise Increased Caution,4/15/2019,,,crime
-US,2019,The Gambia,Level 1: Exercise Normal Precautions,12/10/2018,,,
-US,2019,The Kyrgyz Republic,Level 1: Exercise Normal Precautions,4/3/2019,,,
-US,2019,Timor-Leste,Level 1: Exercise Normal Precautions,12/21/2018,,,
-US,2019,Togo,Level 1: Exercise Normal Precautions,5/22/2019,,,
-US,2019,Tonga,Level 1: Exercise Normal Precautions,11/7/2018,,,
-US,2019,Trinidad and Tobago,Level 2: Exercise Increased Caution,4/9/2019,,,"crime, terrorism, and kidnapping"
-US,2019,Trinidad and Tobago,Level 4: Do Not Travel,4/9/2019,1,The Port of Spain,crime
-US,2019,Tunisia,Level 2: Exercise Increased Caution,1/2/2019,,,terrorism
-US,2019,Tunisia,Level 4: Do Not Travel,1/2/2019,1,Border with Libya,terrorism
-US,2019,Tunisia,Level 4: Do Not Travel,1/2/2019,1,Western Mountains and Chaambi Mountain National Park,terrorism
-US,2019,Tunisia,Level 4: Do Not Travel,1/2/2019,1,The Desert South of Remada,military zone
-US,2019,Tunisia,Level 4: Do Not Travel,1/2/2019,1,Jendouba El Kef and Kasserine near the Algerian Border,terrorism
-US,2019,Tunisia,Level 4: Do Not Travel,1/2/2019,1,Sidi Bou Zid in Central Tunisia,terrorism
-US,2019,Turkey,Level 3: Reconsider Travel,4/9/2019,,,terrorism and arbitrary detentions
-US,2019,Turkey,Level 4: Do Not Travel,4/9/2019,1,Areas Near Syrian and Iraq Borders,terrorism and kidnapping
-US,2019,Turkmenistan,Level 1: Exercise Normal Precautions,4/15/2019,,,
-US,2019,Turks and Caicos Islands,Level 2: Exercise Increased Caution,2/25/2019,,,crime
-US,2019,Tuvalu,Level 1: Exercise Normal Precautions,2/25/2019,,,
-US,2019,Uganda,Level 2: Exercise Increased Caution,4/9/2019,,,crime and kidnapping
-US,2019,Ukraine,Level 2: Exercise Increased Caution,6/11/2019,,,"crime, civil unrest and elections"
-US,2019,Ukraine,Level 4: Do Not Travel,6/11/2019,1,Crimea,"crime, civil unrest and elections"
-US,2019,Ukraine,Level 4: Do Not Travel,6/11/2019,1,Donetsk and Luhansk,"crime, civil unrest and elections"
-US,2019,United Arab Emirates,Level 1: Exercise Normal Precautions,5/17/2019,,,
-US,2019,United Kingdom,Level 2: Exercise Increased Caution,4/22/2019,,,terrorism
-US,2019,Uruguay,Level 1: Exercise Normal Precautions,1/29/2019,,,
-US,2019,Uzbekistan,Level 1: Exercise Normal Precautions,12/13/2018,,,
-US,2019,Vanuatu,Level 1: Exercise Normal Precautions,3/21/2019,,,
-US,2019,Venezuela,Level 4: Do Not Travel,4/9/2019,,,"crime, civil unrest, poor health infrastructure, kidnapping, and arbitrary arrest and detention of U.S. citizens."
-US,2019,Vietnam,Level 1: Exercise Normal Precautions,1/2/2019,,,
-US,2019,Yemen,Level 4: Do Not Travel,4/9/2019,,,"terrorism, civil unrest, health risks, kidnapping, and armed conflict."
-US,2019,Zambia,Level 1: Exercise Normal Precautions,12/14/2018,,,
-US,2019,Zimbabwe,Level 2: Exercise Increased Caution,5/14/2019,,,crime and civil unrest.
-Canada,2019,Azores,1,6/6/2019,,,
-Canada,2019,Canary Islands,1,6/6/2019,,,
-Canada,2019,Mayotte,1,6/13/2019,,,
-Canada,2019,Reunion,2,6/13/2019,,,
-Canada,2019,Falkland Islands,1,6/6/2019,,,
-Canada,2019,Puerto Rico,1,6/6/2019,,,
-Canada,2019,U.S. Virgin Islands,1,6/6/2019,,,
-Canada,2019,Greenland,1,6/6/2019,,,
-Canada,2019,Line Islands (Kiribati),1,6/6/2019,,,
-Canada,2019,American Samoa,1,6/6/2019,,,
-Canada,2019,Cook Islands,1,6/6/2019,,,
-Canada,2019,Niue,1,6/6/2019,,,
-Canada,2019,Tokelau,1,6/6/2019,,,
-Canada,2019,Saint Pierre and Miquelon,1,6/6/2019,,,
-Canada,2019,Northern Mariana Islands ,1,6/6/2019,,,
-Canada,2019,Guam,1,6/6/2019,,,
-Canada,2019,United States,1,6/21/2019,,,
-Canada,2019,Kyrgyzstan,2,7/2/2019,,,
-Canada ,2019,Liechtenstein,1,6/6/2019,,,
-Canada,2019,Monaco,1,6/6/2019,,,
-Canada,2019,Gibraltar,1,6/6/2019,,,
-Canada,2019,San Marino,1,6/6/2019,,,
-Canada,2019,Saint-Barthélemy,1,6/6/2019,,,
-Canada,2019,Bonaire,1,6/6/2019,,,
-Canada,2019,Guadeloupe,1,6/6/2019,,,
+US,2019,Afghanistan,Level 4: Do Not Travel,4/9/19,,,"crime, terrorism, civil unrest, kidnapping, and armed conflict. "
+US,2019,Albania,Level 1: Exercise Normal Precautions,7/10/19,,,
+US,2019,Albania,Level 2: Exercise Increased Caution,6/27/19,1,The southern town of Lazarat,crime
+US,2019,Algeria,Level 2: Exercise Increased Caution,4/9/19,,,Terrorism
+US,2019,Algeria,Level 4: Do Not Travel,4/9/19,1,Eastern and southern borders,"Terrorism and criminal activities, including kidnapping."
+US,2019,Algeria,Level 4: Do Not Travel,4/9/19,1,Sahara Desert,"Terrorism and criminal activities, including kidnapping."
+US,2019,Andorra,Level 1: Exercise Normal Precautions,8/28/18,,,
+US,2019,Angola,Level 1: Exercise Normal Precautions,4/9/19,,,crime and kidnapping
+US,2019,Anguilla,Level 1: Exercise Normal Precautions,5/7/19,,,
+US,2019,Antarctica,Level 2: Exercise Increased Caution,1/10/19,,,extreme and unpredictable weather
+US,2019,Antigua and Barbuda,Level 1: Exercise Normal Precautions,2/26/19,,,
+US,2019,Antigua and Barbuda,Level 1: Exercise Normal Precautions,2/26/19,1,Island of Barbuda ,aftermath of natural disaster 
+US,2019,Argentina,Level 1: Exercise Normal Precautions,12/3/18,,,
+US,2019,Armenia,Level 1: Exercise Normal Precautions,12/13/18,,,
+US,2019,Armenia,Level 4: Do Not Travel,12/13/18,1,Nagorno-Karabakh,armed conflict 
+US,2019,Aruba,Level 1: Exercise Normal Precautions,1/8/19,,,
+US,2019,Australia,Level 1: Exercise Normal Precautions,12/6/18,,,
+US,2019,Austria,Level 1: Exercise Normal Precautions,11/16/18,,,
+US,2019,Azerbaijan,Level 2: Exercise Increased Caution,12/13/18,,,
+US,2019,Azerbaijan,Level 4: Do Not Travel,12/13/18,1,Nagorno-Karabakh,armed conflict 
+US,2019,Bahrain,Level 1: Exercise Normal Precautions,5/17/19,,,
+US,2019,Bangladesh,Level 2: Exercise Increased Caution,4/9/19,,,
+US,2019,Bangladesh,Level 3: Reconsider Travel,4/9/19,1,Southeast Bangladesh,kidnapping
+US,2019,Bangladesh,Level 3: Reconsider Travel,4/9/19,1,Dhaka,crime
+US,2019,Barbados,Level 1: Exercise Normal Precautions,3/7/19,,,
+US,2019,Barbados,4: Do not travel,1/10/18,1,"Crab Hill, St. Lucy",crime
+US,2019,Barbados,4: Do not travel,1/10/18,1,"Ivy, St. Michael",crime
+US,2019,Barbados,4: Do not travel,1/10/18,1,"Nelson Street, Bridgetown",crime
+US,2019,Barbados,4: Do not travel,1/10/18,1,"Wellington Street, Bridgetown",crime
+US,2019,Barbados,4: Do not travel,1/10/18,1,Jolly Roger and Buccaneer Cruises,crime
+US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/18,1,Black Rock,crime
+US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/18,1,Deacons,crime
+US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/18,1,Carrington Village,crime
+US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/18,1,Green Fields,crime
+US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/18,1,New Orleans,crime
+US,2019,Barbados,Level 2: Exercise Increased Caution,1/10/18,1,Pine,crime
+US,2019,Belarus,Level 1: Exercise Normal Precautions,6/18/18,,,
+US,2019,Belgium,Level 2: Exercise Increased Caution,12/21/18,,,terrorism
+US,2019,Belize,Level 2: Exercise Increased Caution,1/4/19,,,crime
+US,2019,Benin,Level 1: Exercise Normal Precautions,5/23/19,,,
+US,2019,Benin,Level 3: Reconsider Travel,5/23/19,1,"Park Pendjari, Park W and Adjacent Hunting Zones",terrorism and kidnapping
+US,2019,Benin,Level 2: Exercise Increased Caution,5/23/19,1,Urban Areas ,crime
+US,2019,Bermuda,Level 1: Exercise Normal Precautions,1/8/19,,,
+US,2019,Bhutan,Level 1: Exercise Normal Precautions,1/25/19,,,
+US,2019,Bolivia,Level 1: Exercise Normal Precautions,5/8/19,,,
+US,2019,"Bonaire, Sint Eustatius and Saba",Level 1: Exercise Normal Precautions,1/8/19,,,
+US,2019,Bosnia and Herzegovina,Level 2: Exercise Increased Caution,6/25/19,,,terrorism and land mines
+US,2019,Botswana,Level 1: Exercise Normal Precautions,12/14/18,,,
+US,2019,Brazil,Level 2: Exercise Increased Caution,2/6/19,,,
+US,2019,Brazil,4: Do not travel,2/6/19,1,"150 km of Brazil's land borders with Venezuela, Colombia, Peru, Bolivia, Guyana, Suriname, French Guiana, and Paraguay",crime
+US,2019,Brazil,4: Do not travel,2/6/19,1,Do not use public buses in and around Recife.,cirme
+US,2019,Brazil,4: Do not travel,2/6/19,1,"Informal housing developments (commonly referred to in Brazil as favelas, vilas, communidades, and/or conglomerados), at any time of day due to crime",crime
+US,2019,Brazil,4: Do not travel,2/6/19,1,"Brasilia’s administrative regions (commonly known as “satellite cities”) of Ceilandia, Santa Maria, Sao Sebastiao, and Paranoa during non-daylight hours due to crime",crime
+US,2019,Brazil,4: Do not travel,2/6/19,1,Recife’s Pina Beach from Dona Benvinda de Farias Street to the Brasilia Teimosa neighborhood after dark due to crime,crime
+US,2019,British Virgin Islands,Level 1: Exercise Normal Precautions,5/7/19,,,
+US,2019,Brunei,Level 1: Exercise Normal Precautions,10/17/18,,,
+US,2019,Bulgaria,Level 1: Exercise Normal Precautions,10/17/18,,,
+US,2019,Burkina Faso,Level 3: Reconsider Travel,6/3/19,,,
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Boucle du Mouhoun,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Cascades,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Centre-Est,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Centre-Nord,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Centre-Ouest,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Centre-Sud,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Est ,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Hauts-Bassins,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Nord,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Sahel,"crime, terrorism, and kidnapping"
+US,2019,Burkina Faso,4: Do not travel,6/3/19,1,Sud-Ouest,"crime, terrorism, and kidnapping"
+US,2019,Burma (Myanmar),Level 2: Exercise Increased Caution,6/18/19,,,
+US,2019,Burundi,Level 3: Reconsider Travel,6/12/19,,,
+US,2019,Cabo Verde,Level 1: Exercise Normal Precautions,12/4/18,,,crime and political violence
+US,2019,Cambodia,Level 1: Exercise Normal Precautions,1/7/19,,,
+US,2019,Cambodia,Level 2: Exercise Increased Caution,1/7/19,1,Phnom Penh,crime
+US,2019,Cambodia,Level 2: Exercise Increased Caution,1/7/19,1,"Battambang, Banteay Meanchey, Pursat, Siem Reap, Pailin, and Kampong Thom provinces",land mines
+US,2019,Cameroon,Level 2: Exercise Increased Caution,4/9/19,,,
+US,2019,Cameroon,Level 4: Do Not Travel,4/9/19,1,"North, Far North, Northwest, and Southwest Regions, Parts of East and Adamawa Regions",crime and kidnapping
+US,2019,Cameroon,Level 4: Do Not Travel,4/9/19,1,Far North,Terrorism
+US,2019,Cameroon,Level 4: Do Not Travel,4/9/19,1,Northwest and Southwest ,armed conflict 
+US,2019,Canada,Level 1: Exercise Normal Precautions,1/9/19,,,
+US,2019,Cayman Islands,Level 1: Exercise Normal Precautions,1/8/19,,,
+US,2019,Central African Republic,Level 4: Do Not Travel,4/9/19,,,"crime, civil unrest, and kidnapping "
+US,2019,Chad,Level 3: Reconsider Travel,1/30/19,,,"crime, terrorism, and minefields"
+US,2019,Chile,Level 1: Exercise Normal Precautions,8/27/18,,,
+US,2019,China,Level 2: Exercise Increased Caution,1/3/19,,,arbitrary enforcement of local laws as well as special restrictions on dual U.S.-Chinese nationals.
+US,2019,Colombia,Level 2: Exercise Increased Caution,4/9/19,,,
+US,2019,Colombia,Level 4: Do Not Travel,4/9/19,1,"Arauca, Cauca, Chocó, Nariño and Norte de Santander Departments ",crime
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Antioquia department north of Medellin,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Caquetá department,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Casanare department,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Cesar department outside of Valledupar,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Cordoba department outside of Montería,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Guainía department,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Guaviare department,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Meta department,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Putumayo department,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Valle del Cauca department outside of Cali and Palmira area,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Vaupes department,crime and terrorism
+US,2019,Colombia,Level 3: Reconsider Travel,4/9/19,1,Vichada department,crime and terrorism
+US,2019,Comoros,Level 1: Exercise Normal Precautions,5/2/19,,,
+US,2019,Costa Rica,Level 1: Exercise Normal Precautions,9/4/18,,,
+US,2019,Cote d'Ivoire,Level 2: Exercise Increased Caution,12/11/18,,,crime and terrorism
+US,2019,Croatia,Level 1: Exercise Normal Precautions,1/2/19,,,
+US,2019,Cuba,Level 2: Exercise Increased Caution,8/23/18,,,
+US,2019,Curacao,Level 1: Exercise Normal Precautions,1/8/19,,,
+US,2019,Cyprus,Level 1: Exercise Normal Precautions,6/18/18,,,
+US,2019,Czech Republic,Level 1: Exercise Normal Precautions,6/26/19,,,
+US,2019,Democratic Republic of the Congo,Level 3: Reconsider Travel,4/9/19,,,
+US,2019,Democratic Republic of the Congo,Level 4: Do Not Travel,4/9/19,1,North Kivu and Ituri Proviences ,"crime, Ebola, and kidnapping."
+US,2019,Democratic Republic of the Congo,Level 4: Do Not Travel,4/9/19,1,The Eastern DRC Region and the Three Kasai Provinces,armed conflict 
+US,2019,Denmark,Level 2: Exercise Increased Caution,6/25/19,,,Terrorism
+US,2019,Djibouti,Level 1: Exercise Normal Precautions,12/12/18,,,
+US,2019,Dominica,Level 1: Exercise Normal Precautions,5/7/19,,,
+US,2019,Dominican Republic,Level 2: Exercise Increased Caution,4/15/19,,,crime
+US,2019,Ecuador,Level 2: Exercise Increased Caution,4/9/19,,,crime
+US,2019,Ecuador,Level 4: Do Not Travel,4/9/19,1,"Carchi, Sucumbíos, and northern Esmeraldas Provinces",crime
+US,2019,Egypt,Level 2: Exercise Increased Caution,2/6/19,,,
+US,2019,Egypt,Level 4: Do Not Travel,2/6/19,1,Sinai Peninsula,Terrorism
+US,2019,Egypt,Level 4: Do Not Travel,2/6/19,1,Western Desert,Terrorism
+US,2019,El Salvador,Level 3: Reconsider Travel,1/29/19,,,crime
+US,2019,Equatorial Guinea,Level 1: Exercise Normal Precautions,12/10/18,,,
+US,2019,Eritrea,Level 2: Exercise Increased Caution,2/25/19,,,
+US,2019,Estonia,Level 1: Exercise Normal Precautions,8/17/18,,,
+US,2019,Eswatini,Level 1: Exercise Normal Precautions,12/14/18,,,
+US,2019,Ethiopia,Level 2: Exercise Increased Caution,5/13/19,,,
+US,2019,Ethiopia,level 4: Do Not Travel,5/13/19,1,Somali Regional State,"civil unrest, terrorism, kidnapping, and landmines"
+US,2019,Ethiopia,level 3: Reconsider Travel,5/13/19,1,The East Hararge Region and Guji Zone of Oromia State,armed conflict and civil unrest
+US,2019,Ethiopia,level 3: Reconsider Travel,5/13/19,1,Benishangul Gumuz and the western part of Oromia State,armed conflict and civil unrest.
+US,2019,Ethiopia,level 3: Reconsider Travel,5/13/19,1,"Border Areas with Kenya, Sudan, South Sudan, and Eritrea","crime, armed conflict, and civil unrest."
+US,2019,Fiji,Level 1: Exercise Normal Precautions,12/18/18,,,
+US,2019,Finland,Level 1: Exercise Normal Precautions,9/27/18,,,
+US,2019,France,Level 2: Exercise Increased Caution,4/1/19,,,terrorism and civil unrest
+US,2019,French Guiana,Level 1: Exercise Normal Precautions,10/24/18,,,
+US,2019,French Polynesia,Level 1: Exercise Normal Precautions,3/25/19,,,
+US,2019,French West Indies,Level 1: Exercise Normal Precautions,2/25/19,,,
+US,2019,Gabon,Level 1: Exercise Normal Precautions,1/10/19,,,
+US,2019,Georgia,Level 1: Exercise Normal Precautions,4/9/19,,,
+US,2019,Germany,Level 2: Exercise Increased Caution,6/19/19,,,terrorism
+US,2019,Ghana,Level 1: Exercise Normal Precautions,2/12/19,,,
+US,2019,Greece,Level 1: Exercise Normal Precautions,7/10/18,,,
+US,2019,Grenada,Level 1: Exercise Normal Precautions,2/25/19,,,
+US,2019,Guatemala,Level 2: Exercise Increased Caution,2/28/19,,,crime
+US,2019,Guatemala,Level 3: Reconsider Travel,2/28/19,1,Guatemala Department,crime
+US,2019,Guatemala,Level 3: Reconsider Travel,2/28/19,1,Escuintla Department,crime
+US,2019,Guatemala,Level 3: Reconsider Travel,2/28/19,1,Chiquimula Department,crime
+US,2019,Guatemala,Level 3: Reconsider Travel,2/28/19,1,Quetzaltenango Department,crime
+US,2019,Guatemala,Level 3: Reconsider Travel,2/28/19,1,Izabal Department,crime
+US,2019,Guatemala,Level 3: Reconsider Travel,2/28/19,1,Petén Department ,crime
+US,2019,Guinea,Level 2: Exercise Increased Caution,1/31/19,,,civil unrest 
+US,2019,Guinea-Bissau,Level 3: Reconsider Travel,4/25/19,,,crime and civil unrest
+US,2019,Guyana,Level 2: Exercise Increased Caution,5/30/19,,,crime
+US,2019,Haiti,Level 3: Reconsider Travel,6/11/19,,,"crime, civil unrest, and kidnapping "
+US,2019,Honduras,Level 3: Reconsider Travel,6/24/19,,,
+US,2019,Honduras,Level 4: Do Not Travel,6/24/19,1,Gracias a Dios Department,crime
+US,2019,Hong Kong,Level 1: Exercise Normal Precautions,12/31/18,,,
+US,2019,Hungary,Level 1: Exercise Normal Precautions,8/17/18,,,
+US,2019,Iceland,Level 1: Exercise Normal Precautions,6/20/19,,,
+US,2019,India,Level 2: Exercise Increased Caution,3/8/19,,,
+US,2019,India,Level 4: Do Not Travel,3/8/19,1,State of Jammu and Kashmir,terrorism and civil unrest
+US,2019,India,Level 4: Do Not Travel,3/8/19,1,Within 10 km of the India-Pakistan border,potential for armed conflict
+US,2019,Indonesia,Level 2: Exercise Increased Caution,1/3/19,,,
+US,2019,Indonesia,level 3: Reconsider Travel,1/3/19,1,Central Sulawesi and Papua,civil unrest 
+US,2019,Iran,Level 4: Do Not Travel,4/9/19,,,
+US,2019,Iraq,Level 4: Do Not Travel,5/15/19,,,
+US,2019,Ireland,Level 1: Exercise Normal Precautions,11/6/18,,,
+US,2019,"Israel, The West Bank and Gaza",Level 2: Exercise Increased Caution,12/28/18,,,
+US,2019,"Israel, The West Bank and Gaza",Level 4: Do Not Travel,12/28/18,1,Gaza,"terrorism, civil unrest, and armed conflict"
+US,2019,"Israel, The West Bank and Gaza",Level 3: Reconsider Travel,12/28/18,1,West Bank,"terrorism, potentially violent civil unrest, and the potential for armed conflict"
+US,2019,Italy,Level 2: Exercise Increased Caution,12/31/18,,,terrorism
+US,2019,Jamaica,Level 2: Exercise Increased Caution,4/15/19,,,
+US,2019,Jamaica,Level 4: Do Not Travel,4/15/19,1,Some areas of Kingston,crime
+US,2019,Jamaica,Level 4: Do Not Travel,4/15/19,1,Some areas of Montego Bay,crime
+US,2019,Jamaica,Level 4: Do Not Travel,4/15/19,1,Spanish Town,crime
+US,2019,Japan,Level 1: Exercise Normal Precautions,12/20/18,,,
+US,2019,Jordan,Level 2: Exercise Increased Caution,12/12/18,,,
+US,2019,Jordan,Level 4: Do Not Travel,12/12/18,1,The border with Syria and Iraq,terrorism and armed conflict
+US,2019,Kazakhstan,Level 1: Exercise Normal Precautions,4/3/19,,,
+US,2019,Kenya,Level 2: Exercise Increased Caution,4/9/19,,,
+US,2019,Kenya,Level 4: Do Not Travel,4/9/19,1,Kenya-Somalia Border Counties and Coastal Areas,terrorism
+US,2019,Kenya,Level 4: Do Not Travel,4/9/19,1,Kenya-Somalia Border Counties ,terrorism
+US,2019,Kenya,Level 4: Do Not Travel,4/9/19,1,Coastal Areas,crime
+US,2019,Kenya,Level 4: Do Not Travel,4/9/19,1,Turkana County,crime 
+US,2019,Kenya,Level 3: Reconsider Travel,4/9/19,1,Nairobi neighborhoods of Eastleigh and Kibera,crime and kidnapping
+US,2019,Kiribati,Level 1: Exercise Normal Precautions,10/18/18,,,
+US,2019,Kosovo,Level 2: Exercise Increased Caution,5/31/19,,,
+US,2019,Kosovo,Level 3: Reconsider Travel,5/31/19,1,"North Mitrovica, Leposavic, Zubin Potok, and Zvecan",civil unrest
+US,2019,Kuwait,Level 1: Exercise Normal Precautions,5/17/19,,,
+US,2019,Laos,Level 1: Exercise Normal Precautions,7/11/18,,,
+US,2019,Latvia,Level 1: Exercise Normal Precautions,7/30/18,,,
+US,2019,Lebanon,Level 3: Reconsider Travel,4/9/19,,,"crime, terrorism, kidnapping, and armed conflict"
+US,2019,Lebanon,Level 4: Do Not Travel,4/9/19,1,Border with Syria,terrorism and armed conflict
+US,2019,Lebanon,Level 4: Do Not Travel,4/9/19,1,Border with Israel,the potential for armed conflict
+US,2019,Lebanon,Level 4: Do Not Travel,4/9/19,1,Refugee Settlements,the potential for armed conflict
+US,2019,Lesotho,Level 1: Exercise Normal Precautions,12/18/18,,,
+US,2019,Liberia,Level 1: Exercise Normal Precautions,1/7/19,,,
+US,2019,Libya,Level 4: Do Not Travel,4/9/19,,,"crime, terrorism, civil unrest, kidnapping, and armed conflict."
+US,2019,Lithuania,Level 1: Exercise Normal Precautions,6/4/19,,,
+US,2019,Luxembourg,Level 1: Exercise Normal Precautions,1/2/19,,,
+US,2019,Macau,Level 1: Exercise Normal Precautions,12/31/18,,,
+US,2019,Madagascar,Level 2: Exercise Increased Caution,7/31/18,,,civil unrest and crime
+US,2019,Malawi,Level 1: Exercise Normal Precautions,12/18/18,,,
+US,2019,Malaysia,Level 1: Exercise Normal Precautions,4/9/19,,,
+US,2019,Maldives,Level 2: Exercise Increased Caution,5/2/19,,,terrorism
+US,2019,Mali,Level 4: Do Not Travel,4/9/19,,,"crime, terrorism, and kidnapping"
+US,2019,Malta,Level 1: Exercise Normal Precautions,7/1/19,,,
+US,2019,Marshall Islands,Level 1: Exercise Normal Precautions,12/10/18,,,
+US,2019,Mauritania,Level 3: Reconsider Travel,11/29/18,,,crime and terrorism
+US,2019,Mauritius,Level 1: Exercise Normal Precautions,12/26/18,,,
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,,,
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Aguascalientes state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Baja California state ,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Baja California Sur state ,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Campeche state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Chiapas state ,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Chihuahua state,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Coahuila state,crime
+US,2019,Mexico,Level 4: Do Not Travel,4/9/19,1,Colima state,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Durango state,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Estado de Mexico state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Guanajuato state,crime
+US,2019,Mexico,Level 4: Do Not Travel,4/9/19,1,Guerrero state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Hildago state,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Jalisco state,crime 
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Mexico City,crime
+US,2019,Mexico,Level 4: Do Not Travel,4/9/19,1,Michoacan state,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Morelos state,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Nayarit state ,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Nuevo Leon state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Oaxaca state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Puebla state ,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Queretaro state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Quintana Roo state,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,San Luis Potosi state,crime
+US,2019,Mexico,Level 4: Do Not Travel,4/9/19,1,Sinaloa state ,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Sonora state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Tabasco state ,crime and kidnapping
+US,2019,Mexico,Level 4: Do Not Travel,4/9/19,1,Tamaulipas state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Tlaxcala state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Veracruz state,crime
+US,2019,Mexico,Level 2: Exercise Increased Caution,4/9/19,1,Yucatan state,crime
+US,2019,Mexico,Level 3: Reconsider Travel,4/9/19,1,Zacatecas state,crime
+US,2019,Micronesia,Level 1: Exercise Normal Precautions,11/30/18,,,
+US,2019,Moldova,Level 1: Exercise Normal Precautions,7/10/18,,,
+US,2019,Mongolia,Level 1: Exercise Normal Precautions,1/9/19,,,
+US,2019,Montenegro,Level 1: Exercise Normal Precautions,12/31/18,,,
+US,2019,Montserrat,Level 1: Exercise Normal Precautions,2/26/19,,,
+US,2019,Morocco,Level 2: Exercise Increased Caution,4/2/19,,,terrorism
+US,2019,Mozambique,Level 1: Exercise Normal Precautions,2/6/19,,,
+US,2019,Namibia,Level 1: Exercise Normal Precautions,12/17/18,,,
+US,2019,Nauru,Level 1: Exercise Normal Precautions,4/2/19,,,
+US,2019,Nepal,Level 2: Exercise Increased Caution,1/8/19,,,isolated political violence
+US,2019,Netherlands,Level 2: Exercise Increased Caution,9/28/18,,,terrorism
+US,2019,New Caledonia,Level 1: Exercise Normal Precautions,4/1/19,,,
+US,2019,New Zealand,Level 1: Exercise Normal Precautions,11/15/18,,,
+US,2019,Nicaragua,Level 3: Reconsider Travel,4/3/19,,,"civil unrest, crime, limited healthcare availability, and arbitrary enforcement of laws"
+US,2019,Niger,Level 3: Reconsider Travel,4/9/19,,,"crime, terrorism, and kidnapping"
+US,2019,Nigeria,Level 3: Reconsider Travel,4/9/19,,,"crime, terrorism, civil unrest, kidnapping and piracy."
+US,2019,Nigeria,Level 4: Do Not Travel,4/9/19,1,Borno and Yobe States and Northern Adamawa State,terrorism
+US,2019,North Korea (Democratic People's Republic of Korea),Level 4: Do Not Travel,12/19/18,,,serious risk of arrest and long-term detention of U.S. nationals. 
+US,2019,North Macedonia,Level 1: Exercise Normal Precautions,12/26/18,,,
+US,2019,Norway,Level 1: Exercise Normal Precautions,9/13/18,,,
+US,2019,Oman,Level 1: Exercise Normal Precautions,5/17/19,,,
+US,2019,Pakistan,Level 3: Reconsider Travel,4/9/19,,,
+US,2019,Pakistan,Level 4: Do Not Travel,4/9/19,1,Balochistan Province,terrorism and kidnapping
+US,2019,Pakistan,Level 4: Do Not Travel,4/9/19,1,"KPK Province, including the former FATA",terrorism and kidnapping
+US,2019,Pakistan,Level 4: Do Not Travel,4/9/19,1,Azad Kashmir ,terrorism and armed conflict
+US,2019,Pakistan,Level 4: Do Not Travel,4/9/19,1,India-Pakistan Border,terrorism and armed conflict
+US,2019,Palau,Level 1: Exercise Normal Precautions,12/17/18,,,
+US,2019,Panama,Level 1: Exercise Normal Precautions,5/3/19,,,
+US,2019,Papua New Guinea,Level 2: Exercise Increased Caution,4/9/19,,,
+US,2019,Papua New Guinea,Level 3: Reconsider Travel,4/9/19,1,Areas Near the Panguna Mine,civil unrest
+US,2019,Papua New Guinea,Level 3: Reconsider Travel,4/9/19,1,The Highlands Region ,natural disaster and civil unrest
+US,2019,Paraguay,Level 1: Exercise Normal Precautions,1/22/19,,,
+US,2019,Peru,Level 1: Exercise Normal Precautions,7/11/18,,,
+US,2019,Philippines,Level 2: Exercise Increased Caution,4/9/19,,,
+US,2019,Philippines,Level 4: Do Not Travel,4/9/19,1,The Sulu Archipelago and Sulu Sea,"crime, terrorism, civil unrest, and kidnapping"
+US,2019,Philippines,Level 4: Do Not Travel,4/9/19,1,Marawi City in Mindanao,terrorism and civil unrest
+US,2019,Philippines,Level 3: Reconsider Travel,4/9/19,1,Mindanao ,"crime, terrorism, civil unrest, and kidnapping"
+US,2019,Poland,Level 1: Exercise Normal Precautions,12/27/18,,,
+US,2019,Portugal,Level 1: Exercise Normal Precautions,5/28/19,,,
+US,2019,Qatar,Level 1: Exercise Normal Precautions,5/17/19,,,
+US,2019,Republic of the Congo,Level 2: Exercise Increased Caution,4/18/19,,,crime and  civil unrest
+US,2019,Republic of the Congo,Level 4: Do Not Travel,4/18/19,1,The Southern and Western Districts of the Pool Region,crime and  civil unrest
+US,2019,Romania,Level 1: Exercise Normal Precautions,8/3/18,,,
+US,2019,Russia,Level 2: Exercise Increased Caution,4/9/19,,,"terrorism, harassment, and the arbitrary enforcement of local laws"
+US,2019,Russia,Level 4: Do Not Travel,4/9/19,1,North Caucasus (including Chechnya and Mount Elbrus),"terrorism, kidnapping, and civil unrest"
+US,2019,Russia,Level 4: Do Not Travel,4/9/19,1,Crimea,abuses by its occupying authorities
+US,2019,Rwanda,Level 1: Exercise Normal Precautions,2/19/19,,,
+US,2019,Saint Kitts and Nevis,Level 1: Exercise Normal Precautions,5/7/19,,,
+US,2019,Saint Lucia,Level 1: Exercise Normal Precautions,4/15/19,,,
+US,2019,Saint Vincent and The Grenadines,Level 1: Exercise Normal Precautions,2/26/19,,,
+US,2019,Samoa,Level 1: Exercise Normal Precautions,12/13/18,,,
+US,2019,Sao Tome and Principe,Level 1: Exercise Normal Precautions,1/10/19,,,
+US,2019,Saudi Arabia,Level 2: Exercise Increased Caution,6/25/19,,,terrorism and the threat of missile and drone attacks on civilian targets.
+US,2019,Saudi Arabia,Level 4: Do Not Travel,6/25/19,1,Yemen Border,terrorism and armed conflict
+US,2019,Senegal,Level 1: Exercise Normal Precautions,4/25/19,,,
+US,2019,Serbia,Level 2: Exercise Increased Caution,12/31/18,,,crime
+US,2019,Seychelles,Level 1: Exercise Normal Precautions,12/12/18,,,
+US,2019,Sierra Leone,Level 2: Exercise Increased Caution,12/4/18,,,crime
+US,2019,Singapore,Level 1: Exercise Normal Precautions,12/20/18,,,
+US,2019,Sint Maarten,Level 1: Exercise Normal Precautions,1/8/19,,,
+US,2019,Slovakia,Level 1: Exercise Normal Precautions,12/27/18,,,
+US,2019,Slovenia,Level 1: Exercise Normal Precautions,12/28/18,,,
+US,2019,Solomon Island,Level 1: Exercise Normal Precautions,2/22/19,,,
+US,2019,Somalia,Level 4: Do Not Travel,4/9/19,,,"crime, terrorism, kidnapping and piracy."
+US,2019,South Africa,Level 2: Exercise Increased Caution,10/19/18,,,"crime, civil unrest, and drought."
+US,2019,South Korea,Level 1: Exercise Normal Precautions,12/19/18,,,
+US,2019,South Sudan,Level 4: Do Not Travel,4/9/19,,,"crime, kidnapping, and armed conflict."
+US,2019,Spain,Level 2: Exercise Increased Caution,3/18/19,,,terrorism
+US,2019,Sri Lanka,Level 2: Exercise Increased Caution,6/24/19,,,terrorism
+US,2019,Sudan,Level 4: Do Not Travel,4/11/19,,,"crime, terrorism, civil unrest, kidnapping, and armed conflict. "
+US,2019,Suriname,Level 1: Exercise Normal Precautions,10/19/18,,,
+US,2019,Sweden,Level 1: Exercise Normal Precautions,3/29/19,,,
+US,2019,Switzerland,Level 1: Exercise Normal Precautions,9/18/18,,,
+US,2019,Syria,Level 4: Do Not Travel,4/9/19,,,"terrorism, civil unrest, kidnapping, and armed conflict."
+US,2019,Taiwan,Level 1: Exercise Normal Precautions,1/2/19,,,
+US,2019,Tajikistan,Level 2: Exercise Increased Caution,8/3/18,,,terrorism
+US,2019,Tanzania,Level 2: Exercise Increased Caution,2/25/19,,,"crime, terrorism, and targeting of LGBTI persons"
+US,2019,Thailand,Level 1: Exercise Normal Precautions,1/29/19,,,
+US,2019,The Bahamas,Level 2: Exercise Increased Caution,4/15/19,,,crime
+US,2019,The Gambia,Level 1: Exercise Normal Precautions,12/10/18,,,
+US,2019,The Kyrgyz Republic,Level 1: Exercise Normal Precautions,4/3/19,,,
+US,2019,Timor-Leste,Level 1: Exercise Normal Precautions,12/21/18,,,
+US,2019,Togo,Level 1: Exercise Normal Precautions,5/22/19,,,
+US,2019,Tonga,Level 1: Exercise Normal Precautions,11/7/18,,,
+US,2019,Trinidad and Tobago,Level 2: Exercise Increased Caution,4/9/19,,,"crime, terrorism, and kidnapping"
+US,2019,Trinidad and Tobago,Level 4: Do Not Travel,4/9/19,1,The Port of Spain,crime
+US,2019,Tunisia,Level 2: Exercise Increased Caution,1/2/19,,,terrorism
+US,2019,Tunisia,Level 4: Do Not Travel,1/2/19,1,Border with Libya,terrorism
+US,2019,Tunisia,Level 4: Do Not Travel,1/2/19,1,Western Mountains and Chaambi Mountain National Park,terrorism
+US,2019,Tunisia,Level 4: Do Not Travel,1/2/19,1,The Desert South of Remada,military zone
+US,2019,Tunisia,Level 4: Do Not Travel,1/2/19,1,Jendouba El Kef and Kasserine near the Algerian Border,terrorism
+US,2019,Tunisia,Level 4: Do Not Travel,1/2/19,1,Sidi Bou Zid in Central Tunisia,terrorism
+US,2019,Turkey,Level 3: Reconsider Travel,4/9/19,,,terrorism and arbitrary detentions
+US,2019,Turkey,Level 4: Do Not Travel,4/9/19,1,Areas Near Syrian and Iraq Borders,terrorism and kidnapping
+US,2019,Turkmenistan,Level 1: Exercise Normal Precautions,4/15/19,,,
+US,2019,Turks and Caicos Islands,Level 2: Exercise Increased Caution,2/25/19,,,crime
+US,2019,Tuvalu,Level 1: Exercise Normal Precautions,2/25/19,,,
+US,2019,Uganda,Level 2: Exercise Increased Caution,4/9/19,,,crime and kidnapping
+US,2019,Ukraine,Level 2: Exercise Increased Caution,6/11/19,,,"crime, civil unrest and elections"
+US,2019,Ukraine,Level 4: Do Not Travel,6/11/19,1,Crimea,"crime, civil unrest and elections"
+US,2019,Ukraine,Level 4: Do Not Travel,6/11/19,1,Donetsk and Luhansk,"crime, civil unrest and elections"
+US,2019,United Arab Emirates,Level 1: Exercise Normal Precautions,5/17/19,,,
+US,2019,United Kingdom,Level 2: Exercise Increased Caution,4/22/19,,,terrorism
+US,2019,Uruguay,Level 1: Exercise Normal Precautions,1/29/19,,,
+US,2019,Uzbekistan,Level 1: Exercise Normal Precautions,12/13/18,,,
+US,2019,Vanuatu,Level 1: Exercise Normal Precautions,3/21/19,,,
+US,2019,Venezuela,Level 4: Do Not Travel,4/9/19,,,"crime, civil unrest, poor health infrastructure, kidnapping, and arbitrary arrest and detention of U.S. citizens."
+US,2019,Vietnam,Level 1: Exercise Normal Precautions,1/2/19,,,
+US,2019,Yemen,Level 4: Do Not Travel,4/9/19,,,"terrorism, civil unrest, health risks, kidnapping, and armed conflict."
+US,2019,Zambia,Level 1: Exercise Normal Precautions,12/14/18,,,
+US,2019,Zimbabwe,Level 2: Exercise Increased Caution,5/14/19,,,crime and civil unrest.
+Canada,2019,Azores,1,6/6/19,,,
+Canada,2019,Canary Islands,1,6/6/19,,,
+Canada,2019,Mayotte,1,6/13/19,,,
+Canada,2019,Reunion,2,6/13/19,,,
+Canada,2019,Falkland Islands,1,6/6/19,,,
+Canada,2019,Puerto Rico,1,6/6/19,,,
+Canada,2019,U.S. Virgin Islands,1,6/6/19,,,
+Canada,2019,Greenland,1,6/6/19,,,
+Canada,2019,Line Islands (Kiribati),1,6/6/19,,,
+Canada,2019,American Samoa,1,6/6/19,,,
+Canada,2019,Cook Islands,1,6/6/19,,,
+Canada,2019,Niue,1,6/6/19,,,
+Canada,2019,Tokelau,1,6/6/19,,,
+Canada,2019,Saint Pierre and Miquelon,1,6/6/19,,,
+Canada,2019,Northern Mariana Islands ,1,6/6/19,,,
+Canada,2019,Guam,1,6/6/19,,,
+Canada,2019,United States,1,6/21/19,,,
+Canada,2019,Kyrgyzstan,2,7/2/19,,,
+Canada ,2019,Liechtenstein,1,6/6/19,,,
+Canada,2019,Monaco,1,6/6/19,,,
+Canada,2019,Gibraltar,1,6/6/19,,,
+Canada,2019,San Marino,1,6/6/19,,,
+Canada,2019,Saint-Barthélemy,1,6/6/19,,,
+Canada,2019,Bonaire,1,6/6/19,,,
+Canada,2019,Guadeloupe,1,6/6/19,,,
