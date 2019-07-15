@@ -72,7 +72,7 @@ source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/wor
 
 ## Download and save data
 *Skip if you have already downloaded data.*
-```{r load_data,eval=F}
+```{r load_data, eval=F}
 
 # check website to see what years are available
 yr_start = 1990
@@ -109,13 +109,32 @@ if (!file.exists(here("globalprep/ao/v2019/output"))){
   dir.create(here("globalprep/ao/v2019/output"))
 }
 
+date <- Sys.Date()
 
 #Save the file into the raw folder
-write_csv(gdppcppp_raw, here('globalprep/ao/v2019/raw/raw_gdppcppp_10Jul2019.csv')) # Save file with date, as WDI data changes over even short periods of time. For instance, the Mauritania GDP data changed by an order of magnitude over the course of a week. We want to preserve the date it was downloaded so that data is not being overwritten everytime we run the script. 
+write_csv(gdppcppp_raw, here(sprintf('globalprep/ao/v2019/raw/raw_gdppcppp_%s.csv', date))) # Save file with date, as WDI data changes over even short periods of time. For instance, the Mauritania GDP data changed by an order of magnitude over the course of a week. We want to preserve the date it was downloaded so that data is not being overwritten everytime we run the script. 
+
 
 ```
 
 
+```{r raw check, eval=FALSE}
+
+last_saved_date <- "2019-07-15" # update when new data are downloaded.
+
+new <- read_csv(here(sprintf('globalprep/ao/v2019/raw/raw_gdppcppp_%s.csv', last_saved_date)))
+
+old <- read_csv(here('globalprep/ao/v2018/raw/raw_gdppcppp.csv')) %>%
+  select(country, old_value = NY.GDP.PCAP.PP.KD, year)
+
+compare <- left_join(new, old, by = c("country", "year"))  %>%
+  filter(year==2017)
+ 
+ggplot(compare, aes(x=NY.GDP.PCAP.PP.KD, y=old_value)) + 
+  geom_point() + 
+  geom_abline(slope = 1, intercept = 0, color="red")
+  
+```
 ## Gapfilling 1: Linear Regression within a country's data
 
 When a country has some values (but not a complete series), a within-country regression model is used to predict the missing values.
@@ -124,7 +143,9 @@ When a country has some values (but not a complete series), a within-country reg
 
 # Reorganize to create cells for countries that have missing values for some years
 
-gdppcppp_clean <- read_csv(here('globalprep/ao/v2019/raw/raw_gdppcppp_10Jul2019.csv')) %>% # change date here also to match filename above 
+last_saved_date <- "2019-07-15" # update when new data are downloaded.
+
+gdppcppp_clean <- read_csv(here(sprintf('globalprep/ao/v2019/raw/raw_gdppcppp_%s.csv', last_saved_date))) %>% # change date here also to match filename above 
   dplyr::select(country, value=NY.GDP.PCAP.PP.KD, year) %>%
   dplyr::filter(year >= 2005) %>%
   tidyr::spread(year, value) %>%
