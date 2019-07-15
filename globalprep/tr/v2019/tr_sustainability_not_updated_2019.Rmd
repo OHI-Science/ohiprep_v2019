@@ -15,6 +15,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+***note: once the newest WEC travel and tourism competitiveness report is released, this code can be pasted back into the main tr_data_prep.Rmd script***
+
 
 [REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2017/tr_dataprep.html]
 
@@ -49,7 +51,7 @@ In past assessment we identified subregional warnings and modified the penalty b
 The TTCI data is available to download in an excel file directly from the source. File was download on 07/12/2018 and saved in Mazu as a csv. No changes in data.
 
 We were able to update the following data:
-* Tourism Sustainability - TTCI form WEF - No updates
+* Tourism Sustainability - TTCI from WEF - No updates
 * Proportion of jobs in tourism - WTTC data reported until 2017 and unclear if 2018 is actual data or prediction so we used 2017 as the data_year (downloaded: 07/08/2019)
 **** should we be using 2018 as the most recent data year? e.g. should this be standard practice? *****
 * Travel warnings for 2018 (downloaded: U.S State Department 07/02/2019)

@@ -21,7 +21,7 @@ editor_options:
 ###### need to update this link, not working ^^
 
 # Summary
-This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2018 global assessment.
+This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2019 global assessment.
 
 The general calculation is:
 tr = Ep * Sr * Tw
@@ -32,31 +32,34 @@ Xtr = tr/90th quantile across regions
 * Sr = (S-1)/5; Sustainability of tourism
 * Tw = A penalty applied to regions with travel warnings from the US State Department (or Canada's Government Travel Advise and Advisory)
 
-The following data are used:
 
-* Tourism sustainability: Travel and Tourism Competitiveness Index (TTCI) from World Economic Forum (WEF)
+## The following data are used:
+
+* Tourism sustainability: Travel and Tourism Competitiveness Index (TTCI) from World Economic Forum (WEF) (NOT updated for 2019)
 * Proportion of workforce directly employed in tourism: World Travel & Tourism Council ([WTTC](https://www.wttc.org/datagateway))
-* Travel warnings: (U.S. State Department)
-* Per capita GDP: (World Bank with gaps filled using CIA data), used to gapfill missing values in Tourism sustainability
+* Travel warnings: ([U.S. State Department](https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories.html/) and [Canadian Government](https://travel.gc.ca/travelling/advisories))
+* Per capita GDP: (World Bank with gaps filled using CIA data), used to gapfill missing values in Tourism sustainability (in previous years)
+
 
 # Updates from previous assessment
-In 2017 we discovered that the WEF-Economics Global Competitiveness Index data used to estimate sustainability is not compatible across years.  New methods are used each year and previous year's of data are not recalculated using the updated methods. Consequently, we use the most recent data for all scenario years.
 
-Travel Warning data form the U.S State department has updated the way data is reported. This year all countries have a travel warning that ranges from level 1 (normal precautions) to level 4 (do not travel). Within each general warning for a country there are regional warnings that are obtain by clicking in each country.
-In past assessment we identified subregional warnings and modified the penalty based on this information. This year, because the new way of reporting the data, we will no longer apply this method. We eliminated the "subregion" information/penalties and modified past data to be consistent with our new approach. Future data should be collected without including this information. More information on how to obtain the data in the travel_warning section (scroll down).
+## Tourism employment
+WTTC data includes projections 10 years in the future, and in 2018 it was unclear when these projections began, so they used 2017 as their maximum data year. When downloading data for the 2019 assessment it was clear from the WTTC data gateway where the real data ended and projections began, so 2019 was used as the maximum data year.
 
+## Travel warnings
+Previously, US state department data only were used to identify travel warnings for each country. In 2019 we incorporated advisories from the Canadian government to fill in data for countries the US did not establish warnings for. The Canadian advisories were matched to the numeric scale used by the US State Department since 2018 (1-4, ranges from level 1 (normal precautions) to level 4 (do not travel)). 
 
-The TTCI data is available to download in an excel file directly from the source. File was download on 07/12/2018 and saved in Mazu as a csv. No changes in data.
-
-We were able to update the following data:
-* Tourism Sustainability - TTCI form WEF - No updates (in separate .Rmd as of v2019)
-* Proportion of jobs in tourism - WTTC data reported until 2017 and unclear if 2018 is actual data or prediction so we used 2017 as the data_year (downloaded: 07/08/2019)
-**** should we be using 2018 as the most recent data year? e.g. should this be standard practice? *****
-* Travel warnings for 2018 (downloaded: U.S State Department 07/02/2019)
+In 2019 we also gapfilled travel warnings for missing territorial regions, using administrative country data. In 2018 a multiplier of 1 was applied to each region with no data. In 2019 all of these regions also received a multiplier of 1 based on the admin country advisories.
 
 
+**We were able to update the following data:**
 
-# Initial set-up code
+* Proportion of jobs in tourism - WTTC data reported until 2029, but 2019 is most recent year of real data (year_max) (downloaded from WTTC on 07/08/2019)
+* Travel warnings for 2018-2019 (downloaded from U.S State Department and Canadian Government on 07/02/2019)
+
+Tourism sustainability data from the WEC Travel and Tourism Competitiveness Report were not updated, as the 2019 report has not been released as of 15 July 2019. 
+
+## Initial set-up code
 
 ```{r setup, message=FALSE, warning=FALSE}
 
@@ -83,7 +86,7 @@ source(here("globalprep/tr/v2019/R/tr_fxns.R"))
 
 # Ep: Proportion of workforce directly employed in tourism
 
-These data are from the World Travel & Tourism Council (http://www.wttc.org/).  We use "direct" employment data (eee mazu: globalprep/_raw_data/WTTC/d2019/README.md for instructions on obtaining data). The data extend to 2029, but these values are projections.  The actual data goes to 2019.
+These data are from the [World Travel & Tourism Council](http://www.wttc.org/datagateway).  We use "direct" employment data (see mazu: git-annex/globalprep/_raw_data/WTTC/d2019/README.md for instructions on obtaining data). The data extend to 2029, which includes 10 years of projections. The actual data goes to 2019 (projected/real data are differentiated on the data gateway chart).
 
 These data are cleaned and formatted using the R/process_WTTC.R script. Missing values are gapfilled using the UN georegion information.
 
@@ -204,30 +207,20 @@ outliers <- tr_data_raw %>%
 
 # Tw: Travel warnings
 
-Primary source of information is from the U.S. State Department  (https://travel.state.gov/content/passports/en/alertswarnings.html)
+Primary source of information is from the [U.S. State Department](https://travel.state.gov/content/passports/en/alertswarnings.html), secondary source is the [Canadian Government](https://travel.gc.ca/travelling/advisories)
 
 
-#### 2018 Assesment
-the U.S. State Department updated the way they report the data. This year warnings are reported for every country (not only the ones under a certain risk as it used to be). They now provide a numeric scale describing the level of warning rather than just keywords.  
+**For future assessments** It would be worthwhile to see if data can be "scraped" directly from the government websites into R. This seems possible given the new format of the state department travel warning data.
 
-
-Previously, we identified subregional warnings and modified the penalty based on this information.  However, given the State Department's new approach, we no longer will apply this method.  We eliminated the "subregion" information/penalties and modified past data to be consistent with our new approach. Future data should be collected without including this information.
-
-
-#### Notes about getting data:
-
-**For future assessments** It would be worthwhile to see if data can be "scraped" directly from the website into R. This seems possible given the new format of the state department travel warning data.
-
-#### Getting data for 2019 assessment
-The following code is used transform the warnings into a multiplier that is used to calculate tourism and recreation scores: 
-
-Step 1: Copy and paste the data for each country: from https://travel.state.gov/content/travel/en/traveladvisories/traveladvisories.html/. Paste into an excel file, convert to .csv and uploade to raw folder
+### Getting data for 2019 assessment
+The following code is used transform the warnings into a multiplier that is used to calculate tourism and recreation scores. Data from each country are copied from the US and Canada government travel websites, pasted into an excel file, and saved as a .csv in the raw folder (tr_travelwarning_20??_raw.csv)
 
 *Date downloaded*: 1 July 2019
 
 *Date range of warnings*: 18 June 2018 - 1 July 2019
 
-Step 2: Wrangle and clean the new data
+
+## After raw data are uploaded, wrangle and clean the new data:
 
 ```{r, eval=FALSE}
 ##Reading and wrangling 2019 warning data
@@ -297,9 +290,6 @@ warn_improved <- warn_improved %>%
   dplyr::mutate(country = ifelse(stringr::str_detect(country,"Northern Mariana Islands"), "Northern Mariana Islands and Guam", country))
   
 
-##NOTE: Puerto Rico and Virgin Islands are reported by the Canadian Goverment Travel Advisory (SEE BELOW befre runnig the script) ??
-
-
 # Look at warn_improved and remove other regions that are duplicated or aren't reported in the OHI. Make sure there are no NAs. 
 get_dupes(warn_improved)
 
@@ -311,7 +301,10 @@ write_csv(warn_improved, here("globalprep/tr/v2019/intermediate/warning_2019.csv
 
 ```
 
-Step 3: Join new data with previous years' assesment data
+
+### Delete this whole step for v2019??
+
+Join new data with previous years' assesment data
 (adjusting previous data to be consistent with this year's data)
 
 In 2018 we adjusted the data for provious years and saved the complete warning list up to 2018 in the intermediate folder (warning_complete.csv). This file should be combined with the data downloaded in 2019 (if data is reported in the same format)
@@ -356,14 +349,14 @@ warn_complete <- warn_improved %>% #2019 data
 # check to make sure that all regions are represented for both years
 
 ##Save warn_complete. This file will be the one that needs to be combined with the new warnings in 2019. -- wasn't it already at this point?
-## v2019: some differences in country names 
+## v2019: some differences in country names since we imported the raw data that hadn't been mutated yet
 
 write_csv(warn_complete, here("globalprep/tr/v2019/intermediate/warning_complete_1819.csv"))
 
 
 ```
 
-Step 4: Transform the warnings into a multiplier that is used to calculate tourism and recreation scores.
+## Transform the warnings into a multiplier that is used to calculate tourism and recreation scores.
 
 Travel warning  | Multiplier   | Description
 --------------- | ------------ | -------------------
@@ -372,7 +365,6 @@ Level 2 | 1 (no penalty) | Exercise Increased Caution:  Be aware of heightened r
 Level 3 | 0.25  | Reconsider Travel: Avoid travel due to serious risks to safety and security.
 Level 4 | 0 (full penalty, results in zero scores) | Do Not Travel:  This is the highest advisory level due to greater likelihood of life-threatening risks. 
 
-**should we be doing this on warn_improved instead, with just 2019 data??**
 ```{r, eval=FALSE}
 warn_complete <- read_csv(here("globalprep/tr/v2019/intermediate/warning_2019.csv"))
 
@@ -400,7 +392,7 @@ write_csv(warn_multiplier, here("globalprep/tr/v2019/intermediate/warning.csv"))
 ```
 
 
-Step 5: Convert names to OHI regions and clean. 
+## Convert names to OHI regions and clean. 
 
 ```{r travel warnings, eval=FALSE}
 warn <- read_csv(here("globalprep/tr/v2019/intermediate/warning.csv"))
@@ -415,7 +407,7 @@ warn_rgn <- name_2_rgn(df_in = warn,
 sort(table(paste(warn_rgn$year, warn_rgn$rgn_id)))
 # China has multiple warnings (rgn_id 209)
 
-# Average China warnings
+# Average warnings for China, China Macao SAR and Hong Kong: 
 warn_rgn <- warn_rgn %>%
   group_by(rgn_id, rgn_name, year) %>%
   summarize(multiplier = mean(multiplier)) %>%
@@ -427,10 +419,7 @@ sort(table(paste(warn_rgn$year, warn_rgn$rgn_id)))
 ```
 
 
-from v2018: Next year, consider gapfilling missing territorial regions with administrative country data.
-**do we want to do this for v2019? looks like last year's output data has data for all regions** 
-
-Final step is to **compare with previous year's data**.
+## Final step: Compare with previous year's data
 
 Many European regions now have a travel warning due to increased terrorism (e.g., United Kingdom, Italy, Spain, Germany), although this doesn't show up in the following figure because previously, these regions had no travel warning (and were thus, NA).
 
@@ -447,11 +436,12 @@ tmp <- warn_rgn %>%
   data.frame() %>% 
   left_join(tmp_old, by = "rgn_id")
 
+# Add noise to scatter to compare warnings between this year and last year (clustered points indicate where there are multiple observations of the same value)
 ggplotly(ggplot(tmp, aes(x = jitter(X2018), y = jitter(X2019), labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
-# Investigate outliers 
+# Investigate outliers (will potentially change from year to year)
 outliers <- tmp %>% 
   filter(rgn_id %in% c(49, 73, 112, 136, 139)) %>% 
   select(rgn_id, rgn_name, X2018, X2019)
@@ -460,62 +450,83 @@ outliers <- tmp %>%
 
 ```
 
-### Save the travel warning data in the output folder
+## Gapfill territorial regions with admin country data and save the travel warning data in the output folder
 
 ```{r, eval=FALSE}
 georegions <- georegion_labels %>%
   select(rgn_id)
   
-
 warn_rgn_spread <- warn_rgn %>%
   spread(year, multiplier) %>%
   full_join(georegions, by=c("rgn_id")) %>%
   data.frame() %>%
   gather(year, multiplier, starts_with("X")) %>%
   mutate(year = gsub("X", "", year)) %>%
-  mutate(multiplier = ifelse(is.na(multiplier), 1, multiplier)) %>% #wth a multiplier 1 to all regions with no warnings
+  #mutate(multiplier = ifelse(is.na(multiplier), 1, multiplier)) %>% #wth a multiplier 1 to all regions with no warnings
+  ########## ^ remove this and instead fill in admin data for territories/regions with no warnings 
   filter(rgn_id <= 250) %>%
   filter(rgn_id != 213) # Filter out Antarctica
   
-#should be 220 
+# Check number of regions reported - should be 220 
 table(warn_rgn_spread$year) 
 
-############################ Identify territories without multiplier data and connect them with multipliers for admin regions 
+
+# Identify territories without advisories and connect them with multipliers for admin regions 
 region_data()
 warn_rgn_nas <- warn_rgn_spread %>% 
   filter(is.na(rgn_name)) %>% 
-  select(rgn_id, multiplier) %>% 
-  left_join(rgns_eez, by = "rgn_id", "rgn_name") %>% 
-  select(rgn_id, multiplier, rgn_name, admin_rgn_id, admin_country_name)
+  select(rgn_id) %>% 
+  left_join(rgns_eez, by = "rgn_id") %>% 
+  select(rgn_id, rgn_name, admin_rgn_id, admin_country_name)
 
 admin_rgn_multipliers <- warn_rgn_nas %>% 
-  select(rgn_id = admin_rgn_id, admin_country_name) %>% 
-  left_join(warn_rgn_spread, by = "rgn_id")
+  select(rgn_id = admin_rgn_id) %>% 
+  left_join(warn_rgn_spread, by = "rgn_id") %>% 
+  rename(admin_rgn_id = rgn_id) %>% 
+  select(admin_rgn_id, year, multiplier) %>%
+  filter(!duplicated(admin_rgn_id))
 
-# they're all 1.00 :) 
-#############################
+warn_rgn_nas <- warn_rgn_nas %>% 
+  left_join(admin_rgn_multipliers, by = "admin_rgn_id") %>% 
+  select(rgn_id, rgn_name, year, multiplier)
 
 
+### Finalize warnings data and save
+# Remove NAs from warn_rgn_spread, then add them back in
+
+warn_rgn_spread <- warn_rgn_spread %>%
+  filter(!is.na(rgn_name)) %>% 
+  bind_rows(warn_rgn_nas)
+  
 warn_rgn_all_rgns <- warn_rgn_spread %>%
   select(rgn_id, year, multiplier) %>%
   arrange(year, rgn_id) %>% 
   mutate(year = as.numeric(year))
 
-write_csv(warn_rgn_all_rgns, here('globalprep/tr/v2019/output/tr_travelwarnings_2019.csv'))
+# Check again that we have 220 regions reported
+table(warn_rgn_all_rgns$year) 
+
+
+# Save 2019 data
+write_csv(warn_rgn_all_rgns, here('globalprep/tr/v2019/output/tr_travelwarnings_2019only.csv'))
+
 
 ## Create gapfill file. No gapfill in this case so gapfill = 0
+######## Do we want to change this since we gapfilled for territorial regions? 
 
-travelwarning_gf <- read.csv(here("globalprep/tr/v2019/output/tr_travelwarnings.csv")) %>% 
+travelwarning_gf <- read_csv(here("globalprep/tr/v2019/output/tr_travelwarnings.csv")) %>% 
   mutate(multiplier = 0) %>% 
   rename(gapfilled = multiplier)
 
-write_csv(travelwarning_gf, here('globalprep/tr/v2019/output/tr_travlewarnings_gf.csv'))
+write_csv(travelwarning_gf, here('globalprep/tr/v2019/output/tr_travelwarnings_gf.csv'))
 
 
 ## Combine with previous years' data and save
 
 travel_warnings_all <- read_csv(here("globalprep/tr/v2018/output/tr_travelwarnings.csv")) %>%
   bind_rows(warn_rgn_all_rgns)
+
+write_csv(travel_warnings_all, here('globalprep/tr/v2019/output/tr_travelwarnings.csv'))
 
 ```
 
