@@ -1,0 +1,91 @@
+---
+title: 'OHI 2019: Seagrass extent exploration '
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+
+
+
+# Summary
+
+This script generates the extent of seagrass for each OHI region. 
+
+
+## Updates from previous assessment
+Creating an actual script to calculate this. This has not been updated since 2012. 
+
+***
+## Data Source 
+
+**Downloaded**: 07/15/2019
+
+**Description**:  
+Global Distribution of Seagrasses
+https://data.unep-wcmc.org/datasets/7
+Reported at spatial cell scale. 
+
+This dataset shows the global distribution of seagrasses, and is composed of two subsets of point and polygon occurence data. The data were compiled by UNEP World Conservation Monitoring Centre in collaboration with many collaborators (e.g. Frederick Short of the University of New Hampshire), organisations (e.g. the OSPAR Convention for the Northeast Atlantic sea), and projects (e.g. the European project Mediterranean Sensitive Habitats "Mediseh"), across the globe (full list available in "Metadata_Seagrass.dbf").
+
+**Time range**: 1934-2015
+
+
+***
+# Methods
+We reclassified the seagrass extent data into a mask of 1 or NoData, and then computed zonal statistics for the count of cells within an OHI region that have seagrass and then converted into km2.
+
+
+## Setup
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+library(readr)      # for read_csv()
+library(raster)
+library(here)
+library(sf)
+library(fasterize)
+library(tidyverse)
+
+source(here('workflow/R/common.R'))
+
+goal     <- 'globalprep/hab_seagrass/v2019'
+dir_git  <- file.path('~/github/ohiprep', goal)
+dir_wcmc <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/wcmc_seagrass'))
+dir_global_dist <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/global_dist_seagrass'))
+
+```
+
+```{r}
+habitat_extent_seagrass_updated <- read_csv("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/habitat_extent_seagrass_updated.csv")
+seagrass_wcmc_v6_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
+seagrass_wcmc_v3_pts <- sf::st_read(dsn = file.path(dir_wcmc, "DataPack-WCMC-013-014-SeagrassPointsPolygons2005-ver3"), layer = "WCMC-013-SeagrassPoints2005-ver3")
+seagrass_wcmc_v6_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPy_v6")
+seagrass_wcmc_v3_py <- sf::st_read(dsn = file.path(dir_wcmc, "DataPack-WCMC-013-014-SeagrassPointsPolygons2005-ver3"), layer = "WCMC-014-SeagrassPolygons2005-ver3")
+
+```
+
+1. source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
+2. regions_shape()
+3. fasterize function from fasterize package, you will use the regions raster as the base raster. I think this will catch points and polygons (but check this). 4. Make sure all raster values are NA or 0 and 1
+5. zonal in raster package with sum function
+
+```{r}
+v6 <- st_join(seagrass_wcmc_v6_pts, seagrass_wcmc_v6_py)
+
+regions_shape()
+#regions_rast <- raster(regions)
+fasterize_pts <- fasterize::fasterize(seagrass_wcmc_v6_py, raster = regions)
+
+
+```
+
+
+
+

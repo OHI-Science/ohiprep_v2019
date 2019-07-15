@@ -29,32 +29,18 @@ library(here)
 library(ggridges)
 library(ggplot2)
 
-
-##BEFORE
-#source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
-#dir_git <- '~/github/spp_risk_dists'
-### provenance tracking
-#library(provRmd); prov_setup()
-### goal specific folders and info
-#dir_setup   <- file.path(dir_git, 'setup')
-#dir_o_anx <- file.path(dir_O, 'git-annex/spp_risk_dists')
-#source(file.path(dir_setup, 'common_fxns.R'))
-
-##AFTER
 #source('https://raw.githubusercontent.com/oharac/src/master/R/common.R')
 source(here('workflow/R/common.R'))
 
 goal     <- 'spp'
 scenario <- 'v2019'
 
-#### TODO change dir_git to dir_goal whenever seen ####
 dir_goal <- here('globalprep', goal, scenario)
 
 ### provenance tracking
 library(provRmd); prov_setup() #delete if not needed 
 
 ### goal specific folders and info
-#### TODO: change dir_O to dir_M and dir_o_anx to dir_goal_anx whenever seen ####
 dir_anx  <- file.path(dir_M, 'git-annex/globalprep')
 dir_setup   <- file.path(dir_goal, '_setup')
 dir_goal_anx <- file.path(dir_anx, goal, scenario, 'spp_risk_dists')
