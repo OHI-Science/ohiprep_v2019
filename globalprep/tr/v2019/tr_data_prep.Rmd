@@ -16,9 +16,8 @@ editor_options:
 ---
 
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2017/tr_dataprep.html]
+[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2017/tr_data_prep.html]
 
-###### need to update this link, not working ^^
 
 # Summary
 This document describes the steps for obtaining the data used to calculate the tourism and recreation goal for the 2019 global assessment.
@@ -45,6 +44,8 @@ Xtr = tr/90th quantile across regions
 
 ## Tourism employment
 WTTC data includes projections 10 years in the future, and in 2018 it was unclear when these projections began, so they used 2017 as their maximum data year. When downloading data for the 2019 assessment it was clear from the WTTC data gateway where the real data ended and projections began, so 2019 was used as the maximum data year.
+
+We also updated the code to account for uninhabited/low population areas, as we did with the Artisanal Fishing Opportunities data prep script.
 
 ## Travel warnings
 Previously, US state department data only were used to identify travel warnings for each country. In 2019 we incorporated advisories from the Canadian government to fill in data for countries the US did not establish warnings for (such as the US itself). The Canadian advisories were matched to the numeric scale used by the US State Department since 2018 (1-4, ranges from level 1 (normal precautions) to level 4 (do not travel)). 
@@ -155,27 +156,35 @@ tr_data_raw_gf <- tr_data_raw_gf %>%
   mutate(method = ifelse(is.na(Ep) & !is.na(Ep_pred_r2), "UN georegion (r2)", NA)) %>%
   mutate(method = ifelse(is.na(Ep) & is.na(Ep_pred_r2) & !is.na(Ep_pred_r1), "UN georegion (r1)", method)) 
 
-###############################################
-# After gap-filling, make sure low/uninhabited regions are NA
-source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R')
+######################################
+
+### After gap-filling, make sure low/uninhabited regions are NA
+# Create df for unpopulated/low populated regions
 low_pop()
 low_pop <- low_pop %>%
   filter(est_population < 3000 | is.na(est_population)) %>%  #filter out regions that have populations > 3000 and keep NA values 
   rename(rgn_label = rgn_nam)
 
+
 # make sure all the NAs are uninhabited regions
 tr_data_nas <- tr_data_raw_gf %>% 
-  filter(r1 == 999) %>% 
+  filter(is.na(Ep_all)) %>% 
   select(rgn_id, year, r1_label, r2_label, rgn_label) %>% 
   left_join(low_pop, by = c("rgn_id", "rgn_label"))
+#  filter(!duplicated(rgn_id))
 
-# make sure all the uninhabited regions are NA
-##### write code that detects whether a region is in the low_pop df, and if it is, assign a value of NA to Ep column . Something like this: 
+max(tr_data_nas$est_population, na.rm=TRUE)<3000 # should be true
 
-tr_data_raw_gf2 <- tr_data_raw_gf %>% 
-  mutate(Ep_all = ifelse(rgn_id %in% low_pop$rgn_id, NA, Ep_all))
+# make sure all the uninhabited regions are NA (along with gapfill and method if they were gapfilled above)
+tr_data_raw_gf <- tr_data_raw_gf %>% 
+  mutate(Ep_all = ifelse(rgn_id %in% low_pop$rgn_id, NA, Ep_all)) %>% 
+  mutate(gapfilled = ifelse(is.na(Ep_all), NA, gapfilled)) %>% 
+  mutate(method = ifelse(is.na(Ep_all), NA, method))
 
-####################################################
+
+# check NAs once more 
+summary(tr_data_raw_gf)
+# v2019: Adding the low pop df identifies 13 additional regions that should be NA instead of gapfilled, taking the total number of NAs in the data set from 245 to 700
 
 
 # save the gapfill report data
@@ -186,9 +195,6 @@ write_csv(tr_data_gf, here("globalprep/tr/v2019/output/tr_jobs_pct_tourism_gf.cs
 
 tr_data <- tr_data_raw_gf %>%
   select(rgn_id, year, Ep=Ep_all) 
-################# 245 NAs - this is because all of the regions under "Southern Islands" are not being gapfilled because there are no data for any of these regions to base regional gapfilling off of. Need to decide whether we will leave these as NAs, gapfill on the r0 (world) scale, or use administrative region data.
-
-
 
 
 
@@ -437,7 +443,7 @@ table(warn_rgn_spread$year)
 
 
 # Identify territories without advisories and connect them with multipliers for admin regions 
-region_data()
+region_data() # reload common.R if this isn't working
 warn_rgn_nas <- warn_rgn_spread %>% 
   filter(is.na(rgn_name)) %>% 
   select(rgn_id) %>% 
