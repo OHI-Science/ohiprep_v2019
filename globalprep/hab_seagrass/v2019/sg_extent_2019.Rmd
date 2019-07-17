@@ -72,22 +72,6 @@ v3_seagrass_py <- sf::st_read(dsn = file.path(dir_wcmc, "DataPack-WCMC-013-014-S
 
 ```
 
-1. source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
-2. regions_shape()
-3. fasterize function from fasterize package, you will use the regions raster as the base raster. I think this will catch points and polygons (but check this). 
-4. Make sure all raster values are NA or 0 and 1
-5. zonal in raster package with sum function
-
-probably assume each point is a km^2
-do fasterize with points and polygons
-sum those together somehow 
-- stack the rasters 
-- calc function, na.rm = TRUE
-- some spots equal 2 => anything 1 or greater = 1
-- then zonal with zones and newly created combined seagrass raster - function is sum and na.rm = TRUE
- -- sum up all seagrass cells for each zone 
-- to get km^2 -- 0.9344789**2*zonal_sums 
-
 **Convert seagrass shapefiles into same CRS as our region zones raster**
 ```{r}
 
@@ -154,15 +138,6 @@ unique(check_values_py)
 #NA 1
 ```
 
-sum those together somehow 
-- stack the rasters 
-- calc function, na.rm = TRUE
-- some spots equal 2 => anything 1 or greater = 1
-- then zonal with zones and newly created combined seagrass raster - function is sum and na.rm = TRUE
- -- sum up all seagrass cells for each zone 
-- to get km^2 -- 0.9344789**2*zonal_sums 
-
-
 **Stack rasters and adjust**
 ```{r}
 stacked_seagrass <- raster::stack(rasterize_pts, fasterize_py)
@@ -182,7 +157,7 @@ sum(combined_values == 1, na.rm = TRUE) #377618
 sum(combined_values == 2, na.rm = TRUE) #1521
 sum(combined_values == 0, na.rm = TRUE) # 744986911 -- these are all of the NAs
 
-## Need to assign all "2's" as "1's" and all "0's" as "NA"
+## Need to assign all "2's" as "1's" and all "0's" as "NA". There are 2s because 1+1=2. 
 combined_seagrass <- sum_seagrass
 
 #assign all 2 to 1 
@@ -203,13 +178,9 @@ writeRaster(combined_seagrass, file.path(dir_M, "/git-annex/globalprep/hab_seagr
 combined_seagrass <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py_adjusted.tif"))
 ```
 
-- then zonal with zones and newly created combined seagrass raster - function is sum and na.rm = TRUE
- -- sum up all seagrass cells for each zone 
-- to get km^2 -- 0.9344789**2*zonal_sums 
-
-**Calculate zonal stats with zones raster and new combined seagrass. Convert to km^2**
+**Calculate zonal stats with zones raster and new combined seagrass. Convert to km^2 and save int/output files**
 ```{r}
-zonal_sums_combined <- raster::zonal(combined_seagrass, zones, fun = "sum", na.rm = TRUE)
+zonal_sums_combined <- raster::zonal(combined_seagrass, zones, fun = "sum", na.rm = TRUE) #sum all seagrass cells for each ohi zone
 
 summary(zonal_sums_combined)
 
@@ -217,13 +188,13 @@ zonal_sums_combined_df <- data.frame(zonal_sums_combined)
 
 zonal_sums_km2 <- zonal_sums_combined_df %>%
   mutate(year = 2019, habitat = "seagrass",
-         km2 = (0.934478877011218970**2*sum)) %>%
+         km2 = (0.934478877011218970**2*sum)) %>% #one cell is equal to ~0.93 km
   rename("rgn_id" = "zone") %>%
   select(-sum)
 
-write_csv(zonal_sums_km2, file.path(dir_git, 'data/habitat_extent_seagrass.csv'))
+write_csv(zonal_sums_km2, file.path(dir_git, 'int/habitat_extent_seagrass_raw.csv')) #save into intermediate data folder
 
-
+#compare new and old data
 compare_habitat_extent <- zonal_sums_km2 %>%
   left_join(habitat_extent_seagrass_updated, by = "rgn_id") %>%
   mutate(km2.y = ifelse(
@@ -237,8 +208,28 @@ ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
   labs(title = "Seagrass Habitat version 3 vs version 6", x = "version 3 extent", y=  "version 6 extent") +
   theme_bw()
 
-compare_hab <- compare_habitat_extent %>%
-  filter(km2.x > 0, is.na(km2.y))
+#Find which regions to classify as NA in our new data... i.e. regions in the new extent which have 0 km2 and that have NA km2 in old data
+compare_hab_NAs <- compare_habitat_extent %>%
+  filter(km2.x == 0, is.na(km2.y))
+
+NA_rgns <- c(compare_hab$rgn_id)
+
+#Now assign NA values to all of the regions without seagrass extent. Also filter out weird huge rgn_ids
+zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
+  mutate(km2 = ifelse(
+    rgn_id %in% NA_rgns,
+    NA,
+    km2
+  )) %>%
+  filter(rgn_id <= 277)
+
+write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'int/habitat_extent_seagrass_all_rgns.csv'))
+
+#create final dataset and save
+zonal_sums_km2_final <- zonal_sums_km2_all_rgns %>%
+  filter(!is.na(km2))
+write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'data/habitat_extent_seagrass_final.csv'))
+
 ```
 
 
