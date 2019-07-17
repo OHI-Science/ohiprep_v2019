@@ -54,12 +54,13 @@ library(zoo)
 library(ggplot2)
 library(here)
 library(tidyverse)
+library(plotly)
 
 
 ## Load FAO-specific user-defined functions
 source(here('workflow/R/fao_fxn.R')) # function for cleaning FAO files
 source(here('workflow/R/common.R')) # directory locations
-source(here('globalprep/np/v2019/R/np_fxn.R')) # copied this over to v2019 folder
+source(here('globalprep/np/v2019/R/np_fxn.R')) 
 
 ```
 
@@ -75,20 +76,16 @@ dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities
 
 files <- list.files(dir_fao_data, pattern=glob2rx('*.csv'), full.names=T)
 
-## To compare to old data:
-# dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2016')
- 
-# files <- list.files(dir_fao_data, pattern=glob2rx('*.csv'), full.names=T)
-
 for (f in files){ # f = files[1]
   cat(sprintf('\n\n\n====\nfile: %s\n', basename(f)))
   
   
   d <- read.csv(f, check.names=FALSE, strip.white=TRUE, stringsAsFactors = FALSE) #          stringsAsFactors=T
 
+# checks names syntactically, strips leading and trailing whitespace, prevents conversion of characters to factors 
   
   ## Specifies that units are tonnes if we are reading in the Commodities Quantity data      csv, and usd if we are reading in the Commodities Value data csv
-  units <- c('tonnes','usd')[str_detect(f, c('quant','value'))] # using American English,    lowercase
+  units <- c('tonnes','usd')[str_detect(f, c('quant','value'))] # detect unit name
 
   ## gather into long format and clean up FAO-specific data foibles
   ## warning: attributes are not identical across measure variables; they will be dropped:   this is fine
@@ -116,8 +113,6 @@ for (f in files){ # f = files[1]
   ## load lookup for converting commodities to products
   com2prod <- read.csv(here('globalprep/np/v2019/raw/commodities2products.csv'), na.strings='')
     
-  ## version used in 2015: use when testing....
-  ## com2prod <- read.csv('../v2014_test/commodities2products.csv', na.strings='')
     
   ## Check the current commodity-to-product lookup table.  If necessary, make changes to     "raw/commodities2products.csv"
   np_commodity_lookup(m, com2prod)
@@ -132,7 +127,7 @@ for (f in files){ # f = files[1]
   ##   breaking up Antilles into separate reported rgns
   m <- np_split_antilles(m)
     
-  ## v2018: Some changes to region names that aren't working
+  ## v2018: Some changes to region names that aren't being detected by name_2_rgn below
   m <- m %>%
     mutate(country = ifelse(country == "Côte d'Ivoire", "Ivory Coast", country)) %>%
     mutate(country = ifelse(country == "Curaçao","Curacao", country)) %>%
@@ -158,6 +153,8 @@ for (f in files){ # f = files[1]
     summarize(value = sum_function(value)) %>%
     ungroup()
 
+  # number of lines of data go down here^
+  
   ## units: rename value field to units based on filename
   names(m_rgn)[names(m_rgn) == 'value'] <- units  
   
@@ -176,6 +173,71 @@ Combining the quantity and value data and a bit of cleaning to remove data prior
 h_tonnes <- read.csv(here('globalprep/np/v2019/int/tonnes.csv'))
 
 h_usd <- read.csv(here('globalprep/np/v2019/int/usd.csv'))
+
+
+########################## Troubleshooting 17-Jul (delete later)
+comp_new <- h_usd %>%
+  filter(year == 2015) %>%
+#  filter(rgn_name == "United States") %>% 
+  filter(product == "fish_oil") %>% 
+  left_join(h_tonnes, by = c("rgn_id", "rgn_name", "commodity", "product", "year"))
+
+h_tonnes_old <- read.csv(here('globalprep/np/v2018/int/tonnes.csv'))
+
+h_usd_old <- read.csv(here('globalprep/np/v2018/int/usd.csv'))
+
+comp_old <- h_usd_old %>% 
+  filter(year == 2015) %>%
+#  filter(rgn_name == "United States") %>% 
+  filter(product == "fish_oil") %>% 
+  left_join(h_tonnes_old, by = c("rgn_id", "rgn_name", "commodity", "product", "year"))
+
+ggplotly(ggplot(comp_old, aes(x = tonnes, y = usd, labels = rgn_name)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
+
+ggplotly(ggplot(comp_new, aes(x = tonnes, y = usd, labels = rgn_name)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
+
+
+mismatch_new_tonnes <- h_usd %>%
+#  filter(year == 2015) %>% 
+  left_join(h_tonnes, by = c("rgn_id", "rgn_name", "commodity", "product", "year")) %>% 
+  filter(tonnes == 0.0 & usd > 0)
+
+mismatch_new <- h_usd %>% 
+#  filter(year == 2015) %>% 
+  left_join(h_tonnes, by = c("rgn_id", "rgn_name", "commodity", "product", "year")) %>% 
+  filter(usd == 0.0 & tonnes > 0) %>% 
+  bind_rows(mismatch_new_tonnes)
+
+mismatch_old_tonnes <- h_usd_old %>%
+#  filter(year == 2015) %>% 
+  left_join(h_tonnes_old, by = c("rgn_id", "rgn_name", "commodity", "product", "year")) %>% 
+  filter(tonnes == 0.0 & usd > 0)
+
+mismatch_old <- h_usd_old %>% 
+#  filter(year == 2015) %>% 
+  left_join(h_tonnes_old, by = c("rgn_id", "rgn_name", "commodity", "product", "year")) %>% 
+  filter(usd == 0.0 & tonnes > 0) %>% 
+  bind_rows(mismatch_old_tonnes)
+
+commodities_old <- h_usd_old %>%
+    full_join(h_tonnes_old, by=c('rgn_name', 'rgn_id', 'commodity', 'product', 'year')) %>%
+    mutate(commodity = as.character(commodity)) %>%
+    arrange(rgn_id, product, commodity, year)
+
+commodities_comp <- commodities_old %>% 
+  left_join(commodities, by=c('rgn_name', 'rgn_id', 'commodity', 'product', 'year')) %>% 
+  filter(rgn_id == 186) %>% 
+  rename(usd_2018 = usd.x) %>% 
+  rename(tonnes_2018 = tonnes.x) %>% 
+  rename(usd_2019 = usd.y) %>%
+  rename(tonnes_2019 = tonnes.y)
+
+############################
+
 
 ## concatenates h_tonnes and h_usd data
 ## commodities includes rgn_name, rgn_id, commodity, product, year, tonnes, usd.
