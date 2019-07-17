@@ -19,7 +19,7 @@ This script generates the extent of seagrass for each OHI region.
 
 
 ## Updates from previous assessment
-Creating an actual script to calculate this. This has not been updated since 2012. Updating the data with newest version of data (version 6). 
+Creating an actual script to calculate this. This has not been updated since 2012. Updating the data with newest version (version 6). 
 
 ***
 ## Data Source 
@@ -38,7 +38,7 @@ This dataset shows the global distribution of seagrasses, and is composed of two
 
 ***
 # Methods
-Reclassify the seagrass extent data into a mask of 1 or NoData, and then compute zonal statistics for the count of cells within an OHI region that have seagrass and then convert into km2.
+Reclassify the seagrass extent data into a mask of 1 or NA, and then compute zonal statistics for the count of cells within an OHI region that have seagrass and then convert into km2.
 
 
 ## Setup
@@ -143,7 +143,6 @@ unique(check_values_py)
 stacked_seagrass <- raster::stack(rasterize_pts, fasterize_py)
 plot(stacked_seagrass)
 
-###NOTE: change these to save directly and then read in. file.path should be in the raster::calc() fxn
 sum_seagrass <- raster::calc(stacked_seagrass, 
                              fun = sum,
                              na.rm = TRUE,
