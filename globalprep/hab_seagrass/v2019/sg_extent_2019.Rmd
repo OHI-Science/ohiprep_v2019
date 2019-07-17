@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2019: Seagrass extent exploration '
+title: 'OHI 2019: Seagrass extent'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -13,16 +13,13 @@ output:
     toc: true
 ---
 
-
-
-
 # Summary
 
 This script generates the extent of seagrass for each OHI region. 
 
 
 ## Updates from previous assessment
-Creating an actual script to calculate this. This has not been updated since 2012. 
+Creating an actual script to calculate this. This has not been updated since 2012. Updating the data with newest version of data (version 6). 
 
 ***
 ## Data Source 
@@ -41,7 +38,7 @@ This dataset shows the global distribution of seagrasses, and is composed of two
 
 ***
 # Methods
-We reclassified the seagrass extent data into a mask of 1 or NoData, and then computed zonal statistics for the count of cells within an OHI region that have seagrass and then converted into km2.
+Reclassify the seagrass extent data into a mask of 1 or NoData, and then compute zonal statistics for the count of cells within an OHI region that have seagrass and then convert into km2.
 
 
 ## Setup
@@ -56,35 +53,264 @@ library(tidyverse)
 source(here('workflow/R/common.R'))
 
 goal     <- 'globalprep/hab_seagrass/v2019'
-dir_git  <- file.path('~/github/ohiprep', goal)
+dir_git  <- file.path('~/github/ohiprep_v2019', goal)
 dir_wcmc <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/wcmc_seagrass'))
-dir_global_dist <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/global_dist_seagrass'))
-
+ohi_rasters() # call the region zones raster
 ```
 
-```{r}
+```{r, echo = FALSE}
 habitat_extent_seagrass_updated <- read_csv("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/habitat_extent_seagrass_updated.csv")
-seagrass_wcmc_v6_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
-seagrass_wcmc_v3_pts <- sf::st_read(dsn = file.path(dir_wcmc, "DataPack-WCMC-013-014-SeagrassPointsPolygons2005-ver3"), layer = "WCMC-013-SeagrassPoints2005-ver3")
-seagrass_wcmc_v6_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPy_v6")
-seagrass_wcmc_v3_py <- sf::st_read(dsn = file.path(dir_wcmc, "DataPack-WCMC-013-014-SeagrassPointsPolygons2005-ver3"), layer = "WCMC-014-SeagrassPolygons2005-ver3")
+
+v6_seagrass_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
+
+v6_seagrass_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPy_v6")
 
 ```
 
-1. source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
-2. regions_shape()
-3. fasterize function from fasterize package, you will use the regions raster as the base raster. I think this will catch points and polygons (but check this). 4. Make sure all raster values are NA or 0 and 1
-5. zonal in raster package with sum function
+**Convert seagrass shapefiles into same CRS as our region zones raster**
+```{r, echo = FALSE}
 
-```{r}
-v6 <- st_join(seagrass_wcmc_v6_pts, seagrass_wcmc_v6_py)
+moll_crs <- crs(zones, asText = TRUE)
 
-regions_shape()
-#regions_rast <- raster(regions)
-fasterize_pts <- fasterize::fasterize(seagrass_wcmc_v6_py, raster = regions)
+v6_seagrass_pts_moll <- st_transform(v6_seagrass_pts, crs = moll_crs) #project points shapefile to match zones crs
+
+
+crs(v6_seagrass_pts_moll) #check to see it worked
+
+v6_seagrass_py_moll <- st_transform(v6_seagrass_py, crs = moll_crs)
+
+crs(v6_seagrass_py_moll)
+plot(v6_seagrass_py_moll[1])
+plot(zones)
+```
+
+**Fasterize/rasterize: Where there is seagrass assign a value of 1 and NA otherwise**
+```{r, echo = FALSE}
+
+## convert from multipoint to point
+v6_seagrass_pts_moll_cast <- st_cast(v6_seagrass_pts_moll, "POINT")
+
+#convert to a spatial type 
+v6_seagrass_pts_moll_spat <- as(v6_seagrass_pts_moll_cast, "Spatial")
+#create a column full of "1's"
+v6_seagrass_pts_moll_spat$raster <- 1
+#rasterize our points data to raster 
+rasterize_pts <- raster::rasterize(v6_seagrass_pts_moll_spat, 
+                                   zones,
+                                   "raster",
+                                   fun = min,
+ filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/pt_seagrass_rast.tif"), overwrite=TRUE) #write raster
+
+rasterize_pts <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/pt_seagrass_rast.tif")) #read it back in
+
+plot(rasterize_pts)
+zoom()
+#cell stats sum - should be similar to dim
+cellStats(rasterize_pts, stat = "sum") #9331... reassuring, it is similar to the dimensions. 
+
+
+
+#fasterize our polygon dataset into a raster
+fasterize_py <- fasterize::fasterize(v6_seagrass_py_moll, raster = zones, 
+                                     field = NULL, # all polygons given value of 1
+                                     filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"), overwrite=TRUE) 
+
+fasterize_py <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"))
+
+plot(fasterize_py)
+#check to see if all points are 0 and 1 for points raster
+check_values_points <- getValues(rasterize_pts)
+sum(check_values_points == 1, na.rm = TRUE)
+#9331
+sum(is.na(check_values_points))
+#745356719
+unique(check_values)
+#NA 1
+
+#check to see if all points are NA and 1 for polygon raster
+
+check_values_py <- getValues(fasterize_py)
+sum(check_values_py == 1, na.rm = TRUE)
+#371329
+sum(is.na(check_values_py))
+#744994721
+unique(check_values_py)
+#NA 1
+```
+
+**Stack rasters and adjust**
+```{r, echo = FALSE}
+stacked_seagrass <- raster::stack(rasterize_pts, fasterize_py)
+plot(stacked_seagrass)
+
+###NOTE: change these to save directly and then read in. file.path should be in the raster::calc() fxn
+sum_seagrass <- raster::calc(stacked_seagrass, 
+                             fun = sum,
+                             na.rm = TRUE,
+                             filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py.tif"), overwrite=TRUE)
+plot(sum_seagrass)
+
+sum_seagrass <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py.tif"))
+
+#check values in combined_seagrass
+combined_values <- getValues(sum_seagrass)
+unique(combined_values)
+sum(combined_values == 1, na.rm = TRUE) #377618
+sum(combined_values == 2, na.rm = TRUE) #1521
+sum(combined_values == 0, na.rm = TRUE) # 744986911 -- these are all of the NAs
+
+## Need to assign all "2's" as "1's" and all "0's" as "NA". There are 2s because 1+1=2. 
+combined_seagrass <- sum_seagrass
+
+m <- c(1, 1, # if value 1, assign it 1
+       2, 1, # if value 2, assign it 1
+       0, NA) #if value 0, assign it NA
+
+rclmat <- matrix(m, ncol = 2, byrow = TRUE) # make m a matrix
+
+combined_seagrass <- raster::reclassify(combined_seagrass, 
+                                        rclmat, 
+                                        filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py_adjusted.tif"), overwrite = TRUE) #reclassify and write raster according the our reclassify matrix
+
+combined_seagrass <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py_adjusted.tif"))
+
+# check to see that the reclassify worked
+combined_values_2 <- getValues(combined_seagrass1)
+sum(combined_values_2 == 2, na.rm = TRUE) #should  be 0... it is
+sum(combined_values_2 == 1, na.rm = TRUE) #should be 377618 + 1521 = 379139... it is
+sum(combined_values_2 == 0, na.rm = TRUE) # should be 0... it is
+sum(is.na(combined_values_2)) #should be 744986911... it is
+
+```
+
+**Calculate zonal stats with zones raster and new combined seagrass. Convert to km^2 and save int/output files**
+```{r, echo = FALSE}
+zonal_sums_combined <- raster::zonal(combined_seagrass, 
+                                     zones,
+                                     fun = "sum",
+                                     na.rm = TRUE) #sum all seagrass cells for each ohi zone
+zonal_sums_combined_df <- data.frame(zonal_sums_combined)
+
+write_csv(zonal_sums_combined_df, file.path(dir_git, 'int/zonal_sums_combined_df.csv')) #save into intermediate data folder
+
+zonal_sums_combined_df <- read_csv(file.path(dir_git, 'int/zonal_sums_combined_df.csv'))
+
+summary(zonal_sums_combined)
+
+zonal_sums_km2 <- zonal_sums_combined_df %>%
+  mutate(year = 2019, habitat = "seagrass",
+         km2 = (0.934478877011218970**2*sum)) %>% #one cell is equal to ~0.93 km
+  rename("rgn_id" = "zone") %>%
+  select(-sum)
+
+write_csv(zonal_sums_km2, file.path(dir_git, 'int/habitat_extent_seagrass_raw.csv')) #save into intermediate data folder
+
+#compare new and old data
+compare_habitat_extent <- zonal_sums_km2 %>%
+  left_join(habitat_extent_seagrass_updated, by = "rgn_id") %>%
+  mutate(km2.y = ifelse(
+    km2.x >0 & is.na(km2.y) ,0, #assign 0 values to old data km2 that have new data so that we can properly graph these differences.
+    km2.y
+  ))
+write_csv(compare_habitat_extent, file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
+
+#Find which regions to classify as NA in our new data... i.e. regions in the new extent which have 0 km2 and that have NA km2 in old data
+compare_hab_NAs <- compare_habitat_extent %>%
+  filter(km2.x == 0, is.na(km2.y))
+
+NA_rgns <- c(compare_hab$rgn_id)
+
+#Now assign NA values to all of the regions without seagrass extent. Also filter out weird huge rgn_ids (antarctica)
+zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
+  mutate(km2 = ifelse(
+    rgn_id %in% NA_rgns,
+    NA,
+    km2
+  )) %>%
+  filter(rgn_id <= 250)
+
+write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'int/habitat_extent_seagrass_all_rgns.csv'))
+
+#create final dataset and save
+zonal_sums_km2_final <- zonal_sums_km2_all_rgns %>%
+  filter(!is.na(km2))
+write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'data/habitat_extent_seagrass_final.csv'))
+
+```
+
+
+**Data Check**
+
+```{r, echo = FALSE}
+
+compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
+
+## Compare old and new habitat extent data. We aren't using the "final" dataset here, so we can see the regions that had extent data added. 48 of them. 
+ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
+  geom_point() +
+  geom_abline() +
+  labs(title = "Seagrass Habitat version 3 vs version 6", x = "version 3 extent", y=  "version 6 extent") +
+  theme_bw()
 
 
 ```
+
+**Justification for using ~0.9 km2 for average seagrass polygon area**
+
+
+```{r, echo = FALSE}
+# Read in shapefiles
+v6_seagrass_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
+
+v6_seagrass_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPy_v6")
+
+
+# Transform shapefiles to fit moll CRS
+moll_crs <- crs(zones, asText = TRUE)
+
+v6_seagrass_pts_moll <- st_transform(v6_seagrass_pts, crs = moll_crs) #project points shapefile to match zones crs
+
+
+crs(v6_seagrass_pts_moll) #check to see it worked
+
+v6_seagrass_py_moll <- st_transform(v6_seagrass_py, crs = moll_crs)
+
+crs(v6_seagrass_py_moll)
+plot(v6_seagrass_py_moll[1])
+plot(zones)
+
+## "I want to get a general feel for how bad our estimate of point data is. To begin to get at this, will you determine the area of each polygon (I think this is pretty easy) and create a histogram of these areas. I want to see how our estimate of ~0.9km2 for each point aligns with average seagrass polygon area." - MF
+
+check_seagrass_py_moll <- v6_seagrass_py_moll
+check_seagrass_py_moll$area <- st_area(v6_seagrass_py_moll)/1000000
+median(check_seagrass_py_moll$area) #0.8089765
+
+hh <- hist(check_seagrass_py_moll$area)
+hh
+#breaks are by 1000 to 16000
+
+hist(check_seagrass_py_moll$area)
+abline(v = 0.934478877011218970^2, col = "red")
+abline(v=0.8089765, col = "blue")
+
+
+check_seagrass_py_moll$area_log <- log(check_seagrass_py_moll$area)
+log_area_py <- data.frame(check_seagrass_py_moll$area_log) 
+
+log_area_py$check_seagrass_py_moll.area_log <- substr(log_area_py$check_seagrass_py_moll.area_log, 1, nchar(log_area_py$check_seagrass_py_moll.area_log)-7)
+
+log_area_py$check_seagrass_py_moll.area_log <- as.numeric(log_area_py$check_seagrass_py_moll.area_log)
+median(log_area_py$check_seagrass_py_moll.area_log)
+
+
+hist(log_area_py$check_seagrass_py_moll.area_log)
+abline(v = log(0.934478877011218970^2), col = "red")
+abline(v=-0.2119862, col = "blue")
+#Wow! Very good estimate!
+```
+
+
+
 
 
 
