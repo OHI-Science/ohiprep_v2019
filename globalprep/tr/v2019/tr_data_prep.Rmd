@@ -125,7 +125,6 @@ tr_data_raw <- rgn_names %>%
   filter(!rgn_id == 213) %>% 
   filter(!rgn_id == 255) # ditch disputed regions and Antarctica
 
-# v2018: Some regions (rgn_ids 32, 52 and 140 in the 2018 assesment) appear to have an error bteween some years, Ep value > 100%. This line makes this values NA (v2019: Ep all <0.5)
 ## v2019: >2500 NAs in Ep column
 # summary(tr_data_raw)
 
@@ -215,7 +214,6 @@ new <- read_csv(here('globalprep/tr/v2019/output/tr_jobs_pct_tourism.csv')) %>%
   arrange(ep_old)
 
 # Visualize data comparison 
-library(plotly)
 ggplotly(ggplot(new, aes(x = Ep, y = ep_old, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
