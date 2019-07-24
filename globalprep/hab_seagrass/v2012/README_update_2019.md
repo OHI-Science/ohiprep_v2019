@@ -24,5 +24,3 @@ Trend in seagrass condition was determined using two data sources (Waycott et al
 **Notes on Waycott et al. 2009**
 
 **Notes on Short et al. 2011**
-
-

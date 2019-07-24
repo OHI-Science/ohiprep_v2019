@@ -255,8 +255,6 @@ ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
 ```
 
 **Justification for using ~0.9 km2 for average seagrass polygon area**
-
-
 ```{r, echo = FALSE}
 # Read in shapefiles
 v6_seagrass_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
@@ -307,6 +305,35 @@ abline(v = log(0.934478877011218970^2), col = "red")
 abline(v=-0.2119862, col = "blue")
 #Wow! Very good estimate!
 ```
+
+**Explore how gapfilling was done in 2012**
+```{r}
+## Regions to gapfill as is: 
+trend <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/habitat_trend_seagrass_updated.csv"))
+
+trend_rgns <- c(trend$rgn_id)
+
+zonal_sums_km2_final <- read_csv(file.path(dir_git, 'data/habitat_extent_seagrass_final.csv'))
+
+extent_rgns <- c(zonal_sums_km2_final$rgn_id)
+
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+ extent_trend_rgn_to_gf <- extent_rgns[extent_rgns %!in% trend_rgns]
+ 
+ habitat_health_seagrass_updated <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/habitat_health_seagrass_updated.csv"))
+ 
+ health_rgns <- c(habitat_health_seagrass_updated$rgn_id)
+
+  extent_health_rgn_to_gf <- extent_rgns[extent_rgns %!in% health_rgns]
+  extent_health_rgn_to_gf
+  
+  
+ habitat_health_gf <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/health_seagrass_gf.csv"))
+ 
+ habitat_trend_gf <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/trend_seagrass_gf.csv"))
+```
+
 
 
 
