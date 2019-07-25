@@ -422,6 +422,8 @@ Comparing against last year's data. For example, compare the data for 1976-2014 
 ## Look at Commodities TONNES for a few countries
 ## Look at a few regions that previously had no scores: Malta, Cayman Islands, Curacao
 
+#################### Delete most of these, leave a few examples 
+
 ## Malta
 new <- read.csv(here("globalprep/np/v2019/int/tonnes.csv")) %>%
   filter(rgn_id==68, year %in% c(1990:2014))
