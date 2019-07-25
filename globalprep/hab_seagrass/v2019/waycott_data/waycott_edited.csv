@@ -1,4 +1,4 @@
-site_number,site_name,bioregion,county,start_year,end_year,area_cat,mu,year,area
+site_number,site_name,bioregion,country,start_year,end_year,area_cat,mu,year,area
 1,Chincoteague Bay,Temperate North Atlantic,USA,1986,2003,>1000ha,6.39,1986,2100
 1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1987,2300
 1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1989,2200
