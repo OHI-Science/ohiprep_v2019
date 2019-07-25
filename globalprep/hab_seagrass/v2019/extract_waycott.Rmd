@@ -111,6 +111,15 @@ final_waycott_trends <- ldply(out_waycott_trends, rbind)
 ## Now lets split this data manually into four different datasets. 
 
 write_csv(final_waycott_trends, file.path(dir_git, '/raw/waycott_extract_trends.csv'))
+
+#take a look at all waycott trend data
+waycott_global_trends <-  read_csv(file.path(dir_git, '/waycott_data/waycott_global_trends.csv'))
+
+waycott_increasing_trends <-  read_csv(file.path(dir_git, '/waycott_data/waycott_increasing_trends.csv'))
+
+waycott_decreasing_trends <-  read_csv(file.path(dir_git, '/waycott_data/waycott_decreasing_trends.csv'))
+
+waycott_no_change_trends <-  read_csv(file.path(dir_git, '/waycott_data/waycott_no_change_trends.csv'))
 ```
 
 
