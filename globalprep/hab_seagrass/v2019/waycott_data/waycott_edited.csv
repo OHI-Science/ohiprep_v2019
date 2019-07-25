@@ -1,0 +1,1139 @@
+site_number,site_name,bioregion,country,start_year,end_year,area_cat,mu,year,area
+1,Chincoteague Bay,Temperate North Atlantic,USA,1986,2003,>1000ha,6.39,1986,2100
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1987,2300
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1989,2200
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1990,2300
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1991,2600
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1992,3200
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1993,3400
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1994,3700
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1995,3400
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1996,4000
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1997,5000
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1998,5500
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,1999,6300
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,2000,6900
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,2001,6794
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,2002,6300
+1,Chincoteague Bay,Temperate North Atlantic,,1986,2003,>1000ha,6.39,2003,6220
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1986,29
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1987,75
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1989,132
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1990,180
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1991,180
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1992,200
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1993,230
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1994,280
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1995,230
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1996,350
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1997,420
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1998,480
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,1999,650
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,2000,690
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,2001,680
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,2002,743
+2,Sinepuxent Bay,Temperate North Atlantic,USA,1986,2003,<1000ha,18.69,2003,696
+4,Souther Delmarva Coast Bays,Temperate North Atlantic,USA,2001,2003,<100ha,103.34,2001,20
+4,Souther Delmarva Coast Bays,Temperate North Atlantic,USA,2001,2003,<100ha,103.34,2002,85
+4,Souther Delmarva Coast Bays,Temperate North Atlantic,USA,2001,2003,<100ha,103.34,2003,158
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,1879,30970
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,1950,16448
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,1982,8764
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,1988,9427
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,1990,10213
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,1992,10426
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,1994,10736
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,1996,10897
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,1999,10057
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,2002,10558
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,2004,10941
+5,Tampa Bay,Tropical Atlantic,USA,1879,2006,>1000ha,-0.78,2006,11466
+6,Upper Charlotte Harbor,Tropical Atlantic,USA,1982,2002,>1000ha,0.01,1982,7369
+6,Upper Charlotte Harbor,Tropical Atlantic,USA,1982,2002,>1000ha,0.01,1988,7507
+6,Upper Charlotte Harbor,Tropical Atlantic,USA,1982,2002,>1000ha,0.01,1992,7216
+6,Upper Charlotte Harbor,Tropical Atlantic,USA,1982,2002,>1000ha,0.01,1993,7532
+6,Upper Charlotte Harbor,Tropical Atlantic,USA,1982,2002,>1000ha,0.01,1996,7781
+6,Upper Charlotte Harbor,Tropical Atlantic,USA,1982,2002,>1000ha,0.01,1999,7224
+6,Upper Charlotte Harbor,Tropical Atlantic,USA,1982,2002,>1000ha,0.01,2002,7381
+7,Sarasota Bay,Tropical Atlantic,USA,1950,2001,>1000ha,-0.56,1950,4886
+7,Sarasota Bay,Tropical Atlantic,USA,1950,2001,>1000ha,-0.56,1987,3476
+7,Sarasota Bay,Tropical Atlantic,USA,1950,2001,>1000ha,-0.56,1993,3865
+7,Sarasota Bay,Tropical Atlantic,USA,1950,2001,>1000ha,-0.56,1995,4158
+7,Sarasota Bay,Tropical Atlantic,USA,1950,2001,>1000ha,-0.56,1998,3701
+7,Sarasota Bay,Tropical Atlantic,USA,1950,2001,>1000ha,-0.56,2001,3668
+15,Cala Millo,Mediterranean,Spain,1956,2001,<1000ha,-1.68,1956,259.4
+15,Cala Millo,Mediterranean,Spain,1956,2001,<1000ha,-1.68,2001,121.7
+16,Calvia,Mediterranean,Spain,1956,2001,<1000ha,-0.85,1956,313.1
+16,Calvia,Mediterranean,Spain,1956,2001,<1000ha,-0.85,2001,213.7
+17,Maquoit Bay,Temperate North Atlantic,USA,1993,2001,<1000ha,5.3,1993,373.2
+17,Maquoit Bay,Temperate North Atlantic,USA,1993,2001,<1000ha,5.3,2000,535.5
+17,Maquoit Bay,Temperate North Atlantic,USA,1993,2001,<1000ha,5.3,2001,570.1
+18,Holmstange,Temperate North Atlantic,Denmark,1945,1995,<10ha,7.63,1945,0.3601
+18,Holmstange,Temperate North Atlantic,Denmark,1945,1995,<10ha,7.63,1954,1.1287
+18,Holmstange,Temperate North Atlantic,Denmark,1945,1995,<10ha,7.63,1959,9.718
+18,Holmstange,Temperate North Atlantic,Denmark,1945,1995,<10ha,7.63,1974,10.098
+18,Holmstange,Temperate North Atlantic,Denmark,1945,1995,<10ha,7.63,1981,7.4888
+18,Holmstange,Temperate North Atlantic,Denmark,1945,1995,<10ha,7.63,1986,4.2047
+18,Holmstange,Temperate North Atlantic,Denmark,1945,1995,<10ha,7.63,1992,13.8553
+18,Holmstange,Temperate North Atlantic,Denmark,1945,1995,<10ha,7.63,1995,16.3639
+19,Boddum Vig,Temperate North Atlantic,Denmark,1954,1998,<100ha,3.9,1954,3.0671
+19,Boddum Vig,Temperate North Atlantic,Denmark,1954,1998,<100ha,3.9,1958,5.0023
+19,Boddum Vig,Temperate North Atlantic,Denmark,1954,1998,<100ha,3.9,1975,11.7847
+19,Boddum Vig,Temperate North Atlantic,Denmark,1954,1998,<100ha,3.9,1981,6.7919
+19,Boddum Vig,Temperate North Atlantic,Denmark,1954,1998,<100ha,3.9,1986,9.3079
+19,Boddum Vig,Temperate North Atlantic,Denmark,1954,1998,<100ha,3.9,1992,28.5837
+19,Boddum Vig,Temperate North Atlantic,Denmark,1954,1998,<100ha,3.9,1995,20.5012
+19,Boddum Vig,Temperate North Atlantic,Denmark,1954,1998,<100ha,3.9,1998,17.0408
+20,Vejie,Temperate North Atlantic,Denmark,1954,1999,<10ha,2.99,1954,1.2873
+20,Vejie,Temperate North Atlantic,Denmark,1954,1999,<10ha,2.99,1960,1.6972
+20,Vejie,Temperate North Atlantic,Denmark,1954,1999,<10ha,2.99,1970,4.9942
+20,Vejie,Temperate North Atlantic,Denmark,1954,1999,<10ha,2.99,1977,5.2349
+20,Vejie,Temperate North Atlantic,Denmark,1954,1999,<10ha,2.99,1983,5.1017
+20,Vejie,Temperate North Atlantic,Denmark,1954,1999,<10ha,2.99,1995,3.2058
+20,Vejie,Temperate North Atlantic,Denmark,1954,1999,<10ha,2.99,1999,4.9388
+21,Amager,Temperate North Atlantic,Denmark,1954,1995,<1000ha,-0.98,1954,138.6405
+21,Amager,Temperate North Atlantic,Denmark,1954,1995,<1000ha,-0.98,1967,156.8419
+21,Amager,Temperate North Atlantic,Denmark,1954,1995,<1000ha,-0.98,1974,71.6146
+21,Amager,Temperate North Atlantic,Denmark,1954,1995,<1000ha,-0.98,1980,117.2306
+21,Amager,Temperate North Atlantic,Denmark,1954,1995,<1000ha,-0.98,1984,108.0853
+21,Amager,Temperate North Atlantic,Denmark,1954,1995,<1000ha,-0.98,1989,138.4917
+21,Amager,Temperate North Atlantic,Denmark,1954,1995,<1000ha,-0.98,1995,92.8247
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1954,147.3958
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1969,119.3412
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1975,115.4546
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1979,90.3404
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1983,141.4856
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1988,146.2929
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1993,67.1163
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1994,76.7664
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1995,81.5879
+22,Samso,Temperate North Atlantic,Denmark,1954,1999,<1000ha,-1.16,1999,87.3645
+23,Terschelling harbour,Temperate North Atlantic,TheNetherlands,1995,1998,<100ha,-82.31,1995,18.9
+23,Terschelling harbour,Temperate North Atlantic,TheNetherlands,1995,1998,<100ha,-82.31,1998,1.6
+24,Paap,Temperate North Atlantic,TheNetherlands,1994,1997,<100ha,48.01,1994,27
+24,Paap,Temperate North Atlantic,TheNetherlands,1994,1997,<100ha,48.01,1995,64
+24,Paap,Temperate North Atlantic,TheNetherlands,1994,1997,<100ha,48.01,1996,159
+24,Paap,Temperate North Atlantic,TheNetherlands,1994,1997,<100ha,48.01,1997,114
+25,Stromstad,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-2.87,1980,190
+25,Stromstad,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-2.87,2000,107
+26,Lysekil,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-0.12,1980,167
+26,Lysekil,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-0.12,2000,163
+27,Uddevalla,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-6.53,1980,384
+27,Uddevalla,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-6.53,2000,104
+28,Stenungsund,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-1.03,1980,290
+28,Stenungsund,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-1.03,2000,236
+29,Kungalv,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-8.47,1980,794
+29,Kungalv,Temperate North Atlantic,Sweden,1980,2000,<1000ha,-8.47,2000,146
+31,Hillsborough Bay,Tropical Atlantic,USA,1987,1990,<1ha,120.48,1987,0.00112885
+31,Hillsborough Bay,Tropical Atlantic,USA,1987,1990,<1ha,120.48,1987,0.00034993
+31,Hillsborough Bay,Tropical Atlantic,USA,1987,1990,<1ha,120.48,1987,0.00116875
+31,Hillsborough Bay,Tropical Atlantic,USA,1987,1990,<1ha,120.48,1988,0.00024182
+31,Hillsborough Bay,Tropical Atlantic,USA,1987,1990,<1ha,120.48,1988,0.00776219
+31,Hillsborough Bay,Tropical Atlantic,USA,1987,1990,<1ha,120.48,1988,0.01484461
+31,Hillsborough Bay,Tropical Atlantic,USA,1987,1990,<1ha,120.48,1989,0.01828509
+31,Hillsborough Bay,Tropical Atlantic,USA,1987,1990,<1ha,120.48,1989,0.02929817
+31,Hillsborough Bay,Tropical Atlantic,USA,1987,1990,<1ha,120.48,1989,0.04191263
+32,Middle Tampa Bay,Tropical Atlantic,USA,1986,1989,<100ha,23.79,1986,48
+32,Middle Tampa Bay,Tropical Atlantic,USA,1986,1989,<100ha,23.79,1989,98
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,1993,4721.61
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,1994,3851.47
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,1995,3826.11
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,1996,3541.93
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,1997,96.85
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,1998,1583.78
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,1999,1599.23
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,2000,2963.57
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,2001,4109.8
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,2002,3975.45
+38,Vaccares Lagoon,Mediterranean,France,1993,2003,>1000ha,-1.89,2003,3909.16
+39,Mondego Estuary (South Arm),Temperate North Atlantic,Portugal,1986,2002,<10ha,-13.99,1986,15
+39,Mondego Estuary (South Arm),Temperate North Atlantic,Portugal,1986,2002,<10ha,-13.99,1993,1.6
+39,Mondego Estuary (South Arm),Temperate North Atlantic,Portugal,1986,2002,<10ha,-13.99,1997,0.02
+39,Mondego Estuary (South Arm),Temperate North Atlantic,Portugal,1986,2002,<10ha,-13.99,2000,0.9
+39,Mondego Estuary (South Arm),Temperate North Atlantic,Portugal,1986,2002,<10ha,-13.99,2002,1.6
+41,Ria Formosa,Temperate North Atlantic,Portugal,1940,1998,<100ha,1.84,1940,7.1
+41,Ria Formosa,Temperate North Atlantic,Portugal,1940,1998,<100ha,1.84,1980,6
+41,Ria Formosa,Temperate North Atlantic,Portugal,1940,1998,<100ha,1.84,1989,7.9
+41,Ria Formosa,Temperate North Atlantic,Portugal,1940,1998,<100ha,1.84,1996,50.1
+41,Ria Formosa,Temperate North Atlantic,Portugal,1940,1998,<100ha,1.84,1998,20.7
+44,Urangan,Tropical Indo-Pacific,Australia,1998,2002,<100ha,0.21,1998,91.48
+44,Urangan,Tropical Indo-Pacific,Australia,1998,2002,<100ha,0.21,1999,0
+44,Urangan,Tropical Indo-Pacific,Australia,1998,2002,<100ha,0.21,2002,92.26
+45,Wanggoolba Creek,Tropical Indo-Pacific,Australia,1998,2002,<100ha,2.99,1998,119.5
+45,Wanggoolba Creek,Tropical Indo-Pacific,Australia,1998,2002,<100ha,2.99,1999,4.37
+45,Wanggoolba Creek,Tropical Indo-Pacific,Australia,1998,2002,<100ha,2.99,2002,134.7
+46,Northern Great Sandy Strait,Tropical Indo-Pacific,Australia,1998,2002,>1000ha,15.52,1998,1995
+46,Northern Great Sandy Strait,Tropical Indo-Pacific,Australia,1998,2002,>1000ha,15.52,1999,913.3
+46,Northern Great Sandy Strait,Tropical Indo-Pacific,Australia,1998,2002,>1000ha,15.52,1999,98.1
+46,Northern Great Sandy Strait,Tropical Indo-Pacific,Australia,1998,2002,>1000ha,15.52,2000,3712
+62,Marseilles,Mediterranean,France,1984,1999,<1ha,1.27,1984,0.67
+62,Marseilles,Mediterranean,France,1984,1999,<1ha,1.27,1987,0.63
+62,Marseilles,Mediterranean,France,1984,1999,<1ha,1.27,1991,0.68
+62,Marseilles,Mediterranean,France,1984,1999,<1ha,1.27,1994,0.7
+62,Marseilles,Mediterranean,France,1984,1999,<1ha,1.27,1999,0.81
+65,Cockburn Sound East,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-15.32,1967,1750
+65,Cockburn Sound East,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-15.32,1972,310
+65,Cockburn Sound East,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-15.32,1981,14
+65,Cockburn Sound East,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-15.32,1994,26
+65,Cockburn Sound East,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-15.32,1999,13
+66,Cockburn Sound South,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-2.42,1967,634
+66,Cockburn Sound South,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-2.42,1972,528
+66,Cockburn Sound South,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-2.42,1981,283
+66,Cockburn Sound South,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-2.42,1994,291
+66,Cockburn Sound South,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-2.42,1999,292
+67,Cockburn Sound West,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-1.33,1967,545
+67,Cockburn Sound West,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-1.33,1972,504
+67,Cockburn Sound West,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-1.33,1981,443
+67,Cockburn Sound West,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-1.33,1994,372
+67,Cockburn Sound West,Temperate Southern Oceans,Australia,1967,1999,<1000ha,-1.33,1999,356
+69,Hornillo Bay,Mediterranean,Spain,1988,1998,<100ha,-7.52,1988,40
+69,Hornillo Bay,Mediterranean,Spain,1988,1998,<100ha,-7.52,1994,18.85
+69,Hornillo Bay,Mediterranean,Spain,1988,1998,<100ha,-7.52,1998,18.85
+70,Success Bank East,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.91,1965,229.4
+70,Success Bank East,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.91,1972,340.9
+70,Success Bank East,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.91,1982,456.5
+70,Success Bank East,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.91,1995,482.7
+71,Success Bank Central,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.47,1965,53.4
+71,Success Bank Central,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.47,1972,121.9
+71,Success Bank Central,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.47,1982,138.8
+71,Success Bank Central,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.47,1995,94.6
+72,Success BankWest,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.83,1965,224.5
+72,Success BankWest,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.83,1972,297.7
+72,Success BankWest,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.83,1982,382.8
+72,Success BankWest,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.83,1995,458.6
+73,Parmelia BankEast,Temperate Southern Oceans,Australia,1965,2004,<1000ha,-1.04,1965,487
+73,Parmelia BankEast,Temperate Southern Oceans,Australia,1965,2004,<1000ha,-1.04,1972,491.5
+73,Parmelia BankEast,Temperate Southern Oceans,Australia,1965,2004,<1000ha,-1.04,1982,289.2
+73,Parmelia BankEast,Temperate Southern Oceans,Australia,1965,2004,<1000ha,-1.04,1995,324.1
+74,Parmelia Bank West,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.06,1965,248.1
+74,Parmelia Bank West,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.06,1972,285.2
+74,Parmelia Bank West,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.06,1982,343.6
+74,Parmelia Bank West,Temperate Southern Oceans,Australia,1965,2004,<1000ha,1.06,1995,375.1
+75,Spencer Gulf,Temperate Southern Oceans,Australia,1987,1994,>1000ha,-13.05,1987,15953
+75,Spencer Gulf,Temperate Southern Oceans,Australia,1987,1994,>1000ha,-13.05,1994,6401
+78,Vaccares Lagoon,Mediterranean,France,1984,1994,>1000ha,3.6,1984,3000
+78,Vaccares Lagoon,Mediterranean,France,1984,1994,>1000ha,3.6,1994,4300
+79,Izembek Lagoon,Temperate North Pacific,USA,1978,1995,>1000ha,0.63,1978,15067
+79,Izembek Lagoon,Temperate North Pacific,USA,1978,1995,>1000ha,0.63,1987,15915
+79,Izembek Lagoon,Temperate North Pacific,USA,1978,1995,>1000ha,0.63,1995,15951
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1954,350
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1963,4190
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1965,3120
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1966,2820
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1980,1434
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1981,1313
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1981,1760
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1982,1419
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1983,1864
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1984,1628
+81,Tuggerah Lakes,Temperate Southern Oceans,Australia,1954,1985,>1000ha,5.48,1985,1911
+82,Urbinu Lagoon,Mediterranean,France,1990,1999,<1000ha,0.67,1990,137.2597
+82,Urbinu Lagoon,Mediterranean,France,1990,1999,<1000ha,0.67,1994,106.1578
+82,Urbinu Lagoon,Mediterranean,France,1990,1999,<1000ha,0.67,1996,161.6553
+82,Urbinu Lagoon,Mediterranean,France,1990,1999,<1000ha,0.67,1999,145.8419
+83,"Botany Bay, Northern Shoreline",Temperate Southern Oceans,Australia,1930,1985,<100ha,-0.47,1930,35
+83,"Botany Bay, Northern Shoreline",Temperate Southern Oceans,Australia,1930,1985,<100ha,-0.47,1942,93
+83,"Botany Bay, Northern Shoreline",Temperate Southern Oceans,Australia,1930,1985,<100ha,-0.47,1951,22
+83,"Botany Bay, Northern Shoreline",Temperate Southern Oceans,Australia,1930,1985,<100ha,-0.47,1961,49
+83,"Botany Bay, Northern Shoreline",Temperate Southern Oceans,Australia,1930,1985,<100ha,-0.47,1977,16
+83,"Botany Bay, Northern Shoreline",Temperate Southern Oceans,Australia,1930,1985,<100ha,-0.47,1985,27
+84,"Botany Bay, Southern Shoreline",Temperate Southern Oceans,Australia,1942,1984,<1000ha,-0.61,1942,668
+84,"Botany Bay, Southern Shoreline",Temperate Southern Oceans,Australia,1942,1984,<1000ha,-0.61,1951,567
+84,"Botany Bay, Southern Shoreline",Temperate Southern Oceans,Australia,1942,1984,<1000ha,-0.61,1961,598
+84,"Botany Bay, Southern Shoreline",Temperate Southern Oceans,Australia,1942,1984,<1000ha,-0.61,1970,740
+84,"Botany Bay, Southern Shoreline",Temperate Southern Oceans,Australia,1942,1984,<1000ha,-0.61,1977,483
+84,"Botany Bay, Southern Shoreline",Temperate Southern Oceans,Australia,1942,1984,<1000ha,-0.61,1979,394
+84,"Botany Bay, Southern Shoreline",Temperate Southern Oceans,Australia,1942,1984,<1000ha,-0.61,1982,541
+84,"Botany Bay, Southern Shoreline",Temperate Southern Oceans,Australia,1942,1984,<1000ha,-0.61,1984,516
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1932,278.8
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1952,128.3
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1961,168.4
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1967,175.3
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1969,161.2
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1976,170.3
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1978,154.9
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1982,145.9
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1987,115.8
+88,Glenan Archipelago,Temperate North Atlantic,France,1932,1990,<1000ha,-0.98,1990,154.6
+96,Mourillion,Mediterranean,France,1964,1999,<1000ha,-1.81,1964,147
+96,Mourillion,Mediterranean,France,1964,1999,<1000ha,-1.81,1979,78
+97,Marseille,Mediterranean,France,1900,1994,<1000ha,-0.62,1900,471
+97,Marseille,Mediterranean,France,1900,1994,<1000ha,-0.62,1994,263
+115,Whangamata Harbour,Temperate Southern Oceans,New Zealand,1944,1998,<100ha,-0.51,1944,79
+115,Whangamata Harbour,Temperate Southern Oceans,New Zealand,1944,1998,<100ha,-0.51,1998,60
+116,Wallis Lake,Temperate Southern Oceans,Australia,1988,2002,>1000ha,-0.95,1988,2374
+116,Wallis Lake,Temperate Southern Oceans,Australia,1988,2002,>1000ha,-0.95,1991,2184
+116,Wallis Lake,Temperate Southern Oceans,Australia,1988,2002,>1000ha,-0.95,1995,1856
+116,Wallis Lake,Temperate Southern Oceans,Australia,1988,2002,>1000ha,-0.95,2002,2078
+119,Esperance Bay,Temperate Southern Oceans,Australia,1956,2001,<1000ha,-0.57,1956,585
+119,Esperance Bay,Temperate Southern Oceans,Australia,1956,2001,<1000ha,-0.57,1969,509
+119,Esperance Bay,Temperate Southern Oceans,Australia,1956,2001,<1000ha,-0.57,1977,428
+119,Esperance Bay,Temperate Southern Oceans,Australia,1956,2001,<1000ha,-0.57,1989,482
+119,Esperance Bay,Temperate Southern Oceans,Australia,1956,2001,<1000ha,-0.57,1995,463
+119,Esperance Bay,Temperate Southern Oceans,Australia,1956,2001,<1000ha,-0.57,2001,453
+120,Warnbro Sound,Temperate Southern Oceans,Australia,1953,2002,<1000ha,-0.64,1953,273
+120,Warnbro Sound,Temperate Southern Oceans,Australia,1953,2002,<1000ha,-0.64,1963,263
+120,Warnbro Sound,Temperate Southern Oceans,Australia,1953,2002,<1000ha,-0.64,1989,265
+120,Warnbro Sound,Temperate Southern Oceans,Australia,1953,2002,<1000ha,-0.64,1995,223
+120,Warnbro Sound,Temperate Southern Oceans,Australia,1953,2002,<1000ha,-0.64,2002,200
+121,Swan-Canning Estuary,Temperate Southern Oceans,Australia,1976,1982,<1000ha,0.87,1976,563
+121,Swan-Canning Estuary,Temperate Southern Oceans,Australia,1976,1982,<1000ha,0.87,1982,593
+123,Princess Royal Harbour,Temperate Southern Oceans,Australia,1960,1988,<1000ha,-6.25,1960,1440
+123,Princess Royal Harbour,Temperate Southern Oceans,Australia,1960,1988,<1000ha,-6.25,1988,250
+124,Oyster Harbour,Temperate Southern Oceans,Australia,1960,1988,<1000ha,-5.52,1960,610
+124,Oyster Harbour,Temperate Southern Oceans,Australia,1960,1988,<1000ha,-5.52,1988,130
+126,"Hamblin Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<100ha,-9.78,1987,17.3
+126,"Hamblin Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<100ha,-9.78,1988,19.3
+126,"Hamblin Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<100ha,-9.78,1989,14.6
+126,"Hamblin Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<100ha,-9.78,1992,10.1
+126,"Hamblin Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<100ha,-9.78,1997,6.5
+127,"Eel Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,2000,<10ha,,1987,14.3
+127,"Eel Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,2000,<10ha,,1988,13.3
+127,"Eel Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,2000,<10ha,,1989,12.1
+127,"Eel Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,2000,<10ha,,1992,6.2
+127,"Eel Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,2000,<10ha,,1994,0.66
+127,"Eel Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,2000,<10ha,,2000,0
+128,"Jehu Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<10ha,-17.77,1987,11.8
+128,"Jehu Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<10ha,-17.77,1988,9.6
+128,"Jehu Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<10ha,-17.77,1989,4.3
+128,"Jehu Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<10ha,-17.77,1992,4.5
+128,"Jehu Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1997,<10ha,-17.77,1997,2
+129,"Central Basin, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<100ha,-27.88,1987,23.2
+129,"Central Basin, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<100ha,-27.88,1988,9.7
+129,"Central Basin, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<100ha,-27.88,1989,12.6
+129,"Central Basin, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<100ha,-27.88,1992,5.8
+130,"Great River, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<10ha,-24.87,1987,14.4
+130,"Great River, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<10ha,-24.87,1988,10.4
+130,"Great River, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<10ha,-24.87,1989,6
+130,"Great River, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<10ha,-24.87,1992,4.2
+131,"Tim's Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<10ha,1.75,1987,2.4
+131,"Tim's Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<10ha,1.75,1988,2.3
+131,"Tim's Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<10ha,1.75,1989,2.3
+131,"Tim's Pond, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<10ha,1.75,1992,2.6
+132,"Offshore, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<1ha,-1.84,1987,1
+132,"Offshore, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<1ha,-1.84,1988,0.9
+132,"Offshore, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<1ha,-1.84,1989,0.8
+132,"Offshore, Waquoit Bay",Temperate North Atlantic,USA,1987,1992,<1ha,-1.84,1992,0.9
+133,Ninigret Pond,Temperate North Atlantic,USA,1960,1992,<10ha,-1.68,1960,5.2
+133,Ninigret Pond,Temperate North Atlantic,USA,1960,1992,<10ha,-1.68,1974,4.4
+133,Ninigret Pond,Temperate North Atlantic,USA,1960,1992,<10ha,-1.68,1980,3.3
+133,Ninigret Pond,Temperate North Atlantic,USA,1960,1992,<10ha,-1.68,1992,3.1
+134,Japan,Temperate North Pacific,Japan,1978,1991,>1000ha,-0.3,1978,51500
+134,Japan,Temperate North Pacific,Japan,1978,1991,>1000ha,-0.3,1991,49500
+136,Puget Sound,North Pacific,USA,2000,2004,>1000ha,8.27,2000,14470
+136,Puget Sound,North Pacific,USA,2000,2004,>1000ha,8.27,2001,20990
+136,Puget Sound,North Pacific,USA,2000,2004,>1000ha,8.27,2002,20390
+136,Puget Sound,North Pacific,USA,2000,2004,>1000ha,8.27,2003,20620
+136,Puget Sound,North Pacific,USA,2000,2004,>1000ha,8.27,2004,20140
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,1943,305
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,1986,43.2
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,1989,34.8
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,1992,67.1
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,1994,61.7
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,1996,119.8
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,1999,205.3
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,2001,214.9
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,2003,241.7
+137,Indian River Lagoon Segment SV ,Tropical Atlantic,USA,1943,2005,<1000ha,-0.31,2005,252
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,1943,233
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,1986,18
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,1989,47.1
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,1992,29.9
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,1994,92.5
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,1996,134.3
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,1999,194.5
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,2001,220.4
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,2003,242.3
+138,Indian River Lagoon Segment NV,Tropical Atlantic,USA,1943,2005,<1000ha,0.08,2005,245
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,1943,411.8
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,1986,243.8
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,1989,240.8
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,1992,246.5
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,1994,152.4
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,1996,240.5
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,1999,243.1
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,2001,264.5
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,2003,267.8
+139,Indian River Lagoon Segment MP,Tropical Atlantic,USA,1943,2005,<1000ha,-0.68,2005,269.5
+140,Bermuda Platform,Tropical Atlantic,Bermuda,1997,2004,>1000ha,-3.66,1997,2100
+140,Bermuda Platform,Tropical Atlantic,Bermuda,1997,2004,>1000ha,-3.66,2004,1625
+164,Lower Laguna Madre,Tropical Atlantic,USA,1965,1988,>1000ha,-0.8,1965,66608
+164,Lower Laguna Madre,Tropical Atlantic,USA,1965,1988,>1000ha,-0.8,1974,54468
+164,Lower Laguna Madre,Tropical Atlantic,USA,1965,1988,>1000ha,-0.8,1988,55437
+165,Turkey Point,Tropical Atlantic,USA,1967,1969,<100ha,,1967,20.2
+165,Turkey Point,Tropical Atlantic,USA,1967,1969,<100ha,,1968,13.1
+165,Turkey Point,Tropical Atlantic,USA,1967,1969,<100ha,,1969,0
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1984,270
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1985,172
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1986,203
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1987,321
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1989,490
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1990,608
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1991,635
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1992,778
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1993,813
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1994,757
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1995,703
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1996,709
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1997,667
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1998,659
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,1999,640
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,2000,725
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,2001,944
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,2002,1120
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,2003,352
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,2004,742
+201,CB5MH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,6.22,2005,997
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1984,305
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1985,328
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1986,322
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1987,242
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1989,351
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1990,373
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1991,396
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1992,467
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1993,512
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1994,454
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1995,431
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1996,396
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1997,362
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1998,313
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,1999,268
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,2000,288
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,2001,289
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,2002,310
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,2003,286
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,2004,198
+202,CB6PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.76,2005,260
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1984,2822
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1985,2899
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1986,2989
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1987,2942
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1989,3241
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1990,3324
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1991,4007
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1992,4151
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1993,4470
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1994,4014
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1995,3560
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1996,3831
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1997,3937
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1998,3617
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,1999,3335
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,2000,3403
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,2001,3712
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,2002,3966
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,2003,3720
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,2004,2896
+203,CB7PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,>1000ha,0.74,2005,3294
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1984,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1985,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1986,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1987,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1989,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1990,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1991,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1992,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1993,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1994,0
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1995,4
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1996,4
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1997,4
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1998,4
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,1999,3
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,2000,3
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,2001,3
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,2002,4
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,2003,2
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,2004,2
+204,CB8PH - Chesapeake Bay,Temperate North Atlantic,USA,1984,2005,<10ha,,2005,4
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1984,0
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1985,0
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1986,0
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1987,3
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1989,4
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1990,3
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1991,3
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1992,3
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1993,4
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1994,6
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1995,15
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1996,19
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1997,76
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1998,52
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,1999,31
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,2000,38
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,2001,94
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,2002,114
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,2003,53
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,2004,30
+206,JMSPH - James,Temperate North Atlantic,USA,1984,2005,<100ha,,2005,0
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1984,38
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1985,37
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1986,43
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1987,40
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1989,38
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1990,29
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1991,24
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1992,20
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1993,21
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1994,43
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1995,13
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1996,30
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1997,16
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1998,17
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,1999,38
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,2000,19
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,2001,17
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,2002,16
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,2003,0
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,2004,4
+207,LYNPH - Lynnhaven,Temperate North Atlantic,USA,1984,2005,<100ha,-7.42,2005,8
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1984,2736
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1985,2847
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1986,2821
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1987,2913
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1989,3667
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1990,3983
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1991,4287
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1992,4361
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1993,4430
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1994,4375
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1995,4389
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1996,4303
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1997,4442
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1998,4082
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,1999,3584
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,2000,3694
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,2001,3850
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,2002,3538
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,2003,3423
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,2004,3055
+208,MOBPH - Mobjack,Temperate North Atlantic,USA,1984,2005,>1000ha,0.30,2005,2916
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1984,10
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1985,10
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1986,10
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1987,43
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1989,142
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1990,242
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1991,270
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1992,323
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1993,435
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1994,250
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1995,144
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1996,142
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1997,175
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1998,132
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,1999,117
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,2000,171
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,2001,218
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,2002,284
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,2003,181
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,2004,179
+209,PIAMH - Piankatank,Temperate North Atlantic,USA,1984,2005,<1000ha,14.52,2005,211
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1984,431
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1985,385
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1986,556
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1987,474
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1989,600
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1990,595
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1991,732
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1992,719
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1993,776
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1994,665
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1995,655
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1996,652
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1997,530
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1998,459
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,1999,466
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,2000,489
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,2001,619
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,2002,733
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,2003,674
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,2004,471
+210,POCMH - Pocomoke,Temperate North Atlantic,USA,1984,2005,<1000ha,2.46,2005,723
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1984,4
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1985,1
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1986,0
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1987,13
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1989,48
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1990,51
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1991,31
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1992,37
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1993,62
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1994,27
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1995,19
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1996,12
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1997,9
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1998,5
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,1999,3
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,2000,10
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,2001,57
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,2002,122
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,2003,9
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,2004,5
+211,RPPMH - Rappahannock,Temperate North Atlantic,USA,1984,2005,<100ha,11.42,2005,44
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1984,4486
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1985,4441
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1986,5173
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1987,4250
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1989,5391
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1990,5535
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1991,5941
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1992,5996
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1993,5727
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1994,4325
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1995,4065
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1996,3965
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1997,3738
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1998,2623
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,1999,3785
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,2000,4233
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,2001,4368
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,2002,4922
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,2003,3463
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,2004,3202
+212,TANMH - Tangier,Temperate North Atlantic,USA,1984,2005,>1000ha,-0.42,2005,4107
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1984,179
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1985,176
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1986,173
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1987,190
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1989,233
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1990,272
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1991,267
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1992,274
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1993,282
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1994,296
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1995,302
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1996,307
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1997,339
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1998,303
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,1999,265
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,2000,308
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,2001,324
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,2002,373
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,2003,359
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,2004,242
+213,YRKPH - York,Temperate North Atlantic,USA,1984,2005,<1000ha,-0.05,2005,177
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1984,0
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1985,52
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1986,76
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1987,26
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1989,47
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1990,41
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1991,75
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1992,70
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1993,77
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1994,64
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1995,71
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1996,44
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1997,59
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1998,38
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,1999,65
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,2000,84
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,2001,93
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,2002,105
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,2003,63
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,2004,90
+214,BIGMH - Big Annenessex,Temperate North Atlantic,USA,1984,2005,<100ha,,2005,112
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1937,327.71
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1953,488.71
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1963,428.80
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1971,420.00
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1974,211.43
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1978,239.51
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1981,151.10
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1984,201.18
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1985,177.28
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1986,173.64
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1987,185.41
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1989,225.94
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1990,235.76
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1991,252.62
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1992,267.43
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1993,269.52
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1994,298.50
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1995,303.21
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1996,302.72
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1997,309.05
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1998,298.35
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,1999,265.92
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,2000,308.89
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,2001,310.33
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,2002,299.02
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,2003,294.67
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,2004,290.74
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,2005,275.29
+215,East River,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.68,2006,205.20
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1937,267.86
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1953,296.09
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1961,543.09
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1969,523.76
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1974,300.00
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1978,77.31
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1981,73.04
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1984,109.40
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1985,90.99
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1986,94.74
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1987,154.85
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1989,210.57
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1990,240.27
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1991,239.45
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1992,285.81
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1993,307.46
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1994,302.75
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1995,289.27
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1996,293.91
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1997,271.83
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1998,280.44
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,1999,266.24
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,2000,291.69
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,2001,299.40
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,2002,366.08
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,2003,239.99
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,2004,252.12
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,2005,294.76
+216,Fleets Bay,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.19,2006,234.17
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1937,203.33
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1951,360.26
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1960,364.16
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1971,223.01
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1974,200.00
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1978,129.00
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1981,125.23
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1984,193.01
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1985,192.24
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1986,198.95
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1987,202.75
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1989,247.19
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1990,259.06
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1991,272.43
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1992,281.41
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1993,282.31
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1994,301.12
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1995,300.85
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1996,301.33
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1997,328.38
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1998,305.48
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,1999,278.87
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,2000,298.14
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,2001,303.00
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,2002,309.55
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,2003,312.30
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,2004,215.43
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,2005,152.74
+217,Jenkins Neck,Temperate North Atlantic,USA,1937,2006,<1000ha,-0.46,2006,147.60
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1938,405.18
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1949,399.41
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1955,370.54
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1966,399.36
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1972,355.88
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1978,316.27
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1981,290.08
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1984,290.18
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1985,277.23
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1986,295.74
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1987,259.41
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1989,280.01
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1990,307.71
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1991,339.36
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1992,370.74
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1993,395.2
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1994,353.09
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1995,349.18
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1996,344.91
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1997,368.03
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1998,354.61
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,1999,365.33
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,2000,355.9
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,2001,354.88
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,2002,350.36
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,2003,351.3
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,2004,303.83
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,2005,306.92
+218,Vaucluse Shores,Temperate North Atlantic,USA,1938,2006,<1000ha,-0.99,2006,206.04
+219,Parrott Islands,Temperate North Atlantic,USA,1937,1971,<1000ha,,1937,189.53
+219,Parrott Islands,Temperate North Atlantic,,1937,1971,<1000ha,,1951,355.37
+219,Parrott Islands,Temperate North Atlantic,,1937,1971,<1000ha,,1960,353.73
+219,Parrott Islands,Temperate North Atlantic,,1937,1971,<1000ha,,1968,277.62
+219,Parrott Islands,Temperate North Atlantic,,1937,1971,<1000ha,,1971,0
+220,Mumfort Islands,Temperate North Atlantic,USA,1937,2000,<1000ha,-10.97,1937,91.63
+220,Mumfort Islands,Temperate North Atlantic,,1937,2000,<1000ha,-10.97,1953,241.92
+220,Mumfort Islands,Temperate North Atlantic,,1937,2000,<1000ha,-10.97,1960,213.84
+220,Mumfort Islands,Temperate North Atlantic,,1937,2000,<1000ha,-10.97,1971,200
+220,Mumfort Islands,Temperate North Atlantic,,1937,2000,<1000ha,-10.97,1974,5.67
+220,Mumfort Islands,Temperate North Atlantic,,1937,2000,<1000ha,-10.97,1990,1.48
+220,Mumfort Islands,Temperate North Atlantic,,1937,2000,<1000ha,-10.97,2000,0.09
+224,Bass River,Temperate North Atlantic,USA,1994,2000,<10ha,-26.58,1994,5.86
+224,Bass River,Temperate North Atlantic,,1994,2000,<10ha,-26.58,2000,1.19
+225,Beverly Harbor/Danvers River,Temperate North Atlantic,USA,1995,2001,<10ha,-9.78,1995,4.11
+225,Beverly Harbor/Danvers River,Temperate North Atlantic,,1995,2001,<10ha,-9.78,2001,2.29
+226,"Boston Harbor
+South",Temperate North Atlantic,USA,1995,2001,<100ha,-25.45,1995,73.06
+226,"Boston Harbor
+South",Temperate North Atlantic,USA,1995,2001,<100ha,-25.45,2001,15.87
+227,Bournes Pond,Temperate North Atlantic,USA,1994,2000,<100ha,-8.59,1994,18.91
+227,Bournes Pond,Temperate North Atlantic,USA,1994,2000,<100ha,-8.59,2000,11.29
+228,Buttermilk and Little Buttermilk Bays,Temperate North Atlantic,USA,1996,2002,<100ha,,1996,38.22
+228,Buttermilk and Little Buttermilk Bays,Temperate North Atlantic,,1996,2002,<100ha,,2002,0
+229,Cape Pogue Pond\Pochet Pond\Calebs Pond,Temperate North Atlantic,USA,1994,1999,<1000ha,-4.15,1994,220.43
+229,Cape Pogue Pond\Pochet Pond\Calebs Pond,Temperate North Atlantic,USA,1994,1999,<1000ha,-4.15,1999,179.11
+230,"Duxbury/Plymout
+h Harbors",Temperate North Atlantic,USA,1995,2000,<1000ha,-2.71,1995,906.03
+230,"Duxbury/Plymout
+h Harbors",Temperate North Atlantic,USA,1995,2000,<1000ha,-2.71,2000,791.38
+232,Gloucester Harbor,Temperate North Atlantic,USA,1996,2001,<100ha,-3.88,1996,18.37
+232,Gloucester Harbor,Temperate North Atlantic,USA,1996,2001,<100ha,-3.88,2001,15.13
+234,Herring River,Temperate North Atlantic,USA,1994,2000,<10ha,-13.31,1994,3.4
+234,Herring River,Temperate North Atlantic,USA,1994,2000,<10ha,-13.31,2000,1.53
+235,Hyannis Harbor,Temperate North Atlantic,USA,1994,2000,<100ha,-4.11,1994,68.35
+235,Hyannis Harbor,Temperate North Atlantic,USA,1994,2000,<100ha,-4.11,2000,53.4
+236,Lagoon Pond,Temperate North Atlantic,USA,1994,1999,<100ha,-16.55,1994,66.44
+236,Lagoon Pond,Temperate North Atlantic,USA,1994,1999,<100ha,-16.55,1999,29.04
+237,Lake Tashmoo,Temperate North Atlantic,USA,1994,1999,<100ha,-17.36,1994,36.92
+237,Lake Tashmoo,Temperate North Atlantic,USA,1994,1999,<100ha,-17.36,1999,15.5
+238,Little Pond,Temperate North Atlantic,USA,1994,2000,<10ha,-14.75,1994,5.96
+238,Little Pond,Temperate North Atlantic,USA,1994,2000,<10ha,-14.75,2000,2.46
+239,Lower Pleasant Bay,Temperate North Atlantic,USA,1994,2000,<1000ha,-1.5,1994,513.06
+239,Lower Pleasant Bay,Temperate North Atlantic,USA,1994,2000,<1000ha,-1.5,2000,468.93
+240,Lynn Harbor,Temperate North Atlantic,USA,1996,2001,<1000ha,-2.15,1996,288.7
+240,Lynn Harbor,Temperate North Atlantic,USA,1996,2001,<1000ha,-2.15,2001,259.28
+241,Madaket Harbor,Temperate North Atlantic,USA,1994,1999,<1000ha,-2.1,1994,271.66
+241,Madaket Harbor,Temperate North Atlantic,USA,1994,1999,<1000ha,-2.1,1999,244.59
+242,Manchester Harbor,Temperate North Atlantic,USA,1996,2001,<100ha,-4.11,1996,58.39
+242,Manchester Harbor,Temperate North Atlantic,USA,1996,2001,<100ha,-4.11,2001,47.53
+243,Marblehead Harbor,Temperate North Atlantic,USA,1996,2001,<10ha,-14.04,1996,10.21
+243,Marblehead Harbor,Temperate North Atlantic,USA,1996,2001,<10ha,-14.04,2001,5.06
+244,Menemsha Pond,Temperate North Atlantic,USA,1994,1999,<1000ha,-3.66,1994,171.74
+244,Menemsha Pond,Temperate North Atlantic,USA,1994,1999,<1000ha,-3.66,1999,143
+245,Morris Island,Temperate North Atlantic,USA,1994,2000,<100ha,-2.33,1994,68.57
+245,Morris Island,Temperate North Atlantic,USA,1994,2000,<100ha,-2.33,2000,59.62
+246,Nantucket  Harbor,Temperate North Atlantic,USA,1994,1999,<1000ha,-6.44,1994,964.11
+246,Nantucket  Harbor,Temperate North Atlantic,USA,1994,1999,<1000ha,-6.44,1999,698.62
+247,New Bedfor Harbor(Outer)/Clarks Cove,Temperate North Atlantic,USA,1996,2002,<100ha,-1.97,1996,54.58
+247,New Bedfor Harbor(Outer)/Clarks Cove,Temperate North Atlantic,USA,1996,2002,<100ha,-1.97,2002,48.5
+248,Ryders Cove/Crow Pond/Bassing Harbor,Temperate North Atlantic,USA,1994,2000,<100ha,-4.70,1994,59.29
+248,Ryders Cove/Crow Pond/Bassing Harbor,Temperate North Atlantic,USA,1994,2000,<100ha,-4.70,2000,44.72
+249,Salem Harbor,Temperate North Atlantic,USA,1996,2001,<100ha,-33.43,1996,41.87
+249,Salem Harbor,Temperate North Atlantic,USA,1996,2001,<100ha,-33.43,2001,7.87
+250,Scituate Harbor,Temperate North Atlantic,USA,1995,2000,<10ha,-3.03,1995,4.77
+250,Scituate Harbor,Temperate North Atlantic,USA,1995,2000,<10ha,-3.03,2000,4.1
+251,"Stage Harbor
+System",Temperate North Atlantic,USA,1994,2000,<100ha,-7.93,1994,104.59
+251,"Stage Harbor
+System",Temperate North Atlantic,USA,1994,2000,<100ha,-7.93,2000,64.99
+252,Three Bays,Temperate North Atlantic,USA,1994,2000,<10ha,,1994,4.35
+252,Three Bays,Temperate North Atlantic,USA,1994,2000,<10ha,,2000,0
+253,"Upper Pleasant
+Bay",Temperate North Atlantic,USA,1994,2000,<100ha,-7.67,1994,120.82
+253,"Upper Pleasant
+Bay",Temperate North Atlantic,USA,1994,2000,<100ha,-7.67,2000,76.24
+255,"Wareham
+River/Marks Cove",Temperate North Atlantic,USA,1996,2002,<10ha,-23.83,1996,4.39
+255,"Wareham
+River/Marks Cove",Temperate North Atlantic,USA,1996,2002,<10ha,-23.83,2002,1.05
+256,"West Falmouth
+Harbor",Temperate North Atlantic,USA,1996,2002,<100ha,-1.24,1996,21.92
+256,"West Falmouth
+Harbor",Temperate North Atlantic,USA,1996,2002,<100ha,-1.24,2002,20.35
+257,Westport River - East and West Branch,Temperate North Atlantic,USA,1996,2002,<1000ha,-6.19,1996,273.05
+257,Westport River - East and West Branch,Temperate North Atlantic,USA,1996,2002,<1000ha,-6.19,2002,188.36
+258,Weweantic River,Temperate North Atlantic,USA,1996,2002,<100ha,-14.16,1996,20.63
+258,Weweantic River,Temperate North Atlantic,USA,1996,2002,<100ha,-14.16,2002,8.82
+259,Wild Harbor,Temperate North Atlantic,USA,1996,2002,<10ha,-2.16,1996,8.06
+259,Wild Harbor,Temperate North Atlantic,USA,1996,2002,<10ha,-2.16,2002,7.08
+260,Boston Harbor North,Temperate North Atlantic,USA,1995,2001,<10ha,,1995,0
+260,Boston Harbor North,Temperate North Atlantic,USA,1995,2001,<10ha,,2001,11.1
+261,Cohasset Harbor,Temperate North Atlantic,USA,1995,2001,<100ha,0.52,1995,45.56
+261,Cohasset Harbor,Temperate North Atlantic,USA,1995,2001,<100ha,0.52,2001,47
+262,Lewis Bay,Temperate North Atlantic,USA,1995,2001,<1ha,18.12,1995,0.16
+262,Lewis Bay,Temperate North Atlantic,USA,1995,2001,<1ha,18.12,2001,0.48
+271,Coastal Bend,Tropical Atlantic,USA,1958,1994,>1000ha,0.2,1958,10584
+271,Coastal Bend,Tropical Atlantic,USA,1958,1994,>1000ha,0.2,1994,11385
+272,Galveston Bay,Tropical Atlantic,USA,1956,1998,>1000ha,-5.4,1956,2025
+272,Galveston Bay,Tropical Atlantic,USA,1956,1998,>1000ha,-5.4,1998,210
+273,Chandeleur Islands,Tropical Atlantic,USA,1969,1995,>1000ha,-1.33,1969,6377
+273,Chandeleur Islands,Tropical Atlantic,USA,1969,1995,>1000ha,-1.33,1969,4669
+273,Chandeleur Islands,Tropical Atlantic,USA,1969,1995,>1000ha,-1.33,1992,6536
+273,Chandeleur Islands,Tropical Atlantic,USA,1969,1995,>1000ha,-1.33,1995,4511
+274,Mississippi Sound,Tropical Atlantic,USA,1992,2003,<1000ha,-6.36,1992,600
+274,Mississippi Sound,Tropical Atlantic,USA,1992,2003,<1000ha,-6.36,2003,298
+275,Mobile Bay,Tropical Atlantic,USA,1981,2003,<1000ha,-7.77,1981,1105
+275,Mobile Bay,Tropical Atlantic,USA,1981,2003,<1000ha,-7.77,2003,200
+276,Perdido Bay,Tropical Atlantic,USA,1940,2003,<1000ha,-2.18,1940,475
+276,Perdido Bay,Tropical Atlantic,USA,1940,2003,<1000ha,-2.18,2003,120
+277,Pensacola Bay,Tropical Atlantic,USA,1960,1992,>1000ha,-2.31,1968,3800
+277,Pensacola Bay,Tropical Atlantic,USA,1960,1992,>1000ha,-2.31,1992,1814
+278,Choctawhatchee Bay,Tropical Atlantic,USA,1983,1992,>1000ha,3.68,1983,1237
+278,Choctawhatchee Bay,Tropical Atlantic,USA,1983,1992,>1000ha,3.68,1992,1722
+279,St. Andrew Bay,Tropical Atlantic,USA,1964,1992,>1000ha,-0.60,1964,4706
+279,St. Andrew Bay,Tropical Atlantic,USA,1964,1992,>1000ha,-0.60,1992,3979
+280,Big Bend,Tropical Atlantic,USA,1984,1992,>1000ha,-9.15,1984,520000
+280,Big Bend,Tropical Atlantic,USA,1984,1992,>1000ha,-9.15,1992,250000
+283,Greater Charlotte Harbor,Tropical Atlantic,USA,1982,1999,>1000ha,-0.35,1982,23127
+283,Greater Charlotte Harbor,Tropical Atlantic,USA,1982,1999,>1000ha,-0.35,1999,21802
+284,Florida Bay,Tropical Atlantic,USA,1987,1994,>1000ha,-1.89,1987,142473
+284,Florida Bay,Tropical Atlantic,USA,1987,1994,>1000ha,-1.89,1994,124787
+285,Cartegena Bay,Tropical Atlantic,Colombia,1945,2001,<1000ha,-4.28,1945,834.34
+285,Cartegena Bay,Tropical Atlantic,Colombia,1945,2001,<1000ha,-4.28,1956,253.50
+285,Cartegena Bay,Tropical Atlantic,Colombia,1945,2001,<1000ha,-4.28,1972,150.09
+285,Cartegena Bay,Tropical Atlantic,Colombia,1945,2001,<1000ha,-4.28,1991,93.80
+285,Cartegena Bay,Tropical Atlantic,Colombia,1945,2001,<1000ha,-4.28,2001,76
+286,Rocky Bay,Temperate Southern Oceans,Australia,1941,1992,<100ha,-0.38,1941,20.44
+286,Rocky Bay,Temperate Southern Oceans,Australia,1941,1992,<100ha,-0.38,1972,19.63
+286,Rocky Bay,Temperate Southern Oceans,Australia,1941,1992,<100ha,-0.38,1981,19.50
+286,Rocky Bay,Temperate Southern Oceans,Australia,1941,1992,<100ha,-0.38,1992,16.83
+287,Thomson Bay South,Temperate Southern Oceans,Australia,1966,1992,<100ha,-0.08,1966,34.02
+287,Thomson Bay South,Temperate Southern Oceans,Australia,1966,1992,<100ha,-0.08,1992,33.34
+288,Thomson Bay North,Temperate Southern Oceans,Australia,1966,1992,<10ha,-0.16,1966,10.12
+288,Thomson Bay North,Temperate Southern Oceans,Australia,1966,1992,<10ha,-0.16,1992.00,9.7
+289,De Keeg-De Ans,Temperate North Atlantic,TheNetherlands,1972,1987,<100ha,2.85,1972,15
+289,De Keeg-De Ans,Temperate North Atlantic,TheNetherlands,1972,1987,<100ha,2.85,1987,23
+290,Hoorn,Temperate North Atlantic,TheNetherlands,1972,1987,<100ha,-2.09,1972,115
+290,Hoorn,Temperate North Atlantic,TheNetherlands,1972,1987,<100ha,-2.09,1987,84
+291,Linthorst Homanpolder,Temperate North Atlantic,TheNetherlands,1972,1987,<100ha,,1972,0
+291,Linthorst Homanpolder,Temperate North Atlantic,TheNetherlands,1972,1987,<100ha,,1987,75
+292,Emmapolder,Temperate North Atlantic,TheNetherlands,1972,1987,<100ha,,1972,0
+292,Emmapolder,Temperate North Atlantic,TheNetherlands,1972,1987,<100ha,,1987,77
+293,Balgzand,Temperate North Atlantic,TheNetherlands,1972,1987,<10ha,-16.57,1972,12
+293,Balgzand,Temperate North Atlantic,TheNetherlands,1972,1987,<10ha,-16.57,1987,1
+330,St Georges Basin,Temperate Southern Oceans,Australia,1961,1998,<1000ha,-0.7,1957,377.9
+330,St Georges Basin,Temperate Southern Oceans,Australia,1961,1998,<1000ha,-0.7,1970,343.4
+330,St Georges Basin,Temperate Southern Oceans,Australia,1961,1998,<1000ha,-0.7,1979,351.7
+330,St Georges Basin,Temperate Southern Oceans,Australia,1961,1998,<1000ha,-0.7,1998,292
+331,Wagonga Inlet,Temperate Southern Oceans,Australia,1957,1994,<100ha,-0.29,1957,83.5
+331,Wagonga Inlet,Temperate Southern Oceans,Australia,1957,1994,<100ha,-0.29,1982,84.8
+331,Wagonga Inlet,Temperate Southern Oceans,Australia,1957,1994,<100ha,-0.29,1999,75.1
+332,Bermagui River,Temperate Southern Oceans,Australia,1957,1998,<100ha,-1.03,1957,42.9
+332,Bermagui River,Temperate Southern Oceans,Australia,1957,1998,<100ha,-1.03,1979,28.8
+332,Bermagui River,Temperate Southern Oceans,Australia,1957,1998,<100ha,-1.03,1998,28.1
+333,Merimbula Lake,Temperate Southern Oceans,Australia,1948,1994,<1000ha,-0.58,1948,200.90
+333,Merimbula Lake,Temperate Southern Oceans,Australia,1948,1994,<1000ha,-0.58,1962,226.00
+333,Merimbula Lake,Temperate Southern Oceans,Australia,1948,1994,<1000ha,-0.58,1972,192.80
+333,Merimbula Lake,Temperate Southern Oceans,Australia,1948,1994,<1000ha,-0.58,1977,185.80
+333,Merimbula Lake,Temperate Southern Oceans,Australia,1948,1994,<1000ha,-0.58,1994,153.70
+334,Pambula Lake,Temperate Southern Oceans,Australia,1948,1994,<100ha,-0.43,1948,73.20
+334,Pambula Lake,Temperate Southern Oceans,Australia,1948,1994,<100ha,-0.43,1972,59.90
+334,Pambula Lake,Temperate Southern Oceans,Australia,1948,1994,<100ha,-0.43,1994,60.20
+335,Sweden west coast,Temperate North Atlantic,Sweden,1980,2000,>1000ha,-4.34,1980,2000
+335,Sweden west coast,Temperate North Atlantic,Sweden,1980,2000,>1000ha,-4.34,2000,840
+339,Glenan Archipelago,Temperate North Atlantic,France,1990,2000,<1000ha,4.70,1990,250
+339,Glenan Archipelago,Temperate North Atlantic,France,1990,2000,<1000ha,4.70,2000,400
+340,Medes Islands,Mediterranean,Spain,1984,2001,<10ha,0.00,1984,9
+340,Medes Islands,Mediterranean,Spain,1984,2001,<10ha,0.00,1994,9
+340,Medes Islands,Mediterranean,Spain,1984,2001,<10ha,0.00,2001,9
+342,Green Island,Tropical Indo-Pacific,Australia,1936,1997,<100ha,6.68,1936,0.39
+342,Green Island,Tropical Indo-Pacific,Australia,1936,1997,<100ha,6.68,1959,1.10
+342,Green Island,Tropical Indo-Pacific,Australia,1936,1997,<100ha,6.68,1972,6.50
+342,Green Island,Tropical Indo-Pacific,Australia,1936,1997,<100ha,6.68,1992,15.31
+342,Green Island,Tropical Indo-Pacific,Australia,1936,1997,<100ha,6.68,1993,22.70
+342,Green Island,Tropical Indo-Pacific,Australia,1936,1997,<100ha,6.68,1994,22.90
+342,Green Island,Tropical Indo-Pacific,Australia,1936,1997,<100ha,6.68,1997,23
+343,Tauranga Harbour,Temperate Southern Oceans,New Zealand,1959,1996,>1000ha,-2.92,1959,8617.65
+343,Tauranga Harbour,Temperate Southern Oceans,New Zealand,1959,1996,>1000ha,-2.92,1996,2930
+344,Kaduk Island,Temperate North Pacific,Korea,1980,1990,<1000ha,,1980,1360
+344,Kaduk Island,Temperate North Pacific,Korea,1980,1990,<1000ha,,1990,0
+346,Mississippi Bays,Tropical Atlantic,USA,1969,1992,>1000ha,-9.65,1969,5520
+346,Mississippi Bays,Tropical Atlantic,USA,1969,1992,>1000ha,-9.65,1992,600
+350,Upper Laguna Madre,Tropical Atlantic,USA,1967,1999,>1000ha,1.86,1967,11800
+350,Upper Laguna Madre,Tropical Atlantic,USA,1967,1999,>1000ha,1.86,1988,24900
+350,Upper Laguna Madre,Tropical Atlantic,USA,1967,1999,>1000ha,1.86,1999,21400
+353,Lemon Bay,Tropical Atlantic,USA,1988,2003,>1000ha,0.34,1988,1055
+353,Lemon Bay,Tropical Atlantic,USA,1988,2003,>1000ha,0.34,1994,1067
+353,Lemon Bay,Tropical Atlantic,USA,1988,2003,>1000ha,0.34,1996,1054
+353,Lemon Bay,Tropical Atlantic,USA,1988,2003,>1000ha,0.34,1999,1049
+353,Lemon Bay,Tropical Atlantic,USA,1988,2003,>1000ha,0.34,2001,1046
+353,Lemon Bay,Tropical Atlantic,USA,1988,2003,>1000ha,0.34,2003,1110
+354,"Placide, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,2.52,1982,957
+354,"Placide, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,2.52,1988,1416
+354,"Placide, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,2.52,1992,1384
+354,"Placide, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,2.52,1994,1344
+354,"Placide, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,2.52,1996,1460
+354,"Placide, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,2.52,1999,1503
+354,"Placide, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,2.52,2001,1531
+354,"Placide, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,2.52,2003,1625
+355,"South Harbor, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.08,1982,3544
+355,"South Harbor, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.08,1988,3710
+355,"South Harbor, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.08,1992,3662
+355,"South Harbor, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.08,1994,3659
+355,"South Harbor, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.08,1996,3648
+355,"South Harbor, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.08,1999,3340
+355,"South Harbor, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.08,2001,3313
+355,"South Harbor, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.08,2003,3488
+356,"West Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-0.14,1982,665
+356,"West Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-0.14,1988,580
+356,"West Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-0.14,1992,490
+356,"West Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-0.14,1994,671
+356,"West Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-0.14,1996,790
+356,"West Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-0.14,1999,699
+356,"West Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-0.14,2001,699
+356,"West Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-0.14,2003,646
+357,"East Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.78,1982,1548
+357,"East Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.78,1988,1372
+357,"East Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.78,1992,1361
+357,"East Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.78,1994,1416
+357,"East Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.78,1996,1371
+357,"East Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.78,1999,1452
+357,"East Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.78,2001,1454
+357,"East Wall, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,>1000ha,-0.78,2003,1315
+358,"Middle Harbor, Upper Charlotte Harbor",Tropical,USA,1982,2003,<100ha,-2.32,1982,70
+358,"Middle Harbor, Upper Charlotte Harbor",Tropical,USA,1982,2003,<100ha,-2.32,1988,50
+358,"Middle Harbor, Upper Charlotte Harbor",Tropical,USA,1982,2003,<100ha,-2.32,1992,50
+358,"Middle Harbor, Upper Charlotte Harbor",Tropical,USA,1982,2003,<100ha,-2.32,1994,60
+358,"Middle Harbor, Upper Charlotte Harbor",Tropical,USA,1982,2003,<100ha,-2.32,1996,76
+358,"Middle Harbor, Upper Charlotte Harbor",Tropical,USA,1982,2003,<100ha,-2.32,1999,62
+358,"Middle Harbor, Upper Charlotte Harbor",Tropical,USA,1982,2003,<100ha,-2.32,2001,64
+358,"Middle Harbor, Upper Charlotte Harbor",Tropical,USA,1982,2003,<100ha,-2.32,2003,43
+359,"Myakka River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-2.92,1982,218
+359,"Myakka River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-2.92,1988,161
+359,"Myakka River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-2.92,1992,130
+359,"Myakka River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-2.92,1994,189
+359,"Myakka River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-2.92,1996,203
+359,"Myakka River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-2.92,1999,191
+359,"Myakka River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-2.92,2001,185
+359,"Myakka River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-2.92,2003,118
+360,"Peace River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-6.29,1982,397
+360,"Peace River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-6.29,1988,158
+360,"Peace River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-6.29,1992,167
+360,"Peace River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-6.29,1994,196
+360,"Peace River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-6.29,1996,232
+360,"Peace River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-6.29,1999,109
+360,"Peace River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-6.29,2001,138
+360,"Peace River, Upper Charlotte Harbor",Tropical Atlantic,USA,1982,2003,<1000ha,-6.29,2003,106
+361,"Pine Island Sound, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,>1000ha,0.39,1982,9857
+361,"Pine Island Sound, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,>1000ha,0.39,1999,10483
+361,"Pine Island Sound, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,>1000ha,0.39,2002,10647
+362,"Matlacha Pass, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,>1000ha,-0.77,1982,3247
+362,"Matlacha Pass, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,>1000ha,-0.77,1999,2456
+362,"Matlacha Pass, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,>1000ha,-0.77,2002,2784
+363,"San Carlos Bay, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,>1000ha,-1.57,1989,2420
+363,"San Carlos Bay, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,>1000ha,-1.57,1999,1504
+363,"San Carlos Bay, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,>1000ha,-1.57,2002,1768
+364,"Caloosahatchee Rover, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,<100ha,-8.76,1989,242
+364,"Caloosahatchee Rover, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,<100ha,-8.76,1999,1
+364,"Caloosahatchee Rover, Lower Charlotte Harbor",Tropical Atlantic,USA,1982,2002,<100ha,-8.76,2002,42
+365,Estero Bay,Tropical Atlantic,USA,1999,2002,<1000ha,-1.11,1999,1008
+365,Estero Bay,Tropical Atlantic,USA,1999,2002,<1000ha,-1.11,2002,975
+395,Seabrook Shore,Tropical Atlantic,USA,1956,1987,<100ha,,1956,86
+395,Seabrook Shore,Tropical Atlantic,USA,1956,1987,<100ha,,1965,0
+395,Seabrook Shore,Tropical Atlantic,USA,1956,1987,<100ha,,1975,0
+395,Seabrook Shore,Tropical Atlantic,USA,1956,1987,<100ha,,1987,0
+396,West Bay,Tropical Atlantic,USA,1956,1987,<1000ha,,1956,458
+396,West Bay,Tropical Atlantic,USA,1956,1987,<1000ha,,1965,117
+396,West Bay,Tropical Atlantic,USA,1956,1987,<1000ha,,1975,37
+396,West Bay,Tropical Atlantic,USA,1956,1987,<1000ha,,1987,0
+397,Christmas Bay,Tropical Atlantic,USA,1975,1987,<100ha,-1.92,1975,97
+397,Christmas Bay,Tropical Atlantic,USA,1975,1987,<100ha,-1.92,1987,77
+398,Christmas Bay,Tropical Atlantic,USA,1971,1987,<1000ha,-9.32,1971,502
+398,Christmas Bay,Tropical Atlantic,USA,1971,1987,<1000ha,-9.32,1987,113
+399,West Bay,Tropical Atlantic,USA,1971,1987,<1000ha,,1971,202.2
+399,West Bay,Tropical Atlantic,USA,1971,1987,<1000ha,,1987,0
+400,Bastrop Bay,Tropical Atlantic,USA,1971,1987,<100ha,,1971,104.9
+400,Bastrop Bay,Tropical Atlantic,USA,1971,1987,<100ha,,1987,0
+401,East Matagorda,Tropical Atlantic,USA,1971,1987,<1000ha,2.51,1971,258.9
+401,East Matagorda,Tropical Atlantic,USA,1971,1987,<1000ha,2.51,1987,387
+402,Redfish Lake,Tropical Atlantic,USA,1971,1987,<100ha,,1971,0
+402,Redfish Lake,Tropical Atlantic,USA,1971,1987,<100ha,,1987,62.8
+403,Keller,Tropical Atlantic,USA,1971,1987,<1000ha,-5.62,1971,168.3
+403,Keller,Tropical Atlantic,USA,1971,1987,<1000ha,-5.62,1987,68.5
+404,Matagorda,Tropical Atlantic,USA,1971,1987,<1000ha,-0.93,1971,569.60
+404,Matagorda,Tropical Atlantic,USA,1971,1987,<1000ha,-0.93,1987,491
+405,Salt Lake,Tropical Atlantic,USA,1971,1987,<100ha,,1971,0
+405,Salt Lake,Tropical Atlantic,USA,1971,1987,<100ha,,1987,50.8
+406,Powderhorm Lake,Tropical Atlantic,USA,1971,1987,<100ha,,1971,0
+406,Powderhorm Lake,Tropical Atlantic,USA,1971,1987,<100ha,,1987,20.5
+407,Tres Palacios,Tropical Atlantic,USA,1971,1987,<10ha,,1971,0
+407,Tres Palacios,Tropical Atlantic,USA,1971,1987,<10ha,,1987,15.6
+408,Funter Bay,Temperate North Pacific,USA,2001,2003,<10ha,-11.47,2001,7.90
+408,Funter Bay,Temperate North Pacific,USA,2001,2003,<10ha,-11.47,2002,7.24
+408,Funter Bay,Temperate North Pacific,USA,2001,2003,<10ha,-11.47,2003,6.28
+409,Crab Bay,Temperate North Pacific,USA,2001,2003,<10ha,3.29,2001,1.63
+409,Crab Bay,Temperate North Pacific,USA,2001,2003,<10ha,3.29,2002,1.78
+409,Crab Bay,Temperate North Pacific,USA,2001,2003,<10ha,3.29,2003,1.74
+410,Chaik Bay,Temperate North Pacific,USA,2001,2003,<1ha,-2.14,2001,0.10
+410,Chaik Bay,Temperate North Pacific,USA,2001,2003,<1ha,-2.14,2002,0.09
+410,Chaik Bay,Temperate North Pacific,USA,2001,2003,<1ha,-2.14,2003,0.10
+411,Nakwasina,Temperate North Pacific,USA,2001,2003,<1ha,5.35,2001,0.52
+411,Nakwasina,Temperate North Pacific,USA,2001,2003,<1ha,5.35,2002,0.46
+411,Nakwasina,Temperate North Pacific,USA,2001,2003,<1ha,5.35,2003,0.58
+412,Sandy Cove,Temperate North Pacific,USA,2001,2003,<1ha,-3.82,2001,0.70
+412,Sandy Cove,Temperate North Pacific,USA,2001,2003,<1ha,-3.82,2002,0.68
+412,Sandy Cove,Temperate North Pacific,USA,2001,2003,<1ha,-3.82,2003,0.65
+413,Pirates Cove,Temperate North Pacific,USA,2001,2003,<1ha,4.90,2001,0.18
+413,Pirates Cove,Temperate North Pacific,USA,2001,2003,<1ha,4.90,2002,0.20
+413,Pirates Cove,Temperate North Pacific,USA,2001,2003,<1ha,4.90,2003,0.20
+414,Kromme Estuary,Temperate Southern Oceans,South Africa,1942,1989,<10ha,5.01,1942,1.16
+414,Kromme Estuary,Temperate Southern Oceans,South Africa,1942,1989,<10ha,5.01,1961,6.02
+414,Kromme Estuary,Temperate Southern Oceans,South Africa,1942,1989,<10ha,5.01,1975,6.08
+414,Kromme Estuary,Temperate Southern Oceans,South Africa,1942,1989,<10ha,5.01,1979,6.13
+414,Kromme Estuary,Temperate Southern Oceans,South Africa,1942,1989,<10ha,5.01,1985,9.92
+414,Kromme Estuary,Temperate Southern Oceans,South Africa,1942,1989,<10ha,5.01,1986,9.78
+414,Kromme Estuary,Temperate Southern Oceans,South Africa,1942,1989,<10ha,5.01,1988,11.65
+414,Kromme Estuary,Temperate Southern Oceans,South Africa,1942,1989,<10ha,5.01,1989,12.20
+415,Canal de Ovar,Temperate North Atlantic,Portugal,1984,2003,<1000ha,-23.06,1984,800
+415,Canal de Ovar,Temperate North Atlantic,Portugal,1984,2003,<1000ha,-23.06,2003,10
+416,Mosquito Lagoon,Tropical Atlantic,USA,1970,1992,>1000ha,0.94,1970,5496.80
+416,Mosquito Lagoon,Tropical Atlantic,USA,1970,1992,>1000ha,0.94,1986,5023.80
+416,Mosquito Lagoon,Tropical Atlantic,USA,1970,1992,>1000ha,0.94,1992,6758.10
+417,Banana River,Tropical Atlantic,USA,1970,1992,>1000ha,-0.18,1970,9052.20
+417,Banana River,Tropical Atlantic,USA,1970,1992,>1000ha,-0.18,1986,6729.30
+417,Banana River,Tropical Atlantic,USA,1970,1992,>1000ha,-0.18,1992,8691.20
+418,Indian River Lagoon,Tropical Atlantic,USA,1970,1992,>1000ha,-1.30,1970,17226.90
+418,Indian River Lagoon,Tropical Atlantic,USA,1970,1992,>1000ha,-1.30,1986,21905.10
+418,Indian River Lagoon,Tropical Atlantic,USA,1970,1992,>1000ha,-1.30,1992,12935.30
+419,Barnegat Bay,Temperate North Atlantic,USA,1968,1999,>1000ha,-0.37,1968,6825
+419,Barnegat Bay,Temperate North Atlantic,USA,1968,1999,>1000ha,-0.37,1979,8053
+419,Barnegat Bay,Temperate North Atlantic,USA,1968,1999,>1000ha,-0.37,1987,8799
+419,Barnegat Bay,Temperate North Atlantic,USA,1968,1999,>1000ha,-0.37,1999,6083
+420,Port Hacking,Temperate Southern Oceans,Australia,1950,2000,<1000ha,-1.61,1950.0000,183.46
+420,Port Hacking,Temperate Southern Oceans,Australia,1950,2000,<1000ha,-1.61,1960.0000,140.73
+420,Port Hacking,Temperate Southern Oceans,Australia,1950,2000,<1000ha,-1.61,1977.0000,72.79
+420,Port Hacking,Temperate Southern Oceans,Australia,1950,2000,<1000ha,-1.61,1985.0000,99.50
+420,Port Hacking,Temperate Southern Oceans,Australia,1950,2000,<1000ha,-1.61,2000.0000,81.85
+421,Bahia San Quintin,Temperate North Pacific,Mexico,1987,2000,>1000ha,-1.11,1987,2390
+421,Bahia San Quintin,Temperate North Pacific,Mexico,1987,2000,>1000ha,-1.11,2000,2069
+422,Back Sound & Southern Core,Temperate North Atlantic,USA,1985,1988,>1000ha,-1.92,1985,7030
+422,Back Sound & Southern Core,Temperate North Atlantic,USA,1985,1988,>1000ha,-1.92,1988,6637
+423,"South Sound, Grand Cayman",Tropical Atlantic,British West Indies,1971,1992,<1000ha,1.75,1971,121.36
+423,"South Sound, Grand Cayman",Tropical Atlantic,British West Indies,1971,1992,<1000ha,1.75,1992,175.36
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1943,117.16
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1965,151.45
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1974,116.35
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1986,59.82
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1989,124.17
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1992,91.66
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1993,
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1994,125.36
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1995,
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1996,92.32
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1997,
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1998,
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,1999,33.76
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,2000,
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,2001,
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,2002,
+435,Turnbull Creek,Tropical Atlantic,USA,1943,2003,<100ha,-1.19,2003,57.28
+437,Western Port Bay,Temperate Southern Oceans ,Australia,1973,1999,>1000ha,-2.14,1973,23000
+437,Western Port Bay,Temperate Southern Oceans ,Australia,1973,1999,>1000ha,-2.14,1984,5900
+437,Western Port Bay,Temperate Southern Oceans ,Australia,1973,1999,>1000ha,-2.14,1994,9300
+437,Western Port Bay,Temperate Southern Oceans ,Australia,1973,1999,>1000ha,-2.14,1999,13200
+438,Port Phillip Bay-Kirk Pt,Temperate Southern Oceans,Australia,2000,2005,<100ha,12.07,2000,16.30
+438,Port Phillip Bay-Kirk Pt,Temperate Southern Oceans,Australia,2000,2005,<100ha,12.07,2005,29.80
+439,Port Phillip Bay-Pt Richards,Temperate Southern Oceans,Australia,2000,2005,<100ha,-23.16,2000,83.40
+439,Port Phillip Bay-Pt Richards,Temperate Southern Oceans,Australia,2000,2005,<100ha,-23.16,2005,26.20
+440,Port Phillip Bay-Blairgowrie,Temperate Southern Oceans,Australia,2000,2005,<10ha,-25.50,2000,5.94
+440,Port Phillip Bay-Blairgowrie,Temperate Southern Oceans,Australia,2000,2005,<10ha,-25.50,2005,1.66
+441,Western Port-Rhyll,Temperate Southern Oceans,Australia,1999,2005,<100ha,0.21,1999,16
+441,Western Port-Rhyll,Temperate Southern Oceans,Australia,1999,2005,<100ha,0.21,2005,16.20
+442,Western Port-Scrub Point,Temperate Southern Oceans,Australia,1999,2005,<1000ha,0.06,1999,108.10
+442,Western Port-Scrub Point,Temperate Southern Oceans,Australia,1999,2005,<1000ha,0.06,2005,108.50
+443,Corner Inlet - Lewis Channel,Temperate Southern Oceans,Australia,1998,2005,<1000ha,-3.88,1998,194.10
+443,Corner Inlet - Lewis Channel,Temperate Southern Oceans,Australia,1998,2005,<1000ha,-3.88,2005,147.90
+444,Corner Inlet - Duck Point,Temperate Southern Oceans,Australia,1998,2005,<1000ha,-0.15,1998,136
+444,Corner Inlet - Duck Point,Temperate Southern Oceans,Australia,1998,2005,<1000ha,-0.15,2005,134.60
+445,Corner Inlet - Granite Island,Temperate Southern Oceans,Australia,1998,2005,<1000ha,0.21,1998,240.60
+445,Corner Inlet - Granite Island,Temperate Southern Oceans,Australia,1998,2005,<1000ha,0.21,2005,244.10
+446,Portinho da Rabida,Temperate North Atlantic,Portugal,1983,2005,<100ha,-38.71,1983,30
+446,Portinho da Rabida,Temperate North Atlantic,Portugal,1983,2005,<100ha,-38.71,2005,0.01
+483,Buck Channel Island,Tropical Atlantic,US Virgin Islands,1971,1999,<1000ha,4.22,1971,133
+483,Buck Channel Island,Tropical Atlantic,US Virgin Islands,1971,1999,<1000ha,4.22,1999,434

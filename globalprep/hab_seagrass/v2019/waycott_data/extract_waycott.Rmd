@@ -1,0 +1,126 @@
+---
+title: 'OHI 2019: Extract Waycott et al. 2009'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+## Setup
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+library(tabulizer)
+library(dplyr)
+library(here)
+library(plyr)
+library(tidyverse)
+
+source(here('workflow/R/common.R'))
+source(file.path('~/github/ohiprep_v2019/workflow/R/common.R'))
+goal     <- 'globalprep/hab_seagrass/v2019'
+dir_git  <- file.path('~/github/ohiprep_v2019', goal)
+```
+
+```{r}
+
+# Link for reference on how to extract PDF tables: https://community.rstudio.com/t/need-to-extract-tables-from-a-pdf-using-r/17144/4
+
+waycott <- 'https://www.pnas.org/content/pnas/suppl/2009/07/08/0905620106.DCSupplemental/ST1_PDF.pdf'
+
+areas_waycott <- locate_areas(waycott, pages = c(1,2)) # use this to determine the areas of page 1 and page 2. Everything after page 2 contains the same area. Page one is slightly different. 
+
+out_waycott <- extract_tables(waycott,
+                              output = "data.frame",
+                              area = list(  #define all 42 pages worth of area here.
+                                c(122.74933, 22.07547, 692.73315, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911),
+                                c(82.18868, 26.34501, 703.40701, 547.22911)
+                              ),
+                              pages = 1:42)
+
+
+final_waycott <- ldply(out_waycott, rbind)  ##Mostly ok. Some columns were extracted out of order. We will filter out the column names and then manually fix everything in excel. For some reason it did not extract page 1, so we will have to manually add this in excel as well. Will need to go through manually and make sure that everything is in order in the correct place. 
+ 
+final_waycott_fix <- final_waycott %>%
+  filter(!str_detect(`Site`, 'Site'),
+         !str_detect(`Site`, 'reference'),
+         !str_detect(`Site`, 'number'),
+         !str_detect(`Site`, '(database)')
+         ) 
+
+#now write to a csv file so we can manually fix all problems in excel. 
+write_csv(final_waycott_fix, file.path(dir_git, '/raw/waycott_extract.csv'))
+
+
+##Take a look at the manually edited waycott data
+waycott_edited <- read_csv(file.path(dir_git, '/waycott_data/waycott_edited.csv'))
+
+
+#Extract Waycott global trends data 
+waycott_summary <- 'https://www.pnas.org/content/pnas/suppl/2009/07/08/0905620106.DCSupplemental/ST2_PDF.pdf'
+
+out_waycott_trends <- extract_tables(waycott_summary)
+
+
+final_waycott_trends <- ldply(out_waycott_trends, rbind)
+## Now lets split this data manually into four different datasets. 
+
+write_csv(final_waycott_trends, file.path(dir_git, '/raw/waycott_extract_trends.csv'))
+
+#take a look at all waycott trend data
+waycott_global_trends <-  read_csv(file.path(dir_git, '/waycott_data/waycott_global_trends.csv'))
+
+waycott_increasing_trends <-  read_csv(file.path(dir_git, '/waycott_data/waycott_increasing_trends.csv'))
+
+waycott_decreasing_trends <-  read_csv(file.path(dir_git, '/waycott_data/waycott_decreasing_trends.csv'))
+
+waycott_no_change_trends <-  read_csv(file.path(dir_git, '/waycott_data/waycott_no_change_trends.csv'))
+```
+
+
+
