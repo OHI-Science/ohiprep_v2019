@@ -415,317 +415,253 @@ write.csv(tonnes_rel, here('globalprep/np/v2019/output/np_harvest_tonnes_rel.csv
 
 ## Final data check
 
-Comparing against last year's data. For example, compare the data for 1976-2014 for the 2018 and 2019 assessment year. Do not need to look at new years of data (2015-2016), which is only available in the 2019 assessment year, since those did not exist in the previous year's assessment.
+Checking out some outliers with large changes in status values (found after uploading to global):
 
+region_id   | region name  | change in status  | explanation
+----------- | ---------------- | ------------------ | -------------------
+67             |           Libya             | +84                       |
+153           |      Cook Islands        | +27                     | 
+78            |          Lebanon            | +24                     | 
+43            |            Kenya              | + 18                    | 
+191          |              Iran            | -30                          | 
 ```{r}
 
 ## Look at Commodities TONNES for a few countries
-## Look at a few regions that previously had no scores: Malta, Cayman Islands, Curacao
-
-#################### Delete most of these, leave a few examples 
-
-## Malta
-new <- read.csv(here("globalprep/np/v2019/int/tonnes.csv")) %>%
-  filter(rgn_id==68, year %in% c(1990:2014))
-old <- read.csv(here('globalprep/np/v2018/int/tonnes.csv')) %>%  # CHANGE YEAR
-  filter(rgn_id==68, year %in% c(1990:2014)) %>% 
-  rename(tonnes_old = tonnes)
-
-compare <- old %>% 
-full_join(new, by = c("rgn_id","rgn_name","commodity","product","year"))
-
-## Cayman Islands
-new <- read.csv(here("globalprep/np/v2019/int/tonnes.csv")) %>% 
-  filter(rgn_id==113, year %in% c(1976:2014))
-old <- read.csv(here('globalprep/np/v2018/int/tonnes.csv')) %>%  # CHANGE YEAR
-  filter(rgn_id==113, year %in% c(1976:2014)) %>% 
-  rename(tonnes_old = tonnes)
-
-compare <- old %>% 
-full_join(new, by = c("rgn_id","rgn_name","commodity","product","year"))
-
-## Curacao Islands
-new <- read.csv(here('globalprep/np/v2019/int/tonnes.csv')) %>% 
-  filter(rgn_id==244, year %in% c(1976:2014))
-old <- read.csv(here("globalprep/np/v2018/int/tonnes.csv")) %>%  # CHANGE YEAR
-  filter(rgn_id==244, year %in% c(1976:2014)) %>% 
-  rename(tonnes_old = tonnes)
-
-compare <- old %>% 
-full_join(new, by = c("rgn_id","rgn_name","commodity","product","year"))
 
 
-## Look at a few regions that had large differences in status values: Vanuatu, Tunisia, Cuba, North Korea
-############# how do we know which regions had large diff in status values? 
-## Take a look at Vanuatu: no diff in int tonnes, but significant diff in np_harvest_tonnes, checked gapfilling - gapfilled all '0' and NA values for tonnes using regression with georegion
+## Libya
+
+# Look at raw data:
 new <- read.csv(here('globalprep/np/v2019/int/tonnes.csv'))
-old <- read.csv(here('globalprep/np/v2018/int/tonnes.csv')) # CHANGE YEAR
-new_c <- filter(new, rgn_id==6) %>%
+old <- read.csv(here('globalprep/np/v2018/int/tonnes.csv')) 
+new_libya <- filter(new, rgn_id==67) %>%
   arrange(commodity, year) %>% 
   rename(tonnes_new = "tonnes")
-old_c <- filter(old, rgn_id==6) %>%
+old_libya <- filter(old, rgn_id==67) %>%
   arrange(commodity, year)
 
-compare <- old_c %>% 
-left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
+libya_compare <- old_libya %>% 
+left_join(new_libya, by = c("commodity","year","rgn_id","rgn_name","product"))
 
 plot(compare$tonnes_new, compare$tonnes)
 abline(0,1, col="red")
 
-## Look at Vanuatu final output: decreases in ornamental values from old assessment year to new assessment year
-new_tonnes <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
-  filter(rgn_id==6, year %in% c(2010:2015))
-old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
-  filter(rgn_id==6, year %in% c(2010:2015)) %>% 
-  rename(tonnes_old = tonnes)
+# No changes at all in raw data, look into smoothed data: 
 
-compare <- old_tonnes %>% 
-full_join(new_tonnes, by = c("rgn_id","product","year"))
-#### lots of big changes here
-
-
-## Take a look at Tunisia harvest tonnes:
-new <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
-  filter(rgn_id==61, year %in% c(2010:2015))
-old <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
-  filter(rgn_id==61, year %in% c(2010:2015)) %>% 
-  rename(tonnes_old = tonnes)
-
-compare <- old %>% 
-full_join(new, by = c("rgn_id","product","year"))
-
-## Tunisia harvest smoothed data to see rel tonnes
-####### is this what you should do when you encounter discrepancies in the raw values? 
+## Libya harvest smoothed data to see rel tonnes
 smooth_new <- read.csv(here("globalprep/np/v2019/int/np_harvest_smoothed_data.csv")) %>%
-  filter(rgn_id==61, year %in% c(2010:2013)) %>% 
+  filter(rgn_id==67, year %in% c(2010:2014)) %>% 
   select(rgn_id, product, year, tonnes, tonnes_rel)
-smooth_old <- read.csv(here("globalprep/np/v2019/int/np_harvest_smoothed_data.csv")) %>% 
-  filter(rgn_id==61, year %in% c(2010:2013)) %>%
+smooth_old <- read.csv(here("globalprep/np/v2018/int/np_harvest_smoothed_data.csv")) %>% 
+  filter(rgn_id==67, year %in% c(2010:2014)) %>%
   select(rgn_id, product, year, tonnes, tonnes_rel) %>% 
   rename(tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
 
 smoothed <- smooth_old %>% 
   full_join(smooth_new, by = c("rgn_id","product","year"))
 
-
-
-
-## Take a look at Cuba: no diff in intermediate tonnes file
-new <- read.csv(here("globalprep/np/v2019/int/tonnes.csv"))
-old <- read.csv(here("globalprep/np/v2018/int/tonnes.csv")) 
-new_c <- new %>% 
-  filter(rgn_id==112, year %in% c(2007:2013)) %>%
-  arrange(commodity, year)
-old_c <- old %>% 
-  filter(rgn_id==112, year %in% c(2007:2013)) %>%
-  arrange(commodity, year) %>% 
-  rename(tonnes_old = "tonnes")
-
-compare <- old_c %>% 
-  left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
-compare_full <- old_c %>% 
-  full_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
-
-plot(compare$tonnes, compare$tonnes_old)
-abline(0,1, col="red")
-
-## Just look at Cuba sponges, all years
-new <- read.csv(here("globalprep/np/v2019/int/tonnes.csv"))
-old <- read.csv(here("globalprep/np/v2018/int/tonnes.csv")) # CHANGE YEAR
-new_c <- new %>% 
-  filter(rgn_id==112, product == "sponges") %>%
-  arrange(commodity, year) %>% 
-  rename(tonnes_new = "tonnes")
-old_c <- old %>% 
-  filter(rgn_id==112, product == "sponges") %>%
-  arrange(commodity, year)
-
-compare <- old_c %>% 
-left_join(new_c, by = c("rgn_id","rgn_name","commodity","product","year"))
-
-
-## Look at Cuba final tonnes output: minor diff in final output
+# Compare output files:
 new_tonnes <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
-  filter(rgn_id==112, year %in% c(2007:2015))
+  filter(rgn_id==67, year %in% c(2010:2015))
 old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
-  filter(rgn_id==112, year %in% c(2007:2015)) %>% 
-  rename(tonnes_old = tonnes)
-
-compare2 <- old_tonnes %>% 
-  left_join(new_tonnes, by = c("rgn_id","product","year"))
-
-
-
-
-
-## Take a look at Cuba smoothed data to find tonnes rel
-smooth_new <- read.csv(here("globalprep/np/v2019/int/np_harvest_smoothed_data.csv")) %>% 
-  filter(rgn_id==112, year %in% c(2010:2015)) %>% 
-  select(rgn_id, product, year, tonnes, tonnes_rel)
-smooth_old <- read.csv(here("globalprep/np/v2018/int/np_harvest_smoothed_data.csv")) %>% 
-  filter(rgn_id==112, year %in% c(2010:2015)) %>% 
-  select(rgn_id, product, year, tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
-
-compare <- smooth_old %>% 
-left_join(smooth_new, by = c("rgn_id","product","year"))
-
-plot(compare$tonnes_old, compare$tonnes)
-abline(0,1, col="red")
-
-## Look at North Korea final tonnes output:
-new_tonnes <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
-  filter(rgn_id==21)
-old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
-  filter(rgn_id==21) %>% 
+  filter(rgn_id==67, year %in% c(2010:2015)) %>% 
   rename(tonnes_old = tonnes)
 
 compare <- old_tonnes %>% 
-left_join(new_tonnes, by = c("rgn_id","product","year"))
-plot(compare$tonnes_old, compare$tonnes)
+full_join(new_tonnes, by = c("rgn_id","product","year"))
+
+
+# Looks like there may have been a mistake made last year because np_harvest_tonnes had NA for shells in 2013-2015, where same data file for v2019 had 3-5 tons for this product and 0 - 1 for previous years. Odd because the raw data have matching numbers for tonnes, so maybe something got messed up in last year's gapfilling procedure. 
+
+
+
+## Cook Islands (rgn #153)
+
+# Compare raw data 
+new_cook <- filter(new, rgn_id==153) %>%
+  arrange(commodity, year) %>% 
+  rename(tonnes_new = "tonnes")
+old_cook <- filter(old, rgn_id==153) %>%
+  arrange(commodity, year)
+
+cook_compare <- old_cook %>% 
+left_join(new_cook, by = c("commodity","year","rgn_id","rgn_name","product"))
+
+plot(cook_compare$tonnes_new, cook_compare$tonnes)
 abline(0,1, col="red")
 
-## Take a look at North Korea smoothed data to find tonnes rel
-smooth_new <- read.csv(here("globalprep/np/v2019/int/np_harvest_smoothed_data.csv")) %>% 
-  filter(rgn_id==21, year %in% c(2010:2015)) %>% 
+# No changes at all in raw data, look into smoothed data: 
+
+## Cook Islands harvest smoothed data to see rel tonnes
+smooth_new <- read.csv(here("globalprep/np/v2019/int/np_harvest_smoothed_data.csv")) %>%
+  filter(rgn_id==153, year %in% c(2010:2014)) %>% 
   select(rgn_id, product, year, tonnes, tonnes_rel)
 smooth_old <- read.csv(here("globalprep/np/v2018/int/np_harvest_smoothed_data.csv")) %>% 
-  filter(rgn_id==21, year %in% c(2010:2015)) %>% 
-  select(rgn_id, product, year, tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
+  filter(rgn_id==153, year %in% c(2010:2014)) %>%
+  select(rgn_id, product, year, tonnes, tonnes_rel) %>% 
+  rename(tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
 
-compare <- smooth_old %>% 
-left_join(smooth_new, by = c("rgn_id","product","year"))
+smoothed <- smooth_old %>% 
+  full_join(smooth_new, by = c("rgn_id","product","year"))
 
-plot(compare$tonnes_rel_old, compare$tonnes_rel)
-abline(0,1, col="red")
+# some small changes to smoothed data, but nothing drastic 
 
+# Compare output files:
+new_tonnes <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
+  filter(rgn_id==153, year %in% c(2010:2015))
+old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
+  filter(rgn_id==153, year %in% c(2010:2015)) %>% 
+  rename(tonnes_old = tonnes)
 
+compare <- old_tonnes %>% 
+full_join(new_tonnes, by = c("rgn_id","product","year"))
 
+# weird because it doesnt look like anything is changing at all??? need to look into this more (to do)
 
-## Look at a few random regions
-## Take a look at Dominican Republic
-new_c <- filter(new, rgn_id==115) %>%
+## Lebanon (rgn #78)
+# Compare raw data 
+new_leb <- filter(new, rgn_id==78) %>%
   arrange(commodity, year) %>% 
   rename(tonnes_new = "tonnes")
-old_c <- filter(old, rgn_id==115) %>%
-  arrange(commodity, year)
+old_leb <- filter(old, rgn_id==78) %>%
+  arrange(commodity, year) %>% 
+    rename(tonnes_old = "tonnes")
 
-compare <- old_c %>% 
-left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
+leb_compare <- old_leb %>% 
+left_join(new_leb, by = c("commodity","year","rgn_id","rgn_name","product"))
 
-plot(compare$tonnes_new, compare$tonnes)
+plot(leb_compare$tonnes_new, leb_compare$tonnes_old)
 abline(0,1, col="red")
 
+# Some points were zero that are now NA 
 
-## Look at tonnes for Senegal
-new_c <- filter(new, rgn_id==66) %>%
+## Lebanon harvest smoothed data to see rel tonnes
+smooth_new <- read.csv(here("globalprep/np/v2019/int/np_harvest_smoothed_data.csv")) %>%
+  filter(rgn_id==78, year %in% c(2010:2015)) %>% 
+  select(rgn_id, product, year, tonnes, tonnes_rel)
+smooth_old <- read.csv(here("globalprep/np/v2018/int/np_harvest_smoothed_data.csv")) %>% 
+  filter(rgn_id==78, year %in% c(2010:2015)) %>%
+  select(rgn_id, product, year, tonnes, tonnes_rel) %>% 
+  rename(tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
+
+smoothed <- smooth_old %>% 
+  full_join(smooth_new, by = c("rgn_id","product","year"))
+
+plot(smoothed$tonnes_old, smoothed$tonnes)
+abline(0,1, col="red")
+#^^ weird outliers 
+# ornamentals for were 0 for 2014-2015 in v2018 but >1 in v2019 data; changes in relative tons for ornamentals overall by an order of magnitude or more for several years
+
+# Compare output files:
+new_tonnes <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
+  filter(rgn_id==78, year %in% c(2010:2015))
+old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
+  filter(rgn_id==78, year %in% c(2010:2015)) %>% 
+  rename(tonnes_old = tonnes)
+
+compare <- old_tonnes %>% 
+full_join(new_tonnes, by = c("rgn_id","product","year"))
+
+# Big change in ornamentals data from 2012-2015 between v2018 and v2019
+
+
+## Kenya (rgn #43)
+# Compare raw data 
+new_kenya <- filter(new, rgn_id==43) %>%
   arrange(commodity, year) %>% 
   rename(tonnes_new = "tonnes")
-old_c <- filter(old, rgn_id==66) %>%
-  arrange(commodity, year)
+old_kenya <- filter(old, rgn_id==43) %>%
+  arrange(commodity, year) %>% 
+    rename(tonnes_old = "tonnes")
 
-compare <- old_c %>% 
-left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
+kenya_compare <- old_kenya %>% 
+left_join(new_kenya, by = c("commodity","year","rgn_id","rgn_name","product"))
 
-plot(compare$tonnes_new, compare$tonnes)
+plot(kenya_compare$tonnes_new, kenya_compare$tonnes_old)
 abline(0,1, col="red")
 
+# No changes to raw data at all 
 
-## Look at tonnes for Greenland
-new_c <- filter(new, rgn_id==145) %>%
+## Kenya harvest smoothed data to see rel tonnes
+smooth_new <- read.csv(here("globalprep/np/v2019/int/np_harvest_smoothed_data.csv")) %>%
+  filter(rgn_id==43, year %in% c(2010:2015)) %>% 
+  select(rgn_id, product, year, tonnes, tonnes_rel)
+smooth_old <- read.csv(here("globalprep/np/v2018/int/np_harvest_smoothed_data.csv")) %>% 
+  filter(rgn_id==43, year %in% c(2010:2015)) %>%
+  select(rgn_id, product, year, tonnes, tonnes_rel) %>% 
+  rename(tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
+
+smoothed <- smooth_old %>% 
+  full_join(smooth_new, by = c("rgn_id","product","year"))
+
+plot(smoothed$tonnes_old, smoothed$tonnes)
+abline(0,1, col="red")
+# Large differences for ornamentals 2013-2015 between v2018 and v2019
+
+
+# Compare output files:
+new_tonnes <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
+  filter(rgn_id==43, year %in% c(2010:2015))
+old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
+  filter(rgn_id==43, year %in% c(2010:2015)) %>% 
+  rename(tonnes_old = tonnes)
+
+compare <- old_tonnes %>% 
+full_join(new_tonnes, by = c("rgn_id","product","year"))
+
+plot(compare$tonnes_old, compare$tonnes)
+abline(0,1, col="red")
+# again we're seeing the changes in ornamentals only 
+
+
+## Iran (rgn #191)
+
+# Compare raw data 
+new_iran <- filter(new, rgn_id==191) %>%
   arrange(commodity, year) %>% 
   rename(tonnes_new = "tonnes")
-old_c <- filter(old, rgn_id==145) %>%
-  arrange(commodity, year)
-
-compare <- old_c %>% 
-left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
-
-plot(compare$tonnes_new, compare$tonnes)
-abline(0,1, col="red")
-
-
-## Look at tonnes for Indonesia
-new_c <- filter(new, rgn_id==216) %>%
+old_iran <- filter(old, rgn_id==191) %>%
   arrange(commodity, year) %>% 
-  rename(tonnes_new = "tonnes")
-old_c <- filter(old, rgn_id==216) %>%
-  arrange(commodity, year)
+    rename(tonnes_old = "tonnes")
 
-compare <- old_c %>% 
-left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
+iran_compare <- old_iran %>% 
+left_join(new_iran, by = c("commodity","year","rgn_id","rgn_name","product"))
 
-plot(compare$tonnes_new, compare$tonnes)
+plot(iran_compare$tonnes_new, iran_compare$tonnes_old)
 abline(0,1, col="red")
 
+# Ornamental nei have NAs for v2019 in 2014-2015, 0 for v2018
 
+## Iran harvest smoothed data to see rel tonnes
+smooth_new <- read.csv(here("globalprep/np/v2019/int/np_harvest_smoothed_data.csv")) %>%
+  filter(rgn_id==191, year %in% c(2010:2015)) %>% 
+  select(rgn_id, product, year, tonnes, tonnes_rel)
+smooth_old <- read.csv(here("globalprep/np/v2018/int/np_harvest_smoothed_data.csv")) %>% 
+  filter(rgn_id==191, year %in% c(2010:2015)) %>%
+  select(rgn_id, product, year, tonnes, tonnes_rel) %>% 
+  rename(tonnes_old = tonnes, tonnes_rel_old = tonnes_rel)
 
+smoothed <- smooth_old %>% 
+  full_join(smooth_new, by = c("rgn_id","product","year"))
 
-
-## Look at Commodities USD value for a few countries
-new <- read.csv('globalprep/np/v2019/int/usd.csv')
-old <- read.csv('globalprep/np/v2016/int/usd.csv') # CHANGE YEAR
-
-## Look at Republique du Congo
-new_c <- filter(new, rgn_id==100) %>%
-  arrange(commodity, year) %>%
-  rename(usd_new = "usd")
-old_c <- filter(old, rgn_id==100) %>%
-  arrange(commodity, year)
-
-compare <- old_c %>%
-  left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
-
-plot(compare$usd_new,compare$usd)
+plot(smoothed$tonnes_old, smoothed$tonnes)
 abline(0,1, col="red")
+# no changes !
 
+# Compare output files:
+new_tonnes <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
+  filter(rgn_id==191, year %in% c(2010:2015))
+old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
+  filter(rgn_id==191, year %in% c(2010:2015)) %>% 
+  rename(tonnes_old = tonnes)
 
+compare <- old_tonnes %>% 
+full_join(new_tonnes, by = c("rgn_id","product","year"))
 
-## Look at Bahamas
-new_c <- filter(new, rgn_id==110) %>%
-  arrange(commodity, year) %>%
-  rename(usd_new = "usd")
-old_c <- filter(old, rgn_id==110) %>%
-  arrange(commodity, year)
-
-compare <- old_c %>%
-  left_join(new_c, by = c("commodity","year","rgn_id","rgn_name","product"))
-
-plot(compare$usd_new,compare$usd)
+plot(compare$tonnes_old, compare$tonnes)
 abline(0,1, col="red")
+# no changes
 
-
-## Look at final smoothed tonnes data for Republique du Congo
-## Rolling average changes values slightly - make sure new data is not too different from previous year
-new <- read.csv('globalprep/np/v2019/output/np_harvest_tonnes.csv')
-old <- read.csv('globalprep/np/v2018/output/np_harvest_tonnes.csv')
-
-
-## Look at 	Republique du Congo
-new_c <- new %>% 
-  filter(rgn_id==100) %>% 
-  rename(tonnes_new = tonnes)
-old_c <- old %>% 
-  filter(rgn_id==100)
-
-compare <- old_c %>%
-  left_join(new_c, by = c("year","rgn_id","product"))
-
-plot(compare$tonnes_new,compare$tonnes)
-abline(0,1, col="red")
-
-
-## Look at Bahamas
-new_c <- new %>% 
-  filter(rgn_id==110) %>% 
-  rename(tonnes_new = tonnes)
-old_c <- old %>% 
-  filter(rgn_id==110)
-
-compare <- old_c %>%
-  left_join(new_c, by = c("year","rgn_id","product"))
-
-plot(compare$tonnes_new,compare$tonnes)
-abline(0,1, col="red")
 
 
 ```
