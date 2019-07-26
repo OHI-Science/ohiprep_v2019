@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2019: Seagrass extent'
+title: 'OHI 2019: Salt Marsh extent'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -15,7 +15,7 @@ output:
 
 # Summary
 
-This script generates the extent of seagrass for each OHI region. 
+This script generates the extent of salt marsh for each OHI region. 
 
 
 ## Updates from previous assessment
@@ -24,21 +24,21 @@ Creating an actual script to calculate this. This has not been updated since 201
 ***
 ## Data Source 
 
-**Downloaded**: 07/15/2019
+**Downloaded**: 07/25/2019
 
 **Description**:  
-Global Distribution of Seagrasses
-https://data.unep-wcmc.org/datasets/7
+Global Distribution of Saltmarshes
+https://data.unep-wcmc.org/datasets/43
 Reported at spatial cell scale. 
 
-This dataset shows the global distribution of seagrasses, and is composed of two subsets of point and polygon occurence data. The data were compiled by UNEP World Conservation Monitoring Centre in collaboration with many collaborators (e.g. Frederick Short of the University of New Hampshire), organisations (e.g. the OSPAR Convention for the Northeast Atlantic sea), and projects (e.g. the European project Mediterranean Sensitive Habitats "Mediseh"), across the globe (full list available in "Metadata_Seagrass.dbf").
+This dataset displays the extent of our knowledge regarding the distribution of saltmarsh globally, drawing from occurrence data (surveyed and/or remotely sensed).
 
-**Time range**: 1934-2015
+**Time range**: 1973-2015
 
 
 ***
 # Methods
-Reclassify the seagrass extent data into a mask of 1 or NA, and then compute zonal statistics for the count of cells within an OHI region that have seagrass and then convert into km2.
+Reclassify the saltmarsh extent data into a mask of 1 or NA, and then compute zonal statistics for the count of cells within an OHI region that have seagrass and then convert into km2.
 
 
 ## Setup
@@ -52,54 +52,70 @@ library(tidyverse)
 
 source(file.path('~/github/ohiprep_v2019/workflow/R/common.R'))
 
-goal     <- 'globalprep/hab_seagrass/v2019'
+goal     <- 'globalprep/hab_saltmarsh/v2019'
 dir_git  <- file.path('~/github/ohiprep_v2019', goal)
-dir_wcmc <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/wcmc_seagrass'))
+dir_wcmc <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/wcmc_saltmarsh'))
 ohi_rasters() # call the region zones raster
-```
-
-```{r, echo = FALSE}
-habitat_extent_seagrass_updated <- read_csv("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/habitat_extent_seagrass_updated.csv")
-
-v6_seagrass_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
-
-v6_seagrass_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPy_v6")
 
 ```
 
-**Convert seagrass shapefiles into same CRS as our region zones raster**
 ```{r, echo = FALSE}
+habitat_extent_saltmarsh_updated <- read_csv("~/github/ohiprep_v2019/globalprep/hab_saltmarsh/v2012/data/habitat_extent_saltmarsh_updated.csv")
+
+v6_saltmarsh_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmarsh_v6/01_Data"), layer = "WCMC027_Saltmarshes_Pt_v6")
+
+v6_saltmarsh_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmarsh_v6/01_Data"), layer = "WCMC027_Saltmarshes_Py_v6")
+
+```
+
+**Convert saltmarsh shapefiles into same CRS as our region zones raster**
+```{r, echo = FALSE}
+
+#for some reason there are 0's attached to the end of the geometry column, lets remove those.
+#v6_saltmarsh_pts$geometry = substr(v6_saltmarsh_pts$geometry, 1, nchar(v6_saltmarsh_pts$geometry)-4)
+## Now need to add a parenthesis to the end of each geometry since we just removed that 
+#v6_saltmarsh_pts$geometry = paste(v6_saltmarsh_pts$geometry,")", sep = "")
+## Need to set geometry again since we tampered with the data inside of it
+#sfc <- v6_saltmarsh_pts$geometry
+#st_multipoint(sfc)
+#st_geometry(sfc)
+#st_geometry(v6_saltmarsh_pts$geometry) 
+
 
 moll_crs <- crs(zones, asText = TRUE)
 
-v6_seagrass_pts_moll <- st_transform(v6_seagrass_pts, crs = moll_crs) #project points shapefile to match zones crs
+v6_saltmarsh_pts_moll <- st_transform(v6_saltmarsh_pts, crs = moll_crs) #project points shapefile to match zones crs
 
 
-crs(v6_seagrass_pts_moll) #check to see it worked
+crs(v6_saltmarsh_pts_moll) #check to see it worked
 
-v6_seagrass_py_moll <- st_transform(v6_seagrass_py, crs = moll_crs)
+v6_saltmarsh_py_moll <- st_transform(v6_saltmarsh_py, crs = moll_crs)
 
-crs(v6_seagrass_py_moll)
-plot(v6_seagrass_py_moll[1])
+crs(v6_saltmarsh_py_moll)
+plot(v6_saltmarsh_py_moll[1])
 plot(zones)
+plot(v6_saltmarsh_pts_moll[1])
 ```
 
-**Fasterize/rasterize: Where there is seagrass assign a value of 1 and NA otherwise**
+**Fasterize/rasterize: Where there is saltmarsh assign a value of 1 and NA otherwise**
 ```{r, echo = FALSE}
 
 ## convert from multipoint to point
-v6_seagrass_pts_moll_cast <- st_cast(v6_seagrass_pts_moll, "POINT")
+v6_saltmarsh_pts_moll_cast <- st_cast(v6_saltmarsh_pts_moll, "POINT")
 
 #convert to a spatial type 
-v6_seagrass_pts_moll_spat <- as(v6_seagrass_pts_moll_cast, "Spatial")
+v6_saltmarsh_pts_moll_spat <- as(v6_saltmarsh_pts_moll_cast, "Spatial")
 #create a column full of "1's"
-v6_seagrass_pts_moll_spat$raster <- 1
+v6_saltmarsh_pts_moll_spat$raster <- 1
 #rasterize our points data to raster 
-rasterize_pts <- raster::rasterize(v6_seagrass_pts_moll_spat, 
+
+#### STOPPED HERE JULY 25 ####
+
+rasterize_pts <- raster::rasterize(v6_saltmarsh_pts_moll_spat, 
                                    zones,
                                    "raster",
                                    fun = min,
- filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/pt_seagrass_rast.tif"), overwrite=TRUE) #write raster
+ filename = file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/pt_saltmarsh_rast.tif"), overwrite=TRUE) #write raster
 
 rasterize_pts <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/pt_seagrass_rast.tif")) #read it back in
 
@@ -111,9 +127,11 @@ cellStats(rasterize_pts, stat = "sum") #9331... reassuring, it is similar to the
 
 
 #fasterize our polygon dataset into a raster
-fasterize_py <- fasterize::fasterize(v6_seagrass_py_moll, raster = zones, 
-                                     field = NULL, # all polygons given value of 1
-                                     filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"), overwrite=TRUE) 
+fasterize_py <- fasterize::fasterize(v6_saltmarsh_py_moll, raster = zones, 
+                                     field = NULL)
+
+writeRaster(fasterize_py, file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/py_saltmarsh_rast.tif"), overwrite=TRUE)
+                                     
 
 fasterize_py <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"))
 
@@ -131,9 +149,9 @@ unique(check_values)
 
 check_values_py <- getValues(fasterize_py)
 sum(check_values_py == 1, na.rm = TRUE)
-#371329
+#62576
 sum(is.na(check_values_py))
-#744994721
+#745303474
 unique(check_values_py)
 #NA 1
 ```
