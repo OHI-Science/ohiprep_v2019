@@ -15,7 +15,7 @@ output:
 
 # Summary
 
-This script generates the extent of salt marsh for each OHI region. 
+This script generates the extent of saltmarsh for each OHI region. 
 
 
 ## Updates from previous assessment
@@ -38,7 +38,7 @@ This dataset displays the extent of our knowledge regarding the distribution of 
 
 ***
 # Methods
-Reclassify the saltmarsh extent data into a mask of 1 or NA, and then compute zonal statistics for the count of cells within an OHI region that have seagrass and then convert into km2.
+Reclassify the saltmarsh extent data into a mask of 1 or NA, and then compute zonal statistics for the count of cells within an OHI region that have saltmarsh and then convert into km2.
 
 
 ## Setup
@@ -71,15 +71,15 @@ v6_saltmarsh_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmar
 **Convert saltmarsh shapefiles into same CRS as our region zones raster**
 ```{r, echo = FALSE}
 
+v6_saltmarsh_pts$geometry1 <- v6_saltmarsh_pts$geometry
+
+v6_saltmarsh_pts <- st_zm(v6_saltmarsh_pts)
+
 #for some reason there are 0's attached to the end of the geometry column, lets remove those.
-#v6_saltmarsh_pts$geometry = substr(v6_saltmarsh_pts$geometry, 1, nchar(v6_saltmarsh_pts$geometry)-4)
-## Now need to add a parenthesis to the end of each geometry since we just removed that 
-#v6_saltmarsh_pts$geometry = paste(v6_saltmarsh_pts$geometry,")", sep = "")
-## Need to set geometry again since we tampered with the data inside of it
-#sfc <- v6_saltmarsh_pts$geometry
-#st_multipoint(sfc)
-#st_geometry(sfc)
-#st_geometry(v6_saltmarsh_pts$geometry) 
+geometry_df = data.frame(substr(v6_saltmarsh_pts$geometry1, 1, nchar(v6_saltmarsh_pts$geometry1)-4))
+
+##Separate geometry DF into two columns: 
+geometry_df <- separate(geometry_df, )
 
 
 moll_crs <- crs(zones, asText = TRUE)
@@ -109,20 +109,18 @@ v6_saltmarsh_pts_moll_spat <- as(v6_saltmarsh_pts_moll_cast, "Spatial")
 v6_saltmarsh_pts_moll_spat$raster <- 1
 #rasterize our points data to raster 
 
-#### STOPPED HERE JULY 25 ####
-
 rasterize_pts <- raster::rasterize(v6_saltmarsh_pts_moll_spat, 
                                    zones,
                                    "raster",
                                    fun = min,
  filename = file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/pt_saltmarsh_rast.tif"), overwrite=TRUE) #write raster
 
-rasterize_pts <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/pt_seagrass_rast.tif")) #read it back in
+rasterize_pts <- raster(file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/pt_saltmarsh_rast.tif")) #read it back in
 
 plot(rasterize_pts)
 zoom()
 #cell stats sum - should be similar to dim
-cellStats(rasterize_pts, stat = "sum") #9331... reassuring, it is similar to the dimensions. 
+cellStats(rasterize_pts, stat = "sum") #464... reassuring, it is similar to the dimensions (477). 
 
 
 
@@ -133,16 +131,17 @@ fasterize_py <- fasterize::fasterize(v6_saltmarsh_py_moll, raster = zones,
 writeRaster(fasterize_py, file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/py_saltmarsh_rast.tif"), overwrite=TRUE)
                                      
 
-fasterize_py <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"))
+fasterize_py <- raster(file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/py_saltmarsh_rast.tif"))
 
 plot(fasterize_py)
-#check to see if all points are 0 and 1 for points raster
+
+#check to see if all points are NA and 1 for points raster
 check_values_points <- getValues(rasterize_pts)
 sum(check_values_points == 1, na.rm = TRUE)
-#9331
+#464
 sum(is.na(check_values_points))
-#745356719
-unique(check_values)
+#745365586
+unique(check_values_points)
 #NA 1
 
 #check to see if all points are NA and 1 for polygon raster
@@ -158,84 +157,85 @@ unique(check_values_py)
 
 **Stack rasters and adjust**
 ```{r, echo = FALSE}
-stacked_seagrass <- raster::stack(rasterize_pts, fasterize_py)
-plot(stacked_seagrass)
+stacked_saltmarsh <- raster::stack(rasterize_pts, fasterize_py)
+plot(stacked_saltmarsh)
 
-sum_seagrass <- raster::calc(stacked_seagrass, 
+sum_saltmarsh <- raster::calc(stacked_saltmarsh, 
                              fun = sum,
                              na.rm = TRUE,
-                             filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py.tif"), overwrite=TRUE)
-plot(sum_seagrass)
+                             filename = file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_saltmarsh.tif"), overwrite=TRUE)
+plot(sum_saltmarsh)
 
-sum_seagrass <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py.tif"))
+sum_saltmarsh <- raster(file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_saltmarsh.tif"))
 
-#check values in combined_seagrass
-combined_values <- getValues(sum_seagrass)
+#check values in combined_saltmarsh
+combined_values <- getValues(sum_saltmarsh)
 unique(combined_values)
-sum(combined_values == 1, na.rm = TRUE) #377618
-sum(combined_values == 2, na.rm = TRUE) #1521
-sum(combined_values == 0, na.rm = TRUE) # 744986911 -- these are all of the NAs
+sum(combined_values == 1, na.rm = TRUE) #63040
+sum(combined_values == 2, na.rm = TRUE) #0
+sum(combined_values == 0, na.rm = TRUE) #745303010 -- these are all of the NAs
 
-## Need to assign all "2's" as "1's" and all "0's" as "NA". There are 2s because 1+1=2. 
-combined_seagrass <- sum_seagrass
+## Need to assign all "0's" as "NA".
+combined_saltmarsh <- sum_saltmarsh
 
 m <- c(1, 1, # if value 1, assign it 1
-       2, 1, # if value 2, assign it 1
        0, NA) #if value 0, assign it NA
 
 rclmat <- matrix(m, ncol = 2, byrow = TRUE) # make m a matrix
 
-combined_seagrass <- raster::reclassify(combined_seagrass, 
+combined_saltmarsh <- raster::reclassify(combined_saltmarsh, 
                                         rclmat, 
-                                        filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py_adjusted.tif"), overwrite = TRUE) #reclassify and write raster according the our reclassify matrix
+                                        filename = file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_adjusted_saltmarsh.tif"), overwrite = TRUE) #reclassify and write raster according the our reclassify matrix
 
-combined_seagrass <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py_adjusted.tif"))
+combined_saltmarsh <- raster(file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_adjusted_saltmarsh.tif"))
 
 # check to see that the reclassify worked
-combined_values_2 <- getValues(combined_seagrass1)
-sum(combined_values_2 == 2, na.rm = TRUE) #should  be 0... it is
-sum(combined_values_2 == 1, na.rm = TRUE) #should be 377618 + 1521 = 379139... it is
+combined_values_2 <- getValues(combined_saltmarsh)
+sum(combined_values_2 == 1, na.rm = TRUE) #should be 63040.. it is
 sum(combined_values_2 == 0, na.rm = TRUE) # should be 0... it is
-sum(is.na(combined_values_2)) #should be 744986911... it is
+sum(is.na(combined_values_2)) #should be 745303010... it is
 
 ```
 
-**Calculate zonal stats with zones raster and new combined seagrass. Convert to km^2 and save int/output files**
+**Calculate zonal stats with zones raster and new combined saltmarsh. Convert to km^2 and save int/output files**
 ```{r, echo = FALSE}
-zonal_sums_combined <- raster::zonal(combined_seagrass, 
+zonal_sums_combined <- raster::zonal(combined_saltmarsh, 
                                      zones,
                                      fun = "sum",
-                                     na.rm = TRUE) #sum all seagrass cells for each ohi zone
+                                     na.rm = TRUE) #sum all saltmarsh cells for each ohi zone
 zonal_sums_combined_df <- data.frame(zonal_sums_combined)
 
-write_csv(zonal_sums_combined_df, file.path(dir_git, 'int/zonal_sums_combined_df.csv')) #save into intermediate data folder
+write_csv(zonal_sums_combined_df, file.path(dir_git, 'int/zonal_sums_combined_df_saltmarsh.csv')) #save into intermediate data folder
 
 zonal_sums_combined_df <- read_csv(file.path(dir_git, 'int/zonal_sums_combined_df.csv'))
 
 summary(zonal_sums_combined)
 
 zonal_sums_km2 <- zonal_sums_combined_df %>%
-  mutate(year = 2019, habitat = "seagrass",
-         km2 = (0.934478877011218970**2*sum)) %>% #one cell is equal to ~0.93 km
-  rename("rgn_id" = "zone") %>%
-  select(-sum)
+  mutate(year = 2019, habitat = "saltmarsh",
+         km2 = (0.934478877011218970**2*sum)) %>% #one cell is equal to ~0.93^2 km
+  dplyr::rename("rgn_id" = "zone") %>%
+  dplyr::select(-sum)
 
-write_csv(zonal_sums_km2, file.path(dir_git, 'int/habitat_extent_seagrass_raw.csv')) #save into intermediate data folder
+write_csv(zonal_sums_km2, file.path(dir_git, 'int/habitat_extent_saltmarsh_raw.csv')) #save into intermediate data folder
 
 #compare new and old data
 compare_habitat_extent <- zonal_sums_km2 %>%
-  left_join(habitat_extent_seagrass_updated, by = "rgn_id") %>%
+  left_join(habitat_extent_saltmarsh_updated, by = "rgn_id") %>%
   mutate(km2.y = ifelse(
     km2.x >0 & is.na(km2.y) ,0, #assign 0 values to old data km2 that have new data so that we can properly graph these differences.
     km2.y
   ))
-write_csv(compare_habitat_extent, file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
+write_csv(compare_habitat_extent, file.path(dir_git, 'data_check/compare_habitat_extent_saltmarsh.csv'))
 
 #Find which regions to classify as NA in our new data... i.e. regions in the new extent which have 0 km2 and that have NA km2 in old data
 compare_hab_NAs <- compare_habitat_extent %>%
   filter(km2.x == 0, is.na(km2.y))
 
-NA_rgns <- c(compare_hab$rgn_id)
+NA_rgns <- c(compare_hab_NAs$rgn_id)
+
+compare_hab_new_data <- compare_habitat_extent %>%
+  filter(km2.x > 0, is.na(year.y)) ## 53 new regions
 
 #Now assign NA values to all of the regions without seagrass extent. Also filter out weird huge rgn_ids (antarctica)
 zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
@@ -246,12 +246,12 @@ zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
   )) %>%
   filter(rgn_id <= 250)
 
-write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'int/habitat_extent_seagrass_all_rgns.csv'))
+write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'int/habitat_extent_saltmarsh_all_rgns.csv'))
 
 #create final dataset and save
 zonal_sums_km2_final <- zonal_sums_km2_all_rgns %>%
   filter(!is.na(km2))
-write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'data/habitat_extent_seagrass_final.csv'))
+write_csv(zonal_sums_km2_final, file.path(dir_git, 'data/habitat_extent_saltmarsh_final.csv'))
 
 ```
 
@@ -260,13 +260,13 @@ write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'data/habitat_extent_seagr
 
 ```{r, echo = FALSE}
 
-compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
+compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent_saltmarsh.csv'))
 
-## Compare old and new habitat extent data. We aren't using the "final" dataset here, so we can see the regions that had extent data added. 48 of them. 
+## Compare old and new habitat extent data. We aren't using the "final" dataset here, so we can see the regions that had extent data added. 53 of them. 
 ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
   geom_point() +
   geom_abline() +
-  labs(title = "Seagrass Habitat version 3 vs version 6", x = "version 3 extent", y=  "version 6 extent") +
+  labs(title = "Saltmarsh Habitat version ? vs version 6", x = "version ? extent", y=  "version 6 extent") +
   theme_bw()
 
 
@@ -323,35 +323,6 @@ abline(v = log(0.934478877011218970^2), col = "red")
 abline(v=-0.2119862, col = "blue")
 #Wow! Very good estimate!
 ```
-
-**Explore how gapfilling was done in 2012**
-```{r}
-## Regions to gapfill as is: 
-trend <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/habitat_trend_seagrass_updated.csv"))
-
-trend_rgns <- c(trend$rgn_id)
-
-zonal_sums_km2_final <- read_csv(file.path(dir_git, 'data/habitat_extent_seagrass_final.csv'))
-
-extent_rgns <- c(zonal_sums_km2_final$rgn_id)
-
-'%!in%' <- function(x,y)!('%in%'(x,y))
-
- extent_trend_rgn_to_gf <- extent_rgns[extent_rgns %!in% trend_rgns]
- 
- habitat_health_seagrass_updated <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/habitat_health_seagrass_updated.csv"))
- 
- health_rgns <- c(habitat_health_seagrass_updated$rgn_id)
-
-  extent_health_rgn_to_gf <- extent_rgns[extent_rgns %!in% health_rgns]
-  extent_health_rgn_to_gf
-  
-  
- habitat_health_gf <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/health_seagrass_gf.csv"))
- 
- habitat_trend_gf <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/trend_seagrass_gf.csv"))
-```
-
 
 
 

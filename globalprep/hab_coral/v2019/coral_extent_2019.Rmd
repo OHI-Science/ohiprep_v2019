@@ -212,6 +212,8 @@ compare_habitat_extent <- zonal_sums_km2 %>%
   ))
 write_csv(compare_habitat_extent, file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
 
+compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
+
 #Find which regions to classify as NA in our new data... i.e. regions in the new extent which have 0 km2 and that have NA km2 in old data
 compare_hab_NAs <- compare_habitat_extent %>%
   filter(km2.x == 0, is.na(km2.y))
@@ -231,6 +233,8 @@ zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
   filter(rgn_id <= 250)
 
 write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'int/habitat_extent_coral_all_rgns.csv'))
+
+zonal_sums_km2_all_rgns <- read_csv(file.path(dir_git, 'int/habitat_extent_coral_all_rgns.csv'))
 
 #create final dataset and save
 zonal_sums_km2_final <- zonal_sums_km2_all_rgns %>%
