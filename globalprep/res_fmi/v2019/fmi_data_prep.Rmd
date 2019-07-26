@@ -366,13 +366,13 @@ fmi_gdp2 <- fmi_rgn %>%
 
 ```
 
-## Correlation testing 
+## Correlation testing
 ```{r}
 # install.packages("psych")
 library(psych)
 
 # Look at data and check for correlation
-ggplotly(ggplot(fmi_gdp2, aes(x = fmi, y = gdppcppp, labels = rgn_name)) +
+ggplotly(ggplot(fmi_gdp2, aes(x = gdppcppp, y = fmi, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
@@ -397,13 +397,16 @@ cor.test(log_fmi_gdp$log_fmi, log_fmi_gdp$log_gdppcppp, method="pearson", altern
 
 ```
 
+
 ## Create linear regression models for gapfilling
 ```{r}
 
+### Using gapfilled GDP data (process above)
 model <- lm(fmi ~ gdppcppp, data=fmi_gdp)
 summary(model)
 anova(model)
 # p<0.001 for gdp, reject null ; GDP is significant predictor of FMI 
+# R2: 0.47
 # plot(model)
 
 fmi_gf <- fmi_gdp %>%
@@ -416,5 +419,170 @@ fmi_gf <- fmi_gdp %>%
 
 summary(gdppcppp_gf)
 head(gdppcppp_gf)
+
 ```
 
+# Alternative linear models 
+## Correlation and model based on gapfilled, rescaled "score" data (calculated from gdppcppp, AO output product)
+```{r}
+
+ao_score <- read_csv(here("globalprep/ao/v2019/output/wb_gdppcppp_rescaled.csv"))
+
+fmi_ao <- ao_score %>% 
+  left_join(fmi_rgn, by=c("rgn_id","year")) %>% 
+  select(-rgn_name) %>% 
+  rename(ao_need_score = value)
+
+fmi_ao2 <- fmi_rgn %>% 
+  left_join(ao_score, by=c("rgn_id","year")) %>% 
+  select(-rgn_name) %>% 
+  rename(ao_need_score = value)
+
+ggplotly(ggplot(fmi_ao2, aes(x = ao_need_score, y = fmi, labels = rgn_id)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
+
+fmi_ao_plot <- fmi_ao %>% 
+  select(fmi, ao_need_score)
+  
+pairs.panels(fmi_ao_plot, density = TRUE, cor=TRUE, lm=TRUE)
+
+# Take logs and create scatter
+# Log transformations adjust for skew/exponential relationships
+log_fmi_ao <- log(fmi_ao_plot+1) %>% 
+  rename(log_fmi=fmi) %>% 
+  rename(log_ao_need_score=ao_need_score)
+
+pairs.panels(log_fmi_ao, density = TRUE, cor=FALSE, lm=TRUE)
+
+# Correlation test
+cor.test(log_fmi_ao$log_fmi, log_fmi_ao$log_ao_need_score, method="pearson", alternative="two.sided")
+# p <0.001, reject null that true correlation=0
+# cor = ~0.66 (decent strong positve)
+
+model_ao <- lm(fmi ~ ao_need_score, data=fmi_ao)
+summary(model_ao)
+anova(model_ao)
+# p<0.001 for ao_need_score, reject null ; AO need is significant predictor of FMI 
+# R2 = 0.4758
+# plot(model)
+
+fmi_gf_ao <- fmi_ao %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::do({ 
+    fmi_pred <- predict(model, newdata =.[c('ao_need_score')]) 
+    data.frame(., fmi_pred) # do loop applies the model fitting and prediction to each country group
+  }) %>% 
+  dplyr::ungroup()
+
+
+```
+
+## Model based on Social Progress Index (SPI)
+**Note: this data set only has 1100 data points compared to more for wgi and ao (data is only 2014-2018)**
+```{r}
+spi <- read_csv(here("globalprep/prs_res_spi/v2018/output/spi_res.csv"))
+
+fmi_spi <- spi %>% 
+  left_join(fmi_rgn, by=c("rgn_id","year")) %>% 
+  select(-rgn_name)
+
+fmi_spi2 <- fmi_rgn %>% 
+  left_join(spi, by=c("rgn_id","year")) %>% 
+  select(-rgn_name)
+
+ggplotly(ggplot(fmi_spi2, aes(x = resilience_score, y = fmi, labels = rgn_id)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
+
+fmi_spi_plot <- fmi_spi %>% 
+  select(fmi, resilience_score)
+  
+pairs.panels(fmi_spi_plot, density = TRUE, cor=TRUE, lm=TRUE)
+
+# Take logs and create scatter
+# Log transformations adjust for skew/exponential relationships
+log_fmi_spi <- log(fmi_spi_plot+1) %>% 
+  rename(log_fmi=fmi) %>% 
+  rename(log_resilience_score=resilience_score)
+
+pairs.panels(log_fmi_spi, density = TRUE, cor=FALSE, lm=TRUE)
+
+# Correlation test
+cor.test(log_fmi_spi$log_fmi, log_fmi_spi$log_resilience_score, method="pearson", alternative="two.sided")
+# p <0.001, reject null that true correlation=0
+# cor = ~0.64 (decent strong positve)
+
+model_spi <- lm(fmi ~ resilience_score, data=fmi_spi)
+summary(model_spi)
+anova(model_spi)
+# p<0.001 for resilience_score, reject null ; SPI resilience score is significant predictor of FMI 
+# R2 = 0.4204
+# plot(model)
+
+fmi_gf_spi <- fmi_spi %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::do({ 
+    fmi_pred <- predict(model, newdata =.[c('resilience_score')]) 
+    data.frame(., fmi_pred) # do loop applies the model fitting and prediction to each country group
+  }) %>% 
+  dplyr::ungroup()
+
+```
+
+## Model based on world governance indicator score
+**Note: v2019 data go through 2017**
+```{r}
+wgi <- read_csv(here("globalprep/prs_res_wgi/v2019/output/wgi_res.csv")) %>% 
+dplyr::mutate(year = ifelse(stringr::str_detect(year,"2017"), "2018", year)) # making data from 2017 2018 instead so that it will merge with FMI data 
+
+wgi$year <- as.numeric(wgi$year)
+
+fmi_wgi <- wgi %>% 
+  left_join(fmi_rgn, by=c("rgn_id","year")) %>% 
+  select(-rgn_name)
+
+fmi_wgi2 <- fmi_rgn %>% 
+  left_join(wgi, by=c("rgn_id","year")) %>% 
+  select(-rgn_name)
+
+ggplotly(ggplot(fmi_wgi2, aes(x = resilience_score, y = fmi, labels = rgn_id)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
+
+fmi_wgi_plot <- fmi_wgi2 %>% 
+  select(fmi, resilience_score)
+
+pairs.panels(fmi_wgi_plot, density = TRUE, cor=TRUE, lm=TRUE)
+
+# Take logs and create scatter
+# Log transformations adjust for skew/exponential relationships
+log_fmi_wgi <- log(fmi_wgi_plot+1) %>% 
+  rename(log_fmi=fmi) %>% 
+  rename(log_resilience_score=resilience_score)
+
+pairs.panels(log_fmi_wgi, density = TRUE, cor=FALSE, lm=TRUE)
+
+# Correlation test
+cor.test(log_fmi_wgi$log_fmi, log_fmi_wgi$log_resilience_score, method="pearson", alternative="two.sided")
+# p <0.001, reject null that true correlation=0
+# cor = ~0.72 (strong positive!)
+
+model_wgi <- lm(fmi ~ resilience_score, data=fmi_wgi)
+summary(model_wgi)
+anova(model_wgi)
+# p<0.001 for resilience_score, reject null ; SPI resilience score is significant predictor of FMI 
+# R2 = 0.4298
+# plot(model)
+
+fmi_gf_wgi <- fmi_wgi %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::do({ 
+    fmi_pred <- predict(model, newdata =.[c('resilience_score')]) 
+    data.frame(., fmi_pred) # do loop applies the model fitting and prediction to each country group
+  }) %>% 
+  dplyr::ungroup()
+```
+
+
+**How can we test to determine an acceptable level of difference between predicted an actual for the data we do have?**
