@@ -216,6 +216,9 @@ write_csv(compare_habitat_extent, file.path(dir_git, 'data_check/compare_habitat
 compare_hab_NAs <- compare_habitat_extent %>%
   filter(km2.x == 0, is.na(km2.y))
 
+compare_hab_NAs_new_rgns <- compare_habitat_extent %>%
+  filter(km2.x > 0, is.na(km2.y))
+
 NA_rgns <- c(compare_hab_NAs$rgn_id)
 
 #Now assign NA values to all of the regions without coral extent. Also filter out weird huge rgn_ids (antarctica)
@@ -232,7 +235,7 @@ write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'int/habitat_extent_coral_
 #create final dataset and save
 zonal_sums_km2_final <- zonal_sums_km2_all_rgns %>%
   filter(!is.na(km2))
-write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'data/habitat_extent_coral_final.csv'))
+write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'data/habitat_extent_coral_updated_2019.csv'))
 
 ```
 
@@ -256,53 +259,53 @@ ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
 **Justification for using ~0.9 km2 for average seagrass polygon area**
 ```{r, echo = FALSE}
 # Read in shapefiles
-v6_seagrass_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
+v4_coral_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC008_CoralReefs2018_v4/01_Data"), layer = "WCMC008_CoralReef2018_Pt_v4")
 
-v6_seagrass_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPy_v6")
+v4_coral_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC008_CoralReefs2018_v4/01_Data"), layer = "WCMC008_CoralReef2018_Py_v4")
 
 
 # Transform shapefiles to fit moll CRS
 moll_crs <- crs(zones, asText = TRUE)
 
-v6_seagrass_pts_moll <- st_transform(v6_seagrass_pts, crs = moll_crs) #project points shapefile to match zones crs
+v4_coral_pts_moll <- st_transform(v4_coral_pts, crs = moll_crs) #project points shapefile to match zones crs
 
 
-crs(v6_seagrass_pts_moll) #check to see it worked
+crs(v4_coral_pts_moll) #check to see it worked
 
-v6_seagrass_py_moll <- st_transform(v6_seagrass_py, crs = moll_crs)
+v4_coral_py_moll <- st_transform(v4_coral_py, crs = moll_crs)
 
-crs(v6_seagrass_py_moll)
+crs(v4_coral_py_moll)
 plot(v6_seagrass_py_moll[1])
 plot(zones)
 
-## "I want to get a general feel for how bad our estimate of point data is. To begin to get at this, will you determine the area of each polygon (I think this is pretty easy) and create a histogram of these areas. I want to see how our estimate of ~0.9km2 for each point aligns with average seagrass polygon area." - MF
+## "I want to get a general feel for how bad our estimate of point data is. To begin to get at this, will you determine the area of each polygon (I think this is pretty easy) and create a histogram of these areas. I want to see how our estimate of ~0.9km2 for each point aligns with average coral polygon area." - MF
 
-check_seagrass_py_moll <- v6_seagrass_py_moll
-check_seagrass_py_moll$area <- st_area(v6_seagrass_py_moll)/1000000
-median(check_seagrass_py_moll$area) #0.8089765
+check_coral_py_moll <- v4_coral_py_moll
+check_coral_py_moll$area <- st_area(v4_coral_py_moll)/1000000
+median(check_coral_py_moll$area) #0.1440342
 
-hh <- hist(check_seagrass_py_moll$area)
+hh <- hist(check_coral_py_moll$area)
 hh
-#breaks are by 1000 to 16000
+#breaks are by 500 to 10000
 
-hist(check_seagrass_py_moll$area)
+hist(check_coral_py_moll$area)
 abline(v = 0.934478877011218970^2, col = "red")
-abline(v=0.8089765, col = "blue")
+abline(v=0.1440342, col = "blue")
 
 
-check_seagrass_py_moll$area_log <- log(check_seagrass_py_moll$area)
-log_area_py <- data.frame(check_seagrass_py_moll$area_log) 
+check_coral_py_moll$area_log <- log(check_coral_py_moll$area)
+log_area_py <- data.frame(check_coral_py_moll$area_log) 
 
-log_area_py$check_seagrass_py_moll.area_log <- substr(log_area_py$check_seagrass_py_moll.area_log, 1, nchar(log_area_py$check_seagrass_py_moll.area_log)-7)
+log_area_py$check_coral_py_moll.area_log <- substr(log_area_py$check_coral_py_moll.area_log, 1, nchar(log_area_py$check_coral_py_moll.area_log)-5)
 
-log_area_py$check_seagrass_py_moll.area_log <- as.numeric(log_area_py$check_seagrass_py_moll.area_log)
-median(log_area_py$check_seagrass_py_moll.area_log)
+log_area_py$check_coral_py_moll.area_log <- as.numeric(log_area_py$check_coral_py_moll.area_log)
+median(log_area_py$check_coral_py_moll.area_log)
 
 
-hist(log_area_py$check_seagrass_py_moll.area_log)
+hist(log_area_py$check_coral_py_moll.area_log)
 abline(v = log(0.934478877011218970^2), col = "red")
-abline(v=-0.2119862, col = "blue")
-#Wow! Very good estimate!
+abline(v=-1.938199, col = "blue")
+#Meh, not perfect. 
 ```
 
 
