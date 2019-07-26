@@ -1,0 +1,322 @@
+---
+title: 'OHI 2019: Coral extent'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+# Summary
+
+This script generates the extent of coral for each OHI region. 
+
+
+## Updates from previous assessment
+Creating an actual script to calculate this. This has not been updated since 2012. Updating the data with newest version (version 4). 
+
+***
+## Data Source 
+
+**Downloaded**: 07/25/2019
+
+**Description**:  
+Global Distribution of Coral Reefs
+https://data.unep-wcmc.org/datasets/1
+Reported at spatial cell scale. 
+
+This dataset shows the global distribution of coral reefs in tropical and subtropical regions. It is the most comprehensive global dataset of warm-water coral reefs to date, acting as a foundation baseline map for future, more detailed, work. This dataset was compiled from a number of sources by UNEP World Conservation Monitoring Centre (UNEP-WCMC) and the WorldFish Centre, in collaboration with WRI (World Resources Institute) and TNC (The Nature Conservancy). Data sources include the Millennium Coral Reef Mapping Project (IMaRS-USF and IRD 2005, IMaRS-USF 2005) and the World Atlas of Coral Reefs (Spalding et al. 2001).
+
+**Time range**: 1954-2018
+
+
+***
+# Methods
+Reclassify the coral extent data into a mask of 1 or NA, and then compute zonal statistics for the count of cells within an OHI region that have coral and then convert into km2.
+
+
+## Setup
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+library(readr)      # for read_csv()
+library(raster)
+library(here)
+library(sf)
+library(fasterize)
+library(tidyverse)
+
+source(file.path('~/github/ohiprep_v2019/workflow/R/common.R'))
+
+goal     <- 'globalprep/hab_coral/v2019'
+dir_git  <- file.path('~/github/ohiprep_v2019', goal)
+dir_wcmc <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/wcmc_coral'))
+ohi_rasters() # call the region zones raster
+```
+
+```{r, echo = FALSE}
+habitat_extent_coral_updated <- read_csv("~/github/ohiprep_v2019/globalprep/hab_coral/v2012/data/habitat_extent_coral_updated.csv")
+
+v4_coral_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC008_CoralReefs2018_v4/01_Data"), layer = "WCMC008_CoralReef2018_Pt_v4")
+
+v4_coral_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC008_CoralReefs2018_v4/01_Data"), layer = "WCMC008_CoralReef2018_Py_v4")
+
+```
+
+**Convert seagrass shapefiles into same CRS as our region zones raster**
+```{r, echo = FALSE}
+
+moll_crs <- crs(zones, asText = TRUE)
+
+v4_coral_pts_moll <- st_transform(v4_coral_pts, crs = moll_crs) #project points shapefile to match zones crs
+
+
+crs(v4_coral_pts_moll) #check to see it worked
+
+v4_coral_py_moll <- st_transform(v4_coral_py, crs = moll_crs)
+
+crs(v4_coral_py_moll)
+plot(v4_coral_py_moll[1])
+plot(zones)
+plot(v4_coral_pts_moll[1])
+```
+
+**Fasterize/rasterize: Where there is seagrass assign a value of 1 and NA otherwise**
+```{r, echo = FALSE}
+#create a column full of "1's"
+v4_coral_pts_moll$raster <- 1
+#rasterize our points data to raster 
+
+rasterize_pts <- raster::rasterize(v4_coral_pts_moll, 
+                                   zones,
+                                   "raster",
+                                   fun = min,
+ filename = file.path(dir_M, "/git-annex/globalprep/hab_coral/v2019/int/pt_coral_rast.tif"), overwrite=TRUE) #write raster
+
+rasterize_pts <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/pt_seagrass_rast.tif")) #read it back in
+
+plot(rasterize_pts)
+zoom()
+#cell stats sum - should be similar to dim
+cellStats(rasterize_pts, stat = "sum") #847... reassuring, it is similar to the dimensions. 
+
+
+
+#fasterize our polygon dataset into a raster
+fasterize_py <- fasterize::fasterize(v4_coral_py_moll, raster = zones, 
+                                     field = NULL) # all polygons given value of 1
+
+
+writeRaster(fasterize_py, file.path(dir_M, "/git-annex/globalprep/hab_coral/v2019/int/py_coral_rast.tif"), overwrite=TRUE)    
+
+fasterize_py <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"))
+
+plot(fasterize_py)
+
+#check to see if all points are 0 and 1 for points raster
+check_values_points <- getValues(rasterize_pts)
+sum(check_values_points == 1, na.rm = TRUE)
+#847
+sum(is.na(check_values_points))
+#745365203
+unique(check_values_points)
+#NA 1
+
+#check to see if all points are NA and 1 for polygon raster
+
+check_values_py <- getValues(fasterize_py)
+sum(check_values_py == 1, na.rm = TRUE)
+#171657
+sum(is.na(check_values_py))
+#745194393
+unique(check_values_py)
+#NA 1
+```
+
+**Stack rasters and adjust**
+```{r, echo = FALSE}
+stacked_coral <- raster::stack(rasterize_pts, fasterize_py)
+plot(stacked_coral)
+
+sum_coral <- raster::calc(stacked_coral, 
+                             fun = sum,
+                             na.rm = TRUE,
+                             filename = file.path(dir_M, "/git-annex/globalprep/hab_coral/v2019/int/combined_coral_pt_py.tif"), overwrite=TRUE)
+plot(sum_coral)
+
+sum_coral <- raster(file.path(dir_M, "/git-annex/globalprep/hab_coral/v2019/int/combined_coral_pt_py.tif"))
+
+#check values in combined_seagrass
+combined_values <- getValues(sum_coral)
+unique(combined_values)
+sum(combined_values == 1, na.rm = TRUE) #172232
+sum(combined_values == 2, na.rm = TRUE) #136
+sum(combined_values == 0, na.rm = TRUE) # 745193682 -- these are all of the NAs
+
+## Need to assign all "2's" as "1's" and all "0's" as "NA". There are 2s because 1+1=2. 
+combined_coral <- sum_coral
+
+m <- c(1, 1, # if value 1, assign it 1
+       2, 1, # if value 2, assign it 1
+       0, NA) #if value 0, assign it NA
+
+rclmat <- matrix(m, ncol = 2, byrow = TRUE) # make m a matrix
+
+combined_coral <- raster::reclassify(combined_coral, 
+                                        rclmat, 
+                                        filename = file.path(dir_M, "/git-annex/globalprep/hab_coral/v2019/int/combined_coral_pt_py_adjusted.tif"), overwrite = TRUE) #reclassify and write raster according the our reclassify matrix
+
+combined_coral <- raster(file.path(dir_M, "/git-annex/globalprep/hab_coral/v2019/int/combined_coral_pt_py_adjusted.tif"))
+
+# check to see that the reclassify worked
+combined_values <- getValues(combined_coral)
+sum(combined_values == 2, na.rm = TRUE) #should be 0... it is
+sum(combined_values == 1, na.rm = TRUE) #should be 172232 + 136  = 172368... it is
+sum(combined_values == 0, na.rm = TRUE) # should be 0... it is
+sum(is.na(combined_values)) #should be 745193682... it is
+
+```
+
+**Calculate zonal stats with zones raster and new combined seagrass. Convert to km^2 and save int/output files**
+```{r, echo = FALSE}
+zonal_sums_combined <- raster::zonal(combined_coral, 
+                                     zones,
+                                     fun = "sum",
+                                     na.rm = TRUE) #sum all seagrass cells for each ohi zone
+zonal_sums_combined_df <- data.frame(zonal_sums_combined)
+
+write_csv(zonal_sums_combined_df, file.path(dir_git, 'int/coral_zonal_sums_combined_df.csv')) #save into intermediate data folder
+
+zonal_sums_combined_df <- read_csv(file.path(dir_git, 'int/zonal_sums_combined_df.csv'))
+
+summary(zonal_sums_combined)
+
+zonal_sums_km2 <- zonal_sums_combined_df %>%
+  mutate(year = 2019, habitat = "coral",
+         km2 = (0.934478877011218970**2*sum)) %>% #one cell is equal to ~0.93 km
+  dplyr::rename("rgn_id" = "zone") %>%
+  dplyr::select(-sum)
+
+write_csv(zonal_sums_km2, file.path(dir_git, 'int/habitat_extent_coral_raw.csv')) #save into intermediate data folder
+
+#compare new and old data
+compare_habitat_extent <- zonal_sums_km2 %>%
+  left_join(habitat_extent_coral_updated, by = "rgn_id") %>%
+  mutate(km2.y = ifelse(
+    km2.x >0 & is.na(km2.y) ,0, #assign 0 values to old data km2 that have new data so that we can properly graph these differences.
+    km2.y
+  ))
+write_csv(compare_habitat_extent, file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
+
+compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
+
+#Find which regions to classify as NA in our new data... i.e. regions in the new extent which have 0 km2 and that have NA km2 in old data
+compare_hab_NAs <- compare_habitat_extent %>%
+  filter(km2.x == 0, is.na(km2.y))
+
+compare_hab_NAs_new_rgns <- compare_habitat_extent %>%
+  filter(km2.x > 0, is.na(km2.y))
+
+NA_rgns <- c(compare_hab_NAs$rgn_id)
+
+#Now assign NA values to all of the regions without coral extent. Also filter out weird huge rgn_ids (antarctica)
+zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
+  mutate(km2 = ifelse(
+    rgn_id %in% NA_rgns,
+    NA,
+    km2
+  )) %>%
+  filter(rgn_id <= 250)
+
+write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'int/habitat_extent_coral_all_rgns.csv'))
+
+zonal_sums_km2_all_rgns <- read_csv(file.path(dir_git, 'int/habitat_extent_coral_all_rgns.csv'))
+
+#create final dataset and save
+zonal_sums_km2_final <- zonal_sums_km2_all_rgns %>%
+  filter(!is.na(km2))
+write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'data/habitat_extent_coral_updated_2019.csv'))
+
+```
+
+
+**Data Check**
+
+```{r, echo = FALSE}
+
+compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
+
+## Compare old and new habitat extent data. We aren't using the "final" dataset here, so we can see the regions that had extent data added. 48 of them. 
+ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
+  geom_point() +
+  geom_abline() +
+  labs(title = "Coral Habitat version ? vs version 4", x = "version ? extent", y=  "version 4 extent") +
+  theme_bw()
+
+
+```
+
+**Justification for using ~0.9 km2 for average seagrass polygon area**
+```{r, echo = FALSE}
+# Read in shapefiles
+v4_coral_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC008_CoralReefs2018_v4/01_Data"), layer = "WCMC008_CoralReef2018_Pt_v4")
+
+v4_coral_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC008_CoralReefs2018_v4/01_Data"), layer = "WCMC008_CoralReef2018_Py_v4")
+
+
+# Transform shapefiles to fit moll CRS
+moll_crs <- crs(zones, asText = TRUE)
+
+v4_coral_pts_moll <- st_transform(v4_coral_pts, crs = moll_crs) #project points shapefile to match zones crs
+
+
+crs(v4_coral_pts_moll) #check to see it worked
+
+v4_coral_py_moll <- st_transform(v4_coral_py, crs = moll_crs)
+
+crs(v4_coral_py_moll)
+plot(v6_seagrass_py_moll[1])
+plot(zones)
+
+## "I want to get a general feel for how bad our estimate of point data is. To begin to get at this, will you determine the area of each polygon (I think this is pretty easy) and create a histogram of these areas. I want to see how our estimate of ~0.9km2 for each point aligns with average coral polygon area." - MF
+
+check_coral_py_moll <- v4_coral_py_moll
+check_coral_py_moll$area <- st_area(v4_coral_py_moll)/1000000
+median(check_coral_py_moll$area) #0.1440342
+
+hh <- hist(check_coral_py_moll$area)
+hh
+#breaks are by 500 to 10000
+
+hist(check_coral_py_moll$area)
+abline(v = 0.934478877011218970^2, col = "red")
+abline(v=0.1440342, col = "blue")
+
+
+check_coral_py_moll$area_log <- log(check_coral_py_moll$area)
+log_area_py <- data.frame(check_coral_py_moll$area_log) 
+
+log_area_py$check_coral_py_moll.area_log <- substr(log_area_py$check_coral_py_moll.area_log, 1, nchar(log_area_py$check_coral_py_moll.area_log)-5)
+
+log_area_py$check_coral_py_moll.area_log <- as.numeric(log_area_py$check_coral_py_moll.area_log)
+median(log_area_py$check_coral_py_moll.area_log)
+
+
+hist(log_area_py$check_coral_py_moll.area_log)
+abline(v = log(0.934478877011218970^2), col = "red")
+abline(v=-1.938199, col = "blue")
+#Meh, not perfect. 
+```
+
+
+
+
+
+
+
+
+

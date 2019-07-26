@@ -1,0 +1,332 @@
+---
+title: 'OHI 2019: Salt Marsh extent'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+# Summary
+
+This script generates the extent of saltmarsh for each OHI region. 
+
+
+## Updates from previous assessment
+Creating an actual script to calculate this. This has not been updated since 2012. Updating the data with newest version (version 6). 
+
+***
+## Data Source 
+
+**Downloaded**: 07/25/2019
+
+**Description**:  
+Global Distribution of Saltmarshes
+https://data.unep-wcmc.org/datasets/43
+Reported at spatial cell scale. 
+
+This dataset displays the extent of our knowledge regarding the distribution of saltmarsh globally, drawing from occurrence data (surveyed and/or remotely sensed).
+
+**Time range**: 1973-2015
+
+
+***
+# Methods
+Reclassify the saltmarsh extent data into a mask of 1 or NA, and then compute zonal statistics for the count of cells within an OHI region that have saltmarsh and then convert into km2.
+
+
+## Setup
+``` {r setup, echo = FALSE, message = FALSE, warning = FALSE}
+library(readr)      # for read_csv()
+library(raster)
+library(here)
+library(sf)
+library(fasterize)
+library(tidyverse)
+
+source(file.path('~/github/ohiprep_v2019/workflow/R/common.R'))
+
+goal     <- 'globalprep/hab_saltmarsh/v2019'
+dir_git  <- file.path('~/github/ohiprep_v2019', goal)
+dir_wcmc <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/wcmc_saltmarsh'))
+ohi_rasters() # call the region zones raster
+
+```
+
+```{r, echo = FALSE}
+habitat_extent_saltmarsh_updated <- read_csv("~/github/ohiprep_v2019/globalprep/hab_saltmarsh/v2012/data/habitat_extent_saltmarsh_updated.csv")
+
+v6_saltmarsh_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmarsh_v6/01_Data"), layer = "WCMC027_Saltmarshes_Pt_v6")
+
+v6_saltmarsh_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmarsh_v6/01_Data"), layer = "WCMC027_Saltmarshes_Py_v6")
+
+```
+
+**Convert saltmarsh shapefiles into same CRS as our region zones raster**
+```{r, echo = FALSE}
+
+v6_saltmarsh_pts$geometry1 <- v6_saltmarsh_pts$geometry
+
+v6_saltmarsh_pts <- st_zm(v6_saltmarsh_pts)
+
+#for some reason there are 0's attached to the end of the geometry column, lets remove those.
+geometry_df = data.frame(substr(v6_saltmarsh_pts$geometry1, 1, nchar(v6_saltmarsh_pts$geometry1)-4))
+
+##Separate geometry DF into two columns: 
+geometry_df <- separate(geometry_df, )
+
+
+moll_crs <- crs(zones, asText = TRUE)
+
+v6_saltmarsh_pts_moll <- st_transform(v6_saltmarsh_pts, crs = moll_crs) #project points shapefile to match zones crs
+
+
+crs(v6_saltmarsh_pts_moll) #check to see it worked
+
+v6_saltmarsh_py_moll <- st_transform(v6_saltmarsh_py, crs = moll_crs)
+
+crs(v6_saltmarsh_py_moll)
+plot(v6_saltmarsh_py_moll[1])
+plot(zones)
+plot(v6_saltmarsh_pts_moll[1])
+```
+
+**Fasterize/rasterize: Where there is saltmarsh assign a value of 1 and NA otherwise**
+```{r, echo = FALSE}
+
+## convert from multipoint to point
+v6_saltmarsh_pts_moll_cast <- st_cast(v6_saltmarsh_pts_moll, "POINT")
+
+#convert to a spatial type 
+v6_saltmarsh_pts_moll_spat <- as(v6_saltmarsh_pts_moll_cast, "Spatial")
+#create a column full of "1's"
+v6_saltmarsh_pts_moll_spat$raster <- 1
+#rasterize our points data to raster 
+
+rasterize_pts <- raster::rasterize(v6_saltmarsh_pts_moll_spat, 
+                                   zones,
+                                   "raster",
+                                   fun = min,
+ filename = file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/pt_saltmarsh_rast.tif"), overwrite=TRUE) #write raster
+
+rasterize_pts <- raster(file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/pt_saltmarsh_rast.tif")) #read it back in
+
+plot(rasterize_pts)
+zoom()
+#cell stats sum - should be similar to dim
+cellStats(rasterize_pts, stat = "sum") #464... reassuring, it is similar to the dimensions (477). 
+
+
+
+#fasterize our polygon dataset into a raster
+fasterize_py <- fasterize::fasterize(v6_saltmarsh_py_moll, raster = zones, 
+                                     field = NULL)
+
+writeRaster(fasterize_py, file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/py_saltmarsh_rast.tif"), overwrite=TRUE)
+                                     
+
+fasterize_py <- raster(file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/py_saltmarsh_rast.tif"))
+
+plot(fasterize_py)
+
+#check to see if all points are NA and 1 for points raster
+check_values_points <- getValues(rasterize_pts)
+sum(check_values_points == 1, na.rm = TRUE)
+#464
+sum(is.na(check_values_points))
+#745365586
+unique(check_values_points)
+#NA 1
+
+#check to see if all points are NA and 1 for polygon raster
+
+check_values_py <- getValues(fasterize_py)
+sum(check_values_py == 1, na.rm = TRUE)
+#62576
+sum(is.na(check_values_py))
+#745303474
+unique(check_values_py)
+#NA 1
+```
+
+**Stack rasters and adjust**
+```{r, echo = FALSE}
+stacked_saltmarsh <- raster::stack(rasterize_pts, fasterize_py)
+plot(stacked_saltmarsh)
+
+sum_saltmarsh <- raster::calc(stacked_saltmarsh, 
+                             fun = sum,
+                             na.rm = TRUE,
+                             filename = file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_saltmarsh.tif"), overwrite=TRUE)
+plot(sum_saltmarsh)
+
+sum_saltmarsh <- raster(file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_saltmarsh.tif"))
+
+#check values in combined_saltmarsh
+combined_values <- getValues(sum_saltmarsh)
+unique(combined_values)
+sum(combined_values == 1, na.rm = TRUE) #63040
+sum(combined_values == 2, na.rm = TRUE) #0
+sum(combined_values == 0, na.rm = TRUE) #745303010 -- these are all of the NAs
+
+## Need to assign all "0's" as "NA".
+combined_saltmarsh <- sum_saltmarsh
+
+m <- c(1, 1, # if value 1, assign it 1
+       0, NA) #if value 0, assign it NA
+
+rclmat <- matrix(m, ncol = 2, byrow = TRUE) # make m a matrix
+
+combined_saltmarsh <- raster::reclassify(combined_saltmarsh, 
+                                        rclmat, 
+                                        filename = file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_adjusted_saltmarsh.tif"), overwrite = TRUE) #reclassify and write raster according the our reclassify matrix
+
+combined_saltmarsh <- raster(file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_adjusted_saltmarsh.tif"))
+
+# check to see that the reclassify worked
+combined_values_2 <- getValues(combined_saltmarsh)
+sum(combined_values_2 == 1, na.rm = TRUE) #should be 63040.. it is
+sum(combined_values_2 == 0, na.rm = TRUE) # should be 0... it is
+sum(is.na(combined_values_2)) #should be 745303010... it is
+
+```
+
+**Calculate zonal stats with zones raster and new combined saltmarsh. Convert to km^2 and save int/output files**
+```{r, echo = FALSE}
+zonal_sums_combined <- raster::zonal(combined_saltmarsh, 
+                                     zones,
+                                     fun = "sum",
+                                     na.rm = TRUE) #sum all saltmarsh cells for each ohi zone
+zonal_sums_combined_df <- data.frame(zonal_sums_combined)
+
+write_csv(zonal_sums_combined_df, file.path(dir_git, 'int/zonal_sums_combined_df_saltmarsh.csv')) #save into intermediate data folder
+
+zonal_sums_combined_df <- read_csv(file.path(dir_git, 'int/zonal_sums_combined_df.csv'))
+
+summary(zonal_sums_combined)
+
+zonal_sums_km2 <- zonal_sums_combined_df %>%
+  mutate(year = 2019, habitat = "saltmarsh",
+         km2 = (0.934478877011218970**2*sum)) %>% #one cell is equal to ~0.93^2 km
+  dplyr::rename("rgn_id" = "zone") %>%
+  dplyr::select(-sum)
+
+write_csv(zonal_sums_km2, file.path(dir_git, 'int/habitat_extent_saltmarsh_raw.csv')) #save into intermediate data folder
+
+#compare new and old data
+compare_habitat_extent <- zonal_sums_km2 %>%
+  left_join(habitat_extent_saltmarsh_updated, by = "rgn_id") %>%
+  mutate(km2.y = ifelse(
+    km2.x >0 & is.na(km2.y) ,0, #assign 0 values to old data km2 that have new data so that we can properly graph these differences.
+    km2.y
+  ))
+write_csv(compare_habitat_extent, file.path(dir_git, 'data_check/compare_habitat_extent_saltmarsh.csv'))
+
+#Find which regions to classify as NA in our new data... i.e. regions in the new extent which have 0 km2 and that have NA km2 in old data
+compare_hab_NAs <- compare_habitat_extent %>%
+  filter(km2.x == 0, is.na(km2.y))
+
+NA_rgns <- c(compare_hab_NAs$rgn_id)
+
+compare_hab_new_data <- compare_habitat_extent %>%
+  filter(km2.x > 0, is.na(year.y)) ## 53 new regions
+
+#Now assign NA values to all of the regions without seagrass extent. Also filter out weird huge rgn_ids (antarctica)
+zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
+  mutate(km2 = ifelse(
+    rgn_id %in% NA_rgns,
+    NA,
+    km2
+  )) %>%
+  filter(rgn_id <= 250)
+
+write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'int/habitat_extent_saltmarsh_all_rgns.csv'))
+
+#create final dataset and save
+zonal_sums_km2_final <- zonal_sums_km2_all_rgns %>%
+  filter(!is.na(km2))
+write_csv(zonal_sums_km2_final, file.path(dir_git, 'data/habitat_extent_saltmarsh_final.csv'))
+
+```
+
+
+**Data Check**
+
+```{r, echo = FALSE}
+
+compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent_saltmarsh.csv'))
+
+## Compare old and new habitat extent data. We aren't using the "final" dataset here, so we can see the regions that had extent data added. 53 of them. 
+ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
+  geom_point() +
+  geom_abline() +
+  labs(title = "Saltmarsh Habitat version ? vs version 6", x = "version ? extent", y=  "version 6 extent") +
+  theme_bw()
+
+
+```
+
+**Justification for using ~0.9 km2 for average seagrass polygon area**
+```{r, echo = FALSE}
+# Read in shapefiles
+v6_seagrass_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
+
+v6_seagrass_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPy_v6")
+
+
+# Transform shapefiles to fit moll CRS
+moll_crs <- crs(zones, asText = TRUE)
+
+v6_seagrass_pts_moll <- st_transform(v6_seagrass_pts, crs = moll_crs) #project points shapefile to match zones crs
+
+
+crs(v6_seagrass_pts_moll) #check to see it worked
+
+v6_seagrass_py_moll <- st_transform(v6_seagrass_py, crs = moll_crs)
+
+crs(v6_seagrass_py_moll)
+plot(v6_seagrass_py_moll[1])
+plot(zones)
+
+## "I want to get a general feel for how bad our estimate of point data is. To begin to get at this, will you determine the area of each polygon (I think this is pretty easy) and create a histogram of these areas. I want to see how our estimate of ~0.9km2 for each point aligns with average seagrass polygon area." - MF
+
+check_seagrass_py_moll <- v6_seagrass_py_moll
+check_seagrass_py_moll$area <- st_area(v6_seagrass_py_moll)/1000000
+median(check_seagrass_py_moll$area) #0.8089765
+
+hh <- hist(check_seagrass_py_moll$area)
+hh
+#breaks are by 1000 to 16000
+
+hist(check_seagrass_py_moll$area)
+abline(v = 0.934478877011218970^2, col = "red")
+abline(v=0.8089765, col = "blue")
+
+
+check_seagrass_py_moll$area_log <- log(check_seagrass_py_moll$area)
+log_area_py <- data.frame(check_seagrass_py_moll$area_log) 
+
+log_area_py$check_seagrass_py_moll.area_log <- substr(log_area_py$check_seagrass_py_moll.area_log, 1, nchar(log_area_py$check_seagrass_py_moll.area_log)-7)
+
+log_area_py$check_seagrass_py_moll.area_log <- as.numeric(log_area_py$check_seagrass_py_moll.area_log)
+median(log_area_py$check_seagrass_py_moll.area_log)
+
+
+hist(log_area_py$check_seagrass_py_moll.area_log)
+abline(v = log(0.934478877011218970^2), col = "red")
+abline(v=-0.2119862, col = "blue")
+#Wow! Very good estimate!
+```
+
+
+
+
+
+
+

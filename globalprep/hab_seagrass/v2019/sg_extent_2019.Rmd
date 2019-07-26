@@ -50,7 +50,7 @@ library(sf)
 library(fasterize)
 library(tidyverse)
 
-source(here('workflow/R/common.R'))
+source(file.path('~/github/ohiprep_v2019/workflow/R/common.R'))
 
 goal     <- 'globalprep/hab_seagrass/v2019'
 dir_git  <- file.path('~/github/ohiprep_v2019', goal)
@@ -118,13 +118,14 @@ fasterize_py <- fasterize::fasterize(v6_seagrass_py_moll, raster = zones,
 fasterize_py <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"))
 
 plot(fasterize_py)
-#check to see if all points are 0 and 1 for points raster
+
+#check to see if all points are NA and 1 for points raster
 check_values_points <- getValues(rasterize_pts)
 sum(check_values_points == 1, na.rm = TRUE)
 #9331
 sum(is.na(check_values_points))
 #745356719
-unique(check_values)
+unique(check_values_points)
 #NA 1
 
 #check to see if all points are NA and 1 for polygon raster
@@ -174,7 +175,7 @@ combined_seagrass <- raster::reclassify(combined_seagrass,
 combined_seagrass <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py_adjusted.tif"))
 
 # check to see that the reclassify worked
-combined_values_2 <- getValues(combined_seagrass1)
+combined_values_2 <- getValues(combined_seagrass)
 sum(combined_values_2 == 2, na.rm = TRUE) #should  be 0... it is
 sum(combined_values_2 == 1, na.rm = TRUE) #should be 377618 + 1521 = 379139... it is
 sum(combined_values_2 == 0, na.rm = TRUE) # should be 0... it is
@@ -217,7 +218,7 @@ write_csv(compare_habitat_extent, file.path(dir_git, 'data_check/compare_habitat
 compare_hab_NAs <- compare_habitat_extent %>%
   filter(km2.x == 0, is.na(km2.y))
 
-NA_rgns <- c(compare_hab$rgn_id)
+NA_rgns <- c(compare_hab_NAs$rgn_id)
 
 #Now assign NA values to all of the regions without seagrass extent. Also filter out weird huge rgn_ids (antarctica)
 zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
@@ -230,10 +231,12 @@ zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
 
 write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'int/habitat_extent_seagrass_all_rgns.csv'))
 
+zonal_sums_km2_all_rgns <- read_csv(file.path(dir_git, 'int/habitat_extent_seagrass_all_rgns.csv'))
+
 #create final dataset and save
 zonal_sums_km2_final <- zonal_sums_km2_all_rgns %>%
   filter(!is.na(km2))
-write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'data/habitat_extent_seagrass_final.csv'))
+write_csv(zonal_sums_km2_final, file.path(dir_git, 'data/habitat_extent_seagrass_final.csv'))
 
 ```
 
