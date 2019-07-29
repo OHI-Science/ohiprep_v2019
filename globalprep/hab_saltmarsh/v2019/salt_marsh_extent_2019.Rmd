@@ -70,17 +70,7 @@ v6_saltmarsh_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmar
 
 **Convert saltmarsh shapefiles into same CRS as our region zones raster**
 ```{r, echo = FALSE}
-
-v6_saltmarsh_pts$geometry1 <- v6_saltmarsh_pts$geometry
-
-v6_saltmarsh_pts <- st_zm(v6_saltmarsh_pts)
-
-#for some reason there are 0's attached to the end of the geometry column, lets remove those.
-geometry_df = data.frame(substr(v6_saltmarsh_pts$geometry1, 1, nchar(v6_saltmarsh_pts$geometry1)-4))
-
-##Separate geometry DF into two columns: 
-geometry_df <- separate(geometry_df, )
-
+v6_saltmarsh_pts <- st_zm(v6_saltmarsh_pts) #make geometry column 2d, instead of 3d. The rasterize fxn does not like 3d geometry columns. 
 
 moll_crs <- crs(zones, asText = TRUE)
 
@@ -207,13 +197,13 @@ zonal_sums_combined_df <- data.frame(zonal_sums_combined)
 
 write_csv(zonal_sums_combined_df, file.path(dir_git, 'int/zonal_sums_combined_df_saltmarsh.csv')) #save into intermediate data folder
 
-zonal_sums_combined_df <- read_csv(file.path(dir_git, 'int/zonal_sums_combined_df.csv'))
+zonal_sums_combined_df <- read_csv(file.path(dir_git, 'int/zonal_sums_combined_df_saltmarsh.csv'))
 
 summary(zonal_sums_combined)
 
 zonal_sums_km2 <- zonal_sums_combined_df %>%
   mutate(year = 2019, habitat = "saltmarsh",
-         km2 = (0.934478877011218970**2*sum)) %>% #one cell is equal to ~0.93^2 km
+         km2 = (0.934478877011218970^2*sum)) %>% #one cell is equal to ~0.93^2 km
   dplyr::rename("rgn_id" = "zone") %>%
   dplyr::select(-sum)
 
@@ -253,6 +243,8 @@ zonal_sums_km2_final <- zonal_sums_km2_all_rgns %>%
   filter(!is.na(km2))
 write_csv(zonal_sums_km2_final, file.path(dir_git, 'data/habitat_extent_saltmarsh_final.csv'))
 
+ zonal_sums_km2_final <- read_csv(file.path(dir_git, 'data/habitat_extent_saltmarsh_final.csv'))
+
 ```
 
 
@@ -261,6 +253,11 @@ write_csv(zonal_sums_km2_final, file.path(dir_git, 'data/habitat_extent_saltmars
 ```{r, echo = FALSE}
 
 compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent_saltmarsh.csv'))
+
+compare_habitat_extent_v2 <- compare_habitat_extent %>%
+  mutate(diff = km2.x - km2.y) %>%
+  mutate(abs_diff = abs(diff)) %>%
+  left_join(rgns_eez, by = "rgn_id")
 
 ## Compare old and new habitat extent data. We aren't using the "final" dataset here, so we can see the regions that had extent data added. 53 of them. 
 ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
@@ -275,52 +272,53 @@ ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
 **Justification for using ~0.9 km2 for average seagrass polygon area**
 ```{r, echo = FALSE}
 # Read in shapefiles
-v6_seagrass_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
+v6_saltmarsh_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmarsh_v6/01_Data"), layer = "WCMC027_Saltmarshes_Pt_v6")
 
-v6_seagrass_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPy_v6")
+v6_saltmarsh_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmarsh_v6/01_Data"), layer = "WCMC027_Saltmarshes_Py_v6")
 
+v6_saltmarsh_pts <- st_zm(v6_saltmarsh_pts) #make geometry column 2d, instead of 3d. The rasterize fxn does not like 3d geometry columns. 
 
-# Transform shapefiles to fit moll CRS
 moll_crs <- crs(zones, asText = TRUE)
 
-v6_seagrass_pts_moll <- st_transform(v6_seagrass_pts, crs = moll_crs) #project points shapefile to match zones crs
+v6_saltmarsh_pts_moll <- st_transform(v6_saltmarsh_pts, crs = moll_crs) #project points shapefile to match zones crs
 
 
-crs(v6_seagrass_pts_moll) #check to see it worked
+crs(v6_saltmarsh_pts_moll) #check to see it worked
 
-v6_seagrass_py_moll <- st_transform(v6_seagrass_py, crs = moll_crs)
+v6_saltmarsh_py_moll <- st_transform(v6_saltmarsh_py, crs = moll_crs)
 
-crs(v6_seagrass_py_moll)
-plot(v6_seagrass_py_moll[1])
+crs(v6_saltmarsh_py_moll)
+plot(v6_saltmarsh_py_moll[1])
 plot(zones)
+plot(v6_saltmarsh_pts_moll[1])
 
 ## "I want to get a general feel for how bad our estimate of point data is. To begin to get at this, will you determine the area of each polygon (I think this is pretty easy) and create a histogram of these areas. I want to see how our estimate of ~0.9km2 for each point aligns with average seagrass polygon area." - MF
 
-check_seagrass_py_moll <- v6_seagrass_py_moll
-check_seagrass_py_moll$area <- st_area(v6_seagrass_py_moll)/1000000
-median(check_seagrass_py_moll$area) #0.8089765
+check_saltmarsh_py_moll <- v6_saltmarsh_py_moll
+check_saltmarsh_py_moll$area <- st_area(v6_saltmarsh_py_moll)/1000000
+median(check_saltmarsh_py_moll$area) #0.2095653
 
-hh <- hist(check_seagrass_py_moll$area)
+hh <- hist(check_saltmarsh_py_moll$area)
 hh
-#breaks are by 1000 to 16000
+#breaks are by 500 to 8500
 
-hist(check_seagrass_py_moll$area)
+hist(check_saltmarsh_py_moll$area)
 abline(v = 0.934478877011218970^2, col = "red")
-abline(v=0.8089765, col = "blue")
+abline(v=0.2095653, col = "blue")
 
 
-check_seagrass_py_moll$area_log <- log(check_seagrass_py_moll$area)
-log_area_py <- data.frame(check_seagrass_py_moll$area_log) 
+check_saltmarsh_py_moll$area_log <- log(check_saltmarsh_py_moll$area)
+log_area_py <- data.frame(check_saltmarsh_py_moll$area_log) 
 
-log_area_py$check_seagrass_py_moll.area_log <- substr(log_area_py$check_seagrass_py_moll.area_log, 1, nchar(log_area_py$check_seagrass_py_moll.area_log)-7)
+log_area_py$check_saltmarsh_py_moll.area_log <- substr(log_area_py$check_saltmarsh_py_moll.area_log, 1, nchar(log_area_py$check_saltmarsh_py_moll.area_log)-7)
 
-log_area_py$check_seagrass_py_moll.area_log <- as.numeric(log_area_py$check_seagrass_py_moll.area_log)
-median(log_area_py$check_seagrass_py_moll.area_log)
+log_area_py$check_saltmarsh_py_moll.area_log <- as.numeric(log_area_py$check_saltmarsh_py_moll.area_log)
+median(log_area_py$check_saltmarsh_py_moll.area_log)
 
 
-hist(log_area_py$check_seagrass_py_moll.area_log)
+hist(log_area_py$check_saltmarsh_py_moll.area_log)
 abline(v = log(0.934478877011218970^2), col = "red")
-abline(v=-0.2119862, col = "blue")
+abline(v=-1.562719, col = "blue")
 #Wow! Very good estimate!
 ```
 
