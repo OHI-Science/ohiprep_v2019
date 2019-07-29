@@ -1,0 +1,21 @@
+﻿Region,Area (Ha)*,Number,Start Date,End Date,Methodology
+"USA (Mainland, Hawa'ii)","1,723,410","123,697",1/1/77,31/12/2012,"Remote sensing, field survey"
+Mexico,"272,527",437,N/A,N/A,Remote sensing
+USA (Alaska),"161,483","8,949",1/1/77,31/12/2012,"Remote sensing, field survey"
+Canada,"111,274","10,502",1/1/95,31/12/2002,Field survey
+Argentina,"118,870","3,086",1/3/00,28/02/2003,"Remote sensing, field survey"
+"Brazil, Uruguay, Chile, Peru","37,858",385,1/3/00,31/12/2011,"Remote sensing, field survey"
+South Africa,"6,147","1,561",1/1/08,31/12/2008,Remote sensing
+Madagascar,"5,810",4,1/1/11,31/12/2011,"Remote sensing, field survey"
+United Arab Emirates,"4,797",174,7/10/11,20/05/2014,Remote sensing
+Mainland Europe**,"356,947","31,830",1/1/99,13/02/2015,"Remote sensing, field survey, ground-truthed"
+Great Britain,"81,842","117,052",1/1/06,31/12/2009,"Remote sensing, ground-truthed"
+Ireland (Republic of),"9,889","13,127",1/1/06,31/12/2008,"Remote sensing, field survey"
+Iceland,"2,617",32,1/1/06,31/12/2006,Remote sensing
+Russian Federation,"700,719",50,1/7/73,31/07/2011,Field survey
+China,"549,506","21,958",1/1/99,31/12/2008,Remote sensing
+Australia,"1,325,854","14,145",1/1/01,31/12/2001,"Remote sensing, ground-truthed"
+New Zealand,"19,650","2,482",1/1/07,31/12/2008,Remote sensing
+Puerto Rico and the U.S. Virgin Islands,"5,879","1,498",1/1/77,31/12/2012,"Remote sensing, field survey"
+Guam and the Commonwealth of Northern Marianas,8.2,13,1/1/77,31/12/2012,"Remote sensing, field survey"
+American Samoa,0.1,3,15/12/2003,15/12/2003,"Remote sensing, field survey"

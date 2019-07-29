@@ -174,7 +174,7 @@ m <- c(1, 1, # if value 1, assign it 1
 rclmat <- matrix(m, ncol = 2, byrow = TRUE) # make m a matrix
 
 combined_saltmarsh <- raster::reclassify(combined_saltmarsh, 
-                                        rclmat, 
+                                        rclmat,
                                         filename = file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_adjusted_saltmarsh.tif"), overwrite = TRUE) #reclassify and write raster according the our reclassify matrix
 
 combined_saltmarsh <- raster(file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/combined_pt_py_adjusted_saltmarsh.tif"))
@@ -267,6 +267,26 @@ ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
   theme_bw()
 
 
+# Read in the point data csv that the WCMC paper provided; our countries should match these. These data come from here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5515097/
+pt_synthesis <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_saltmarsh/v2019/data_check/wcmc_saltmarsh_pt_syn.csv")) %>%
+  mutate(Country = 
+           case_when(
+             Country == "Korea, Republic of" ~ "South Korea",
+             Country == "Korea, DPR" ~ "North Korea",
+             Country == "Iran (Islamic Republic of)" ~ "Iran",
+             Country == "Tanzania, United Republic of" ~ "Tanzania",
+             Country == "Viet Nam" ~ "Vietnam",
+             Country == Country ~ Country 
+           )) %>%
+  left_join(rgns_eez, by = c("Country" = "rgn_name")) %>%
+  select(1:3) %>%
+  left_join(zonal_sums_km2_final, by = "rgn_id")
+
+
+## Read in the polygon area data that the WCMC paper provided; lets look at how much different our calculated areas actually are from theirs individually
+
+wcmc_saltmarsh_polygon_area <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_saltmarsh/v2019/data_check/wcmc_saltmarsh_polygon_area.csv")) %>% 
+  mutate(km2 = `Area (Ha)*`*0.01) #from a general eye check, our estimates are very much below the correct estimates. Something must be going wrong when synthesizing the polygon data. 
 ```
 
 **Justification for using ~0.9 km2 for average seagrass polygon area**
