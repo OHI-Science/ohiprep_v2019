@@ -155,7 +155,6 @@ summary(gdppcppp_val)
 
 # Predict values using a linear regression with 'year' as an independent variable 
 # Create new column with these predicted values
-##### Linear regression example 
 gdppcppp_gf <- gdppcppp_val %>%
   dplyr::group_by(country) %>%
   dplyr::do({ 
@@ -586,3 +585,311 @@ fmi_gf_wgi <- fmi_wgi %>%
 
 
 **How can we test to determine an acceptable level of difference between predicted an actual for the data we do have?**
+
+
+## Model based on GDP per capita (constant 2010 US$; alternative to use current US$)
+Source: https://data.worldbank.org/indicator/NY.GDP.PCAP.KD
+
+```{r}
+
+# Extract data from WDI()
+library(WDI)
+
+# check world bank website to see what years are available
+yr_start = 1960
+yr_end   = 2018
+
+
+# get description of variables (NOTE: these descriptions appear out of date, they aren't in sync with the definitions of the World Bank):
+indicators <-  data.frame(WDI_data[[1]])
+
+# Get information about dataset 
+indicators[grep("NY.GDP.PCAP.KD", indicators$indicator), ]  # constant dollars. grep helps identify rows to select based on a string. (used this data)
+
+
+# download the data using the WDI package 
+gdppc_raw <-  WDI(country = "all",
+               indicator = "NY.GDP.PCAP.KD", 
+               start = yr_start, end=yr_end)
+summary(gdppc_raw)
+
+# Can add data saving/re-importing steps in between here if we decide to use this data in the future
+
+# Clean and wrangle GDP data
+gdppc_clean <- gdppc_raw %>% 
+  dplyr::select(country, value=NY.GDP.PCAP.KD, year) %>%
+  dplyr::filter(year >= 2005) %>%
+  tidyr::spread(year, value) %>%
+    # spread to fill in potentially missing values with NA
+  data.frame() %>% # this will add an X in front of the column names, allowing us to gather the values
+  tidyr::gather(year, value, starts_with("X")) %>%
+  dplyr::mutate(year = gsub("X", "", year)) %>% #substitute X for "" (nothing) in the column year
+  dplyr::mutate(year = as.numeric(year)) #convert the year column into a numeric format
+
+summary(gdppc_clean) # 273 NAs
+
+# For the first gapfilling stage, if a region has only one value use this value for all years
+gdppc_val <- gdppc_clean %>%
+  dplyr::group_by(country) %>%
+  dplyr::mutate(value_num = sum(!is.na(value))) %>% # counts the numbers of non-missing values for each country (logical TRUEs regarded as one)
+  dplyr::filter(value_num > 0) %>%    # filter out the countries with no data between 2005 and 2018 
+  dplyr::mutate(value_num_gf = ifelse(value_num==1, mean(value, na.rm=TRUE), NA)) %>%  # mean() function is used on regions with one year of data, applies that single value to all NAs for that region 
+  dplyr::ungroup() %>%
+  dplyr::mutate(value = ifelse(is.na(value), value_num_gf, value)) %>% # if no value is missing, leave it, otherwise gapfill
+  dplyr::select(country, year, value, value_num)  # select just these columns; to eliminate extraneous value_num_gf column
+
+summary(gdppc_val) # now only 39 NAs ! 
+
+
+# Predict values using a linear regression with 'year' as an independent variable 
+# Create new column with these predicted values
+gdppc_gf <- gdppc_val %>%
+  dplyr::group_by(country) %>%
+  dplyr::do({ 
+    mod <- lm(value ~ year, data =.)
+    value_pred <- predict(mod, newdata =.[c('year')]) # value_pred = country-grouped mod$fitted.values?
+    data.frame(., value_pred) # do loop applies the model fitting and prediction to each country group
+  }) %>% 
+  dplyr::ungroup()
+
+summary(gdppc_gf)
+
+# Fill in the remaining NA values using the predicted values
+gdppc_gf2 <- gdppc_gf %>%
+  dplyr::ungroup() %>% # why would we need to ungroup here?
+  dplyr::mutate(gapfilled = ifelse(is.na(value), 1, 0)) %>% # Create column 'gapfilled', if value is currently NA, it will be gapfilled, indicated by a 1 in the gapfill column
+  dplyr::mutate(gapfilled = ifelse(value_num == 1, 1, gapfilled)) %>% # if value_num is 1 it was gapfilled previously and gets a 1 in the gapfill column
+  dplyr::mutate(value = ifelse(is.na(value), value_pred, value)) %>% # if NA in value column, input the value in value_pred column
+  dplyr::mutate(method = ifelse(gapfilled==1, paste("lm based on N years data:", value_num, sep=" "), NA)) %>% # Create column 'method' that indicates method of gapfilling; this puts message "lm based..." even in some rows gapfilled with one year of data
+  dplyr::mutate(method = ifelse(value_num == 1, "gapfilled using one year of data", method)) # this overwrites/corrects method "lm based..." for rows actually gapfilled with "one-year of data"" method
+  
+summary(gdppc_gf2) # no more NAs because everything has been gap-filled.
+
+## Rescale values
+# Values at the 95th Quantile or greater are given a rescaled score of '1' (the highest value)
+gdppc_rescale <- gdppc_gf2 %>%
+  dplyr::mutate(quantile_95 = quantile(value, probs=0.95)) %>% # gives a single value - the 95th quant (v2019=53582.14; without current year of data quant95=53208.67 - these should be different)
+  dplyr::mutate(value_stand = value/quantile_95) %>% # where does value scale relative to 95th quantile
+  dplyr::mutate(value_stand = ifelse(value_stand > 1, 1, value_stand)) %>% 
+  dplyr::select(country, year, value, score=value_stand, gapfilled, method) # rename value_stand 'score'
+
+summary(gdppc_rescale)
+
+## Convert to OHI regions
+d_stand_rgn <- name_2_rgn(df_in = gdppc_rescale, 
+                       fld_name='country', 
+                       flds_unique=c('year'))
+
+
+# Combine the duplicate regions (we report these at lower resolution)
+# In this case, we take the average score weighted by population
+population_weights <- read.csv('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2017/master/src/LookupTables/Pop_weight_ChinaSAR_USVIslPRico.csv')
+
+
+# Weight the `score`, `value`, and `gapfilled` column by population
+d_stand_rgn <- d_stand_rgn %>%
+  dplyr::left_join(population_weights, by="country") %>% # does it make sense to backfill population data with static data?
+  dplyr::mutate(population = ifelse(is.na(population), 1, population)) %>% # If no value available, input 1 (these values will not change)
+  dplyr::group_by(rgn_id, year, method, gapfilled) %>% 
+  dplyr::summarize(score = weighted.mean(score, population), # weight the single score value by pop.
+            value = weighted.mean(value, population)) %>%
+  ungroup() 
+
+# check again:
+data.frame(filter(d_stand_rgn, rgn_id == 209))
+
+
+# Removed `Azerbaijan` (255) because the adjacent body of water is a sea not the ocean
+d_stand_rgn <- d_stand_rgn %>%
+  filter(rgn_id <= 250)
+
+summary(d_stand_rgn) # no NAs
+
+
+# save the cleaned gdppc data for existing regions
+gdppc_data <- d_stand_rgn %>%
+  select(rgn_id, year, value)
+
+write_csv(gdppc_data, here("globalprep/res_fmi/v2019/intermediate/gdppc_ohi.csv"))
+
+
+
+## Gapfilling regions with no GDP per capita data using UN georegions 
+
+# Create dataframe pairing each UN geopolitical region id with a year from 2005 to current
+UNgeorgn()  
+
+# Assign georegion labels to each region for each level (r0, r1, r2)
+d_stand_gf <- data.frame(year=min(d_stand_rgn$year):max(d_stand_rgn$year)) %>% 
+  merge(UNgeorgn, by=NULL) 
+
+# Combine the two data frames by region id and year
+# Calculate means across increasing geopolitical levels (e.g. r2, r1), using the highest resolution possible
+d_stand_gf <- d_stand_gf %>%  
+  left_join(d_stand_rgn, by = c("rgn_id", "year")) %>%
+  group_by(r2_label, year) %>%
+  mutate(r2_value = mean(score, na.rm=TRUE)) %>%
+  ungroup() %>%
+  group_by(r1_label, year) %>%
+  mutate(r1_value = mean(score, na.rm=TRUE)) %>%
+  ungroup() %>%
+  group_by(r0_label, year) %>%
+  mutate(r0_value = mean(score, na.rm=TRUE)) %>%
+  ungroup()
+summary(d_stand_gf) 
+
+# Create vector to filter out low population regions so that they are NA 
+low_pop()
+low_pop <- low_pop %>%
+  filter(est_population < 3000 | is.na(est_population)) #filter out regions that have populations > 3000 and keep NA values 
+low_pop_vector <- c(low_pop$rgn_id) #make a vector of low population areas 
+
+# For `score` cells that still have NA values (still several hundred):
+# Check to see if r2 has a value, if so use that to gapfill `score`, otherwise use r1, otherwise use r0
+d_stand_gf <- d_stand_gf %>%
+  mutate(gapfilled = ifelse(is.na(score) & !is.na(r2_value), "1", gapfilled)) %>%
+  mutate(method = ifelse(is.na(score) & !is.na(r2_value), "UN_geopolitical region avg, r2", method)) %>%
+  mutate(score = ifelse(is.na(score), r2_value, score)) %>%
+  mutate(gapfilled = ifelse(is.na(score) & !is.na(r1_value), "1", gapfilled)) %>%
+  mutate(method = ifelse(is.na(score) & !is.na(r1_value), "UN_geopolitical region avg, r1", method)) %>%
+  mutate(score = ifelse(is.na(score), r1_value, score)) %>%
+  mutate(gapfilled = ifelse(is.na(score) & !is.na(r0_value), "1", gapfilled)) %>%
+  mutate(method = ifelse(is.na(score) & !is.na(r0_value), "UN_geopolitical region avg, r0", method)) %>%
+  mutate(score = ifelse(is.na(score), r0_value, score))
+  
+
+d_stand_gf$score[d_stand_gf$rgn_id %in% low_pop_vector] <- NA
+#should now have NA values in score column for low popuation areas
+
+
+# Save complete GDP per capita data 
+
+final_gdppc <- d_stand_gf %>%
+  select(rgn_id, year, value=score)
+
+write_csv(final_gdppc, here("globalprep/res_fmi/v2019/output/wb_gdppc_rescaled.csv"))
+
+
+# Save dataframe with gapfilled method and status information
+final_gdppc_gf <- d_stand_gf %>%
+  select(rgn_id, year, gapfilled, method)
+
+write_csv(final_gdppc_gf, here("globalprep/res_fmi/v2019/output/wb_gdppc_rescaled_gf.csv"))
+```
+
+
+# Create linear model based on GDP per capita data 
+
+```{r}
+library(psych)
+gdppc <- read_csv(here("globalprep/res_fmi/v2019/output/wb_gdppc_rescaled.csv"))
+
+fmi_gdppc <- gdppc %>% 
+  left_join(fmi_rgn, by=c("rgn_id","year")) %>% 
+  select(-rgn_name) %>% 
+  rename(gdppc = value)
+
+fmi_gdppc2 <- fmi_rgn %>% 
+  left_join(gdppc, by=c("rgn_id","year")) %>% 
+  select(-rgn_name) %>% 
+  rename(gdppc = value)
+
+ggplotly(ggplot(fmi_gdppc, aes(x = gdppc, y = fmi, labels = rgn_id)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
+
+fmi_gdppc_plot <- fmi_gdppc %>% 
+  select(fmi, gdppc)
+  
+pairs.panels(fmi_gdppc_plot, density = TRUE, cor=TRUE, lm=TRUE)
+
+# Take logs and create scatter
+# Log transformations adjust for skew/exponential relationships
+log_fmi_gdppc <- log(fmi_gdppc_plot+1) %>% 
+  rename(log_fmi=fmi) %>% 
+  rename(log_gdppc=gdppc)
+
+pairs.panels(log_fmi_gdppc, density = TRUE, cor=FALSE, lm=TRUE)
+
+# Correlation test
+cor.test(log_fmi_gdppc$log_fmi, log_fmi_gdppc$log_gdppc, method="pearson", alternative="two.sided")
+# p <0.001, reject null that true correlation=0
+# cor = ~0.66 (decent strong positve)
+
+model_gdppc <- lm(fmi ~ gdppc, data=fmi_gdppc)
+summary(model_gdppc)
+# p<0.001 for gdppc, reject null ; GDP per capita is significant predictor of FMI 
+# R2 = 0.4555
+# plot(model)
+
+fmi_gf_gdppc <- fmi_gdppc %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::do({ 
+    fmi_pred <- predict(model_gdppc, newdata =.[c('gdppc')]) 
+    data.frame(., fmi_pred) # do loop applies the model fitting and prediction to each country group
+  }) %>% 
+  dplyr::ungroup()
+
+```
+
+
+# Create linear model based on UN georegions 
+
+```{r}
+
+## Gapfilling regions with no GDP per capita data using UN georegions 
+
+# Create dataframe pairing each UN geopolitical region id with a year from 2005 to current
+UNgeorgn()  
+
+# Assign georegion labels to each region for each level (r0, r1, r2)
+fmi_rgn_gf <- data.frame(year=min(fmi_rgn$year):max(fmi_rgn$year)) %>% 
+  merge(UNgeorgn, by=NULL) %>% 
+  rename(rgn_name = rgn_label)
+
+# Combine the two data frames by region id and year
+# Calculate means across increasing geopolitical levels (e.g. r2, r1), using the highest resolution possible
+fmi_rgn_gf <- fmi_rgn_gf %>%  
+  left_join(fmi_rgn, by = c("rgn_id", "rgn_name", "year")) %>%
+  group_by(r2_label, year) %>%
+  mutate(r2_value = mean(fmi, na.rm=TRUE)) %>%
+  ungroup() %>%
+  group_by(r1_label, year) %>%
+  mutate(r1_value = mean(fmi, na.rm=TRUE)) %>%
+  ungroup() %>%
+  group_by(r0_label, year) %>%
+  mutate(r0_value = mean(fmi, na.rm=TRUE)) %>%
+  ungroup() %>% 
+  filter(year == 2018)
+summary(fmi_rgn_gf) 
+
+# Create vector to filter out low population regions so that they are NA 
+low_pop()
+low_pop <- low_pop %>%
+  filter(est_population < 3000 | is.na(est_population)) #filter out regions that have populations > 3000 and keep NA values 
+low_pop_vector <- c(low_pop$rgn_id) #make a vector of low population areas 
+
+# For `score` cells that still have NA values (still several hundred):
+# Check to see if r2 has a value, if so use that to gapfill `fmi`, otherwise use r1, otherwise use r0
+fmi_rgn_gf2 <- fmi_rgn_gf %>%
+  mutate(gapfilled = ifelse(is.na(fmi) & !is.na(r2_value), 1, 0)) %>% # create binary gapfilled column
+  mutate(method = ifelse(is.na(fmi) & !is.na(r2_value), "UN_geopolitical region avg, r2", NA)) %>%
+  mutate(fmi = ifelse(is.na(fmi), r2_value, fmi)) %>%
+  mutate(gapfilled = ifelse(is.na(fmi) & !is.na(r1_value), "1", gapfilled)) %>%
+  mutate(method = ifelse(is.na(fmi) & !is.na(r1_value), "UN_geopolitical region avg, r1", method)) %>%
+  mutate(fmi = ifelse(is.na(fmi), r1_value, fmi)) %>%
+  mutate(gapfilled = ifelse(is.na(fmi) & !is.na(r0_value), "1", gapfilled)) %>%
+  mutate(method = ifelse(is.na(fmi) & !is.na(r0_value), "UN_geopolitical region avg, r0", method)) %>%
+  mutate(fmi = ifelse(is.na(fmi), r0_value, fmi))
+  
+
+fmi_rgn_gf2$fmi[fmi_rgn_gf2$rgn_id %in% low_pop_vector] <- NA
+#FMI should now be NA for low popuation regions
+
+summary(fmi_rgn_gf2) # 20 NAs in FMI column, as expected after applying the low_pop vector
+```
+
+
+
+
+
