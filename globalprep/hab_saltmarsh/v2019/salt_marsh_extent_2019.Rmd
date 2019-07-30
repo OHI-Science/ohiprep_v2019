@@ -56,6 +56,12 @@ goal     <- 'globalprep/hab_saltmarsh/v2019'
 dir_git  <- file.path('~/github/ohiprep_v2019', goal)
 dir_wcmc <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/wcmc_saltmarsh'))
 ohi_rasters() # call the region zones raster
+regions_shape()
+
+zones_all <- fasterize(regions,
+          zones,
+          field = "rgn_ant_id"
+          ) # create a zones raster to include all land... since most salt marsh probably isn't in the eez
 
 ```
 
@@ -72,7 +78,7 @@ v6_saltmarsh_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmar
 ```{r, echo = FALSE}
 v6_saltmarsh_pts <- st_zm(v6_saltmarsh_pts) #make geometry column 2d, instead of 3d. The rasterize fxn does not like 3d geometry columns. 
 
-moll_crs <- crs(zones, asText = TRUE)
+moll_crs <- crs(zones_all, asText = TRUE)
 
 v6_saltmarsh_pts_moll <- st_transform(v6_saltmarsh_pts, crs = moll_crs) #project points shapefile to match zones crs
 
@@ -100,7 +106,7 @@ v6_saltmarsh_pts_moll_spat$raster <- 1
 #rasterize our points data to raster 
 
 rasterize_pts <- raster::rasterize(v6_saltmarsh_pts_moll_spat, 
-                                   zones,
+                                   zones_all,
                                    "raster",
                                    fun = min,
  filename = file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/pt_saltmarsh_rast.tif"), overwrite=TRUE) #write raster
@@ -115,7 +121,7 @@ cellStats(rasterize_pts, stat = "sum") #464... reassuring, it is similar to the 
 
 
 #fasterize our polygon dataset into a raster
-fasterize_py <- fasterize::fasterize(v6_saltmarsh_py_moll, raster = zones, 
+fasterize_py <- fasterize::fasterize(v6_saltmarsh_py_moll, raster = zones_all, 
                                      field = NULL)
 
 writeRaster(fasterize_py, file.path(dir_M, "/git-annex/globalprep/hab_saltmarsh/v2019/int/py_saltmarsh_rast.tif"), overwrite=TRUE)
@@ -190,7 +196,7 @@ sum(is.na(combined_values_2)) #should be 745303010... it is
 **Calculate zonal stats with zones raster and new combined saltmarsh. Convert to km^2 and save int/output files**
 ```{r, echo = FALSE}
 zonal_sums_combined <- raster::zonal(combined_saltmarsh, 
-                                     zones,
+                                     zones_all,
                                      fun = "sum",
                                      na.rm = TRUE) #sum all saltmarsh cells for each ohi zone
 zonal_sums_combined_df <- data.frame(zonal_sums_combined)
@@ -225,7 +231,7 @@ compare_hab_NAs <- compare_habitat_extent %>%
 NA_rgns <- c(compare_hab_NAs$rgn_id)
 
 compare_hab_new_data <- compare_habitat_extent %>%
-  filter(km2.x > 0, is.na(year.y)) ## 53 new regions
+  filter(km2.x > 0, is.na(year.y)) ## 78 new regions
 
 #Now assign NA values to all of the regions without seagrass extent. Also filter out weird huge rgn_ids (antarctica)
 zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
@@ -266,9 +272,12 @@ ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
   labs(title = "Saltmarsh Habitat version ? vs version 6", x = "version ? extent", y=  "version 6 extent") +
   theme_bw()
 
-
+region_data()
 # Read in the point data csv that the WCMC paper provided; our countries should match these. These data come from here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5515097/
-pt_synthesis <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_saltmarsh/v2019/data_check/wcmc_saltmarsh_pt_syn.csv")) %>%
+pt_synthesis_raw <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_saltmarsh/v2019/data_check/wcmc_saltmarsh_pt_syn.csv")) 
+
+
+pt_synthesis <- pt_synthesis_raw %>%
   mutate(Country = 
            case_when(
              Country == "Korea, Republic of" ~ "South Korea",
