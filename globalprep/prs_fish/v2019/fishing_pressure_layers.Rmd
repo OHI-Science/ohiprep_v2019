@@ -59,11 +59,12 @@ We create raster files of total annual global catch from the Watson data and cor
 library(tidyverse)
 library(purrr)
 library(here) # install.packages("here")
+library(readxl)
 setwd(here::here("globalprep","prs_fish","v2019"))
 
 source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R")
 
-rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandingsv4/d2019")
+rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2019")
 rastFolder <- paste0(dir_M,"/git-annex/globalprep/prs_fish/v2019/int/")
 
 ```
@@ -74,10 +75,10 @@ Download the following from the **data_download.Rmd** script:
 
 * Industrial Catch (1950 - 2015) - reported, iuu, and discard catch data for each cell location and unique identifier
 * Master Index Files (IndexInd/IndexNInd.csv) - information associated with the unique identifiers in the Industrial Catch data
-* Spatial Cells Reference (Cells.csv) - contains geospatial information associated wtih the Industrial Catch data
-* Gear Reference (Gear.csv) - contains information regarding how different fishing gear is classified in the index datasets. This will probably not be used for the fishing pressure layers. 
-* Taxa Reference (Taxa.csv) - contains information regarding how different taxa is classified in the index datasets.
-* Country Reference (Country.csv) - contains informations regarding how different countries are labeled in the index datasets. 
+* Spatial Cells Reference (Codes.xlsx - sheet name is Cell) - contains geospatial information associated wtih the Industrial Catch data
+* Gear Reference (Codes.xlsx - sheet name is Gear) - contains information regarding how different fishing gear is classified in the index datasets. This will probably not be used for the fishing pressure layers. 
+* Taxa Reference (Codes.xlsx - sheet name is Taxa) - contains information regarding how different taxa is classified in the index datasets.
+* Country Reference (Codes.xlsx - sheet name is Country) - contains informations regarding how different countries are labeled in the index datasets. 
 
 # Explore Data
 
@@ -93,14 +94,14 @@ index_2018 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_Glo
 ## Load Files
 indexInd <- read.csv(file.path(rawFolder,"IndexInd.csv")) 
 indexNInd <- read.csv(file.path(rawFolder, "IndexNInd.csv"))
-taxa <- read.csv(file.path(rawFolder, "Taxa.csv"))
-country <- read.csv(file.path(rawFolder, "Country.csv"))
+taxa <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Taxa")
+country <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Country")
 
 
 master <- indexInd %>%
-   full_join(indexNInd, by = c("ID","IYear", "CNumber", "Taxonkey", "Gear", "FGearCode", "NumCells"))  %>%
-  left_join(country, by = c("CNumber" = "Country")) %>%
-  left_join(taxa, by = c("Taxonkey" = "TaxonKey")) %>%
+   dplyr::full_join(indexNInd, by = c("ID","IYear", "CNumber", "Taxonkey", "Gear", "FGearCode", "NumCells"))  %>%
+  dplyr::left_join(country, by = c("CNumber" = "Country")) %>%
+  dplyr::left_join(taxa, by = c("Taxonkey" = "TaxonKey")) %>%
     dplyr::select(ID, Year = IYear, CountryName = FAO.name, TaxonName, CommonName, IndReported = Reported.x, IndIUU = IUUTotal.x, IndDiscards = Discards.x, NIndReported = Reported.y, NIndIUU = IUUTotal.y, NIndDiscards = Discards.y )
 
 master[is.na(master)] <- 0 #replace NA values with 0
@@ -108,7 +109,7 @@ master[is.na(master)] <- 0 #replace NA values with 0
 DT::datatable(head(master))
 
 ## Spatial cells reference
-spatialCells <- read.csv(file.path(rawFolder,"Cells.csv"))
+spatialCells <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Cell")
 DT::datatable(head(spatialCells))
 
 ```
@@ -127,13 +128,13 @@ Test to see whether the values for **IndReported**, **IndIUU**, and **IndDiscard
 ```{r, eval=FALSE}
 
 mex_abalone <- data %>% 
-  filter(ID == 2739) %>% 
-  mutate(tot_Reported = sum(Reported),
+  dplyr::filter(ID == 2739) %>% 
+  dplyr::mutate(tot_Reported = sum(Reported),
          tot_IUU = sum(IUU),
          tot_Discards = sum(Discards))
 
 master_check <- master %>%
-  filter(ID == 2739)
+  dplyr::filter(ID == 2739)
 
 ## IndReported, IndIUU, IndDiscards should match tot_Reported, tot_IUU, and tot_Discards
 DT::datatable(head(mex_abalone))
@@ -151,13 +152,13 @@ data2 <- readRDS(file.path(rawFolder,"CatchNInd1950_1954.rds"))
 data2_ly <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018", "CatchNInd_1950_1954.rds"))
 
 jap_sail <- data2 %>% 
-  filter(ID == 	125429) %>% 
-  mutate(tot_Reported = sum(Reported),
+  dplyr::filter(ID == 	125429) %>% 
+  dplyr::mutate(tot_Reported = sum(Reported),
          tot_IUU = sum(IUU),
          tot_Discards = sum(Discards))
 
 master_check <- master %>%
-  filter(ID == 	125429)
+  dplyr::filter(ID == 	125429)
 
 ## IndReported, IndIUU, IndDiscards should match tot_Reported, tot_IUU, and tot_Discards
 DT::datatable(head(jap_sail))
@@ -183,9 +184,9 @@ combine_fis <- function(x) {
   ## Create a total Landings column
   ## Join with master and spatial cells file
   df <- readRDS(x) %>%
-    mutate(Landings = Reported+IUU) %>% 
-    left_join(master, by = "ID") %>% 
-    left_join(spatialCells, by = "Cell")
+    dplyr::mutate(Landings = Reported+IUU) %>% 
+    dplyr::left_join(master, by = "ID") %>% 
+    dplyr::left_join(spatialCells, by = "Cell")
   
   
   ## Save each individual year as a single file
@@ -218,7 +219,7 @@ Create list of industrial catch file names and apply the `combine_fis` function 
 
 ```{r, eval=FALSE}
 
-ind_files <- dir(file.path(dir_M,"git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandingsv4/d2019"), pattern ="CatchInd", full.names=TRUE)
+ind_files <- dir(file.path(dir_M,"git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2019"), pattern ="CatchInd", full.names=TRUE)
 
 
 ## Wrangle and Save Each Year of Data Separately
@@ -234,7 +235,7 @@ Create list of non-industrial catch file names and apply the `combine_fis` funct
 
 ```{r, eval=FALSE}
 
-nind_files <- dir(file.path(dir_M,"git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandingsv4/d2019"), pattern ="CatchNInd", full.names=TRUE)
+nind_files <- dir(file.path(dir_M,"git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2019"), pattern ="CatchNInd", full.names=TRUE)
 
 ## Wrangle and Save Each Year of Data Separately
 nindCatch <- map_df(nind_files, combine_fis)

@@ -30,7 +30,7 @@ setwd(here::here("globalprep","prs_fish","v2019"))
 
 source("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R")
 
-rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandingsv4/d2019")
+rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2019")
 rastFolder <- paste0(dir_M,"/git-annex/globalprep/prs_fish/v2019/int/")
 
 ```
@@ -42,44 +42,46 @@ index_2018 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_Glo
 ## Load Files
 indexInd <- read.csv(file.path(rawFolder,"IndexInd.csv")) 
 indexNInd <- read.csv(file.path(rawFolder, "IndexNInd.csv"))
-taxa <- read.csv(file.path(rawFolder, "Taxa.csv"))
-country <- read.csv(file.path(rawFolder, "Country.csv"))
+taxa <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Taxa")
+country <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Country")
 
 
 master <- indexInd %>%
-   full_join(indexNInd, by = c("ID","IYear", "CNumber", "Taxonkey", "Gear", "FGearCode", "NumCells"))  %>%
-  left_join(country, by = c("CNumber" = "Country")) %>%
-  left_join(taxa, by = c("Taxonkey" = "TaxonKey")) %>%
-    dplyr::select(ID, Year = IYear, CountryName = FAO.name, TaxonName, CommonName, IndReported = Reported.x, IndIUU = IUUTotal.x, IndDiscards = Discards.x, NIndReported = Reported.y, NIndIUU = IUUTotal.y, NIndDiscards = Discards.y )
+   dplyr::full_join(indexNInd, by = c("ID","IYear", "CNumber", "Taxonkey", "Gear", "FGearCode", "NumCells"))  %>%
+  dplyr::left_join(country, by = c("CNumber" = "Country")) %>%
+  dplyr::left_join(taxa, by = c("Taxonkey" = "TaxonKey")) %>%
+    dplyr::select(ID, Year = IYear, CountryName = `FAO name`, TaxonName, CommonName, IndReported = Reported.x, IndIUU = IUUTotal.x, IndDiscards = Discards.x, NIndReported = Reported.y, NIndIUU = IUUTotal.y, NIndDiscards = Discards.y )
 
 master[is.na(master)] <- 0 #replace NA values with 0
 
 DT::datatable(head(master))
 
 ## Spatial cells reference
-spatialCells <- read.csv(file.path(rawFolder,"Cells.csv"))
+spatialCells <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Cell")
 DT::datatable(head(spatialCells))
 ```
 
 ```{r}
 master_summarise_v4 <- master %>%
-  group_by(Year) %>%
-  summarise(total_catch_Ind = sum(IndReported, IndIUU),
-            total_catch_Nind = sum(NIndReported, NIndIUU)) %>%
-  filter(Year %in% c(2010:2015)) %>%
-    mutate(version = "v4") %>%
-    mutate(total_catch_overall = total_catch_Ind + total_catch_Nind)
+  dplyr::group_by(Year) %>%
+  dplyr::summarise(total_catch_Ind = sum(IndReported, IndIUU),
+            total_catch_Nind = sum(NIndReported, NIndIUU),
+            total_discards = sum(IndDiscards, NIndDiscards)) %>%
+  dplyr::filter(Year %in% c(2010:2015)) %>%
+    dplyr::mutate(version = "v4") %>%
+    dplyr::mutate(total_catch_overall = total_catch_Ind + total_catch_Nind)
 
 master_summarise_v3 <- index_2018 %>%
-   group_by(Year) %>%
-  summarise(total_catch_Ind = sum(IndReported, IndIUU),
-            total_catch_Nind = sum(NIndReported, NIndIUU)) %>%
-  filter(Year %in% c(2010:2015)) %>%
-      mutate(version = "v3") %>%
-    mutate(total_catch_overall = total_catch_Ind + total_catch_Nind)
+   dplyr::group_by(Year) %>%
+  dplyr::summarise(total_catch_Ind = sum(IndReported, IndIUU),
+            total_catch_Nind = sum(NIndReported, NIndIUU),
+            total_discards = sum(IndDiscards, NIndDiscards)) %>%
+  dplyr::filter(Year %in% c(2010:2015)) %>%
+      dplyr::mutate(version = "v3",
+                    total_catch_overall = total_catch_Ind + total_catch_Nind)
 
 master_compare <- master_summarise_v3 %>%
-  full_join(master_summarise_v4) 
+  dplyr::full_join(master_summarise_v4) 
 
 master_compare_gather <- master_compare %>%
   gather(key = "type", value = "catch", -Year, -version) 
@@ -104,5 +106,62 @@ sum(master_compare_gather$catch[master_compare_gather$version == "v3" & master_c
 sum(master_compare_gather$catch[master_compare_gather$version == "v4" & master_compare_gather$type == "overall"]) #v4 total landings = 588168717
 # v3 has 89761819 more landings (IUU and Reported) than v4
 
+```
+
+
+
+## Jamie Code
+Here is some code from @jafflerbach that she got to work on these data !
+
+#Libraries
+```{r}
+library(tidyverse)
+library(readxl)
+library(raster)
+```
+
+#Load Raw Data 
+
+###NOTE that I have these saved on my Desktop. These file paths will need to change for each user
+```{r}
+raw_watson_non_industrial_2015_2015 <- readRDS(file.path(rawFolder, "CatchNInd2015_2015.rds"))
+raw_watson_industrial_2015_2015 <- readRDS(file.path(rawFolder, "CatchInd2015_2015.rds"))
+
+
+raw_watson_non_industrial <- read_csv("~/Desktop/CatchNInd2015_2015.csv")
+raw_watson_industrial     <- read_csv("~/Desktop/CatchInd2015_2015.csv")
+```
+
+#Calculate catch per cell
+
+## First for the industrial catch
+
+```{r}
+industrial <- raw_watson_industrial_2015_2015 %>%
+  group_by(Cell) %>%
+  dplyr::summarize(catch = sum(Reported, IUU, Discards)) #this keeps all Reported catch, IUU catch and Discards
+
+## Then for non-industrial catch
+non_industrial <- raw_watson_non_industrial_2015_2015 %>%
+  group_by(Cell) %>%
+  dplyr::summarize(catch = sum(Reported, IUU, Discards)) #this keeps all Reported catch, IUU catch and Discards
+
+## combine to create a dataframe that just has Cell and total_catch
+total_catch <- industrial %>%
+  bind_rows(non_industrial) %>%
+  group_by(Cell) %>%
+  dplyr::summarize(total_catch = sum(catch))
+
+#create a raster of Cell numbers
+## This Codes.xlsx was downloaded from the same place as the raw Watson data.
+cells <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Cell") %>%
+  dplyr::rename(x = LonCentre,  y = LatCentre, z = Cell) %>% #I renamed these xyz to use in the rasterFromXYZ() function below
+  dplyr::select(x,y,z)
+
+#turn the lat/long points into a raster
+cells_raster <- rasterFromXYZ(cells)
+
+#check out the cells raster to make sure it looks good
+plot(cells_raster)
 ```
 
