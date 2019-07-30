@@ -56,6 +56,12 @@ goal     <- 'globalprep/hab_seagrass/v2019'
 dir_git  <- file.path('~/github/ohiprep_v2019', goal)
 dir_wcmc <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/wcmc_seagrass'))
 ohi_rasters() # call the region zones raster
+regions_shape()
+
+zones_all <- fasterize(regions,
+          zones,
+          field = "rgn_ant_id"
+          ) # create a zones raster to include all land... since most salt marsh probably isn't in the eez
 ```
 
 ```{r, echo = FALSE}
@@ -70,7 +76,7 @@ v6_seagrass_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_Sea
 **Convert seagrass shapefiles into same CRS as our region zones raster**
 ```{r, echo = FALSE}
 
-moll_crs <- crs(zones, asText = TRUE)
+moll_crs <- crs(zones_all, asText = TRUE)
 
 v6_seagrass_pts_moll <- st_transform(v6_seagrass_pts, crs = moll_crs) #project points shapefile to match zones crs
 
@@ -96,7 +102,7 @@ v6_seagrass_pts_moll_spat <- as(v6_seagrass_pts_moll_cast, "Spatial")
 v6_seagrass_pts_moll_spat$raster <- 1
 #rasterize our points data to raster 
 rasterize_pts <- raster::rasterize(v6_seagrass_pts_moll_spat, 
-                                   zones,
+                                   zones_all,
                                    "raster",
                                    fun = min,
  filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/pt_seagrass_rast.tif"), overwrite=TRUE) #write raster
@@ -111,9 +117,11 @@ cellStats(rasterize_pts, stat = "sum") #9331... reassuring, it is similar to the
 
 
 #fasterize our polygon dataset into a raster
-fasterize_py <- fasterize::fasterize(v6_seagrass_py_moll, raster = zones, 
-                                     field = NULL, # all polygons given value of 1
-                                     filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"), overwrite=TRUE) 
+fasterize_py <- fasterize::fasterize(v6_seagrass_py_moll, raster = zones_all, 
+                                     field = NULL)# all polygons given value of 1
+
+
+writeRaster(fasterize_py, filename = file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"), overwrite=TRUE) 
 
 fasterize_py <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/py_seagrass_rast.tif"))
 
@@ -186,7 +194,7 @@ sum(is.na(combined_values_2)) #should be 744986911... it is
 **Calculate zonal stats with zones raster and new combined seagrass. Convert to km^2 and save int/output files**
 ```{r, echo = FALSE}
 zonal_sums_combined <- raster::zonal(combined_seagrass, 
-                                     zones,
+                                     zones_all,
                                      fun = "sum",
                                      na.rm = TRUE) #sum all seagrass cells for each ohi zone
 zonal_sums_combined_df <- data.frame(zonal_sums_combined)
@@ -219,6 +227,9 @@ compare_hab_NAs <- compare_habitat_extent %>%
   filter(km2.x == 0, is.na(km2.y))
 
 NA_rgns <- c(compare_hab_NAs$rgn_id)
+
+compare_hab_new <- compare_habitat_extent %>%
+  filter(km2.x > 0, is.na(year.y))
 
 #Now assign NA values to all of the regions without seagrass extent. Also filter out weird huge rgn_ids (antarctica)
 zonal_sums_km2_all_rgns <- zonal_sums_km2 %>%
