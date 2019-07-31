@@ -30,7 +30,7 @@ This process is completed entirely within this script. The raw data is downloade
 
 # Updates from previous assessment
 
-One additional year of data, 2018, up to september 2018, was added. 
+One additional year of data, 2018, up to September 2018, was added. 
 
 ***
 
@@ -110,7 +110,7 @@ ub <- sprintf("ftp://%s@%s", userpasswd, substr(url, 7, 80))
 
 ## download is quite fast, takes less that 3 minutes for 12 files
 for (mo in months){ 
-   #mo="01" # for testing
+   #mo="11" # for testing
   
   ## retrieve the data (compressed, gzipped files)
   u <- sprintf("%s/dt_global_allsat_msla_h_y2018_m%s.nc.gz", ub, mo)
@@ -137,7 +137,9 @@ All NetCDF files for each month are rasterized.
 ```{r clip, eval=FALSE}
 ## d2016/msla_monthly_mean has data for 1993-2015
 ## then include list.files for d2017 through the data folder for current scenario year
-nc_files <- c(list.files(file.path(dir_anx_aviso, "d2018"),
+nc_files <- c(list.files(file.path(dir_anx_aviso, "d2019"),
+                       full.names = TRUE, pattern = ".nc"),
+              list.files(file.path(dir_anx_aviso, "d2018"),
                        full.names = TRUE, pattern = ".nc"),
               list.files(file.path(dir_anx_aviso, "d2017"),
                        full.names = TRUE, pattern = ".nc"),
