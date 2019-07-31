@@ -443,7 +443,7 @@ old_libya <- filter(old, rgn_id==67) %>%
 libya_compare <- old_libya %>% 
 left_join(new_libya, by = c("commodity","year","rgn_id","rgn_name","product"))
 
-plot(compare$tonnes_new, compare$tonnes)
+plot(libya_compare$tonnes_new, libya_compare$tonnes)
 abline(0,1, col="red")
 
 # No changes at all in raw data, look into smoothed data: 
@@ -470,8 +470,19 @@ old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv"))
 compare <- old_tonnes %>% 
 full_join(new_tonnes, by = c("rgn_id","product","year"))
 
+plot(compare$tonnes, compare$tonnes_old)
+abline(0,1, col="red")
 
-# Looks like there may have been a mistake made last year because np_harvest_tonnes had NA for shells in 2013-2015, where same data file for v2019 had 3-5 tons for this product and 0 - 1 for previous years. Odd because the raw data have matching numbers for tonnes, so maybe something got messed up in last year's gapfilling procedure. 
+# Were they gapfilled?
+new_tonnes_gf <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==67, year %in% c(2010:2015))
+
+old_tonnes_gf <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==67, year %in% c(2010:2015))
+
+# not gapfilled in either year
+
+# Looks like there may have been a mistake made somewhere - the v2018 final output file np_harvest_tonnes.csv had NA for shells in 2013-2015, whereas the same data file for v2019 had 3-5 tonnes for this product over the same span (tonnes values were 0 - 1 for previous years in both files, so big jump). Odd because the raw data have matching numbers for tonnes, so maybe something got messed up in either this year or last year's gapfilling procedure. 
 
 
 
@@ -507,16 +518,27 @@ smoothed <- smooth_old %>%
 # some small changes to smoothed data, but nothing drastic 
 
 # Compare output files:
-new_tonnes <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
+new_cook <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
   filter(rgn_id==153, year %in% c(2010:2015))
-old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
+old_cook <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
   filter(rgn_id==153, year %in% c(2010:2015)) %>% 
   rename(tonnes_old = tonnes)
 
-compare <- old_tonnes %>% 
-full_join(new_tonnes, by = c("rgn_id","product","year"))
+compare_cook <- old_cook %>% 
+full_join(new_cook, by = c("rgn_id","product","year"))
 
-# weird because it doesnt look like anything is changing at all??? need to look into this more (to do)
+plot(compare_cook$tonnes, compare_cook$tonnes_old)
+abline(0,1, col="red")
+
+# Were they gapfilled?
+new_tonnes_gf <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==153, year %in% c(2010:2015))
+
+old_tonnes_gf <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==153, year %in% c(2010:2015))
+
+
+# Values for ornamentals are different between v2018 and v2019- minorly for 2010-11, and more significantly between 2012-2015. This is odd because the raw data for both v2018 and v2019 has 0 for ornamental fish nei and and NA for ornamental saltwater fish (the only ornamental items for this region) for 2012-2015.
 
 ## Lebanon (rgn #78)
 # Compare raw data 
@@ -559,11 +581,18 @@ old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv"))
   filter(rgn_id==78, year %in% c(2010:2015)) %>% 
   rename(tonnes_old = tonnes)
 
-compare <- old_tonnes %>% 
+compare_leb <- old_tonnes %>% 
 full_join(new_tonnes, by = c("rgn_id","product","year"))
 
 # Big change in ornamentals data from 2012-2015 between v2018 and v2019
 
+# were they gapfilled? 
+new_tonnes_gf <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==78, year %in% c(2010:2015))
+old_tonnes_gf <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==78, year %in% c(2010:2015))
+
+# both had zerofill 2011-2013, otherwise no gapfilling
 
 ## Kenya (rgn #43)
 # Compare raw data 
@@ -602,6 +631,7 @@ abline(0,1, col="red")
 # Compare output files:
 new_tonnes <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>% 
   filter(rgn_id==43, year %in% c(2010:2015))
+
 old_tonnes <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>% 
   filter(rgn_id==43, year %in% c(2010:2015)) %>% 
   rename(tonnes_old = tonnes)
@@ -613,6 +643,14 @@ plot(compare$tonnes_old, compare$tonnes)
 abline(0,1, col="red")
 # again we're seeing the changes in ornamentals only 
 
+# Were they gapfilled?
+new_tonnes_gf <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==43, year %in% c(2010:2015))
+
+old_tonnes_gf <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==43, year %in% c(2010:2015))
+
+# ...nope
 
 ## Iran (rgn #191)
 
@@ -662,6 +700,14 @@ plot(compare$tonnes_old, compare$tonnes)
 abline(0,1, col="red")
 # no changes
 
+# Were they gapfilled?
+new_tonnes_gf <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==191, year %in% c(2010:2015))
+
+old_tonnes_gf <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes_gf.csv")) %>% 
+  filter(rgn_id==191, year %in% c(2010:2015))
+
+# zerofilling for 2014-2015, based on data from last year 
 
 
 ```
