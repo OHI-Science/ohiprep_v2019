@@ -1,8 +1,5 @@
 ## created by Ellie Campbell on Jul 24, 2018
 ## script for downloading uv_data; same code as in 'download the data' section of uv_dataprep.Rmd
-## this runs fine on R locally but not on Mazu; so for v2018, exported this script and downloaded data locally, 
-## mapped Mazu and dragged the 'data' folder into the git-annex/globalprep/_raw_data/NASA_OMI_AURA_UV folder
-
 ## see the uv_dataprep.Rmd for more details about the EarthData Archive, access info, where to get the 'file_list.txt' etc
 
 library(dplyr)
