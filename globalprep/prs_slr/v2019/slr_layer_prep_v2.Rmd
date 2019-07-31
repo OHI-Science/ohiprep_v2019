@@ -30,7 +30,7 @@ This process is completed entirely within this script. The raw data is downloade
 
 # Updates from previous assessment
 
-One additional year of data, 2018, up to September 2018, was added. 
+One additional year of data, 2018, was added. 
 
 ***
 
@@ -39,10 +39,10 @@ One additional year of data, 2018, up to September 2018, was added.
 The source data are monthly mean sea level anomalies, in meters. These anomalies are calculated by subtracting the current absolute sea level for each month from the average sea level for that month calculated from 1993 - 2012.
 
 **Reference**: The altimeter products were produced and distributed by Aviso (http://www.aviso.altimetry.fr/), as part of the Ssalto ground processing segment. [AVISO MSLA heights, monthly means](http://www.aviso.altimetry.fr/en/data/products/sea-surface-height-products/global/msla-mean-climatology.html)  
-**Downloaded**: June 27, 2019 (for 2018 data)   
+**Downloaded**: July 30, 2019 (for 2018 data)   
 **Description**: Monthly mean sea level anomaly (meters above mean sea level)   
 **Native data resolution**: 0.25 degree grid cells   
-**Time range**: January 1993 - September 2018  
+**Time range**: January 1993 - December 2018  
 **Format**: NetCDF   
 **Citation information**  The altimeter products were produced and distributed by Aviso (http://www.aviso.altimetry.fr/), as part of the Ssalto ground processing segment. [AVISO MSLA heights, monthly means](http://www.aviso.altimetry.fr/en/data/products/sea-surface-height-products/global/msla-mean-climatology.html)
 
@@ -215,7 +215,8 @@ Since we are only interested in the increase in sea level near the coasts, we ap
 ```{r plot_mask, eval = FALSE}
 
 ## 3nm offshore raster to select only nearshore cells
-ocean_mask_prev <- sprintf("%s/int/ocean_mask.tif", dir_prs_slr, scen_year-1)
+#ocean_mask_prev <- sprintf("%s/int/ocean_mask.tif", dir_prs_slr, scen_year-1) 
+ocean_mask_prev <- file.path(dir_M, "git-annex/globalprep/prs_slr/v2018/int/ocean_mask.tif")
 
 if(file.exists(ocean_mask_prev)){
   file.copy(ocean_mask_prev, file.path(dir_prs_slr, "int"))
@@ -233,13 +234,14 @@ plot(s, col = "red")
 
 ## reproject to mollweide
 annual_means <- list.files(file.path(dir_prs_slr, "int/msla_annual_mean"), full = TRUE)
-foreach(file = annual_means) %dopar% { # file = annual_means[1]
+foreach(file = annual_means) %dopar% {  #file = annual_means[1]
   
   yr <- str_sub(file, -8, -5)
+  msla_int <- file.path(dir_prs_slr, "int")
   
   rast_data <- raster(file) %>%
     projectRaster(crs = mollCRS, over = TRUE) %>%
-    resample(ocean, method = "ngb", 
+    raster::resample(ocean, method = "ngb", 
              filename = sprintf("%s/msla_annual_mol/mlsa_annual_mol_%s.tif", 
                                 msla_int, yr), overwrite = TRUE)
 }
@@ -293,10 +295,13 @@ ref_tab$ref_point[ref_tab$pressure == "Sea Level Rise"] <- ref_point_slr # set s
 write.csv(ref_tab, sprintf("%s/v%s/reference_points_pressures.csv", dir_refpt, scen_year), row.names = FALSE)
 
 ## grab reference value from the supp_info csv
-ref <- read_csv(sprintf("%s/v%s/reference_points_pressures.csv", dir_refpt, scen_year)) %>%
+ref <- read_csv(sprintf("%s/v%s/reference_points_pressures.csv", dir_refpt, "2018")) %>%
        filter(pressure == "Sea Level Rise") %>%
        .$ref_point %>%
         as.numeric()
+
+### Ask about this!!!! 
+#### Stopped here on July 31 ####
 ```     
 
 
