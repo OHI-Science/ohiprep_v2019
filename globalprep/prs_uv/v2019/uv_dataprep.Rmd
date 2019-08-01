@@ -31,14 +31,14 @@ The Ultraviolet Radiation pressure layer is generated from daily data on Local N
 
 # Updates from previous assessment
 
-One additional year of data, and revised data for years 2014-2015 were incorporated (though these revisions to the source data occured in 2016, the updated data were only first included in this - the 2018 - assessment). Added gapfilling where weeks with one or no days of data are gapfilled with days from previous and subsequent weeks. 
+One additional year of data was added to mazu. 
 
 ***
 
 # Data Source
 https://disc.gsfc.nasa.gov/datasets/OMUVBd_V003/summary
 https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMUVBd.003/
-**Reference**: The Ultraviolet Radiation pressures layer uses the [Aura OMI GLobal Surface UVB Data Product](http://disc.sci.gsfc.nasa.gov/Aura/data-holdings/OMI/omuvbd_v003.shtml).  
+**Reference**: The Ultraviolet Radiation pressures layer uses the [Aura OMI Global Surface UVB Data Product](http://disc.sci.gsfc.nasa.gov/Aura/data-holdings/OMI/omuvbd_v003.shtml).  
 **Native Data Resolution**: 1 degree  
 **Values**: Level-3 OMI Surface UV Irradiance and Erythemal Dose- OMUVBd  
 **Time Range**: Daily data from 2005 - 2017 (10/1/2004 through 7/14/2018, but only full years of data are used)
@@ -87,7 +87,7 @@ library(plotly)
 ## update these 3 to reflect current assessment year, or whichever year data is being used!!!
 data_yr <- "d2019"
 raw_data_dir <- file.path(dir_M, "git-annex/globalprep/_raw_data/NASA_OMI_AURA_UV", data_yr)
-int_sp_data <- file.path(dir_M, "git-annex/globalprep/prs_uv/v2018/int") # intermediate spatial data location
+int_sp_data <- file.path(dir_M, "git-annex/globalprep/prs_uv/v2019/int") # intermediate spatial data location
 out_dir <- file.path(dir_M, sprintf("git-annex/globalprep/prs_uv/v2019/output"))
 
 ## years of data we are using for this data layer
@@ -106,14 +106,13 @@ mollCRS <- crs("+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs
 ## define colors in spectral format for plotting rasters -- rainbow color scheme  
 cols <- rev(colorRampPalette(brewer.pal(9, "Spectral"))(255))
 
-##STOPPED HERE JULY 30##
 ```
 
 
 ## Downloading the NetCDF (.he5.nc) Files 
 
 
-Data files can be found in the [GES DISC EARTHDATA Data Archive](https://disc.gsfc.nasa.gov/datasets/OMUVBd_V003/summary). An EarthData account will be required, and will need to be linked to the GES DISC data archive, see [instructions here](https://disc.gsfc.nasa.gov/earthdata-login). Download a links list for the variable "ErythemalDailyDose", in NetCDF format. Note this list is __valid for only 2 days__ so a new one must be generated if data is to be downloaded after that time frame. Once the links list _.txt_ file has been downloaded, the code below will use the list and earthdata login info (username and password) to download the new data files into the raw data directory. The naming convention of the downloaded files: 'OMI-Aura' refers to the instrument, 'L3' means it is a level 3 data product, 'OMUVBd' is the measurement, the first date is when the data was recorded, the second date and time corresponds to modification/upload of the data.
+Data files can be found in the [GES DISC EARTHDATA Data Archive](https://disc.gsfc.nasa.gov/datasets/OMUVBd_V003/summary). An EarthData account will be required, and will need to be linked to the GES DISC data archive, see [instructions here](https://disc.gsfc.nasa.gov/earthdata-login). Download a links list for the variable "ErythemalDailyDose", in NetCDF format. To get this list, go [here](https://disc.gsfc.nasa.gov/datasets/OMUVBd_V003/summary), and click on "Subset/Get Data", and then subset for the links list you want. Note this list is __valid for only 2 days__ so a new one must be generated if data is to be downloaded after that time frame. Once the links list _.txt_ file has been downloaded, the code below will use the list and earthdata login info (username and password) to download the new data files into the raw data directory. The naming convention of the downloaded files: 'OMI-Aura' refers to the instrument, 'L3' means it is a level 3 data product, 'OMUVBd' is the measurement, the first date is when the data was recorded, the second date and time corresponds to modification/upload of the data.
 
 
 
@@ -125,7 +124,7 @@ pass <- readline("Type earthdata password:")
 
 
 ```{r download the data, eval = F}
-## this doesn't run on Mazu for some reason; use 'uv_download_data.R' run locally on R to download locally, then map Mazu at manually move over files
+## This took 103.5 minutes in 2019... 
 
 ## read in file list .text, downloaded from earthdata & saved in destination folder (same as raw_data_dir)
 file_list_raw <- read_delim(file.path(raw_data_dir, "file_list.txt"), delim = "\n", col_names = FALSE)
@@ -141,7 +140,7 @@ n.pym = length(file_list$url_str)
 i.pym = 0
 
 ## download the data
-for(i in 1:3){
+for(i in 1:5375){
   url = as.character(file_list[i,])
   name_raw_file = substr(url, 88, 144)
   
@@ -156,7 +155,10 @@ for(i in 1:3){
                 i.pym, n.pym, min.done, min.togo)) # approx time remaining for data download
 }
 
-## tip: after downloading, check all .he5.nc files are about the same size i.e. they all downloaded properly/fully
+## tip: after downloading, check all .he5.nc files are about the same size i.e. they all downloaded properly/fully - they are all ~264 KB; 2019
+
+
+#### Stopped here on July 31 ####
 ```
 
 
