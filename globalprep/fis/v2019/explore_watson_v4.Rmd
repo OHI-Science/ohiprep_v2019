@@ -1,0 +1,152 @@
+---
+title: "Exploring Watson v4 fishing catch data"
+output: html_document
+---
+
+```{r}
+
+library(here)
+library(tidyverse)
+library(plotly)
+
+
+# directory paths and relevant files
+source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/workflow/R/common.R')
+```
+
+
+```{r}
+
+new_rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2019")
+old_rawFolder <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018")
+
+
+data1 <- readRDS(file.path(new_rawFolder, "CatchInd2015_2015.rds"))
+data2 <- readRDS(file.path(new_rawFolder, "CatchInd2010_2014.rds"))
+data3 <- readRDS(file.path(new_rawFolder, "CatchInd2005_2009.rds"))
+
+new_data <- rbind(data1, data2, data3)
+
+
+## confirming that IndexInd.csv summarizes this information...it does!
+tmp <- filter(new_data, ID==667150)  
+# > dim(tmp)
+# [1] 730   5
+# > sum(tmp$Reported)
+# [1] 142.6872
+# > sum(tmp$IUU)
+# [1] 36.7611
+# > sum(tmp$Discards)
+# [1] 0.11696
+
+
+```
+
+Only need the index file if not assigning to raster cells.
+
+```{r}
+
+Ind_new <- read.csv(file.path(new_rawFolder, "IndexInd.csv"))
+Ind_new <- gather(Ind_new, "catch_type", "tonnes", c("Reported", "IUUTotal", "Discards")) %>%
+  mutate(data = "Industrial_v4")
+
+NInd_new <- read.csv(file.path(new_rawFolder, "IndexNInd.csv"))
+NInd_new <- gather(NInd_new, "catch_type", "tonnes", c("Reported", "IUUTotal", "Discards")) %>%
+  mutate(data = "NonIndustrial_v4")
+
+new_catch <- rbind(Ind_new, NInd_new) %>%
+  select(ID, Year=IYear, catch_type, tonnes, data)
+
+Ind_old <- read.csv(file.path(old_rawFolder, "Index.csv")) %>%
+  select(-NIndReported, -NIndIUU, -NIndDiscards) %>%
+  rename(Reported=IndReported, IUUTotal=IndIUU, Discards=IndDiscards) %>%
+  gather("catch_type", "tonnes", c("Reported", "IUUTotal", "Discards")) %>%
+  mutate(data = "Industrial_v3")
+
+NInd_old <- read.csv(file.path(old_rawFolder, "Index.csv")) %>%
+  select(-IndReported, -IndIUU, -IndDiscards) %>%
+  rename(Reported=NIndReported, IUUTotal=NIndIUU, Discards=NIndDiscards) %>%
+  gather("catch_type", "tonnes", c("Reported", "IUUTotal", "Discards")) %>%
+  mutate(data = "NonIndustrial_v3")
+
+old_catch <- rbind(Ind_old, NInd_old) %>%
+  select(ID, Year, catch_type, tonnes, data) 
+
+catch_data <- rbind(new_catch, old_catch) %>%
+  group_by(Year, data, catch_type) %>%
+  summarize(tonnes = sum(tonnes)) %>%
+  filter(Year >= 1990) %>%
+  separate(data, c("Ind_vs_NInd", "data_version"), by="_")
+
+ggplot(filter(catch_data, Ind_vs_NInd=="Industrial"), aes(x=Year, y=tonnes, 
+                       group=interaction(data_version, catch_type),
+                       color=catch_type,
+                       linetype=data_version,
+                       shape=data_version)) +
+  geom_point() +
+  geom_line() +
+  labs(title="Commercial Fisheries")
+
+ggplot(filter(catch_data, Ind_vs_NInd=="NonIndustrial"), aes(x=Year, y=tonnes, 
+                       group=interaction(data_version, catch_type),
+                       color=catch_type,
+                       linetype=data_version,
+                       shape=data_version)) +
+  geom_point() +
+  geom_line() +
+  labs(title="NonCommercial Fisheries")
+
+summary_catch <- filter(catch_data, Year==2014) %>%
+  spread(data_version, tonnes) %>%
+  arrange(catch_type) 
+
+71037203+10374083
+51404298+30008229
+
+summary_catch
+  colSums(summary_catch[, c(4,5)])
+
+## SAUP Reported + Unreported
+78914000+29773000
+
+catch_data2 <- rbind(new_catch, old_catch) %>%
+  separate(data, c("Ind_vs_NInd", "data_version"), by="_") %>%
+  group_by(Year, data_version, Ind_vs_NInd) %>%
+  summarize(tonnes = sum(tonnes)) %>%
+  filter(Year >= 1990) 
+
+
+
+ggplot(catch_data2, aes(x=Year, y=tonnes, 
+                       group= interaction(data_version, Ind_vs_NInd),
+                       color=Ind_vs_NInd,
+                       linetype = data_version,
+                       style = data_version)) +
+  geom_point() +
+  geom_line() +
+  labs(title="All Fisheries") +
+  ylim(0,max(catch_data2$tonnes))
+
+
+
+catch_data3 <- rbind(new_catch, old_catch) %>%
+  separate(data, c("Ind_vs_NInd", "data_version"), by="_") %>%
+  group_by(Year, data_version) %>%
+  summarize(tonnes = sum(tonnes)) %>%
+  filter(Year >= 1990) 
+
+ggplot(catch_data3, aes(x=Year, y=tonnes, 
+                       group= data_version,
+                       color=data_version)) +
+  geom_point() +
+  geom_line() +
+  labs(title="All Fisheries") +
+  ylim(0,max(catch_data3$tonnes))
+
+
+prop_diff <- catch_data3 %>%
+  group_by(Year) %>%
+  summarize(prop_diff = tonnes[data_version=='v3']/tonnes[data_version=='v4'])
+
+filter(catch_data3, Year==2014)
+
