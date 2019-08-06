@@ -490,6 +490,19 @@ top_10_new_rules <- status_new_rules %>%
 DT::datatable(top_10_new_rules)
 ```
 
+```{r, eval=TRUE}
+##explore the aquaculture data with new reference rules established above 
 
+#graph to see the actual differences 
+library(plotly)
+library(ggplot2)
+p <- ggplot(compare_rules, aes(x=old_score, y=new_score)) +
+  geom_point(aes(text = paste0("rgn = ", region_id)), shape=19) +
+  geom_abline(slope=1, intercept=0) +
+  theme_bw()
+
+p
+
+```
 
 
