@@ -22,7 +22,7 @@ This data prep markdown calls a series of scripts to download and analyze sea ic
 
 # Updates from previous assessment
 
-No changes to methods from previous assessment. Transitioned almost entirely to using the sf package for the spatial data; the one dependence on sp left in ObtainingData.R is OHIregion_points calculation since rasterToPoints() turns raster first into a spatialPointsDataFrame and then sf. 
+No changes to methods from previous assessment. The file structure on the FTP website has changed slightly. 
 
 ***
   
@@ -39,7 +39,7 @@ Data are in the following FTP directory:
 [ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/](ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/)
 
 Within the final-gsfc directory are north and south directories that contain data files, and a browse directory that contains browse image files. Daily and monthly data are further separated into directories named daily and 
-monthly. For final daily data, there is also one directory for each year of available data. For example, all of the north daily data for 1990 are in a directory named /nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/daily/1990/. 
+monthly. For final daily data, there is also one directory for each year of available data. For example, all of the north daily data for 1990 are in a directory named /nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/daily/1990/. For the monthly data, the file structure has slightly changed with the addition of 2018 data. Instead of adding the files onto the bottom of the page with this file structure "/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly/", they have added a "2018 folder, so to retrieve the 2018 data, we will have to access that folder via "/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly/2018/". 
 
 The directory structure is illustrated below; not all directory levels are shown. The structure for each south directory matches that of the corresponding north directory. Each browse directory is divided into a structure that reflects that of the data. In this illustration, the year directories underneath final-gsfc are representative placeholders; there are actually many such directories, each named for the year of data it contains, such as 1987, 2000, etc.
 
@@ -57,6 +57,8 @@ The directory structure is illustrated below; not all directory levels are shown
 . . . . . . . . . . /year
     
 . . . . . . . . /monthly
+
+. . . . . . . . . /2018
     
 . . . . . . /south
     
@@ -67,6 +69,8 @@ The directory structure is illustrated below; not all directory levels are shown
 . . . . . . . . /year
     
 . . . . . . /monthly
+
+. . . . . . . /2018
     
 . . . . /south
 
@@ -90,7 +94,7 @@ Phone: +1 303-492-6199
 Fax: +1 303-492-2468
 E-mail: nsidc@nsidc.org
 
-**Time range**: 1970-2017
+**Time range**: 1970-2018
 
 ***
 
@@ -115,7 +119,7 @@ lapply(c(pkg, "ohicore"), require, character.only = TRUE)
 assessYear <- "v2019" # change to reflect assessment year
 previous_yr <- "v2018" # previous assessment year
 data_yr_gci <- "d2018" # change to reflect year of most recently downloaded data
-final.year <- 2017 # final year of data (all months); double check nsidc0051 monthly dataset was updated at ftp://sidads.colorado.edu/pub/DATASETS/
+final.year <- 2018 # final year of data (all months); double check nsidc0051 monthly dataset was updated at ftp://sidads.colorado.edu/pub/DATASETS/
 
 ## comment out when knitting
 #setwd(paste0("globalprep/hab_seaice/", assessYear))

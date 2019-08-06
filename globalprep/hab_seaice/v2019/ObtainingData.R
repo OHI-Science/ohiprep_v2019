@@ -2,7 +2,7 @@ t0 = Sys.time()
 
 for (p in poles){ 
   
-  # p="s" # testing
+   #p="s" # testing
   
   ######################################################################################################################
   ## Create an empty raster stack with appropriate dimensions and CRS
@@ -28,13 +28,14 @@ for (p in poles){
   for (yr in years){
     for (mo in months){ 
       
-      # yr=1979; mo=1 # testing
+       #yr=1979; mo=1 # testing
       
       ## get proper ftp (file transfer protocol) site based on time of data collection    
       i.pym <- i.pym + 1 
       ym <- yr*100 + mo
       y.m <- sprintf("%d-%02d", yr, mo)
       p.y.m <- sprintf("%s%d%02d", p, yr, mo)
+      
       
       if (ym < 198709){
         ss = "n07"
@@ -117,11 +118,11 @@ for (p in poles){
         r_type[r_hole == 1] = 4
         
         writeRaster(r_type, 
-                    file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2018/tmp/%s_type.tif", p)),
+                    file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2019/tmp/%s_type.tif", p)),
                     overwrite=T) # r_type in memory, read r.typ from file for increased speed
         
         
-        r.typ <- raster(file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2018/tmp/%s_type.tif",p)))
+        r.typ <- raster(file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2019/tmp/%s_type.tif",p)))
         OHIregion <- read_sf(dsn = file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2015/raw"), 
                              layer = sprintf("New_%s_rgn_fao", p)) # projected ohi regions, read as simple features object
         OHIregion <- OHIregion %>%
