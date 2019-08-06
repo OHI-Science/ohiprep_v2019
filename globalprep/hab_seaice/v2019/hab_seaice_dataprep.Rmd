@@ -155,8 +155,10 @@ prj.mol = "+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m 
 # URL base (ub), filename format for final monthly data is nt_YYYYMM_SSS_vVV_R.bin
 ub.n = "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/monthly"
 ub.s = "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly"
+ub.n.2018 <- "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/monthly/2018/"
+ub.s.2018 <- "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly/2018/"
 
-poles = c("n","s")
+poles = c("n","s", "n_2018", "s_2018")
 years = c(1979:final.year) # full range of data
 months = 1:12
 n.pym = length(poles)*length(years)*length(months)

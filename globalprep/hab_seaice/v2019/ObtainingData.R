@@ -14,7 +14,21 @@ for (p in poles){
     xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; ub = ub.n
   } else if (p == "s"){
     xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s
+  } else if (p == "n_2018"){
+    xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; ub = ub.n.2018
+  } else if (p == "s_2018"){
+      xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s.2018
   }
+  
+#  if (p == "n_2018"){
+#    xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; ub = ub.n.2018
+#  } else if (p == "s_2018"){
+#    xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s.2018
+#  } else if (p == "n"){
+#    xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; ub = ub.n
+#  } else if (p == "s"){
+#    xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s
+#  } 
   xMax = xMin + (pixel*nc); yMax = yMin + (pixel*nr)
   
   r <- raster(nrow = nr, ncol = nc, xmn = xMin, xmx = xMax, ymn = yMin, ymx = yMax)
