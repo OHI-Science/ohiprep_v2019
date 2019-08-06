@@ -393,6 +393,8 @@ regions_stats <- regions_stats %>%
 
 write.csv(regions_stats, "output/slr.csv", row.names = FALSE)
 
+regions_stats <- read_csv("output/slr.csv")
+
 ## visualize data
 plotData <- regions_stats %>%
   left_join(rgn_data, by = "rgn_id") %>%
