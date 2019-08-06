@@ -43,7 +43,7 @@ https://acdisc.gesdisc.eosdis.nasa.gov/data/Aura_OMI_Level3/OMUVBd.003/
 **Values**: Level-3 OMI Surface UV Irradiance and Erythemal Dose- OMUVBd  
 **Time Range**: Daily data from 2005 - 2017 (10/1/2004 through 7/14/2018, but only full years of data are used)
 **Format**: NetCDF HDF5 (.he5.nc)
-**Downloaded**: July 24, 2018
+**Downloaded**: August 6, 2018
 
 ***
   
@@ -140,7 +140,7 @@ n.pym = length(file_list$url_str)
 i.pym = 0
 
 ## download the data
-for(i in 1:5375){
+for(i in 1:5379){
   url = as.character(file_list[i,])
   name_raw_file = substr(url, 88, 144)
   
@@ -157,8 +157,6 @@ for(i in 1:5375){
 
 ## tip: after downloading, check all .he5.nc files are about the same size i.e. they all downloaded properly/fully - they are all ~264 KB; 2019
 
-
-#### Stopped here on July 31 ####
 ```
 
 
@@ -187,7 +185,8 @@ files_df <- files %>%
 
 check_ndays <- files_df %>%
   group_by(year, mo) %>% # group_by(year) %>% 
-  summarize(ndays = n()) # View(check_ndays)
+  summarize(ndays = n()) #%>% # View(check_ndays)
+  #filter(ndays < 28)
 ```
 
 
@@ -201,9 +200,9 @@ Calculate weekly means and standard deviations across all years:
 registerDoParallel(3)
 
 ## note: 2016 wk 22 has only 4 layers (4th layer all NAs) and length(days)=52; missing all week 23
-
+## note: so far some 2005 files appear to have been downloaded incorrectly... replace them manually or just retry download??
 foreach (yr = yrs) %dopar% { # j = 22; yr = 2016
-  
+  #yr = 2005; #j = 1
   l <- files[substr(files, 96, 99) == yr]
   
   days_df <- files_df %>%
@@ -351,7 +350,7 @@ foreach(i = 2005:(max(yrs) - 4)) %dopar% {
 ## Rescale
 
 ```{r rescale, eval = F}
-
+#### STOPPED HERE AUGUST 5 ####
 ref_files <- list.files(file.path(int_sp_data, "annual_anomalies_diff"), 
                         full.names = TRUE, pattern = "diff")
 
@@ -369,7 +368,7 @@ for(i in 2006:(max(yrs) - 4)){
     mask(as(land, "Spatial"), inverse = TRUE) %>% getValues()
   vals <- c(vals, m)
 }
-resc_num  <- stats::quantile(vals, prob = 0.9999, na.rm = TRUE) # 42 for v2018
+resc_num  <- stats::quantile(vals, prob = 0.9999, na.rm = TRUE) # 42 for v2018; 46 for v2019
 
 ## rescale using reference point
 for(file in ref_files){
@@ -396,7 +395,7 @@ foreach(i = 2005:(max(yrs) - 4)) %dopar% {
     projectRaster(crs = mollCRS, over = TRUE, method = "ngb") %>%
     resample(ocean, method = "ngb") %>%
     mask(ocean, 
-         filename = file.path("/home/shares/ohi/git-annex/globalprep/prs_uv/v2018/testing/output", 
+         filename = file.path("/home/shares/ohi/git-annex/globalprep/prs_uv/v2019/output", 
                               sprintf("uv_%s_%s-2005_2009_mol_1km.tif", i, max_yr)),
          overwrite = TRUE)
 }
@@ -410,7 +409,7 @@ foreach(i = 2005:(max(yrs) - 4)) %dopar% {
 
 mol1km_masked <- list.files(out_dir, pattern = "uv_.*_mol_1km.tif", full.names = TRUE)
 out <- raster(mol1km_masked[length(mol1km_masked)])
-plot(out, box = FALSE, col = cols, axes = FALSE, main = "UV Pressure Layer \n OHI 2018")
+plot(out, box = FALSE, col = cols, axes = FALSE, main = "UV Pressure Layer \n OHI 2019")
 ```
 
 
@@ -452,6 +451,8 @@ write.csv(regions_stats, "int/uv_mean_rgn.csv", row.names = FALSE)
 
 ## check regions are all present or missing as expected
 setdiff(regions_stats$zone, rgn_data$rgn_id) # high seas and Antarctica
+# 260    261    262    263    264    266    267    269    270    272    273    274    275    276    277 248100 248200 248300 248400
+# 248500 248600 258410 258420 258431 258432 258441 258442 258510 258520 258600 258700 288100 288200 288300
 setdiff(rgn_data$rgn_id, regions_stats$zone) # Antarctica is 213
 
 data <- merge(rgn_data, regions_stats, all.y = TRUE, by.x = "rgn_id", by.y = "zone") %>%
@@ -472,7 +473,8 @@ plotData <- uv_data %>%
   dplyr::select(rgn_name, year, pressure_score)
 motion = gvisMotionChart(plotData, 
                          idvar = "rgn_name", 
-                         timevar = "year")
+                         timevar = "year") 
+
 plot(motion)
 print(motion, file = "uv.html")
 
@@ -489,9 +491,9 @@ write.csv(uv_data, "output/uv.csv", row.names = FALSE)
 uv_data <- read.csv("output/uv.csv")
 
 old <- uv_data %>% 
-  filter(year == 2016) %>% # data years lag assessment yrs by 1
+  filter(year == 2017) %>% # data years lag assessment yrs by 1
   select(-year, new_pressure = pressure_score) %>% 
-  left_join(read.csv("../v2017/output/uv.csv") %>% filter(year == 2016),
+  left_join(read.csv("../v2018/output/uv.csv") %>% filter(year == 2017),
              by = c("rgn_id")) %>% 
   rename(old_pressure = pressure_score)
 

@@ -72,7 +72,7 @@ if (length(new.pkg)){install.packages(new.pkg)}
 lapply(pkg, require, character.only = TRUE)
 
 source('../../../workflow/R/common.R')
-
+library(here)
  
 ## define paths and variables to use throughout data prep
  
@@ -327,10 +327,10 @@ foreach(file = coastal_rasts) %dopar% { # file = coastal_rasts[10]
 ```{r plot_results, eval=FALSE}
 
 r <- raster(sprintf("%s/output/slr_%s.tif", dir_prs_slr, scen_year - 1))
-plot(ocean, col = "cornsilk2", axes = FALSE, box = FALSE, main = "Sea Level Rise Pressure 2016", legend = FALSE)		
+plot(ocean, col = "cornsilk2", axes = FALSE, box = FALSE, main = "Sea Level Rise Pressure 2018", legend = FALSE)		
 plot(r, col = cols, axes = FALSE, box = FALSE, add = TRUE)
 
-r_new <- raster(sprintf("%s/output/slr_%s.tif", dir_prs_slr, scen_year - 2))
+r_new <- raster(sprintf("%s/output/slr_%s.tif", dir_prs_slr, scen_year - 1))
 r_old <- raster(sprintf("%s/git-annex/globalprep/prs_slr/v%s/output/slr_%s.tif", dir_M, scen_year - 1, scen_year - 2))
 
 rasterVis::histogram(r_old, main = sprintf("Sea Level Pressure %s old data", scen_year - 2))
@@ -353,11 +353,12 @@ rgn_data <- read_sf(file.path(dir_M, "git-annex/globalprep/spatial/v2017"), "reg
   dplyr::select(rgn_id = rgn_ant_id, rgn_name)
 
 ## extract data for each region
-## fyi takes forever, about 6hrs for v2018 so start just before leaving for the day...
+## fyi takes awhile... about 2 hours for v2019.... 
 regions_stats <- zonal(stack_slr, zones, fun = "mean", na.rm = TRUE, progress = "text") %>% data.frame()
+
 rgn_stats_long <- foreach(i = zones, .packages = c("raster", "dplyr"), .combine = "rbind") %dopar% {
   zonal(stack_slr, zones, fun = "mean", na.rm = TRUE, progress = "text") %>% data.frame()
-}
+} ## I don't think this line of code or any of the commented out are necessary... waiting for response from Mel on this. 
 
 # t0 <- Sys.time()
 # zones_shp <- st_read(file.path(dir_M, "git-annex/globalprep/spatial/v2017"), "regions_2017_update") %>% 
@@ -381,7 +382,8 @@ rgn_stats_long <- foreach(i = zones, .packages = c("raster", "dplyr"), .combine 
 
 
 setdiff(regions_stats$zone, rgn_data$rgn_id) # High Seas regions are in there, makes sense....no land
-setdiff(rgn_data$rgn_id, regions_stats$zone)
+#[1] 260 261 262 263 264 266 267 269 270 272 273 274 275 276 277
+setdiff(rgn_data$rgn_id, regions_stats$zone) #integer(0)
 
 regions_stats <- regions_stats %>%
   rename(rgn_id = zone) %>%
@@ -390,6 +392,8 @@ regions_stats <- regions_stats %>%
   mutate(year = as.numeric(as.character(substring(year, 5, 8))))
 
 write.csv(regions_stats, "output/slr.csv", row.names = FALSE)
+
+regions_stats <- read_csv("output/slr.csv")
 
 ## visualize data
 plotData <- regions_stats %>%
