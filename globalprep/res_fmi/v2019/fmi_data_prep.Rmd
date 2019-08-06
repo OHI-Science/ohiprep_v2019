@@ -61,7 +61,6 @@ library(tidyverse)
 library(stringr)
 library(WDI) # for accessing World Bank data 
 library(here) 
-library(janitor) # for tidying column names
 library(plotly)
 library(psych) # for correlation testing
 
@@ -864,6 +863,7 @@ ggplotly(ggplot(fmi_gf_gr, aes(x = fmi, y = fmi_pred, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
+
 model_gl <- lm(fmi ~ r1_label, data=fmi_georegions)
 summary(model_gl)
 # p<0.001 for r1_label, reject null ; larger georegions are significant predictor of FMI 
@@ -896,7 +896,7 @@ all_layers <- fmi_ao %>%
   left_join(fmi_spi, by = c("rgn_id", "year", "fmi")) %>% 
   rename(spi = resilience_score) %>% 
   left_join(fmi_georegions, by = c("rgn_id", "year", "fmi")) %>% 
-  select(rgn_id, rgn_name, fmi, ao_need = ao_need_score, wgi, spi, r2_label)
+  select(rgn_id, rgn_name, fmi, ao_need = ao_need_score, wgi, spi, r2_label, r1_label)
   
 mod1 <- lm(fmi ~ ao_need + wgi, data=all_layers)
 summary(mod1)  # r^2 = 0.3962
@@ -932,6 +932,43 @@ mod11 <- lm(fmi ~ ao_need + wgi + spi + r2_label, data=all_layers)
 summary(mod11)  # r^2 = 0.6257
 
 AIC(mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8, mod9, mod10, mod11)
+
+mod6.5 <- lm(fmi ~ spi + r1_label, data=all_layers)
+summary(mod6.5)  # r^2 = 0.5776
+
+
+# Create array of predicted values from best models and visualize:
+
+# Create array of predicted FMI values using fmi ~ spi + r2_label
+fmi_gf_spi_r2 <- all_layers %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::do({ 
+    fmi_pred <- predict(mod6, newdata =.[c('r2_label', 'spi')]) 
+    data.frame(., fmi_pred) # do loop applies the model fitting and prediction to each country group
+  }) %>% 
+  dplyr::ungroup()
+
+# Plot predicted vs actual values 
+ggplotly(ggplot(fmi_gf_spi_r2, aes(x = fmi, y = fmi_pred, labels = rgn_id)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
+
+# Create array of predicted FMI values using fmi ~ spi + r1_label
+fmi_gf_spi_r1 <- all_layers %>%
+  dplyr::group_by(rgn_id) %>%
+  dplyr::do({ 
+    fmi_pred <- predict(mod6.5, newdata =.[c('r1_label', 'spi')]) 
+    data.frame(., fmi_pred) # do loop applies the model fitting and prediction to each country group
+  }) %>% 
+  dplyr::ungroup()
+
+# Plot predicted vs actual values 
+ggplotly(ggplot(fmi_gf_spi_r1, aes(x = fmi, y = fmi_pred, labels = rgn_id)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
+
+
+
 
 ```
 
