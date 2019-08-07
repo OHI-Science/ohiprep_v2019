@@ -123,6 +123,7 @@ final.year <- 2018 # final year of data (all months); double check nsidc0051 mon
 
 ## comment out when knitting
 #setwd(paste0("globalprep/hab_seaice/", assessYear))
+library(stringr)
 ```
 
 ```{r source common and spatial_common}
@@ -155,10 +156,14 @@ prj.mol = "+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m 
 # URL base (ub), filename format for final monthly data is nt_YYYYMM_SSS_vVV_R.bin
 ub.n = "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/monthly"
 ub.s = "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly"
-ub.n.2018 <- "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/monthly/2018/"
-ub.s.2018 <- "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly/2018/"
+#ub.n.2018 <- "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/monthly/2018"
+#ub.s.2018 <- "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly/2018"
 
-poles = c("n","s", "n_2018", "s_2018")
+ub.n <- file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2019/north")
+ub.s <- file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2019/south")
+
+#poles = c("n","s", "n_2018", "s_2018")
+poles = c("n","s")
 years = c(1979:final.year) # full range of data
 months = 1:12
 n.pym = length(poles)*length(years)*length(months)
@@ -166,9 +171,16 @@ i.pym = 0
 ```
 
 
+## Downloading the raw data
+
+To download the raw data, you must go to this website: https://nsidc.org/data/nsidc-0051, and search "nt_??????_" to access the monthly files. This is because all monthly files follow the format "nt_YYYYMM_SSS_vVV_R.bin". Click "Order Files" and wait until your order is processed. Once processed (should only take a couple of minutes, you will receive an email with instructions), download the zip file and place it into the /NSIDC_Seaice/v2019/raw folder on Mazu and extract it.
+
+The zip file contains numbered folders, each with two files in them, .xml and .bin files. We need to create "north" and "south" folders and place the .bin files within them. To do this, search for .xml in the finder, and place all of these files in a "xml" folder. Now move all of the north .bin files into the newly created "north" folder by the same process, just searching for "n.bin" in the finder. Repeat the same process for the south files, searching for "s.bin" instead. 
+
+
 ## Function 1
 
-Collects the data for each month/year from the website and add to raster stack that is saved in tmp folder as: `n_rasters_points.rdata` or `s_rasters_points.rdata`. And, if it doesn't already exist, it converts the region shapefile into a raster points file. See `ObtainingData.R` script for more details.
+Collects the data for each month/year from mazu and add to raster stack that is saved in tmp folder as: `n_rasters_points.rdata` or `s_rasters_points.rdata`. And, if it doesn't already exist, it converts the region shapefile into a raster points file. See `ObtainingData.R` script for more details.
 
 ```{r function 1: source obtaining data script, eval=FALSE}
 source("ObtainingData.R")

@@ -1,6 +1,6 @@
 for (p in poles){ 
   
-  # p="n" # testing
+   p="n" # testing
   
   ######################################################################################################################
   ## This section is mostly for Visualization
@@ -33,7 +33,7 @@ for (p in poles){
   ## create a proprtion ice cover (excluding land/coast) raster (used only to visualize):
   r.ice = r
   r.ice[r.typ < 2] = NA # include: shore(2), water(3), hole(4); exclude: land(0), coast(1)
-  r.ice = r.ice/250 # covert ice score to proportion
+  r.ice = r.ice/250 # convert ice score to proportion
   
   ## create an ice edge habitat raster (ice between 10-50%) (used only to visualize):
   r.ice.edge = r.ice
