@@ -1,0 +1,45 @@
+rgn_id,rgn_name,commodity,product,year,usd,tonnes,gapfill,territory,admin_rgn_id,admin_country_name,Notes,georgn_id
+153,Cook Islands,Ornamental fish nei,ornamentals,1992,111,13,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,1993,89,9,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,1994,157,16,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,1995,111,12.517581997538684,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,1996,105,12.046357103750637,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,1997,60,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,1998,115,14,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,1999,74,8,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2000,115,14,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2001,40,6,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2002,98,12,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2003,163,19,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2004,90,9,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2005,78,10.379112870065484,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2006,92,11.814391539542186,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2007,36,6.576907737592194,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2008,144,16.97275315441334,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2009,132,15.929577191645848,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2010,159,18.60408317724466,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2011,117,14.701151869580002,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2012,0,0,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2013,0,0,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2014,0,0,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental fish nei,ornamentals,2015,0,0,none,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental saltwater fish,ornamentals,2012,18,12.014793251963056,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental saltwater fish,ornamentals,2013,5,4.152801184822238,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental saltwater fish,ornamentals,2014,38,1.9586844389959879,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Ornamental saltwater fish,ornamentals,2015,16,0,r2_t_gr,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2000,0.1,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2001,52,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2002,1,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2003,47,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2004,16,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2005,106,56,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2006,31,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2007,167,73,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2008,80,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2009,0.1,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2010,37,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2011,166,0.1,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2012,0,0,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2013,59,16,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2014,0,0,none,yes,162,New Zealand,,61
+153,Cook Islands,Miscellaneous corals and shells,shells,2015,0,0,none,yes,162,New Zealand,,61
