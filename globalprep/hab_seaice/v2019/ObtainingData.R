@@ -12,9 +12,9 @@ for (p in poles){
   ## extents from NSIDC (http://nsidc.org/data/polar_stereo/ps_grids.html)
   
   if (p == "n"){
-    xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; ub = ub.n
+    xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; fp = fp.n
   } else if (p == "s"){
-    xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s
+    xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; fp = fp.s
   } 
   
   xMax = xMin + (pixel*nc); yMax = yMin + (pixel*nr)
@@ -58,7 +58,7 @@ for (p in poles){
       print(sprintf("Retrieving %s (%d of %d). Minutes done=%0.1f, to go=%0.1f",
                     p.y.m,i.pym,n.pym,min.done,min.togo)) # time remaining for data download
       
-      u <- sprintf("%s/nt_%d_%s_v1.1_%s.bin", ub, ym, ss, p)
+      u <- sprintf("%s/nt_%d_%s_v1.1_%s.bin", fp, ym, ss, p)
       con <- file(u, "rb")  # "rb" = "open for reading in binary mode"
       x <- readBin(con, "raw", 300)
       x <- readBin(con,"int", size = 1, signed = FALSE, 150000)

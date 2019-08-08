@@ -8,7 +8,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -22,7 +22,7 @@ This data prep markdown calls a series of scripts to download and analyze sea ic
 
 # Updates from previous assessment
 
-No changes to methods from previous assessment. The file structure on the FTP website has changed slightly. 
+No changes to methods from previous assessment. We now download the data from a HTTPS website, rather than the defunct FTP website used previously. Instructions for downloading have been updated below. 
 
 ***
   
@@ -31,48 +31,34 @@ No changes to methods from previous assessment. The file structure on the FTP we
 **Reference**:      
 Cavalieri, D.J., Parkinson, C.L., Gloersen, P. and Zwally, H. (1996). Sea ice concentrations from Nimbus-7 SMMR and DMSP SMM/I-SSMIS passive microwave data. 1979-2014. Boulder, Colorado, USA: NASA National Snow and Ice Data Center Distributed Active Archive Center (http://dx.doi.org/10.5067/8GQ8LZQVL0VL).
 
-**Downloaded**: May 18, 2018
+**Downloaded**: August 8, 2019
 
 **Description**: Monthly sea ice extent data.
 
-Data are in the following FTP directory: 
-[ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/](ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/)
+Data can be downloaded here: 
+[https://nsidc.org/data/nsidc-0051](https://nsidc.org/data/nsidc-0051)
 
-Within the final-gsfc directory are north and south directories that contain data files, and a browse directory that contains browse image files. Daily and monthly data are further separated into directories named daily and 
-monthly. For final daily data, there is also one directory for each year of available data. For example, all of the north daily data for 1990 are in a directory named /nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/daily/1990/. For the monthly data, the file structure has slightly changed with the addition of 2018 data. Instead of adding the files onto the bottom of the page with this file structure "/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly/", they have added a "2018 folder, so to retrieve the 2018 data, we will have to access that folder via "/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly/2018/". 
+## Downloading the raw data
 
-The directory structure is illustrated below; not all directory levels are shown. The structure for each south directory matches that of the corresponding north directory. Each browse directory is divided into a structure that reflects that of the data. In this illustration, the year directories underneath final-gsfc are representative placeholders; there are actually many such directories, each named for the year of data it contains, such as 1987, 2000, etc.
+To download the raw data, you must go to this website: https://nsidc.org/data/nsidc-0051, and search "nt_??????_" to access the monthly files. 
 
+![](https://user-images.githubusercontent.com/33332753/62662737-de8b9c80-b929-11e9-93a9-9ff413ced067.png)
 
-/nsidc0051_gsfc_nasateam_seaice
+This is because all monthly files follow the format "nt_YYYYMM_SSS_vVV_R.bin". Click "Order Files" and wait until your order is processed. Once processed (should only take a couple of minutes, you will receive an email with instructions), download the zip file and place it into the /NSIDC_Seaice/v2019/raw folder on Mazu and extract it.
 
-. . /final-gsfc
-    
-. . . . /browse
-    
-. . . . . . /north
-    
-. . . . . . . . /daily
-    
-. . . . . . . . . . /year
-    
-. . . . . . . . /monthly
+The zip file contains numbered folders, each with two files in them, .xml and .bin files. 
 
-. . . . . . . . . /2018
-    
-. . . . . . /south
-    
-. . . . /north
-    
-. . . . . . /daily
-    
-. . . . . . . . /year
-    
-. . . . . . /monthly
+![](https://user-images.githubusercontent.com/33332753/62662757-ee0ae580-b929-11e9-96f7-7b8313e0c24a.png)
 
-. . . . . . . /2018
-    
-. . . . /south
+![](https://user-images.githubusercontent.com/33332753/62719915-d11ff200-b9bd-11e9-9406-76656ee2337a.png)
+
+We need to create "north" and "south" folders and place the .bin files within them. To do this, search for .xml in the finder, and place all of these files in a "xml" folder. Now move all of the north .bin files into the newly created "north" folder by the same process, just searching for "n.bin" in the finder. Repeat the same process for the south files, searching for "s.bin" instead. 
+
+The final folder structure looks like this, where you have created new "north", "south", and "xml" folders: 
+![](https://user-images.githubusercontent.com/33332753/62662807-1c88c080-b92a-11e9-9f4f-08944efba63d.png)
+
+![](https://user-images.githubusercontent.com/33332753/62719994-f4e33800-b9bd-11e9-9ae0-f5db00cbc54d.png)
+
 
 For complete documentation and more information about data access, please see:
 
@@ -119,11 +105,9 @@ lapply(c(pkg, "ohicore"), require, character.only = TRUE)
 assessYear <- "v2019" # change to reflect assessment year
 previous_yr <- "v2018" # previous assessment year
 data_yr_gci <- "d2018" # change to reflect year of most recently downloaded data
-final.year <- 2018 # final year of data (all months); double check nsidc0051 monthly dataset was updated at ftp://sidads.colorado.edu/pub/DATASETS/
+final.year <- 2018 # final year of data (all months)
 
-## comment out when knitting
-#setwd(paste0("globalprep/hab_seaice/", assessYear))
-library(stringr)
+library(here)
 ```
 
 ```{r source common and spatial_common}
@@ -153,30 +137,16 @@ prj.n = "+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +a=63782
 prj.s = "+proj=stere +lat_0=-90 +lat_ts=-70 +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378273 +b=6356889.449 +units=m +no_defs"
 prj.mol = "+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
 
-# URL base (ub), filename format for final monthly data is nt_YYYYMM_SSS_vVV_R.bin
-ub.n = "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/monthly"
-ub.s = "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly"
-#ub.n.2018 <- "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/north/monthly/2018"
-#ub.s.2018 <- "ftp://sidads.colorado.edu/pub/DATASETS/nsidc0051_gsfc_nasateam_seaice/final-gsfc/south/monthly/2018"
+# Filepath (fp), filepath for the final monthly data is nt_YYYYMM_SSS_vVV_R.bin
+fp.n <- file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2019/north")
+fp.s <- file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2019/south")
 
-ub.n <- file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2019/north")
-ub.s <- file.path(dir_M, "git-annex/globalprep/_raw_data/NSIDC_SeaIce/v2019/south")
-
-#poles = c("n","s", "n_2018", "s_2018")
 poles = c("n","s")
 years = c(1979:final.year) # full range of data
 months = 1:12
 n.pym = length(poles)*length(years)*length(months)
 i.pym = 0
 ```
-
-
-## Downloading the raw data
-
-To download the raw data, you must go to this website: https://nsidc.org/data/nsidc-0051, and search "nt_??????_" to access the monthly files. This is because all monthly files follow the format "nt_YYYYMM_SSS_vVV_R.bin". Click "Order Files" and wait until your order is processed. Once processed (should only take a couple of minutes, you will receive an email with instructions), download the zip file and place it into the /NSIDC_Seaice/v2019/raw folder on Mazu and extract it.
-
-The zip file contains numbered folders, each with two files in them, .xml and .bin files. We need to create "north" and "south" folders and place the .bin files within them. To do this, search for .xml in the finder, and place all of these files in a "xml" folder. Now move all of the north .bin files into the newly created "north" folder by the same process, just searching for "n.bin" in the finder. Repeat the same process for the south files, searching for "s.bin" instead. 
-
 
 ## Function 1
 
@@ -264,7 +234,7 @@ write.csv(extent, "output/hab_ice_extent_eez.csv", row.names = FALSE) # save sea
 ## Data Checks
 
 1. Compare to last year's data. There should be a strong correlation between these data.  
-1. Pair with region names for sanity check.
+2. Pair with region names for sanity check.
 
 ```{r data checks, eval=FALSE}
 
@@ -312,22 +282,22 @@ Note: all layers need a gf file, eventhough if there was no gapfilling. In this 
 
 ```{r, eval=FALSE}
 hab_ice_health_gf <- read.csv("output/hab_ice_health_eez.csv")%>%
-  mutate(gapfilled = 0) %>% 
-  select(rgn_id, year, gapfilled)
+  dplyr::mutate(gapfilled = 0) %>% 
+  dplyr::select(rgn_id, year, gapfilled)
 
 write.csv(hab_ice_health_gf, "output/hab_ice_health_eez_gf.csv", row.names=FALSE)
 
 
 hab_ice_extent_gf <- read.csv("output/hab_ice_extent_eez.csv")%>%
-  mutate(gapfilled = 0) %>% 
-  select(rgn_id, year, gapfilled)
+  dplyr::mutate(gapfilled = 0) %>% 
+  dplyr::select(rgn_id, year, gapfilled)
 
 write.csv(hab_ice_health_gf, "output/hab_ice_extent_eez_gf.csv", row.names=FALSE)
 
 
 hab_ice_trend_gf <- read.csv("output/hab_ice_trend_eez.csv")%>%
-  mutate(gapfilled = 0) %>% 
-  select(rgn_id, year, gapfilled)
+  dplyr::mutate(gapfilled = 0) %>% 
+  dplyr::select(rgn_id, year, gapfilled)
 
 write.csv(hab_ice_health_gf, "output/hab_ice_trend_eez_gf.csv", row.names=FALSE)
 
