@@ -1,7 +1,7 @@
 for (p in poles){ 
   
-   p="n" # testing
-  
+   #p="n" # testing
+   p="s"
   ######################################################################################################################
   ## This section is mostly for Visualization
   ######################################################################################################################
@@ -44,14 +44,14 @@ for (p in poles){
   r.rgn[r.typ < 2] = NA # exclude: land(0), coast(1) from the regions
   
   ## plot data
-  png(sprintf("int/%s_IceEdgeHabitat_overview.png",p), width=w, height=h)
+  png(file.path(here(), "globalprep/hab_seaice", assessYear, sprintf("int/%s_IceEdgeHabitat_overview.png",p)), width=w, height=h)
   par(mfcol=c(2,2))
   plot(r.typ, col=rev(topo.colors(length(unique(r.typ)))), main="Pixel Type\n(0=land,1=coast,2=shore,3=water,4=hole)")
   plot(r.ice, col=tim.colors(64), main=sprintf("Ice Concentration (%s)",l))
   plot(r.rgn, col=tim.colors(length(unique(r.rgn))), main="OHI Region")
   plot(r.ice.edge, col=tim.colors(64), main="Ice Edge Habitat\n 10% to 50% Concentration")
   dev.off()
-  
+
   ######################################################################################################################
   ## Converts the (s)tack of rasters to (i)ce concentration
   ######################################################################################################################
@@ -196,7 +196,7 @@ for (p in poles){
   z.h.T[["pole"]] = p
   z.p.T[["pole"]] = p
   
-  labels = pts %>% data.frame() %>% select("rgn_id", "rgn_typ", "rgn_nam") %>% distinct()
+  labels = pts %>% data.frame() %>% dplyr::select("rgn_id", "rgn_typ", "rgn_nam") %>% dplyr::distinct()
   
   z.h.T <- merge(z.h.T, labels, by.x = "zone", by.y = "rgn_id")
   z.p.T <- merge(z.p.T, labels, by.x = "zone", by.y = "rgn_id")
@@ -204,9 +204,9 @@ for (p in poles){
   names(z.h.T)[names(z.h.T) == "zone"] = "rgn_id"    
   names(z.p.T)[names(z.p.T) == "zone"] = "rgn_id"
   
-  write.csv(z.h.T, sprintf("int/%s_IceEdgeHabitat_ref%sto%s.csv", p, 
-                           min(ref.years), max(ref.years)), row.names = FALSE)
-  write.csv(z.p.T, sprintf("int/%s_IceShoreProtection_ref%sto%s.csv", p, 
-                           min(ref.years), max(ref.years)), row.names = FALSE) 
+  write.csv(z.h.T, file.path(here(), "globalprep/hab_seaice", assessYear, sprintf("int/%s_IceEdgeHabitat_ref%sto%s.csv", p, 
+                           min(ref.years), max(ref.years))), row.names = FALSE)
+  write.csv(z.p.T, file.path(here(), "globalprep/hab_seaice", assessYear, sprintf("int/%s_IceShoreProtection_ref%sto%s.csv", p, 
+                           min(ref.years), max(ref.years))), row.names = FALSE) 
   
 }
