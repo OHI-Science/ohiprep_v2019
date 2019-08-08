@@ -11,6 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
+      in_header: '../../../workflow/templates/ohi_hdr.html'
 pdf_document:
   toc: true
 ---
@@ -35,7 +36,7 @@ rastFolder <- paste0(dir_M,"/git-annex/globalprep/prs_fish/v2019/int/")
 
 ```
 
-```{r}
+```{r, eval = FALSE}
 ## Load this to use for comparison to last years data
 index_2018 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv"))
 
@@ -61,7 +62,7 @@ spatialCells <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Cell")
 DT::datatable(head(spatialCells))
 ```
 
-```{r}
+```{r, eval = FALSE}
 master_summarise_v4 <- master %>%
   dplyr::group_by(Year) %>%
   dplyr::summarise(total_catch_Ind = sum(IndReported, IndIUU),
@@ -123,7 +124,7 @@ library(raster)
 #Load Raw Data 
 
 ###NOTE that I have these saved on my Desktop. These file paths will need to change for each user
-```{r}
+```{r,eval = FALSE}
 raw_watson_non_industrial_2015_2015 <- readRDS(file.path(rawFolder, "CatchNInd2015_2015.rds"))
 raw_watson_industrial_2015_2015 <- readRDS(file.path(rawFolder, "CatchInd2015_2015.rds"))
 
@@ -136,7 +137,7 @@ raw_watson_industrial     <- read_csv("~/Desktop/CatchInd2015_2015.csv")
 
 ## First for the industrial catch
 
-```{r}
+```{r, eval = FALSE}
 industrial <- raw_watson_industrial_2015_2015 %>%
   group_by(Cell) %>%
   dplyr::summarize(catch = sum(Reported, IUU, Discards)) #this keeps all Reported catch, IUU catch and Discards

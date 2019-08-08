@@ -8,6 +8,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
+      in_header: '../../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---

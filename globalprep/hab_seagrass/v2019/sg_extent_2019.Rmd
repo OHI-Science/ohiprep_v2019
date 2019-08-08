@@ -8,7 +8,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -64,7 +64,7 @@ zones_all <- fasterize(regions,
           ) # create a zones raster to include all land... since most salt marsh probably isn't in the eez
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 habitat_extent_seagrass_updated <- read_csv("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/habitat_extent_seagrass_updated.csv")
 
 v6_seagrass_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
@@ -74,7 +74,7 @@ v6_seagrass_py <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_Sea
 ```
 
 **Convert seagrass shapefiles into same CRS as our region zones raster**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 
 moll_crs <- crs(zones_all, asText = TRUE)
 
@@ -91,7 +91,7 @@ plot(zones)
 ```
 
 **Fasterize/rasterize: Where there is seagrass assign a value of 1 and NA otherwise**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 
 ## convert from multipoint to point
 v6_seagrass_pts_moll_cast <- st_cast(v6_seagrass_pts_moll, "POINT")
@@ -148,7 +148,7 @@ unique(check_values_py)
 ```
 
 **Stack rasters and adjust**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 stacked_seagrass <- raster::stack(rasterize_pts, fasterize_py)
 plot(stacked_seagrass)
 
@@ -192,7 +192,7 @@ sum(is.na(combined_values_2)) #should be 744986911... it is
 ```
 
 **Calculate zonal stats with zones raster and new combined seagrass. Convert to km^2 and save int/output files**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 zonal_sums_combined <- raster::zonal(combined_seagrass, 
                                      zones_all,
                                      fun = "sum",
@@ -254,7 +254,7 @@ write_csv(zonal_sums_km2_final, file.path(dir_git, 'data/habitat_extent_seagrass
 
 **Data Check**
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 
 compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
 
@@ -269,7 +269,7 @@ ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
 ```
 
 **Justification for using ~0.9 km2 for average seagrass polygon area**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 # Read in shapefiles
 v6_seagrass_pts <- sf::st_read(dsn = file.path(dir_wcmc, "014_001_WCMC013-014_SeagrassPtPy2018_v6/01_Data"), layer = "WCMC_013_014_SeagrassesPt_v6")
 
@@ -321,7 +321,7 @@ abline(v=-0.2119862, col = "blue")
 ```
 
 **Explore how gapfilling was done in 2012**
-```{r}
+```{r, eval = FALSE}
 ## Regions to gapfill as is: 
 trend <- read_csv(file.path("~/github/ohiprep_v2019/globalprep/hab_seagrass/v2012/data/habitat_trend_seagrass_updated.csv"))
 

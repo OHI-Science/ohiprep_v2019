@@ -5,7 +5,7 @@ output:
   html_document:
     highlight: haddock
     includes:
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
     number_sections: yes
     theme: cerulean
     toc: yes
@@ -83,8 +83,8 @@ dir_goal      <- file.path(here('globalprep', goal, scenario))
 dir_goal_anx  <- file.path(dir_anx, goal, scenario)
 
 ## set up provenance tracking for this script:
- library(provRmd)
- prov_setup()
+# library(provRmd)
+# prov_setup()
 
 ```
 

@@ -8,7 +8,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -65,7 +65,7 @@ zones_all <- fasterize(regions,
 
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 habitat_extent_saltmarsh_updated <- read_csv("~/github/ohiprep_v2019/globalprep/hab_saltmarsh/v2012/data/habitat_extent_saltmarsh_updated.csv")
 
 v6_saltmarsh_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmarsh_v6/01_Data"), layer = "WCMC027_Saltmarshes_Pt_v6")
@@ -75,7 +75,7 @@ v6_saltmarsh_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmar
 ```
 
 **Convert saltmarsh shapefiles into same CRS as our region zones raster**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 v6_saltmarsh_pts <- st_zm(v6_saltmarsh_pts) #make geometry column 2d, instead of 3d. The rasterize fxn does not like 3d geometry columns. 
 
 moll_crs <- crs(zones_all, asText = TRUE)
@@ -94,7 +94,7 @@ plot(v6_saltmarsh_pts_moll[1])
 ```
 
 **Fasterize/rasterize: Where there is saltmarsh assign a value of 1 and NA otherwise**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 
 ## convert from multipoint to point
 v6_saltmarsh_pts_moll_cast <- st_cast(v6_saltmarsh_pts_moll, "POINT")
@@ -152,7 +152,7 @@ unique(check_values_py)
 ```
 
 **Stack rasters and adjust**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 stacked_saltmarsh <- raster::stack(rasterize_pts, fasterize_py)
 plot(stacked_saltmarsh)
 
@@ -194,7 +194,7 @@ sum(is.na(combined_values_2)) #should be 745303010... it is
 ```
 
 **Calculate zonal stats with zones raster and new combined saltmarsh. Convert to km^2 and save int/output files**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 zonal_sums_combined <- raster::zonal(combined_saltmarsh, 
                                      zones_all,
                                      fun = "sum",
@@ -256,7 +256,7 @@ write_csv(zonal_sums_km2_final, file.path(dir_git, 'data/habitat_extent_saltmars
 
 **Data Check**
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 
 compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent_saltmarsh.csv'))
 
@@ -299,7 +299,7 @@ wcmc_saltmarsh_polygon_area <- read_csv(file.path("~/github/ohiprep_v2019/global
 ```
 
 **Justification for using ~0.9 km2 for average seagrass polygon area**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 # Read in shapefiles
 v6_saltmarsh_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC027_Saltmarsh_v6/01_Data"), layer = "WCMC027_Saltmarshes_Pt_v6")
 

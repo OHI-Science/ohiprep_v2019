@@ -8,7 +8,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -58,7 +58,7 @@ dir_wcmc <- file.path(file.path(dir_M, 'git-annex/globalprep/_raw_data/wcmc_cora
 ohi_rasters() # call the region zones raster
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 habitat_extent_coral_updated <- read_csv("~/github/ohiprep_v2019/globalprep/hab_coral/v2012/data/habitat_extent_coral_updated.csv")
 
 v4_coral_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC008_CoralReefs2018_v4/01_Data"), layer = "WCMC008_CoralReef2018_Pt_v4")
@@ -68,7 +68,7 @@ v4_coral_py <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC008_CoralReefs2
 ```
 
 **Convert seagrass shapefiles into same CRS as our region zones raster**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 
 moll_crs <- crs(zones, asText = TRUE)
 
@@ -86,7 +86,7 @@ plot(v4_coral_pts_moll[1])
 ```
 
 **Fasterize/rasterize: Where there is seagrass assign a value of 1 and NA otherwise**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 #create a column full of "1's"
 v4_coral_pts_moll$raster <- 1
 #rasterize our points data to raster 
@@ -138,7 +138,7 @@ unique(check_values_py)
 ```
 
 **Stack rasters and adjust**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 stacked_coral <- raster::stack(rasterize_pts, fasterize_py)
 plot(stacked_coral)
 
@@ -182,7 +182,7 @@ sum(is.na(combined_values)) #should be 745193682... it is
 ```
 
 **Calculate zonal stats with zones raster and new combined seagrass. Convert to km^2 and save int/output files**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 zonal_sums_combined <- raster::zonal(combined_coral, 
                                      zones,
                                      fun = "sum",
@@ -246,7 +246,7 @@ write_csv(zonal_sums_km2_all_rgns, file.path(dir_git, 'data/habitat_extent_coral
 
 **Data Check**
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 
 compare_habitat_extent <- read_csv(file.path(dir_git, 'data_check/compare_habitat_extent.csv'))
 
@@ -261,7 +261,7 @@ ggplot(compare_habitat_extent, aes(x = km2.y, y = km2.x)) +
 ```
 
 **Justification for using ~0.9 km2 for average seagrass polygon area**
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 # Read in shapefiles
 v4_coral_pts <- sf::st_read(dsn = file.path(dir_wcmc, "14_001_WCMC008_CoralReefs2018_v4/01_Data"), layer = "WCMC008_CoralReef2018_Pt_v4")
 
