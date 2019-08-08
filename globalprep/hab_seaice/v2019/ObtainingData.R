@@ -2,7 +2,8 @@ t0 = Sys.time()
 
 for (p in poles){ 
   
-   #p="s" # testing
+  #p="s" # testing
+  #p = "n"
   
   ######################################################################################################################
   ## Create an empty raster stack with appropriate dimensions and CRS
@@ -14,21 +15,8 @@ for (p in poles){
     xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; ub = ub.n
   } else if (p == "s"){
     xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s
-  } else if (p == "n_2018"){
-    xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; ub = ub.n.2018
-  } else if (p == "s_2018"){
-      xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s.2018
-  }
+  } 
   
-#  if (p == "n_2018"){
-#    xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; ub = ub.n.2018
-#  } else if (p == "s_2018"){
-#    xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s.2018
-#  } else if (p == "n"){
-#    xMin = -3850000; yMin = -5350000; nr = 448; nc = 304; prj = prj.n; ub = ub.n
-#  } else if (p == "s"){
-#    xMin = -3950000; yMin = -3950000; nr = 332; nc = 316; prj = prj.s; ub = ub.s
-#  } 
   xMax = xMin + (pixel*nc); yMax = yMin + (pixel*nr)
   
   r <- raster(nrow = nr, ncol = nc, xmn = xMin, xmx = xMax, ymn = yMin, ymx = yMax)
@@ -42,7 +30,8 @@ for (p in poles){
   for (yr in years){
     for (mo in months){ 
       
-       #yr=1979; mo=1 # testing
+      #yr=1979; mo=1 # testing
+      #yr = 2018; mo = 1
       
       ## get proper ftp (file transfer protocol) site based on time of data collection    
       i.pym <- i.pym + 1 
@@ -106,7 +95,7 @@ for (p in poles){
       
       ##################################################################################################################
       
-
+      
       pts.shp <- file.path(maps, sprintf("tmp/%s_type_rgns_pts.shp", p))
       
       ## if the pts.shp file exists in the assessment year git-annex NSIDC_SeaIce tmp folder, this code is not run      
@@ -122,7 +111,7 @@ for (p in poles){
         r_coast_na <- calc(r_coast, fun = function(x) { x[x == 0] = NA; return(x) }) # replaces 0 values with NA in r_coast file
         r_coast_distance <- distance(r_coast_na) # calculates distance from coast (units are in meters)
         r_shore <- r_water == 1 & r_coast_distance < pixel*1.1 # selects one pixel offshore from coast: 25km offshore
-      
+        
         r_type <- r
         
         r_type[r_land == 1] = 0
@@ -142,7 +131,7 @@ for (p in poles){
         OHIregion <- OHIregion %>%
           dplyr::filter(!is.na(st_dimension(OHIregion))) %>%
           st_cast("MULTIPOLYGON") # clean up regions with no geometry
-
+        
         ## convert OHIregion multipolygon sf to a raster, replace NAs with zeroes, convert to points sf, add some attributes
         ## with spatial = TRUE option, st_as_sf(rasterToPoints()) turns raster first into spatialPointsDataFrame then sf...
         OHIregion_raster <- fasterize(OHIregion, r.typ, field = "rgn_id")
