@@ -21,7 +21,7 @@ editor_options:
 
 # Summary
 
-This document describes the steps for preparing the pathogen pollution and pathogen pollution trend data layers for the 2018 global assessment.
+This document describes the steps for preparing the pathogen pollution and pathogen pollution trend data layers for the 2019 global assessment.
 
 The percentage of the population with access to improved sanitation facilities (World Health Organization and United Nations Children’s Fund, Joint Monitoring Programme, 2011) was used in combination with measurements of coastal population as a proxy for pathogens in coastal waters. Access to improved sanitation facilities is defined as the percentage of the population in a country with at least adequate access to disposal facilities that can effectively prevent human, animal, and insect contact with excreta. These data are a country-wide average (not specific to the coastal region). 
 
@@ -50,7 +50,7 @@ Definition of each variable according to the data source:
 # Data Source
 **Reference**: 
             https://washdata.org/data
-            Updated ??
+            Updated July 2019
 
 **Downloaded**: Downloaded 8/7/2019
 
@@ -91,10 +91,10 @@ source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/wor
 
 ```{r raw_data, results="hide", message = FALSE, warning = FALSE, eval=FALSE}
 
-##From Mazu
-sani_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2018/JMP_2017_WLD.csv"),  header = FALSE, sep = ",", na.strings = c(NA, ''), skip = 2, stringsAsFactors = FALSE, strip.white = TRUE)
+# Load data from Mazu
+sani_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2019/JMP_2019_WLD.csv"), header=FALSE, sep = ",", na.strings = c(NA, ''), stringsAsFactors = FALSE, strip.white = TRUE)  
 
-# need to update the arguments here for the newest dataset
+
 ```
 
 # Methods
