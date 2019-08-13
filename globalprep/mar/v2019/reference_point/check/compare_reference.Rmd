@@ -415,7 +415,8 @@ ggplot(filter(pot_aq_final, potential_mar_tonnes <= 100000), aes(x = potential_m
   scale_x_continuous(breaks = seq(0, 100000, by  = 5000)) +
   theme(axis.text.x = element_text(angle = -45, hjust = 1))
 
-summary(pot_aq_final)
+summary(pot_aq_final)  # median potential is 66996 tonnes....
+summary(harvest_tonnes_v2019) # median is 102 tonnes....
 
 less_100000 <- pot_aq_final %>%
   filter(potential_mar_tonnes <= 100000) %>%
