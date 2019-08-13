@@ -119,6 +119,7 @@ Here is some code from @jafflerbach that she got to work on these data !
 library(tidyverse)
 library(readxl)
 library(raster)
+library(fasterize)
 ```
 
 #Load Raw Data 
@@ -129,8 +130,8 @@ raw_watson_non_industrial_2015_2015 <- readRDS(file.path(rawFolder, "CatchNInd20
 raw_watson_industrial_2015_2015 <- readRDS(file.path(rawFolder, "CatchInd2015_2015.rds"))
 
 
-raw_watson_non_industrial <- read_csv("~/Desktop/CatchNInd2015_2015.csv")
-raw_watson_industrial     <- read_csv("~/Desktop/CatchInd2015_2015.csv")
+#raw_watson_non_industrial <- read_csv("~/Desktop/CatchNInd2015_2015.csv")
+#raw_watson_industrial     <- read_csv("~/Desktop/CatchInd2015_2015.csv")
 ```
 
 #Calculate catch per cell
@@ -165,4 +166,5 @@ cells_raster <- rasterFromXYZ(cells)
 #check out the cells raster to make sure it looks good
 plot(cells_raster)
 ```
+
 

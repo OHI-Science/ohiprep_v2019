@@ -25,13 +25,13 @@ knitr::opts_chunk$set(eval = FALSE)
 
 The commercial fishing pressure layers are created from spatialized catch by gear data provided by Watson (2018), and net primary production data from the Vertically Generalized Production Model [(VGPM)](http://www.science.oregonstate.edu/ocean.productivity/) as described in [Behrenfeld and Falkowski (1997)](http://www.science.oregonstate.edu/ocean.productivity/references/L&O%201997a.pdf).
 
-This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining Industrial (CatchInd_XXXX_XXXX) and Non-Industrial (CatchNInd_XXXX_XXXX) rds files with IndexInd.csv, IndexNInd.csv, and Cells.csv as well as a single file with all years.
+This script prepares and formats the IMAS Global Fisheries Catch raw data into intermediate data by combining Industrial (CatchInd_XXXX_XXXX) and Non-Industrial (CatchNInd_XXXX_XXXX) rds files with IndexInd.csv, IndexNInd.csv, and Cells (a sheet within Codes.xlsx) as well as a single file with all years.
 
 We create raster files of total annual global catch from the Watson data and correct for system productivity by dividing catch by NPP: [quick review](https://www.researchgate.net/publication/312614653_Reconciling_fisheries_catch_and_ocean_productivity).
 
 # Updates from previous assessment
 
-* Previously, the raw catch data was all in a single file. This year, we have to combine across five different data tables: catch data (CatchInd_XXXX_XXXX), two master index files split by non industrial and industrial with country name, species, etc (IndexInd/IndexNInd.csv), geospatial information (Cells.csv), taxon information (taxa.csv), and country information (country.csv).
+* Previously, the raw catch data was all in a single file. This year, we have to combine across five different data tables: catch data (CatchInd_XXXX_XXXX), two master index files split by non industrial and industrial with country name, species, etc (IndexInd/IndexNInd.csv), geospatial information (sheet name Cells in Codes.xlsx), taxon information (sheet name Taxa in Codes.xlsx), and country information (sheet name Country in Codes.xlsx).
 
 # Data Source
 
@@ -97,12 +97,11 @@ indexNInd <- read.csv(file.path(rawFolder, "IndexNInd.csv"))
 taxa <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Taxa")
 country <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Country")
 
-
 master <- indexInd %>%
    dplyr::full_join(indexNInd, by = c("ID","IYear", "CNumber", "Taxonkey", "Gear", "FGearCode", "NumCells"))  %>%
   dplyr::left_join(country, by = c("CNumber" = "Country")) %>%
   dplyr::left_join(taxa, by = c("Taxonkey" = "TaxonKey")) %>%
-    dplyr::select(ID, Year = IYear, CountryName = FAO.name, TaxonName, CommonName, IndReported = Reported.x, IndIUU = IUUTotal.x, IndDiscards = Discards.x, NIndReported = Reported.y, NIndIUU = IUUTotal.y, NIndDiscards = Discards.y )
+    dplyr::select(ID, Year = IYear, CountryName = `FAO name`, TaxonName, CommonName, IndReported = Reported.x, IndIUU = IUUTotal.x, IndDiscards = Discards.x, NIndReported = Reported.y, NIndIUU = IUUTotal.y, NIndDiscards = Discards.y )
 
 master[is.na(master)] <- 0 #replace NA values with 0
 
@@ -115,7 +114,6 @@ DT::datatable(head(spatialCells))
 ```
 
 ```{r}
-
 ## Look at single catch file
 data <- readRDS(file.path(rawFolder,"CatchInd1950_1954.rds"))
 DT::datatable(head(data))
@@ -126,7 +124,6 @@ DT::datatable(head(data_ly))
 
 Test to see whether the values for **IndReported**, **IndIUU**, and **IndDiscards** in the Master Index File are sum totals of Abalones in the Mexico in year 1953.
 ```{r, eval=FALSE}
-
 mex_abalone <- data %>% 
   dplyr::filter(ID == 2739) %>% 
   dplyr::mutate(tot_Reported = sum(Reported),
@@ -147,7 +144,6 @@ head(master_check)
 Let's do another test. Test to see whether the values for **NIndReported**, **NIndIUU**, and **NIndDiscards** in the Master Index File are sum totals of Sailfin sandfish in the Japan in year 1953.
 
 ```{r, eval=FALSE}
-
 data2 <- readRDS(file.path(rawFolder,"CatchNInd1950_1954.rds"))
 data2_ly <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018", "CatchNInd_1950_1954.rds"))
 
@@ -179,7 +175,8 @@ Tidy Fisheries Files:
 ```{r tidy, eval=FALSE}
 ## Set function to read in each file, combine with Index.csv and Cells.csv, and save each year of data back into mazu
 combine_fis <- function(x) {
-
+  #x <- file.path(rawFolder, "CatchNInd2010_2014.rds")
+ 
   ## Read in the catch data
   ## Create a total Landings column
   ## Join with master and spatial cells file
@@ -188,13 +185,12 @@ combine_fis <- function(x) {
     dplyr::left_join(master, by = "ID") %>% 
     dplyr::left_join(spatialCells, by = "Cell")
   
-  
   ## Save each individual year as a single file
   five_years <- sort(unique(df$Year)) 
   
   for(yr in five_years){
     print(yr) # will show you your progress
-    
+    #yr = 2014
     single_yr_df <- df %>%
       filter(Year == yr)
     
@@ -280,18 +276,22 @@ options(scipen=999)
 
 ```
 
-2. First get the template raster with a resolution of 0.5 degree cells. The getcells() function comes from the seaaroundus R package.
+2. First get the template raster with a resolution of 0.5 degree cells, from the cells data.
 
-The values of these cells are the Cell ID numbers. In the fisheries catch dataset, these Cell ID numbers match up with the "Seq" numbers.
+The values of these cells are the Cell ID numbers.
 
 ```{r, eval=FALSE}
+#create a raster of Cell numbers
+## This Codes.xlsx was downloaded from the same place as the raw Watson data.
+cells <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Cell") %>%
+  dplyr::rename(x = LonCentre,  y = LatCentre, z = Cell) %>% #I renamed these xyz to use in the rasterFromXYZ() function below
+  dplyr::select(x,y,z)
 
-saup_cells <- getcells("POLYGON ((-180 90, 180 90, 180 -90, -180 -90, -180 90))")
+#turn the lat/long points into a raster
+cells_raster <- rasterFromXYZ(cells)
 
-saup_rast <- raster(ncol=720, nrow=360)
-saup_rast[] <- saup_cells
-   
-plot(saup_rast,col=cols,main = "SAUP Cell IDs")
+#check out the cells raster to make sure it looks good
+plot(cells_raster)
 
 ```
 
@@ -302,7 +302,7 @@ plot(saup_rast,col=cols,main = "SAUP Cell IDs")
 * artisanal_landings_XXXX.tif
 * artisanal_discards_XXXX.tif
 
-Catch data is in tonnes, so need to convert to kg then divide by `Area` (km^2^) to get catch per area. Since `Cell` is the identifier for a specific 30-min spatial cell, we want to add up total landings and total discards grouped by `Cell`.
+Catch data is in tonnes, so need to convert to kg then divide by `OceanAreasqkm` (km^2^) to get catch per area. Since `Cell` is the identifier for a specific 30-min spatial cell, we want to add up total landings and total discards grouped by `Cell`.
 
 Note: Subset for data 2003 and onwards since NPP data starts at 2003. Since we will be taking 5-year averages, we will need years 1999-2003 to get the average value for year 2003.
 
@@ -321,7 +321,7 @@ rast_prefx <- list(comm = "comm", artisanal = "artisanal")
 catch2raster <- function(raw_suffx,rast_prefx){
   
 foreach(yr = years) %dopar% { 
- # yr = 2003
+  #yr = 2011
   
   ## find file path of the respective year of data
   yr <- as.character(yr)
@@ -329,7 +329,7 @@ foreach(yr = years) %dopar% {
   dataname <- str_subset(annual_files, paste0(raw_suffx,"*.",yr))
   ## read in raw data
   raw_data <- readRDS(dataname)
- #raw_data <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/prs_fish/v2019/int/annual_catch/CatchInd_2003.rds"))
+
   ## Total Landings per Cell
   landings <- raw_data %>%
     dplyr::mutate(Landings_CR = (Landings * 1000)/OceanAreasqkm) %>% # convert to catch rate (kg/km^2)
@@ -337,7 +337,9 @@ foreach(yr = years) %dopar% {
     dplyr::summarise(cell_catch = sum(Landings_CR, na.rm=TRUE)) %>% # usually no NAs, but just in case
     dplyr::ungroup() %>%
     data.frame()
-  
+ 
+  #length(unique(raw_data$Cell))
+   
 #test what is occurring with cells in v4.0
 #landings_test <- landings %>%
 #  dplyr::arrange(Cell) %>%
@@ -352,9 +354,13 @@ foreach(yr = years) %dopar% {
     dplyr::ungroup()
   
   ## Rasterize Catch: swapping template cell values with those in dataframe
-  raster::subs(saup_rast, landings, by = "Cell", which = "cell_catch", subsWithNA=TRUE, 
-               filename = paste0(rastFolder, rast_prefx, '_landings/annual_catch_', yr ,'.tif'), overwrite=TRUE)
-  raster::subs(saup_rast, discards, by = "Cell", which = "cell_catch", subsWithNA=TRUE, 
+ raster::subs(cells_raster, landings, by = "Cell", which = "cell_catch", subsWithNA=TRUE, filename = paste0(rastFolder, rast_prefx, '_landings/annual_catch_', yr ,'.tif'), overwrite=TRUE)
+
+#rast_test <- raster::subs(cells_raster, landings, by = "Cell", which = "cell_catch", subsWithNA=TRUE)
+#writeRaster(rast_test, filename = paste0(rastFolder, "artisanal", "_landings/annual_catch_", yr, ".tif"))
+#plot(rast_test)
+
+  raster::subs(cells_raster, discards, by = "Cell", which = "cell_catch", subsWithNA=TRUE, 
                filename = paste0(rastFolder, rast_prefx, '_discards/annual_catch_', yr ,'.tif'), overwrite=TRUE) 
   
   }
@@ -364,7 +370,6 @@ foreach(yr = years) %dopar% {
 
 ## Applies catch2raster function on commercial (industrial) then artisanal (non-industrial) files
 create_rast <- map2(raw_suffx, rast_prefx, catch2raster)
-
 
 #Check compared to last years... looks very different 
 #raw_data1 <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_2003.rds"))
@@ -402,28 +407,18 @@ catch <- raster(commercial[17])
 plot(catch)
 res(catch) # 0.5 degree cells
 
-#Compare to last year
-#commercial_ly <- list.files(paste0(file.path("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/int/"), "comm_landings"), full.names = TRUE)
-#commercial_ly <- commercial_ly[!(str_detect(commercial_ly, "mean_catch"))] # remove files with 'mean_catch' in file path
-#commercial_ly <- commercial_ly[!(str_detect(commercial_ly, "corr"))]
-#catch_ly <- raster(commercial_ly[17])
-#plot(catch_ly)
-#res(catch_ly) # 0.5 degree cells
-
 
 ## Compare 2000-2015 industrial catch (log-transformed) to Watson figure
 ## create a raster stack from the input raster files (exclude 1999 which is commercial[1])
 allRasters <- raster::stack(commercial[2:17])
-#allRasters_ly <- raster::stack(commercial_ly[2:17])
+
 
 ## run the sum function on the raster stack - i.e. add (non-cumulatively) the rasters together
 tot_Catch <- sum(allRasters)
-#tot_Catch_ly <- sum(allRasters_ly)
 
 ## apply log to adjust for really large values
 log_Catch <- raster::calc(tot_Catch, function(x){log(x+1)},
              filename = paste0(rastFolder,"datacheck/commLand_2000_2015_log.tif"), overwrite=TRUE)
-#log_Catch_ly <- raster::calc(tot_Catch_ly, function(x){log(x+1)})
 
 
 ## Plot & Save raster
@@ -435,12 +430,6 @@ dev.off()
 plot(log_Catch, col=cols, alpha=1)
 click(log_Catch)
 zoom(log_Catch)
-
-#plot(log_Catch_ly, col=cols, alpha=1)
-#click(log_Catch_ly)
-#zoom(log_Catch_ly)
-
-#########STOPPED HERE JULY 5#########
 ```
 
 ## Standardize Fisheries Catch
