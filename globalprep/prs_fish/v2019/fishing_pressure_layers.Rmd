@@ -366,28 +366,8 @@ foreach(yr = years) %dopar% {
   }
 }
 
-#rast_test <- raster::subs(saup_rast, landings, by = "Cell", which = "cell_catch", subsWithNA=TRUE)
-
 ## Applies catch2raster function on commercial (industrial) then artisanal (non-industrial) files
 create_rast <- map2(raw_suffx, rast_prefx, catch2raster)
-
-#Check compared to last years... looks very different 
-#raw_data1 <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchNInd_2003.rds"))
-# landings1 <- raw_data1 %>%
-#    dplyr::mutate(Landings_CR = (Landings * 1000)/Area) %>% # convert to catch rate (kg/km^2)
-#    dplyr::group_by(Cell) %>%
-#    dplyr::summarise(cell_catch = sum(Landings_CR, na.rm=TRUE)) %>% # usually no NAs, but just in case
-#    dplyr::ungroup()
-
-
-#raw_data1 <- readRDS(file.path("/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/int/annual_catch/CatchInd_2003.rds"))
-# landings1 <- raw_data1 %>%
-#    dplyr::mutate(Landings_CR = (Landings * 1000)/Area) %>% # convert to catch rate (kg/km^2)
-#    dplyr::group_by(Cell) %>%
-#    dplyr::summarise(cell_catch = sum(Landings_CR, na.rm=TRUE)) %>% # usually no NAs, but just in case
-#    dplyr::ungroup()]
-
-#rast_test <- raster::subs(saup_rast, landings1, by = "Cell", which = "cell_catch", subsWithNA=TRUE)
 ```
 
 ## Check Rasters against Watson Fig
@@ -436,7 +416,7 @@ zoom(log_Catch)
 
 Use **net primary production** (NPP) data to correct global fisheries catch for spatial differences in ecosystem impact
 
-* Prepare and gapfill NPP data in [**npp.Rmd**](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/prs_fish/v2018/npp.html)
+* Prepare and gapfill NPP data in [**npp.Rmd**](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/prs_fish/v2019/npp.html)
 * Resample NPP and fish catch rasters to ocean raster
 * Correct fish catch with NPP (catch divided by NPP)
 
