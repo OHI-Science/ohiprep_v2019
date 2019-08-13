@@ -336,8 +336,7 @@ allRasters <- raster::stack(commercial[2:17])
 tot_Catch <- sum(allRasters)
 
 ## apply log to adjust for really large values
-log_Catch <- raster::calc(tot_Catch, function(x){log(x+1)},
-             filename = paste0(rastFolder,"datacheck/commLand_2000_2015_log.tif"), overwrite=TRUE)
+log_Catch <- raster::calc(tot_Catch, function(x){log(x+1)})
 
 ## Plot & Save raster
 png(filename="figs/log_IndCatch_2000_2015.png")
@@ -348,6 +347,38 @@ dev.off()
 click(log_Catch)
 zoom(log_Catch)
 
+## Read in rasters for artisanal landings between 2000 and 2015
+artisanal <- list.files(paste0(rastFolder,"artisanal_landings"),full.names = TRUE)
+artisanal <- artisanal[!(str_detect(artisanal, "mean_catch"))] # remove files with 'mean_catch' in file path
+artisanal <- artisanal[!(str_detect(artisanal, "corr"))] # remove files with 'corr' in file path
+
+
+## Plot one year of data
+catch <- raster(artisanal[17])
+plot(catch)
+res(catch) # 0.5 degree cells
+
+
+## Compare 2000-2015 industrial catch (log-transformed) to Watson figure
+## create a raster stack from the input raster files (exclude 1999 which is commercial[1])
+allRasters <- raster::stack(artisanal[2:17])
+
+
+## run the sum function on the raster stack - i.e. add (non-cumulatively) the rasters together
+tot_Catch <- sum(allRasters)
+
+## apply log to adjust for really large values
+log_Catch <- raster::calc(tot_Catch, function(x){log(x+1)})
+
+## Plot & Save raster
+png(filename="figs/log_NIndCatch_2000_2015.png")
+plot(log_Catch, col=cols, alpha=1)
+dev.off()
+ 
+## Check out some values or zoom in on an area
+plot(log_Catch, col=cols, alpha=1)
+click(log_Catch)
+zoom(log_Catch)
 
 ```
 

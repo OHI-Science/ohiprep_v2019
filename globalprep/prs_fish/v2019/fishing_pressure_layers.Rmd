@@ -290,9 +290,10 @@ cells <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Cell") %>%
 #turn the lat/long points into a raster
 cells_raster <- rasterFromXYZ(cells)
 
+crs(cells_raster) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0" 
+crs(cells_raster)
 #check out the cells raster to make sure it looks good
 plot(cells_raster)
-
 ```
 
 3. Create commercial and artisanal rasters
@@ -410,13 +411,50 @@ dev.off()
 plot(log_Catch, col=cols, alpha=1)
 click(log_Catch)
 zoom(log_Catch)
+
+
+## Read in rasters for artisanal landings between 2000 and 2015
+artisanal <- list.files(paste0(rastFolder,"artisanal_landings"),full.names = TRUE)
+artisanal <- artisanal[!(str_detect(artisanal, "mean_catch"))] # remove files with 'mean_catch' in file path
+artisanal <- artisanal[!(str_detect(artisanal, "corr"))] # remove files with 'corr' in file path
+
+
+## Plot one year of data
+catch <- raster(artisanal[17])
+plot(catch)
+res(catch) # 0.5 degree cells
+
+
+## Compare 2000-2015 industrial catch (log-transformed) to Watson figure
+## create a raster stack from the input raster files (exclude 1999 which is commercial[1])
+allRasters <- raster::stack(artisanal[2:17])
+
+
+## run the sum function on the raster stack - i.e. add (non-cumulatively) the rasters together
+tot_Catch <- sum(allRasters)
+
+## apply log to adjust for really large values
+log_Catch <- raster::calc(tot_Catch, function(x){log(x+1)},
+             filename = paste0(rastFolder,"datacheck/artisanalLand_2000_2015_log.tif"), overwrite=TRUE)
+
+
+## Plot & Save raster
+png(filename="figs/log_NIndCatch_2000_2015.png")
+plot(log_Catch, col=cols, alpha=1)
+dev.off()
+
+## Check out some values or zoom in on an area
+plot(log_Catch, col=cols, alpha=1)
+click(log_Catch)
+zoom(log_Catch)
+
 ```
 
 ## Standardize Fisheries Catch
 
 Use **net primary production** (NPP) data to correct global fisheries catch for spatial differences in ecosystem impact
 
-* Prepare and gapfill NPP data in [**npp.Rmd**](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/prs_fish/v2019/npp.html)
+* Prepare and gapfill NPP data in [**npp.Rmd**](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/prs_fish/v2019/npp.html); NOTE: We did not update the NPP data for OHI 2019 since the source data did not change. 
 * Resample NPP and fish catch rasters to ocean raster
 * Correct fish catch with NPP (catch divided by NPP)
 
@@ -441,19 +479,19 @@ Note: Avoid saving output rasters from `projectRaster()`, `resample()`, or other
 ```{r, eval=FALSE}
 
 catch_npp_fun <- function(file, layer){ # file = dem_d_files[1]  layer = 'dem_dest'
-  
+  #file <- file.path(dir_M, "git-annex/globalprep/prs_fish/v2019/int/comm_landings/annual_catch_2015.tif")
+  ## For some reason our annual_catch rasters don't have a crs associated with them
   catch <- raster(file)
-  
   yr <- str_extract(basename(file),"(\\d)+") # extracts the year, double check yr
   
   npp <- npp_files_gf[str_detect(npp_files_gf, yr)] %>% 
     raster()
 
-  projectRaster(catch, npp, method = 'ngb', over=TRUE, filename = file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/tmp/temp_resample2-1.tif"), overwrite=TRUE) 
+  projectRaster(catch, npp, method = 'ngb', over=TRUE, filename = file.path(dir_M,"git-annex/globalprep/prs_fish/v2019/tmp/temp_resample2-1.tif"), overwrite=TRUE) 
   
-  catch_resmp <- raster(file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/tmp/temp_resample2-1.tif"))
+  catch_resmp <- raster(file.path(dir_M,"git-annex/globalprep/prs_fish/v2019/tmp/temp_resample2-1.tif"))
     
-  overlay(catch_resmp, npp, fun=function(x,y){x/y}, filename = file.path(dir_M, sprintf("git-annex/globalprep/prs_fish/v2018/int/%s/annual_catch_corr_%s.tif",layer,yr)), overwrite=TRUE)
+  overlay(catch_resmp, npp, fun=function(x,y){x/y}, filename = file.path(dir_M, sprintf("git-annex/globalprep/prs_fish/v2019/int/%s/annual_catch_corr_%s.tif",layer,yr)), overwrite=TRUE)
   
 }
 
@@ -487,6 +525,8 @@ art_disc <- art_disc[grep(years_filter, art_disc)]
 
 lapply(comm_land, catch_npp_fun, layer = 'comm_landings')
 lapply(comm_disc, catch_npp_fun, layer = 'comm_discards')
+
+#### STOPPED HERE AUGUST 13 ####
 lapply(art_land, catch_npp_fun, layer = 'artisanal_landings')
 lapply(art_disc, catch_npp_fun, layer = 'artisanal_discards')
 
