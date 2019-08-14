@@ -1038,6 +1038,11 @@ old_new <- read.csv("../v2018/output/comm_lb.csv") %>%
 plot(old_new$new_pressure_score, old_new$pressure_score)
 abline(0, 1, col="red")
 
+old_check1_comm_lb <- old %>%
+  filter(is.na(pressure_score), new_pressure_score >=0 ) # 1 new regions w data
+old_check2_comm_lb <- old %>%
+  filter(pressure_score >= 0 , is.na(new_pressure_score)) # 0 regions now with NA that previously weren't
+
 ## Commercial High Bycatch pressure 
 new <- read.csv("output/comm_hb.csv") %>%
   filter(year == 2014) %>%
@@ -1049,6 +1054,12 @@ old <- read.csv("../v2018/output/comm_hb.csv") %>%
 
 plot(old$new_pressure_score, old$pressure_score)
 abline(0, 1, col="red")
+
+old_check1_comm_hb <- old %>%
+  filter(is.na(pressure_score), new_pressure_score >=0 ) # 1 new regions w data
+old_check2_comm_hb <- old %>%
+  filter(pressure_score >= 0 , is.na(new_pressure_score)) # 0 regions now with NA that previously weren't
+
 
 ## Artisanal Low Bycatch pressure 
 new <- read.csv("output/art_lb.csv") %>%
@@ -1062,6 +1073,11 @@ old <- read.csv("../v2018/output/art_lb.csv") %>%
 plot(old$new_pressure_score, old$pressure_score)
 abline(0, 1, col="red")
 
+old_check1_art_lb <- old %>%
+  filter(is.na(pressure_score), new_pressure_score >=0 ) # 10 new regions w data
+old_check2_art_lb <- old %>%
+  filter(pressure_score >= 0 , is.na(new_pressure_score)) # 2 regions now with NA that previously weren't
+
 ## Artisanal High Bycatch pressure was calculated using different data before
 new <- read.csv("output/art_hb.csv") %>% 
   filter(year == 2014) %>% 
@@ -1074,6 +1090,14 @@ old <- read.csv("../v2018/output/art_hb.csv") %>%
 plot(old$new_pressure_score, old$pressure_score)
 abline(0, 1, col="red")
 
+
+old_check1_art_hb <- old %>%
+  filter(is.na(pressure_score), new_pressure_score >=0 ) # 10 new regions w data
+old_check2_art_hb <- old %>%
+  filter(pressure_score >= 0 , is.na(new_pressure_score)) # 2 regions now with NA that previously weren't
+
+old_check3_art_hb <- old %>%
+  mutate(pressure_diff = pressure_score - new_pressure_score) # 35 regions with better scores, rest are worse. 
 ```
 
 Check for variation in data years for 2019 AY
