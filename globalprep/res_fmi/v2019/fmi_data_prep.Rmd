@@ -32,22 +32,10 @@ Add some detail about this data.
 
 **Method:** Data are not accessible in csv format from website, so points were manually entered into excel and saved as a csv (found in v2019/raw)
 
-## GDP per capita 
-
-Fisheries management index scores are highly correlated with GDP, so GDP per capita per person purchasing power (gdppcpppp) was used to create linear regression models to gapfill FMI data. We used World Bank data (reported at country-scale) and gapfilled any missing GDP values using CIA data. 
-
-[World bank](http://data.worldbank.org/indicator/NY.GDP.PCAP.PP.KD) 
-* Downloaded 7/24/19
-* Time range: 1990-2018
-
-[CIA World Factbook](https://www.cia.gov/library/publications/the-world-factbook/rankorder/2004rank.html)
-* Downloaded 7/24/19
-* Time range: 
-
+Data was available for only 40 regions.  We used our rescaled and gapfilled version of the Social Progress Index and UN geogregion data to estimate missing regions.
 
 # Updates from previous assessment
 These data have not been updated since 2013, so this is an entirely new method for establishing resilience values. 
-
 
 
 # Initial set-up code
@@ -118,9 +106,13 @@ all_layers <- fmi_spi %>%
   
 mod6 <- lm(fmi ~ spi + r2_label, data=all_layers)
 summary(mod6)  # r^2 = 0.6583
+plot(predict(mod6), all_layers$fmi)
+abline(0,1, col="red")
 
 mod6.5 <- lm(fmi ~ spi + r1_label, data=all_layers)
 summary(mod6.5)  # r^2 = 0.5776
+plot(predict(mod6.5), all_layers$fmi)
+abline(0,1, col="red")
 
 
 ```
@@ -130,12 +122,6 @@ summary(mod6.5)  # r^2 = 0.5776
 More information about the linear model process development can be found in fmi_model_compare.Rmd and the [Github issue from v2019](https://github.com/OHI-Science/globalfellows-issues/issues/91). 
 ```{r}
 
-# Create vector to filter out low population regions so that they are NA 
-low_pop()
-low_pop <- low_pop %>%
-  filter(est_population < 3000 | is.na(est_population)) #filter out regions that have populations > 3000 and keep NA values 
-low_pop_vector <- c(low_pop$rgn_id) #make a vector of rgn_ids of low population areas 
-
 fmi_gf <- UNgeorgn %>% 
   merge(spi) %>%
   filter(year==2018) %>% 
@@ -144,70 +130,73 @@ fmi_gf <- UNgeorgn %>%
   mutate(rgn_label = ifelse(str_detect(rgn_label, "R_union"), "Reunion", rgn_label)) %>% 
   select(-rgn_name, -r0_label, spi=resilience_score)
 
-# Separate out low population/uninhabited regions from the data frame to be gapfilled
-low_pop_regions <- fmi_gf %>% 
-  filter(rgn_id %in% low_pop_vector)
-
-# Remove low pop regions from data to be gapfilled
-fmi_gf <- fmi_gf %>% 
-  filter(!rgn_id %in% low_pop_vector)
-
-
-# Create array of predicted FMI values using fmi ~ spi + r1_label
-fmi_gf1 <- fmi_gf %>%
-  dplyr::group_by(rgn_id) %>%
-  dplyr::do({ 
-    fmi_pred_r1 <- predict(mod6.5, newdata =.[c('r1_label', 'spi')]) 
-    data.frame(., fmi_pred_r1) # do loop applies the model fitting and prediction to each country group
-  }) %>% 
-  dplyr::ungroup()
-
 
 # Create array of predicted FMI values using fmi ~ spi + r2_label
-fmi_gf2 <- fmi_gf %>%
-  filter(r2_label != "Melanesia") %>% # Melanesia does not have any FMI data points in df used to train mod6
-  filter(r2_label != "Polynesia") %>% # same issue ^
-  filter(r2_label != "Western Asia") %>% 
-  dplyr::group_by(rgn_id) %>%
-  dplyr::do({ 
-    fmi_pred_r2 <- predict(mod6, newdata =.[c('r2_label', 'spi')]) 
-    data.frame(., fmi_pred_r2) # do loop applies the model fitting and prediction to each country group
-  }) %>% 
-  dplyr::ungroup()
+
+mod_r2 <- lm(fmi ~ r2_label + spi, data=fmi_gf)
+## have to do the predict in a more complicated fashion because some r2 categories have no data, this returns an NA for these
+fmi_gf$fmi_pred_r2 <- 
+  sapply(1:nrow(fmi_gf), 
+           function(i) 
+               tryCatch(predict(mod_r2, fmi_gf[i,]), 
+                           error=function(e) NA))
+
+# get predictions for the regions not represented by r2 regions:
+mod_r1 <- lm(fmi ~ r1_label + spi, data=fmi_gf)
+## have to do the predict in a more complicated fashion because some r2 categories have no data, this returns an NA for these
+fmi_gf$fmi_pred_r1 <- 
+  sapply(1:nrow(fmi_gf), 
+           function(i) 
+               tryCatch(predict(mod_r1, fmi_gf[i,]), 
+                           error=function(e) NA))
+
+# final data and gapfilling recordkeeping
+
+fmi_gf_all <- fmi_gf %>%
+  dplyr::mutate(gapfilled = ifelse(is.na(fmi), "1", 0)) %>%
+  dplyr::mutate(method = ifelse(is.na(fmi) & !is.na(fmi_pred_r2), "SPI + UN_geopolitical region r2", NA)) %>%
+  dplyr::mutate(method = ifelse(is.na(fmi) & is.na(fmi_pred_r2), "SPI + UN_geopolitical region r1" , method)) %>%
+  dplyr::mutate(fmi2 = ifelse(is.na(fmi), fmi_pred_r2, fmi)) %>% 
+  dplyr::mutate(fmi2 = ifelse(is.na(fmi2), fmi_pred_r1, fmi2)) %>%
+  dplyr::mutate(fmi = fmi2) %>%
+  dplyr::select(-fmi2)
 
 
-# Rejoin regions gapfilled with r1, assign best predicted FMI scores to populated regions without FMI data
-# Check to see if r2 has a value, if so use that to gapfill `score`, otherwise use r1, otherwise use r0
+# make sure all low/no population regions are NA 
+low_pop()
+low_pop <- low_pop %>%
+  filter(est_population < 3000 | is.na(est_population)) #filter out regions that have populations > 3000 and keep NA values 
 
-fmi_gf_all <- fmi_gf1 %>%
-  left_join(fmi_gf2, by=c("rgn_id", "r1_label", "r2_label", "rgn_label", "year", "spi", "fmi")) %>% 
-  mutate(gapfilled = ifelse(is.na(fmi) & !is.na(fmi_pred_r2), "1", 0)) %>%
-  mutate(method = ifelse(is.na(fmi) & !is.na(fmi_pred_r2), "SPI + UN_geopolitical region r2", NA)) %>%
-  mutate(fmi = ifelse(is.na(fmi), fmi_pred_r2, fmi)) %>% 
-  mutate(gapfilled = ifelse(is.na(fmi) & !is.na(fmi_pred_r1), "1", gapfilled)) %>%
-  mutate(method = ifelse(is.na(fmi) & !is.na(fmi_pred_r1), "SPI + UN_geopolitical region r1", method)) %>%
-  mutate(fmi = ifelse(is.na(fmi), fmi_pred_r1, fmi))
+fmi_gf_low_pop <- fmi_gf_all %>%
+  dplyr::filter(rgn_id %in% low_pop$rgn_id)
+summary(fmi_gf_low_pop)
+  
 
-# Rejoin regions with low populations 
-final_fmi <- fmi_gf_all %>%
-  select("rgn_id", "r1_label", "r2_label", "rgn_label", "year", "spi", "fmi") %>% 
-  rbind(low_pop_regions) %>%  # these 20 regions will have NAs
+## Make sure all other regions have an fmi value
+fmi_gf_with_pop <- fmi_gf_all %>%
+  dplyr::filter(!(rgn_id %in% low_pop$rgn_id))
+summary(fmi_gf_with_pop)
+
+
+# Correct gapfilling info to low pop regions
+fmi_gf_all <- fmi_gf_all %>% 
+  mutate(gapfilled = ifelse(rgn_id %in% low_pop$rgn_id, 0, gapfilled)) %>% 
+  mutate(method = ifelse(rgn_id %in% low_pop$rgn_id, NA, method))
+
+## format final data
+fmi_final <- fmi_gf_all %>%
   select(rgn_id, year, value=fmi)
+dim(fmi_final) # all regions represented
+summary(fmi_final) # 20 NA values
+
 
 # Save the data 
-write_csv(final_fmi, here("globalprep/res_fmi/v2019/output/fmi_res.csv"))
+write_csv(fmi_final, here("globalprep/res_fmi/v2019/output/fmi_res.csv"))
 
-# Add gapfilling info to low pop regions
-low_pop_regions_gf <- low_pop_regions %>% 
-  mutate(gapfilled = 0) %>% 
-  mutate(method = "Not gapfilled due to low pop") %>% 
-  select(rgn_id, year, gapfilled, method)
 
 # Save dataframe with gapfilled method and status information
 final_fmi_gf <- fmi_gf_all %>%
-  select(rgn_id, year, gapfilled, method) %>% 
-  rbind(low_pop_regions_gf)
-
+  select(rgn_id, year, gapfilled, method)
 write_csv(final_fmi_gf, here("globalprep/res_fmi/v2019/output/fmi_res_gf.csv"))
 
 
@@ -221,11 +210,7 @@ write_csv(final_fmi_gf, here("globalprep/res_fmi/v2019/output/fmi_res_gf.csv"))
 
 mora <- read_csv(here("globalprep/res_mora_ao/v2013/data/r_mora_2013a.csv"))
 
-mora_s4 <- read_csv(here("globalprep/res_mora_ao/v2013/data/r_mora_s4_2013a.csv"))
-
-mora_s4_updated <- read_csv(here("globalprep/res_mora_ao/v2013/data/r_mora_s4_2013a_updated.csv"))
-
-mora_v_fmi <- final_fmi %>% 
+mora_v_fmi <- fmi_final %>% 
   rename(fmi_2019=value) %>% 
   left_join(mora, by="rgn_id") %>% 
   rename(mora=value)
@@ -236,7 +221,7 @@ ggplotly(ggplot(mora_v_fmi, aes(x = mora, y = fmi_2019, labels = rgn_id)) +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
 
-# No correlation here - compare non-gapfilled data only with Mora data:
+# Not a great correlation here - compare non-gapfilled data only with Mora data:
 
 mora_v_fmi2 <- fmi_rgn %>% 
   rename(fmi_2019=fmi) %>% 
@@ -247,6 +232,6 @@ ggplotly(ggplot(mora_v_fmi2, aes(x = mora, y = fmi_2019, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
-# Also no correlation; lack of relationship can be attributed to source data rather than gapfilling method. 
+# Also not a great correlation; differences can be attributed to source data rather than gapfilling method. 
 ```
 

@@ -2,6 +2,7 @@ rgn_id,year,gapfilled,method
 1,2018,1,SPI + UN_geopolitical region r2
 2,2018,1,SPI + UN_geopolitical region r2
 3,2018,1,SPI + UN_geopolitical region r2
+4,2018,0,NA
 5,2018,1,SPI + UN_geopolitical region r1
 6,2018,1,SPI + UN_geopolitical region r1
 7,2018,1,SPI + UN_geopolitical region r1
@@ -9,6 +10,7 @@ rgn_id,year,gapfilled,method
 9,2018,1,SPI + UN_geopolitical region r2
 10,2018,1,SPI + UN_geopolitical region r2
 11,2018,1,SPI + UN_geopolitical region r2
+12,2018,0,NA
 13,2018,1,SPI + UN_geopolitical region r2
 14,2018,1,SPI + UN_geopolitical region r2
 15,2018,0,NA
@@ -23,8 +25,13 @@ rgn_id,year,gapfilled,method
 26,2018,1,SPI + UN_geopolitical region r2
 28,2018,1,SPI + UN_geopolitical region r2
 29,2018,1,SPI + UN_geopolitical region r2
+30,2018,0,NA
 31,2018,1,SPI + UN_geopolitical region r2
 32,2018,1,SPI + UN_geopolitical region r2
+33,2018,0,NA
+34,2018,0,NA
+35,2018,0,NA
+36,2018,0,NA
 37,2018,1,SPI + UN_geopolitical region r2
 38,2018,1,SPI + UN_geopolitical region r2
 39,2018,1,SPI + UN_geopolitical region r2
@@ -75,6 +82,12 @@ rgn_id,year,gapfilled,method
 85,2018,1,SPI + UN_geopolitical region r2
 86,2018,1,SPI + UN_geopolitical region r2
 88,2018,1,SPI + UN_geopolitical region r2
+89,2018,0,NA
+90,2018,0,NA
+91,2018,0,NA
+92,2018,0,NA
+93,2018,0,NA
+94,2018,0,NA
 95,2018,1,SPI + UN_geopolitical region r2
 96,2018,1,SPI + UN_geopolitical region r2
 97,2018,1,SPI + UN_geopolitical region r2
@@ -85,7 +98,9 @@ rgn_id,year,gapfilled,method
 102,2018,0,NA
 103,2018,1,SPI + UN_geopolitical region r2
 104,2018,1,SPI + UN_geopolitical region r2
+105,2018,0,NA
 106,2018,1,SPI + UN_geopolitical region r2
+107,2018,0,NA
 108,2018,1,SPI + UN_geopolitical region r2
 110,2018,0,NA
 111,2018,1,SPI + UN_geopolitical region r2
@@ -119,10 +134,13 @@ rgn_id,year,gapfilled,method
 140,2018,1,SPI + UN_geopolitical region r2
 141,2018,1,SPI + UN_geopolitical region r2
 143,2018,0,NA
+144,2018,0,NA
 145,2018,1,SPI + UN_geopolitical region r2
 146,2018,1,SPI + UN_geopolitical region r1
 147,2018,1,SPI + UN_geopolitical region r1
 148,2018,1,SPI + UN_geopolitical region r2
+149,2018,0,NA
+150,2018,0,NA
 151,2018,1,SPI + UN_geopolitical region r1
 152,2018,1,SPI + UN_geopolitical region r1
 153,2018,1,SPI + UN_geopolitical region r1
@@ -130,6 +148,8 @@ rgn_id,year,gapfilled,method
 155,2018,1,SPI + UN_geopolitical region r1
 156,2018,1,SPI + UN_geopolitical region r1
 157,2018,1,SPI + UN_geopolitical region r2
+158,2018,0,NA
+159,2018,0,NA
 161,2018,1,SPI + UN_geopolitical region r1
 162,2018,0,NA
 163,2018,0,NA
@@ -199,23 +219,3 @@ rgn_id,year,gapfilled,method
 248,2018,1,SPI + UN_geopolitical region r2
 249,2018,1,SPI + UN_geopolitical region r2
 250,2018,1,SPI + UN_geopolitical region r2
-4,2018,0,Not gapfilled due to low pop
-12,2018,0,Not gapfilled due to low pop
-30,2018,0,Not gapfilled due to low pop
-33,2018,0,Not gapfilled due to low pop
-34,2018,0,Not gapfilled due to low pop
-35,2018,0,Not gapfilled due to low pop
-36,2018,0,Not gapfilled due to low pop
-89,2018,0,Not gapfilled due to low pop
-90,2018,0,Not gapfilled due to low pop
-91,2018,0,Not gapfilled due to low pop
-92,2018,0,Not gapfilled due to low pop
-93,2018,0,Not gapfilled due to low pop
-94,2018,0,Not gapfilled due to low pop
-105,2018,0,Not gapfilled due to low pop
-107,2018,0,Not gapfilled due to low pop
-144,2018,0,Not gapfilled due to low pop
-149,2018,0,Not gapfilled due to low pop
-150,2018,0,Not gapfilled due to low pop
-158,2018,0,Not gapfilled due to low pop
-159,2018,0,Not gapfilled due to low pop
