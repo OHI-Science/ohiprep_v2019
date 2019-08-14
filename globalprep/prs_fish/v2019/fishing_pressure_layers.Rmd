@@ -87,7 +87,7 @@ Read in Index files, Spatial cells, Taxa reference, Country reference, and a sin
 Here we will need to wrangle a combination of the index files, Gear reference, Taxa reference, and Country reference to have columns `ID`, `Year`, `CountryName`, `TaxonName`, `CommonName`, `IndReported`, `IndIUU`, `IndDiscards`, `NIndReported`, `NIndIUU`, and `NIndDiscards`.
 
 
-```{r}
+```{r, eval = FALSE}
 ## Load this to use for comparison to last years data
 index_2018 <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisheriesLandings/d2018/Index.csv"))
 
@@ -113,7 +113,7 @@ DT::datatable(head(spatialCells))
 
 ```
 
-```{r}
+```{r, eval = FALSE}
 ## Look at single catch file
 data <- readRDS(file.path(rawFolder,"CatchInd1950_1954.rds"))
 DT::datatable(head(data))
@@ -459,7 +459,7 @@ Use **net primary production** (NPP) data to correct global fisheries catch for 
 * Correct fish catch with NPP (catch divided by NPP)
 
 Read in gapfilled NPP rasters
-```{r gapfill}
+```{r gapfill, eval = FALSE}
 
 npp_files_gf <- list.files(file.path(dir_M,"git-annex/globalprep/prs_fish/v2018/VGPM_primary_productivity/int/annual_npp"), full.names=TRUE, pattern = "gf")
 
@@ -536,7 +536,7 @@ Check if map plots outside of the global ellipse:
 - See example of issue in [stackoverflow](https://stackoverflow.com/questions/27535047/how-to-properly-project-and-plot-raster-in-r)
 - If it is plotting weirdly, will eventually be fixed in the final output map, but may be confusing throughout the data processing steps
 
-```{r}
+```{r, eval = FALSE}
 
 commL_corr <- list.files(paste0(rastFolder,'comm_landings'), pattern="corr", full.names=TRUE)
 commD_corr <- list.files(paste0(rastFolder,'comm_discards'), pattern="corr", full.names=TRUE)
@@ -590,7 +590,7 @@ foreach (i = 2003:2011) %dopar%{ # i = 2010
 
 Check 5-year mean raster - make sure land values are NA not zero.
 
-```{r}
+```{r, eval = FALSE}
 
 mean_CL <- list.files(paste0(rastFolder,'comm_landings'), pattern="mean_catch", full.names=TRUE)
 mean_CL <- mean_CL[!(str_detect(mean_CL, "1km"))] # remove files with '1km' in file path
@@ -714,7 +714,7 @@ ref_ahb <- quantile(vals, prob = 0.9999, na.rm=T)  # 7.45 - 2018; 9.303356 - 201
 ```
 
 Save your reference points to a data frame and save to file -- may want to change pressures column to characters and ref_point column to numeric..
-```{r}
+```{r, eval = FALSE}
 
 pressures <- c("fp_com_lb","fp_com_hb","fp_art_lb","fp_art_hb")
 ref_point <- as.numeric(c(ref_clb,ref_chb,ref_alb,ref_ahb))
@@ -779,7 +779,7 @@ foreach (i = 2003:2011) %dopar%{ # i = 2011
 ```
 
 Check out intermediate results
-```{r}
+```{r, eval = FALSE}
 
 cl <- raster(file.path(rastFolder, 'comm_landings/mean_catch_1km_2011_2015.tif'))
 cd <- raster(file.path(rastFolder, 'comm_discards/mean_catch_1km_2011_2015.tif'))
@@ -795,7 +795,7 @@ plot(all, col=cols, axes=FALSE ,box=FALSE)
 
 Note: Might be able to skip masking with ocean raster if there were no wrapping issues.
 
-```{r}
+```{r, eval = FALSE}
 
 foreach (i = 2003:2011) %dopar%{ # i = 2011
   
@@ -823,7 +823,7 @@ foreach (i = 2003:2011) %dopar%{ # i = 2011
 ```
 
 Check masked rasters!
-```{r}
+```{r, eval = FALSE}
 
 outFolder <-  "/home/shares/ohi/git-annex/globalprep/prs_fish/v2019/output"
 cl <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2011_2015.tif'))
@@ -881,7 +881,7 @@ Tidy and create output data.
 * Preserve all rows in `regions_stats2_lb` even if it doesn't have a match in `rgn_data`.
 * Gather all years of data together
 * Fix up year column, selecting for last year of data in the 5-year interval
-```{r}
+```{r, eval = FALSE}
 
 data <- merge(rgn_data, regions_stats2_lb, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
   tidyr::gather("year", "pressure_score", starts_with("lb")) 
@@ -900,7 +900,7 @@ write.csv(lb_data, "output/comm_lb.csv", row.names=FALSE)
 
 Take a look at output of low bycatch data.
 
-```{r}
+```{r, eval = FALSE}
 
 summary(lb_data)
 filter(lb_data, is.na(pressure_score)) # No NAs!
@@ -909,7 +909,7 @@ filter(lb_data, is.na(pressure_score)) # No NAs!
 
 ## Commercial High Bycatch Data:
 
-```{r}
+```{r, eval = FALSE}
 
 ## combine all years
 rasts_hb <- list.files(file.path(outFolder,'comm_high_bycatch'), full = TRUE)
@@ -925,13 +925,13 @@ write.csv(regions_stats2_hb, "int/comm_high_bycatch.csv", row.names = FALSE)
 
 Compare zone IDs between intermediate data with **regionData.csv**. Should be no difference in `ant_id` zone ids and the `zone` column in the new data frame.
 
-```{r}
+```{r, eval = FALSE}
 setdiff(regions_stats2_hb$zone, rgn_data$ant_id) #numeric(0)
 setdiff(rgn_data$ant_id, regions_stats2_hb$zone) #integer(0)
 ```
 
 Tidy and create output data
-```{r}
+```{r, eval = FALSE}
 data <- merge(rgn_data, regions_stats2_hb, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
   tidyr::gather("year", "pressure_score", starts_with("hb")) 
 
@@ -949,7 +949,7 @@ write.csv(hb_data, "output/comm_hb.csv", row.names=FALSE)
 
 ## Artisanal Low Bycatch:
 
-```{r}
+```{r,eval = FALSE}
 
 ## combine all years
 rasts_art <- list.files(file.path(outFolder,'art_low_bycatch'), full = TRUE)
@@ -963,13 +963,13 @@ write.csv(regions_stats2_art, "int/art_low_bycatch.csv", row.names = FALSE)
 
 Compare zone IDs between intermediate data with **regionData.csv**. Should be no difference in `ant_id` zone ids and the `zone` column in the new data frame.
 
-```{r}
+```{r, eval = FALSE}
 setdiff(regions_stats2_art$zone, rgn_data$ant_id) #numeric(0)
 setdiff(rgn_data$ant_id, regions_stats2_art$zone) #integer(0)
 ```
 
 Tidy and create output data
-```{r}
+```{r, eval = FALSE}
 
 data <- merge(rgn_data, regions_stats2_art, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
   tidyr::gather("year", "pressure_score", starts_with("alb")) 
@@ -986,7 +986,7 @@ write.csv(art_data, "output/art_lb.csv", row.names=FALSE)
 
 ## Artisanal High Bycatch:
 
-```{r}
+```{r, eval = FALSE}
 
 ## combine all years
 rasts_art <- list.files(file.path(outFolder,'art_high_bycatch'), full = TRUE)
@@ -1000,13 +1000,13 @@ write.csv(regions_stats2_art, "int/art_high_bycatch.csv", row.names = FALSE)
 
 Compare zone IDs between intermediate data with **regionData.csv**. Should be no difference in `ant_id` zone ids and the `zone` column in the new data frame.
 
-```{r}
+```{r, eval = FALSE}
 setdiff(regions_stats2_art$zone, rgn_data$ant_id) #numeric(0)
 setdiff(rgn_data$ant_id, regions_stats2_art$zone) #integer(0)
 ```
 
 Tidy and create output data
-```{r}
+```{r, eval = FALSE}
 
 data <- merge(rgn_data, regions_stats2_art, all.y=TRUE, by.x="rgn_id", by.y="zone") %>%
   tidyr::gather("year", "pressure_score", starts_with("ahb")) 
@@ -1024,7 +1024,7 @@ write.csv(art_data, "output/art_hb.csv", row.names=FALSE)
 # Data check
 
 Compare with previous year's data
-```{r}
+```{r, eval = FALSE}
 
 ## Commercial Low Bycatch pressure 
 new <- read.csv("output/comm_lb.csv") %>%
@@ -1102,7 +1102,7 @@ old_check3_art_hb <- old %>%
 
 Check for variation in data years for 2019 AY
 
-```{r}
+```{r, eval = FALSE}
 
 ## Commercial Low Bycatch - 8/14/18 not much change from year to year within same assessment year
 ##                        - 8/14/19 not much change from year to year within same assessment year
@@ -1162,7 +1162,7 @@ abline(0,1, col="red")
 ## Gapfill
 There was no gapfill for any of these data layers. However we create a gf file for every data layer indicating there was no gapfill with 0.
 
-```{r}
+```{r, eval = FALSE}
 
 art_hb_gf <- read.csv("output/art_hb.csv")%>%
   mutate(pressure_score = 0) %>% 

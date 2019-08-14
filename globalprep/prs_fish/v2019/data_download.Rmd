@@ -64,15 +64,15 @@ saveRDS(data, file.path(dir_M, sprintf("git-annex/globalprep/_raw_data/test_IMAS
 
 # How to download the data code definitions. 
 
-For this, it is saved as an .xlsx file (Codes.xlsx), which is hard to work with in R. This file has 4 sheets in it which contain meta data that explain columns in the Index files, and one sheet with is "Spatial Cells Reference - contains geospatial information associated wtih the Industrial Catch data". 
-To download this data, go to the IMAS website: http://data.imas.utas.edu.au/portal/search?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0 and dowload it manually. You can then individually copy-and-paste each sheet into its own excel file, and save as a .csv file in Mazu. 
+For this, it is saved as an .xlsx file (Codes.xlsx). This file has 4 sheets in it which contain meta data that explain columns in the Index files, and one sheet with is "Spatial Cells Reference - contains geospatial information associated wtih the Industrial Catch data". 
+To download this data, go to the IMAS website: http://data.imas.utas.edu.au/portal/search?uuid=ff1274e1-c0ab-411b-a8a2-5a12eb27f2c0 and dowload it manually.
 
-This .xlsx file contains files which you will save as:
+This .xlsx file contains these sheets:
 
-* Spatial Cells Reference (Cells.csv) - contains geospatial information associated wtih the Industrial Catch data
-* Gear Reference (Gear.csv) - contains information regarding how different fishing gear is classified in the index datasets.
-* Taxa Reference (Taxa.csv) - contains information regarding how different taxa is classified in the index datasets.
-* Country Reference (Country.csv) - contains informations regarding how different countries are labeled in the index datasets. 
+* Spatial Cells Reference (Cells) - contains geospatial information associated wtih the Industrial Catch data
+* Gear Reference (Gear) - contains information regarding how different fishing gear is classified in the index datasets.
+* Taxa Reference (Taxa) - contains information regarding how different taxa is classified in the index datasets.
+* Country Reference (Country) - contains informations regarding how different countries are labeled in the index datasets. 
 
 
 
