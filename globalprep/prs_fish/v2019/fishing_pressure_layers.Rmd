@@ -525,8 +525,6 @@ art_disc <- art_disc[grep(years_filter, art_disc)]
 
 lapply(comm_land, catch_npp_fun, layer = 'comm_landings')
 lapply(comm_disc, catch_npp_fun, layer = 'comm_discards')
-
-#### STOPPED HERE AUGUST 13 ####
 lapply(art_land, catch_npp_fun, layer = 'artisanal_landings')
 lapply(art_disc, catch_npp_fun, layer = 'artisanal_discards')
 
@@ -545,8 +543,8 @@ commD_corr <- list.files(paste0(rastFolder,'comm_discards'), pattern="corr", ful
 artL_corr <- list.files(paste0(rastFolder,'artisanal_landings'), pattern="corr", full.names=TRUE)
 artD_corr <- list.files(paste0(rastFolder,'artisanal_discards'), pattern="corr", full.names=TRUE)
 
-num <- 1 # change to check different raster file in the list
-all <- stack(raster(v[num]), raster(commD_corr[num]), raster(artL_corr[num]),raster(artD_corr[num]))
+num <- 13 # change to check different raster file in the list
+all <- stack(raster(commL_corr[num]), raster(commD_corr[num]), raster(artL_corr[num]),raster(artD_corr[num]))
 plot(all, col=cols)
 
 ```
@@ -606,10 +604,9 @@ mean_AL <- mean_AL[!(str_detect(mean_AL, "1km"))] # remove files with '1km' in f
 mean_AD <- list.files(paste0(rastFolder,'artisanal_discards'), pattern="mean_catch", full.names=TRUE)
 mean_AD <- mean_AD[!(str_detect(mean_AD, "1km"))] # remove files with '1km' in file path
 
-num <- 1 # change to check different raster file year
+num <- 9 # change to check different raster file year
 all <- stack(raster(mean_CL[num]), raster(mean_CD[num]), raster(mean_AL[num]),raster(mean_AD[num]))
 plot(all, col=cols)
-
 ```
 
 ## Reference Point
@@ -641,7 +638,7 @@ for(i in 2007:2015){ # i = 2015
 
 }
 
-ref_clb <- quantile(vals, prob = 0.9999, na.rm=T)  # 10.64
+ref_clb <- quantile(vals, prob = 0.9999, na.rm=T)  # 10.64 - 2018; 11.80793 - 2019
   
 ```
 
@@ -665,7 +662,7 @@ for(i in 2007:2015){ # i = 2007
 
 }
 
-ref_chb <- quantile(vals, prob = 0.9999, na.rm=T)  # 9.88
+ref_chb <- quantile(vals, prob = 0.9999, na.rm=T)  # 9.88 - 2018; 9.480187 - 2019
 
 ```
 
@@ -689,7 +686,7 @@ for(i in 2007:2015){ # i = 2007
 
 }
 
-ref_alb <- quantile(vals, prob = 0.9999, na.rm=T)  # 10.72
+ref_alb <- quantile(vals, prob = 0.9999, na.rm=T)  # 10.72 - 2018; 12.38605 - 2019
 ```
 
 ### Artisanal High Bycatch
@@ -712,7 +709,7 @@ for(i in 2007:2015){ # i = 2007
 
 }
 
-ref_ahb <- quantile(vals, prob = 0.9999, na.rm=T)  # 7.45
+ref_ahb <- quantile(vals, prob = 0.9999, na.rm=T)  # 7.45 - 2018; 9.303356 - 2019
 
 ```
 
@@ -726,14 +723,14 @@ write.csv(ref_df, "int/fish_ref_points.csv", row.names=FALSE)
 
 ```
 
-Note: all quantiles increased slightly from last year's assessment (see [v2017 prep](https://github.com/OHI-Science/ohiprep_v2018/blob/master/globalprep/prs_fish/v2017/fishing_pressure_layers.Rmd)).
+Note: all quantiles except for commercial high bycatch increased slightly from last year's assessment (see [v2018 prep](https://github.com/OHI-Science/ohiprep_v2019/blob/master/globalprep/prs_fish/v2018/fishing_pressure_layers.Rmd)).
 
 
 ## Rescale (0-1) & Resample (1-km res)
 
 Use reference points `ref_clb` on commercial landings data, `ref_chb` on commercial discards data, and `ref_alb` on artisanal landings data.
 
-Rasters are currently in resoution 8.35 km x 10.3 km (same as NPP rasters) and in Mollweide coordinate system. Convert to ocean raster 1-km x 1-km resolution.
+Rasters are currently in resolution 8.35 km x 10.3 km (same as NPP rasters) and in Mollweide coordinate system. Convert to ocean raster 1-km x 1-km resolution.
 
 ```{r, eval=FALSE}
 
@@ -806,20 +803,20 @@ foreach (i = 2003:2011) %dopar%{ # i = 2011
   
   ## Commercial Low Bycatch (Landings)
   cl_mask <- raster(paste0(rastFolder, 'comm_landings/mean_catch_1km_', yrs[1], '_', yrs[5], '.tif'))
-  mask(cl_mask, ocean, filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2018/output/comm_low_bycatch/lb_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite = TRUE)
+  mask(cl_mask, ocean, filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2019/output/comm_low_bycatch/lb_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite = TRUE)
 
   ## Commercial High Bycatch (Discards)
   cd_mask <- raster(paste0(rastFolder, 'comm_discards/mean_catch_1km_', yrs[1], '_', yrs[5], '.tif'))
-  mask(cd_mask, ocean, filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2018/output/comm_high_bycatch/hb_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite = TRUE)
+  mask(cd_mask, ocean, filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2019/output/comm_high_bycatch/hb_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite = TRUE)
 
 
   ## Artisanal Low Bycatch (Landings)
   alb_mask <- raster(paste0(rastFolder, 'artisanal_landings/mean_catch_1km_', yrs[1], '_', yrs[5], '.tif'))
-  mask(alb_mask, ocean, filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2018/output/art_low_bycatch/alb_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite = TRUE)
+  mask(alb_mask, ocean, filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2019/output/art_low_bycatch/alb_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite = TRUE)
 
   ## Artisanal High Bycatch (Discards)
   ahb_mask <- raster(paste0(rastFolder, 'artisanal_discards/mean_catch_1km_', yrs[1], '_', yrs[5], '.tif'))
-  mask(ahb_mask, ocean, filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2018/output/art_high_bycatch/ahb_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite = TRUE)
+  mask(ahb_mask, ocean, filename = paste0(dir_M, '/git-annex/globalprep/prs_fish/v2019/output/art_high_bycatch/ahb_fish_pressure_', yrs[1], '_', yrs[5], '.tif'), overwrite = TRUE)
   
 }
 
@@ -828,7 +825,7 @@ foreach (i = 2003:2011) %dopar%{ # i = 2011
 Check masked rasters!
 ```{r}
 
-outFolder <-  "/home/shares/ohi/git-annex/globalprep/prs_fish/v2018/output"
+outFolder <-  "/home/shares/ohi/git-annex/globalprep/prs_fish/v2019/output"
 cl <- raster(file.path(outFolder, 'comm_low_bycatch/lb_fish_pressure_2011_2015.tif'))
 cd <- raster(file.path(outFolder, 'comm_high_bycatch/hb_fish_pressure_2011_2015.tif'))
 al <- raster(file.path(outFolder, 'art_low_bycatch/alb_fish_pressure_2011_2015.tif'))
@@ -875,8 +872,8 @@ write.csv(regions_stats2_lb, "int/comm_low_bycatch.csv", row.names=FALSE)
 Compare zone IDs between intermediate data with **regionData.csv**. Should be no difference in `ant_id` zone ids and the `zone` column in the new data frame.
 
 ```{r, eval=FALSE}
-setdiff(regions_stats2_lb$zone, rgn_data$ant_id) 
-setdiff(rgn_data$ant_id, regions_stats2_lb$zone)
+setdiff(regions_stats2_lb$zone, rgn_data$ant_id) #numeric(0)
+setdiff(rgn_data$ant_id, regions_stats2_lb$zone) #integer(0)
 ```
 
 Tidy and create output data. 
@@ -903,11 +900,10 @@ write.csv(lb_data, "output/comm_lb.csv", row.names=FALSE)
 
 Take a look at output of low bycatch data.
 
-Note: Bouvet Island has NAs for all years.
 ```{r}
 
 summary(lb_data)
-filter(lb_data, is.na(pressure_score))
+filter(lb_data, is.na(pressure_score)) # No NAs!
 
 ```
 
@@ -930,8 +926,8 @@ write.csv(regions_stats2_hb, "int/comm_high_bycatch.csv", row.names = FALSE)
 Compare zone IDs between intermediate data with **regionData.csv**. Should be no difference in `ant_id` zone ids and the `zone` column in the new data frame.
 
 ```{r}
-setdiff(regions_stats2_hb$zone, rgn_data$ant_id) 
-setdiff(rgn_data$ant_id, regions_stats2_hb$zone) 
+setdiff(regions_stats2_hb$zone, rgn_data$ant_id) #numeric(0)
+setdiff(rgn_data$ant_id, regions_stats2_hb$zone) #integer(0)
 ```
 
 Tidy and create output data
@@ -968,8 +964,8 @@ write.csv(regions_stats2_art, "int/art_low_bycatch.csv", row.names = FALSE)
 Compare zone IDs between intermediate data with **regionData.csv**. Should be no difference in `ant_id` zone ids and the `zone` column in the new data frame.
 
 ```{r}
-setdiff(regions_stats2_art$zone, rgn_data$ant_id) # antarctica regions are in there, makes sense....no land
-setdiff(rgn_data$ant_id, regions_stats2_art$zone) # 213 is in there, that makes sense (Antarctica)
+setdiff(regions_stats2_art$zone, rgn_data$ant_id) #numeric(0)
+setdiff(rgn_data$ant_id, regions_stats2_art$zone) #integer(0)
 ```
 
 Tidy and create output data
@@ -1005,8 +1001,8 @@ write.csv(regions_stats2_art, "int/art_high_bycatch.csv", row.names = FALSE)
 Compare zone IDs between intermediate data with **regionData.csv**. Should be no difference in `ant_id` zone ids and the `zone` column in the new data frame.
 
 ```{r}
-setdiff(regions_stats2_art$zone, rgn_data$ant_id) 
-setdiff(rgn_data$ant_id, regions_stats2_art$zone) 
+setdiff(regions_stats2_art$zone, rgn_data$ant_id) #numeric(0)
+setdiff(rgn_data$ant_id, regions_stats2_art$zone) #integer(0)
 ```
 
 Tidy and create output data
@@ -1035,7 +1031,7 @@ new <- read.csv("output/comm_lb.csv") %>%
   filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
 
-old_new <- read.csv("../v2017/output/lb.csv") %>%
+old_new <- read.csv("../v2018/output/comm_lb.csv") %>%
   filter(year == 2014) %>% 
   left_join(new, by = 'rgn_id')
 
@@ -1047,7 +1043,7 @@ new <- read.csv("output/comm_hb.csv") %>%
   filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
 
-old <- read.csv("../v2017/output/hb.csv") %>%
+old <- read.csv("../v2018/output/comm_hb.csv") %>%
   filter(year == 2014) %>% 
   left_join(new, by = 'rgn_id')
 
@@ -1059,7 +1055,7 @@ new <- read.csv("output/art_lb.csv") %>%
   filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
 
-old <- read.csv("../v2017/output/art.csv") %>%
+old <- read.csv("../v2018/output/art_lb.csv") %>%
   filter(year == 2014) %>% 
   left_join(new, by = 'rgn_id')
 
@@ -1071,8 +1067,8 @@ new <- read.csv("output/art_hb.csv") %>%
   filter(year == 2014) %>% 
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
 
-old <- read.csv("../../np_prs_poison_blast_fishing/v2013/data/blast_poison_3nm.csv") %>% 
-  dplyr::select(-year) %>% 
+old <- read.csv("../v2018/output/art_hb.csv") %>% 
+  dplyr::filter(year == 2014) %>% 
   left_join(new, by = 'rgn_id')
 
 plot(old$new_pressure_score, old$pressure_score)
@@ -1080,11 +1076,12 @@ abline(0, 1, col="red")
 
 ```
 
-Check for variation in data years for 2018 AY - esp. bycatch data
+Check for variation in data years for 2019 AY
 
 ```{r}
 
 ## Commercial Low Bycatch - 8/14/18 not much change from year to year within same assessment year
+##                        - 8/14/19 not much change from year to year within same assessment year
 new <- read.csv("output/comm_lb.csv") %>%
   filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
@@ -1098,18 +1095,20 @@ abline(0,1, col="red")
 
 
 ## Commercial High Bycatch - 8/14/18 not much variation from year to year within same assessment year
+##                         - 8/14/19 not much variation from year to year within same assessment year
 new <- read.csv("output/comm_hb.csv") %>%
   filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
 
 new2 <- read.csv("output/comm_hb.csv") %>%
-    filter(year == 2010) %>%
+    filter(year == 2013) %>%
   left_join(new, by = 'rgn_id')
 
 plot(new$new_pressure_score, new2$pressure_score)
 abline(0,1, col="red")
 
 ## Artisanal Low Bycatch - 8/14/18 not much variation from year to year within same assessment year
+##                       - 8/14/19 not much variation from year to year within same assessment year
 new <- read.csv("output/art_lb.csv") %>%
   filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
@@ -1122,6 +1121,7 @@ plot(new$new_pressure_score, new2$pressure_score)
 abline(0,1, col="red")
 
 ## Artisanal Low Bycatch - 8/14/18 not much variation from year to year within same assessment year
+##                       - 8/14/19 not much variation from year to year within same assessment year
 new <- read.csv("output/art_lb.csv") %>%
   filter(year == 2014) %>%
   dplyr::select(rgn_id, new_pressure_score = pressure_score) 
