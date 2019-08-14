@@ -97,6 +97,7 @@ source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/wor
 # Load data from Mazu
 sani_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2019/JMP_2019_WLD.csv"), header=FALSE, sep = ",", na.strings = c(NA, ''), stringsAsFactors = FALSE, strip.white = TRUE)  
 
+sani_raw_old <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2018/JMP_2017_WLD.csv"), header=FALSE, sep = ",", na.strings = c(NA, ''), stringsAsFactors = FALSE, strip.white = TRUE)
 
 ```
 
@@ -171,8 +172,7 @@ Add rgn_id and merge duplicate regions using a mean weighted by population.
 rgn_sani <- name_2_rgn(sani_improved, 
                         fld_name     = 'country',
                         flds_unique  = c('country','year')) 
-
-##Warning: These data were removed for not having any match in the lookup tables.
+# Non-matched regions: Eswatini (landlocked), Isle of Man (not reported in OHI), North Macedonia (landlocked), West Bank/Gaza (disputed)
 ## Check list in warning to make sure all countries removed are not of interest for the OHI global assesment. In this case West Bank and Gaza Strip is not considered because it is a disputed area and Isle of Man is not consider an OHI region. Eswatini and North Macedonia both come up but they are landlocked.
 
 ##Check for duplicate regions.
@@ -236,7 +236,6 @@ sani_gf_lm <- sani_gf %>%
   }) %>%
   dplyr::ungroup()
 
-summary(sani_gf_lm)
 
 sani_gf_lm <- sani_gf_lm %>%
   mutate(gf_lm = ifelse(gf_lm > 1, 1, gf_lm)) %>% # constrain predictions to <=1 
@@ -335,7 +334,18 @@ summary(sani_complete) # should be no more NAs
 
 write_csv(sani_complete, here("globalprep/prs_cw_pathogen/v2019/intermediate/sani_complete.csv"))
 
-sani_complete <- read_csv(here("globalprep/prs_cw_pathogen/v2019/intermediate/sani_complete.csv"))
+
+# Quick check with v2018 data
+sani_complete_old <- read_csv(here("globalprep/prs_cw_pathogen/v2018/intermediate/sani_complete.csv")) %>% 
+  rename(basic_sani_prop_2018 = basic_sani_prop) %>%
+  rename(gapfill_2018 = gapfill) %>% 
+  rename(method_2018 = method) %>% 
+  left_join(sani_complete, by=c("rgn_id", "year", "rgn_name"))
+
+ggplotly(ggplot(sani_complete_old, aes(x = basic_sani_prop, y = basic_sani_prop_2018, labels = rgn_id)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
+
 
 # save gapfilling info
 gf_data <- sani_complete %>%
@@ -366,7 +376,7 @@ First calculate coastal population density (people/km^2^) is calculated by divid
 population <- read_csv(here("globalprep/mar_prs_population/v2019/output/mar_pop_25mi.csv")) %>%
   dplyr::arrange(rgn_id, year)
 
-#Note: there is a difference between the list of islands with no population in the mar_pop_25mi dataset with the uninhabited list in github. In the mar_pop_25mi, rgn_id 144 - Jan Mayen is not identified as a pop_0 region while in the github list it is. Population data also considers Antartica (rgn_id 213) (NOTE: Jan Mayen as a max population of 35-51 people, we will view this as uninhabited for these purposes, along with region 157)
+#Note: there is a difference between the list of islands with no population in the mar_pop_25mi dataset with the uninhabited list in github. In the mar_pop_25mi, rgn_id 144 - Jan Mayen is not identified as a pop_0 region while in the low_pop list it is. Population data also considers Antartica (rgn_id 213) (NOTE: Jan Mayen as a max population of 35-51 people, we will view this as uninhabited for these purposes, along with region 157)
 
 
 #identify inhabited regions (popsum<100)
@@ -425,13 +435,14 @@ ref_calc <- unsani_pop %>%
   dplyr::summarise(ref= quantile(propWO_x_pop_log, probs=c(0.99), na.rm = TRUE)) %>% 
   .$ref
 
-##save to the master reference point list
-##(edit file if necessary)
-# master_refs <- read.csv("../../supplementary_information/v2018/reference_points_pressures.csv", stringsAsFactors = FALSE)
-# master_refs$ref_point[master_refs$pressure == "Sanitation"] <- ref_calc
-# write.csv(master_refs, "../../supplementary_information/v2018/reference_points_pressures.csv", row.names=FALSE)
+## save to the master reference point list - new folder might need to be created for assessment year if this file does not already exist.
+master_refs <- read.csv(here("globalprep/supplementary_information/v2018/reference_points_pressures.csv"), stringsAsFactors = FALSE)
 
-master_refs <- read.csv(here("globalprep/supplementary_information/v2018/reference_points_pressures.csv")) #do we need to update this for v2019? 
+master_refs$ref_point[master_refs$pressure == "Sanitation"] <- ref_calc
+
+write.csv(master_refs, "globalprep/supplementary_information/v2019/reference_points_pressures.csv", row.names=FALSE)
+
+master_refs <- read.csv(here("globalprep/supplementary_information/v2019/reference_points_pressures.csv")) 
 ref_value <- as.numeric(master_refs$ref_point[master_refs$pressure == "Sanitation"]) 
 #ref_value = 11
 
@@ -445,6 +456,15 @@ summary(unsani_prs)
 #Save data pressure scores 
 write_csv(unsani_prs, here("globalprep/prs_cw_pathogen/v2019/output/po_pathogen_popdensity25mi.csv"))
 
+# Compare to v2018 data
+
+unsani_prs_old <- read_csv(here("globalprep/prs_cw_pathogen/v2018/output/po_pathogen_popdensity25mi.csv")) %>%
+  rename(pressure_score_2018 = pressure_score) %>% 
+  left_join(unsani_prs, by=c("rgn_id", "year"))
+
+ggplotly(ggplot(unsani_prs_old, aes(x = pressure_score, y = pressure_score_2018, labels = rgn_id)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red"))
 
 ```
 
@@ -503,11 +523,11 @@ There is not a great correspondence between this year and last year's trend esti
 new <- read_csv(here("globalprep/prs_cw_pathogen/v2019/output/po_pathogen_popdensity25mi_trend.csv"))
 
 compare <- read_csv(here("globalprep/prs_cw_pathogen/v2018/output/po_pathogen_popdensity25mi_trend.csv")) %>%
-  select(rgn_id, year, old_trend = trend) %>%
+  select(rgn_id, year, trend_2018 = trend) %>%
   left_join(new, by=c('rgn_id', 'year'))
 
 
-ggplotly(ggplot(compare, aes(x = trend, y = old_trend, labels = rgn_id)) +
+ggplotly(ggplot(compare, aes(x = trend, y = trend_2018, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
@@ -535,6 +555,8 @@ abline(0,1, col="red")
 
 ### Pressure values
 We checked the main discrepancies and these were due to changes in source data.  Fairly small changes in access can lead to fairly large changes in pressure scores, depending on the population. There are slightly higher pressure scores this year (indicated by points tending to be above the 1-1 red line) due to modifications of reference point calculations.
+
+#v2019: doing this above
 
 ```{r, eval=FALSE}
 new <- read.csv("output/po_pathogen_popdensity25mi.csv")
