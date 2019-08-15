@@ -1363,7 +1363,8 @@ pot_aq_final <- pot_aq_int %>%
          potential_prod_one_percent_f = replace_na(potential_prod_one_percent_f, 0)) %>%
   mutate(potential_mar_tonnes = potential_prod_one_percent_b + potential_prod_one_percent_f) %>%
   arrange(rgn_id) %>%
-  dplyr::select(rgn_id, potential_mar_tonnes)
+  dplyr::select(rgn_id, potential_mar_tonnes) %>%
+  mutate(year = 2019)
 
 write_csv(pot_aq_final, file.path(dir_git, 'output/aq_potential_final.csv'))
 
@@ -1379,7 +1380,7 @@ pot_aq_final_gf <- pot_aq_final %>%
     potential_mar_tonnes == 0 ~ "missing regions given 0 value",
     potential_mar_tonnes > 0 ~ ""
   )) %>%
-  dplyr::select(rgn_id, gapfilled, method)
+  dplyr::select(rgn_id, gapfilled, method, year)
 
 write_csv(pot_aq_final_gf, file.path(dir_git, "output/aq_potential_gf.csv"))
 ```
