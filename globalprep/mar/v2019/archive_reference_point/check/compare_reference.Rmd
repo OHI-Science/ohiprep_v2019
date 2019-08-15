@@ -38,7 +38,7 @@ library(here)
 
 ## some OHI files
 source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
-dir_git_ref <- file.path(here(), "globalprep/mar/v2019/reference_point")
+dir_git_ref <- file.path(here(), "globalprep/mar/v2019/archive_reference_point")
 ```
 
 # Reference Point/ Status Comparison
