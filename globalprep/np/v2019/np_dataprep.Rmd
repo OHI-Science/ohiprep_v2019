@@ -19,7 +19,9 @@ output:
 This analysis converts FAO commodities data into data layers used to calculate OHI 2018 global natural products scores.  
 
 # Updates from previous assessment
-New year of FAO data (1976-2016), but no changes to general methods.
+New year of FAO data (1976-2016). To stabilize the model, we include only commodities with >= 4 non-zero/non-NA values within the most recent 10 years (vs. the entire time frame we previously used).
+
+For next year, consider only including commodities with USD value > 1.  This may further improve the stability of the model.
 
 ***
 
@@ -243,25 +245,29 @@ commodities <- commodities %>% np_lowdata_filter()
 ## Optional parameter with default: nonzero_h_yr_min = 4
 ## NOTE: This filter has consequences for the regression, but also has meaning in terms of 
 ## not inflicting a penalty on regions trying, and then stopping, an experimental harvest.
+
 UNgeorgn()
 
 commodities <- commodities %>% 
   add_georegion_id() %>%
   select(-territory, -admin_rgn_id, -admin_country_name, -Notes) %>% 
     rename(georgn_id = r2_label)
-
 ## Melanie's script to add a georegional ID tag based on country keys and IDs. Used to gap-fill based on decreasing granularity. 
+
 commodities <- commodities %>% np_regr_fill(years_back = 10, vars = 'td', scope = 'rgn_id')
 commodities <- commodities %>% np_regr_fill(vars = 'tdy', scope = 'georgn_id')
 commodities <- commodities %>% np_regr_fill(vars = 'tdy', scope = 'global')
+
 ## np_regr_fill() is a generalized regression gapfill function. Parameters (with defaults):
 ## * years_back=50 (int):     This determines how far back in the time series to include within the regression.
 ## * min_paired_obs=4 (int):  This determines how many paired observations are required to attempt a regression.
 ## * scope = 'rgn_id' (str):  ('rgn_id', 'georgn_id', 'global') Determines grouping scale for regression.
 ## * vars = 'tdy' (str):      ('td', 'tdy') Determines model: (tonnes ~ usd) or (tonnes ~ usd + year) [and vice versa]
+
 commodities <- commodities %>% np_end_fill()
 ## For final year of data, if both usd and tonnes originally reported as NA, pull forward
 ## values for usd and tonnes from the previous year.  This should happen after regression fill.
+
 h_comm <- commodities
 ## Store commodity-level data, before moving on to the product-level smoothing.
 ```
@@ -429,18 +435,19 @@ region_id   | region name  | change in status  | explanation
 # Look at raw data:
 new <- read.csv(here('globalprep/np/v2019/int/tonnes.csv'))
 old <- read.csv(here('globalprep/np/v2018/int/tonnes.csv')) 
-new_libya <- filter(new, rgn_id==67) %>%
+new_libya <- filter(new, rgn_id==110) %>%
   arrange(commodity, year) %>% 
   rename(tonnes_new = "tonnes")
-old_libya <- filter(old, rgn_id==67) %>%
+old_libya <- filter(old, rgn_id==110) %>%
   full_join(new_libya) %>%
-  arrange(commodity, year) 
+  arrange(commodity, year) %>%
+  filter(year>2000)
 
 read.csv(here("globalprep/np/v2019/output/np_harvest_weights_from_usd.csv")) %>%
-  filter(rgn_id==123)
+  filter(rgn_id==110)
 
 read.csv(here("globalprep/np/v2018/output/np_harvest_weights_from_usd.csv")) %>%
-  filter(rgn_id==123)
+  filter(rgn_id==110)
 
 old <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>%
   filter(rgn_id==123) %>%
