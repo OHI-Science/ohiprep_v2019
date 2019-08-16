@@ -476,7 +476,6 @@ add_georegion_id <- function(k) {
   #MNP (Northern Mariana Islands) and GUM (Guam)
   
   
-  UNgeorgn()
   georegion <- UNgeorgn
   #   unique(georegion$georgn_id[georegion$level=="r0"])  # 1 level
   #   unique(georegion$georgn_id[georegion$level=="r1"])  # 7 levels

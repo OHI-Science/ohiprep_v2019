@@ -1,0 +1,330 @@
+---
+title: "Alternative_gf"
+output: html_document
+---
+Currently this is a mess, but provides an alternative method of gapfilling.
+
+
+```{r}  
+
+
+# Step 1: if either usd or tonnes == 0, NA's are considered 0
+# Note: I consider this more record keeping than gapfilling so not labeled as such
+commodities_gf <- commodities_gf %>%
+  mutate(usd_gf = ifelse(tonnes==0 & is.na(usd), 0, usd_gf)) %>%
+  mutate(tonnes_gf = ifelse(usd==0 & is.na(tonnes), 0, tonnes_gf))
+
+summary(commodities_gf)          
+
+# Step 2: if both usd or tonnes are NA's then consider as zeroes
+## assumes that non-reporting indicates zero harvest to report.
+commodities_gf <- commodities_gf %>%
+  mutate(usd_gf = ifelse(is.na(tonnes) & is.na(usd), 0, usd_gf)) %>%
+  mutate(tonnes_gf = ifelse(is.na(usd) & is.na(tonnes), 0, tonnes_gf)) %>%
+  mutate(gapfilled = ifelse(is.na(tonnes) & is.na(usd), 1, NA)) %>%
+  mutate(method = ifelse(is.na(tonnes) & is.na(usd), "both NA values, given zero value", NA))
+
+summary(commodities_gf)          
+
+
+# limit data to year 2000, or greater.  Earlier data is not useful for the 
+# OHI model and may throw off regression estimates due to age of data.
+
+commodities_gf <- commodities_gf %>%
+  filter(year >= 2000)
+
+
+
+# ## Within country regressions to gapfill missing data
+# 
+# 
+# determine regions with >4 points that includ non-zero values of both usd and tonnes...we will not use this method to gapfill regions when
+# the sample size is less than this
+commodities_gf <- commodities_gf %>%
+  rowwise() %>%
+  mutate(total = sum(c(usd_gf, tonnes_gf) )) %>%
+  group_by(rgn_id, rgn_name, commodity) %>%
+  mutate(totalN = sum(total>0, na.rm=TRUE))
+
+
+commodities_gf <- commodities_gf %>%
+  group_by(rgn_id, rgn_name, commodity) %>%
+   do({if (max(.$totalN)>=4) {
+     mod <- lm(usd_gf ~ 0 + tonnes_gf, data = ., na.action=na.exclude)
+   predict_usd_lm = predict(mod, newdata=.["tonnes_gf"])
+   data.frame(., predict_usd_lm)
+   } else {
+     predict_usd_lm = rep(NA, dim(.)[1])
+     data.frame(., predict_usd_lm)
+   }})
+
+dim(commodities_gf)
+summary(commodities_gf)
+plot(commodities_gf$predict_usd_lm, commodities_gf$usd_gf)
+abline(0,1, col="red")
+
+commodities_gf <- commodities_gf %>%
+  mutate(gapfilled = ifelse(is.na(usd_gf) & !is.na(predict_usd_lm), 1, gapfilled)) %>%
+  mutate(method = ifelse(is.na(usd_gf) & !is.na(predict_usd_lm), "within country lm", method)) %>%
+  mutate(usd_gf = ifelse(is.na(usd_gf), predict_usd_lm, usd_gf))
+
+summary(commodities_gf)
+table(commodities_gf$method)
+
+# now predict for tonnes
+commodities_gf <- commodities_gf %>%
+  group_by(rgn_id, rgn_name, commodity) %>%
+   do({if (max(.$totalN)>=4) {
+     mod <- lm(tonnes_gf ~ 0 + usd_gf, data = ., na.action=na.exclude)
+   predict_tonnes_lm = predict(mod, newdata=.["usd_gf"])
+   data.frame(., predict_tonnes_lm)
+   } else {
+     predict_tonnes_lm = rep(NA, dim(.)[1])
+     data.frame(., predict_tonnes_lm)
+   }})
+
+dim(commodities_gf)
+summary(commodities_gf)
+plot(commodities_gf$predict_tonnes_lm, commodities_gf$tonnes_gf)
+abline(0,1, col="red")
+
+commodities_gf <- commodities_gf %>%
+  mutate(gapfilled = ifelse(is.na(tonnes_gf) & !is.na(predict_tonnes_lm), 1, gapfilled)) %>%
+  mutate(method = ifelse(is.na(tonnes_gf) & !is.na(predict_tonnes_lm), "tonnes gapfilled using within country linear model", method)) %>%
+  mutate(tonnes_gf = ifelse(is.na(tonnes_gf), predict_tonnes_lm, tonnes_gf))
+
+summary(commodities_gf)
+table(commodities_gf$method)
+
+
+
+###
+## Gapfill based on georegion relationships between usd and tonnes
+
+UNgeorgn()
+
+commodities_gf <- commodities_gf %>% 
+  left_join(UNgeorgn) %>%
+  select(-rgn_label, -r0_label) %>% 
+    rename(georgn_high_res = r2_label, georgn_low_res=r1_label)
+
+
+#### Higher resolution UN data
+# # determine samples for each georegion/commodity that include non-zero values of both usd and tonnes...we will not use this method to gapfill regions when
+# # the sample size is less than this
+
+commodities_gf <- commodities_gf %>%
+  rowwise() %>%
+  mutate(total = sum(c(usd_gf, tonnes_gf) )) %>%
+  group_by(georgn_high_res, commodity) %>%
+  mutate(totalN = sum(total > 0, na.rm=TRUE))
+hist(commodities_gf$totalN)
+
+## predict USD
+commodities_gf <- commodities_gf %>%
+    select(-predict_usd_lm, -predict_tonnes_lm) %>%
+  group_by(georgn_high_res, commodity) %>%
+   do({if (max(.$totalN)>=5) {
+     mod <- lm(usd_gf ~ 0 + tonnes_gf, data = ., na.action=na.exclude)
+   predict_usd_lm = predict(mod, newdata=.["tonnes_gf"])
+   data.frame(., predict_usd_lm)
+   } else {
+     predict_usd_lm = rep(NA, dim(.)[1])
+     data.frame(., predict_usd_lm)
+   }})
+
+dim(commodities_gf)
+summary(commodities_gf)
+plot(commodities_gf$predict_usd_lm, commodities_gf$usd_gf)
+abline(0,1, col="red")
+
+commodities_gf <- commodities_gf %>%
+  mutate(gapfilled = ifelse(is.na(usd_gf) & !is.na(predict_usd_lm), 1, gapfilled)) %>%
+  mutate(method = ifelse(is.na(usd_gf) & !is.na(predict_usd_lm), "usd gapfilled using r2 UN georegion linear model", method)) %>%
+  mutate(usd_gf = ifelse(is.na(usd_gf), predict_usd_lm, usd_gf))
+
+summary(commodities_gf)
+table(commodities_gf$method)
+
+
+
+## predict tonnes
+commodities_gf <- commodities_gf %>%
+  group_by(georgn_high_res, commodity) %>%
+   do({if (max(.$totalN)>=5) {
+     mod <- lm(tonnes_gf ~ 0 + usd_gf, data = ., na.action=na.exclude)
+   predict_tonnes_lm = predict(mod, newdata=.["usd_gf"])
+   data.frame(., predict_tonnes_lm)
+   } else {
+     predict_tonnes_lm = rep(NA, dim(.)[1])
+     data.frame(., predict_tonnes_lm)
+   }})
+
+dim(commodities_gf)
+summary(commodities_gf)
+plot(commodities_gf$predict_tonnes_lm, commodities_gf$tonnes_gf)
+abline(0,1, col="red")
+
+commodities_gf <- commodities_gf %>%
+  mutate(gapfilled = ifelse(is.na(tonnes_gf) & !is.na(predict_tonnes_lm), 1, gapfilled)) %>%
+  mutate(method = ifelse(is.na(tonnes_gf) & !is.na(predict_tonnes_lm), "tonnes gapfilled using r2 UN georegion linear model", method)) %>%
+  mutate(tonnes_gf = ifelse(is.na(tonnes_gf), predict_tonnes_lm, tonnes_gf))
+
+summary(commodities_gf)
+table(commodities_gf$method)
+
+
+
+#### Lower resolution UN data
+# # determine samples for each georegion/commodity that include non-zero values of both usd and tonnes...we will not use this method to gapfill regions when
+# # the sample size is less than this
+
+commodities_gf <- commodities_gf %>%
+  select(-predict_usd_lm, -predict_tonnes_lm) %>%
+  rowwise() %>%
+  mutate(total = sum(c(usd_gf, tonnes_gf) )) %>%
+  group_by(georgn_low_res, commodity) %>%
+  mutate(totalN = sum(total > 0, na.rm=TRUE))
+
+## predict USD
+commodities_gf <- commodities_gf %>%
+  group_by(georgn_low_res, commodity) %>%
+   do({if (max(.$totalN)>=5) {
+     mod <- lm(usd_gf ~ 0 + tonnes_gf, data = ., na.action=na.exclude)
+   predict_usd_lm = predict(mod, newdata=.["tonnes_gf"])
+   data.frame(., predict_usd_lm)
+   } else {
+     predict_usd_lm = rep(NA, dim(.)[1])
+     data.frame(., predict_usd_lm)
+   }})
+
+dim(commodities_gf)
+summary(commodities_gf)
+plot(commodities_gf$predict_usd_lm, commodities_gf$usd_gf)
+abline(0,1, col="red")
+
+commodities_gf <- commodities_gf %>%
+  mutate(gapfilled = ifelse(is.na(usd_gf) & !is.na(predict_usd_lm), 1, gapfilled)) %>%
+  mutate(method = ifelse(is.na(usd_gf) & !is.na(predict_usd_lm), "usd gapfilled using r1 UN georegion linear model", method)) %>%
+  mutate(usd_gf = ifelse(is.na(usd_gf), predict_usd_lm, usd_gf))
+
+summary(commodities_gf)
+table(commodities_gf$method)
+
+
+
+## predict tonnes
+commodities_gf <- commodities_gf %>%
+  group_by(georgn_low_res, commodity) %>%
+   do({if (max(.$totalN)>=5) {
+     mod <- lm(tonnes_gf ~ 0 + usd_gf, data = ., na.action=na.exclude)
+   predict_tonnes_lm = predict(mod, newdata=.["usd_gf"])
+   data.frame(., predict_tonnes_lm)
+   } else {
+     predict_tonnes_lm = rep(NA, dim(.)[1])
+     data.frame(., predict_tonnes_lm)
+   }})
+
+dim(commodities_gf)
+summary(commodities_gf)
+plot(commodities_gf$predict_tonnes_lm, commodities_gf$tonnes_gf)
+abline(0,1, col="red")
+
+commodities_gf <- commodities_gf %>%
+  mutate(gapfilled = ifelse(is.na(tonnes_gf) & !is.na(predict_tonnes_lm), 1, gapfilled)) %>%
+  mutate(method = ifelse(is.na(tonnes_gf) & !is.na(predict_tonnes_lm), "tonnes gapfilled using r1 UN georegion linear model", method)) %>%
+  mutate(tonnes_gf = ifelse(is.na(tonnes_gf), predict_tonnes_lm, tonnes_gf))
+
+summary(commodities_gf)
+table(commodities_gf$method)
+
+### global values
+
+commodities_gf <- commodities_gf %>%
+  select(-predict_usd_lm, -predict_tonnes_lm) %>%
+  rowwise() %>%
+  mutate(total = sum(c(usd_gf, tonnes_gf) )) %>%
+  group_by(commodity) %>%
+  mutate(totalN = sum(total > 0, na.rm=TRUE))
+
+## predict USD
+commodities_gf <- commodities_gf %>%
+  group_by(commodity) %>%
+   do({if (max(.$totalN)>=5) {
+     mod <- lm(usd_gf ~ 0 + tonnes_gf, data = ., na.action=na.exclude)
+   predict_usd_lm = predict(mod, newdata=.["tonnes_gf"])
+   data.frame(., predict_usd_lm)
+   } else {
+     predict_usd_lm = rep(NA, dim(.)[1])
+     data.frame(., predict_usd_lm)
+   }})
+
+dim(commodities_gf)
+summary(commodities_gf)
+plot(commodities_gf$predict_usd_lm, commodities_gf$usd_gf)
+abline(0,1, col="red")
+
+commodities_gf <- commodities_gf %>%
+  mutate(gapfilled = ifelse(is.na(usd_gf) & !is.na(predict_usd_lm), 1, gapfilled)) %>%
+  mutate(method = ifelse(is.na(usd_gf) & !is.na(predict_usd_lm), "USD gapfilled using global  linear model", method)) %>%
+  mutate(usd_gf = ifelse(is.na(usd_gf), predict_usd_lm, usd_gf))
+
+summary(commodities_gf)
+table(commodities_gf$method)
+
+
+
+## predict tonnes
+commodities_gf <- commodities_gf %>%
+  group_by(commodity) %>%
+   do({if (max(.$totalN)>=5) {
+     mod <- lm(tonnes_gf ~ 0 + usd_gf, data = ., na.action=na.exclude)
+   predict_tonnes_lm = predict(mod, newdata=.["usd_gf"])
+   data.frame(., predict_tonnes_lm)
+   } else {
+     predict_tonnes_lm = rep(NA, dim(.)[1])
+     data.frame(., predict_tonnes_lm)
+   }})
+
+dim(commodities_gf)
+summary(commodities_gf)
+plot(commodities_gf$predict_tonnes_lm, commodities_gf$tonnes_gf)
+abline(0,1, col="red")
+
+commodities_gf <- commodities_gf %>%
+  mutate(gapfilled = ifelse(is.na(tonnes_gf) & !is.na(predict_tonnes_lm), 1, gapfilled)) %>%
+  mutate(method = ifelse(is.na(tonnes_gf) & !is.na(predict_tonnes_lm), "tonnes gapfilled using global linear model", method)) %>%
+  mutate(tonnes_gf = ifelse(is.na(tonnes_gf), predict_tonnes_lm, tonnes_gf))
+
+summary(commodities_gf)
+table(commodities_gf$method)
+
+
+
+###################
+h_ci <- commodities %>% 
+  filter(rgn_id == 153) %>% 
+  filter(year != 2016)
+
+h_ci_2018 <- read_csv(here("globalprep/np/v2019/raw/h_ci_postgapfill.csv")) %>% 
+  filter(rgn_id==153)
+  
+  rename(usd_2018 = usd) %>% 
+  rename(tonnes_2018 = tonnes) %>% 
+  rename(gapfill_2018 = gapfill) %>% 
+  select(-rgn_name, -territory, -admin_rgn_id, -admin_country_name, -Notes, -georgn_id)
+
+h_ci_combine <- h_ci %>% 
+  left_join(h_ci_2018, by = c("rgn_id", "commodity", "product", "year")) %>% 
+  select(commodity, product, year, usd, usd_2018, tonnes, tonnes_2018, gapfill, gapfill_2018)
+
+#################
+
+## Output gapfilling report to .csv files.
+## Very few usd gapfilling, and none in recent years (data used to weight contributions), so will ignore this: gapfill=="regr2_u_gr"
+h_gap <- commodities %>%
+  mutate(gapfill = ifelse(gapfill == "regr2_u_gr", "none", gapfill)) %>%   # focusing only on tonnes gapfilling
+  select(rgn_id, commodity, product, year, gapfill)
+
+write.csv(h_gap, here('globalprep/np/v2019/output/np_harvest_tonnes_gf.csv'), row.names = FALSE, na = '')
+```

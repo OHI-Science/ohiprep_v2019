@@ -75,14 +75,13 @@ Simultaneously read and process FAO commodities value and quantity data.
 
 dir_fao_data <- file.path(dir_M, 'git-annex/globalprep/_raw_data/FAO_commodities/d2019')
 
-files <- list.files(dir_fao_data, pattern=glob2rx('*.csv'), full.names=T)
+files <- list.files(dir_fao_data, pattern=glob2rx('*.csv'), full.names=TRUE)
 
-for (f in files){ # f = files[1]
+for (f in files){ # f = files[2]
   cat(sprintf('\n\n\n====\nfile: %s\n', basename(f)))
   
   
   d <- read.csv(f, check.names=FALSE, strip.white=TRUE, stringsAsFactors = FALSE) #          stringsAsFactors=T
-
 # checks names syntactically, strips leading and trailing whitespace, prevents conversion of characters to factors 
 
   
@@ -191,16 +190,14 @@ commodities <- h_usd %>%
 ## clips out years prior to first reporting year, for each commodity per region
 commodities <- commodities %>% np_harvest_preclip
 
-###############
-comm_ornamentals_poly <- commodities %>% 
-  filter(commodity == "Ornamental saltwater fish") %>% 
-#  filter(year != 2016) %>%
-  filter(year > 2011) %>% 
-  filter(rgn_id %in% c(19, 146, 147, 151, 152, 153, 154, 155, 156, 161))
+# Correct a seeming error in FAO data, when one value is >0 and the other is 0
+# eg. rgn_id 153 Cook Islands, Ornamental saltwater fish, 2016, 12 USD and 0 tonnes
 
-summary(comm_ornamentals)
-unique(comm_ornamentals$rgn_name)
-#############
+commodities <- commodities %>%
+  mutate(usd = ifelse(tonnes>0 & usd==0, NA, usd)) %>%
+  mutate(tonnes = ifelse(usd>0 & tonnes == 0, NA, tonnes))
+
+
 ```
 
 # Gapfilling 
@@ -214,7 +211,7 @@ Summary of gapfilling that is performed:
  * Regression fill third pass: Where passes 1 and 2 failed, use global-scale data to create  regression models (tonnes ~ usd + year, and vice versa) for gapfilling.  100% success.
  * End-fill:  For years where NAs still exist in final year, carry forward data from prior year (after other gapfilling techniques).
 
-```{r}  
+```{r}
 
 commodities <- commodities %>% np_harvest_gapflag  
 ## Adds flag for required gap-filling, based upon NAs in data. 
@@ -233,7 +230,6 @@ data_check <- commodities %>% np_datacheck()
 ##   unique_pairs:     lesser of usd_unique_pairs and tns_unique_pairs
 ##   count_no_data:    number of paired NAs - years with no value reported
 
-
 commodities <- commodities %>% np_zerofill
 ## for post-reporting years with NA for both tonnes and USD, fill zero - 
 ## assumes that non-reporting indicates zero harvest to report.
@@ -244,12 +240,14 @@ commodities <- commodities %>% np_lowdata_filter()
 ## Optional parameter with default: nonzero_h_yr_min = 4
 ## NOTE: This filter has consequences for the regression, but also has meaning in terms of 
 ## not inflicting a penalty on regions trying, and then stopping, an experimental harvest.
+UNgeorgn
 
-commodities <- commodities %>% add_georegion_id() %>%
+commodities <- commodities %>% 
+  add_georegion_id() %>%
   select(-territory, -admin_rgn_id, -admin_country_name, -Notes) %>% 
     rename(georgn_id = r2_label)
-## Melanie's script to add a georegional ID tag based on country keys and IDs. Used to gap-fill based on decreasing granularity. 
 
+## Melanie's script to add a georegional ID tag based on country keys and IDs. Used to gap-fill based on decreasing granularity. 
 commodities <- commodities %>% np_regr_fill(years_back = 10, vars = 'td', scope = 'rgn_id')
 commodities <- commodities %>% np_regr_fill(vars = 'tdy', scope = 'georgn_id')
 commodities <- commodities %>% np_regr_fill(vars = 'tdy', scope = 'global')
@@ -258,40 +256,12 @@ commodities <- commodities %>% np_regr_fill(vars = 'tdy', scope = 'global')
 ## * min_paired_obs=4 (int):  This determines how many paired observations are required to attempt a regression.
 ## * scope = 'rgn_id' (str):  ('rgn_id', 'georgn_id', 'global') Determines grouping scale for regression.
 ## * vars = 'tdy' (str):      ('td', 'tdy') Determines model: (tonnes ~ usd) or (tonnes ~ usd + year) [and vice versa]
-
 commodities <- commodities %>% np_end_fill()
 ## For final year of data, if both usd and tonnes originally reported as NA, pull forward
 ## values for usd and tonnes from the previous year.  This should happen after regression fill.
-
 h_comm <- commodities
 ## Store commodity-level data, before moving on to the product-level smoothing.
-
-###################
-h_ci <- commodities %>% 
-  filter(rgn_id == 153) %>% 
-  filter(year != 2016)
-
-h_ci_2018 <- read_csv(here("globalprep/np/v2019/raw/h_ci_postgapfill.csv")) %>% 
-  rename(usd_2018 = usd) %>% 
-  rename(tonnes_2018 = tonnes) %>% 
-  rename(gapfill_2018 = gapfill) %>% 
-  select(-rgn_name, -territory, -admin_rgn_id, -admin_country_name, -Notes, -georgn_id)
-
-h_ci_combine <- h_ci %>% 
-  left_join(h_ci_2018, by = c("rgn_id", "commodity", "product", "year")) %>% 
-  select(commodity, product, year, usd, usd_2018, tonnes, tonnes_2018, gapfill, gapfill_2018)
-
-#################
-
-## Output gapfilling report to .csv files.
-## Very few usd gapfilling, and none in recent years (data used to weight contributions), so will ignore this: gapfill=="regr2_u_gr"
-h_gap <- commodities %>%
-  mutate(gapfill = ifelse(gapfill == "regr2_u_gr", "none", gapfill)) %>%   # focusing only on tonnes gapfilling
-  select(rgn_id, commodity, product, year, gapfill)
-
-write.csv(h_gap, here('globalprep/np/v2019/output/np_harvest_tonnes_gf.csv'), row.names = FALSE, na = '')
 ```
-
 # Final Data Wranglng
 
 ## Summarize values

@@ -295,9 +295,9 @@
 "Estonia",70,"Miscellaneous corals and shells","shells",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,0.1,0.1,8,1,0.1,1,0.1,0.1,0.1,0.1,1,2
 "Estonia",70,"Natural sponges other than raw","sponges",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,0.1,0,0,0,0,0.1,1,0.1,1
 "Estonia",70,"Other seaweeds and aquatic plants and products thereof","seaweeds",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,140,108,87,111,105,121,99,87,103,265,238,19,74,15,0,0,0,0,0
-"Estonia",70,"Seaweeds and other algae, unfit for human consumption, nei","seaweeds",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,0,1,1,13
+"Estonia",70,"Seaweeds and other algae, unfit for human consumption, nei","seaweeds",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,492.58175371337,1,1,13
 "Estonia",70,"Z_TOTAL","fish_oil",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,11,4,15,9,3,2,2,15,12,24,17,3,21,39,170,77,34,44,34,32,44,31,39,44.1
-"Estonia",70,"Z_TOTAL","seaweeds",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,637,579,706,1160,763,482,161,440,581,715,590,48,334,167,72,12,1,1.1,15
+"Estonia",70,"Z_TOTAL","seaweeds",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,637,579,706,1160,763,482,161,440,581,715,590,48,334,167,72,504.58175371337,1,1.1,15
 "Estonia",70,"Z_TOTAL","shells",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,0.1,0.1,8,1,0.1,1,0.1,0.1,0.1,0.1,1,2
 "Estonia",70,"Z_TOTAL","sponges",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,0.1,0,0,0,0,0.1,1,0.1,1
 "Faeroe Islands",141,"Fish body oils, nei","fish_oil",2155,2438,2469,1158,2707,2038,1097,2773,3020,4548,1724,1699,5276,1947,698,783,3307,5448,2971,2549,3967,3245,949,1374,322,451,570,386,3446,2279,484,2272,75,677,2236,565,0,9100,4300,0,0
@@ -966,9 +966,9 @@
 "Saint Lucia",122,"Z_TOTAL","seaweeds",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,1,0,28,10,13,10,10,1,0,0.1,0.1,0,1,0,0,0,0,0,0
 "Saint Vincent and the Grenadines",127,"Coral and the like","corals",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,4,0,0.1,0,0,1,0,0,0,0.1,0,0,0.1,0,0,0,0,0
 "Saint Vincent and the Grenadines",127,"Fish body oils, nei","fish_oil",NA,NA,NA,NA,NA,7,0,0,1,1,3,3,0,0,0,0,0,0,0,1,0,0,0,2,1,1,1,1,0.1,2,0,0,0,0,0,0,0,0,0,0,0
-"Saint Vincent and the Grenadines",127,"Fish liver oils, nei","fish_oil",1,0,0,0,0,0,0,0,3,1,4,4,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0.1,0,0,0,0.1,0,0,0,0,0,1,0,0
+"Saint Vincent and the Grenadines",127,"Fish liver oils, nei","fish_oil",1,0,0,0,0,0,0,0,3,1,4,4,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0.1,0,0,0,0.1,0,0,0,0,1.10422816702645,1,1.07420610572695,0
 "Saint Vincent and the Grenadines",127,"Z_TOTAL","corals",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,4,0,0.1,0,0,1,0,0,0,0.1,0,0,0.1,0,0,0,0,0
-"Saint Vincent and the Grenadines",127,"Z_TOTAL","fish_oil",1,0,0,0,0,7,0,0,4,2,7,7,0,0,0,0,0,0,0,1,0,0,0,3,1,1,1,1,0.2,2,0,0,0.1,0,0,0,0,0,1,0,0
+"Saint Vincent and the Grenadines",127,"Z_TOTAL","fish_oil",1,0,0,0,0,7,0,0,4,2,7,7,0,0,0,0,0,0,0,1,0,0,0,3,1,1,1,1,0.2,2,0,0,0.1,0,0,0,0,1.10422816702645,1,1.07420610572695,0
 "Samoa",152,"Miscellaneous corals and shells","shells",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,60,0,0.1,1,0,0,0,0,0.1,0,0,0.1
 "Samoa",152,"Ornamental fish nei","ornamentals",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,18,2,6,11,26,0,0.1,1,0.1,0.1,0.1,0,1,0.1,0,48,0,0,0,0,0,0
 "Samoa",152,"Z_TOTAL","ornamentals",NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,18,2,6,11,26,0,0.1,1,0.1,0.1,0.1,0,1,0.1,0,48,0,0,0,0,0,0
