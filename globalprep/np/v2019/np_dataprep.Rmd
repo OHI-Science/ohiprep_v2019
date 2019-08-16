@@ -187,6 +187,9 @@ commodities <- h_usd %>%
     mutate(commodity = as.character(commodity)) %>%
     arrange(rgn_id, product, commodity, year)
 
+filter(commodities, rgn_id==123 & year>2000)
+
+
 ## clips out years prior to first reporting year, for each commodity per region
 commodities <- commodities %>% np_harvest_preclip
 
@@ -236,11 +239,11 @@ commodities <- commodities %>% np_zerofill
 ## Also cross-fills zeros where one side is 0, other is NA (not flagged as gapfill)
 
 commodities <- commodities %>% np_lowdata_filter()
-## Exclude commodities (within a region) that have few non-zero data points.
+## Exclude commodities (within a region) that have few non-zero data points during past 10 years.
 ## Optional parameter with default: nonzero_h_yr_min = 4
 ## NOTE: This filter has consequences for the regression, but also has meaning in terms of 
 ## not inflicting a penalty on regions trying, and then stopping, an experimental harvest.
-UNgeorgn
+UNgeorgn()
 
 commodities <- commodities %>% 
   add_georegion_id() %>%
@@ -430,7 +433,24 @@ new_libya <- filter(new, rgn_id==67) %>%
   arrange(commodity, year) %>% 
   rename(tonnes_new = "tonnes")
 old_libya <- filter(old, rgn_id==67) %>%
-  arrange(commodity, year)
+  full_join(new_libya) %>%
+  arrange(commodity, year) 
+
+read.csv(here("globalprep/np/v2019/output/np_harvest_weights_from_usd.csv")) %>%
+  filter(rgn_id==123)
+
+read.csv(here("globalprep/np/v2018/output/np_harvest_weights_from_usd.csv")) %>%
+  filter(rgn_id==123)
+
+old <- read.csv(here("globalprep/np/v2018/output/np_harvest_tonnes.csv")) %>%
+  filter(rgn_id==123) %>%
+  rename(old_tonnes=tonnes)
+
+tmp <- read.csv(here("globalprep/np/v2019/output/np_harvest_tonnes.csv")) %>%
+  filter(rgn_id==123) %>%
+  full_join(old) %>%
+  arrange(product, year)
+tmp  
 
 libya_compare <- old_libya %>% 
 left_join(new_libya, by = c("commodity","year","rgn_id","rgn_name","product"))
