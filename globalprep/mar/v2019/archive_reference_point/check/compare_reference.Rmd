@@ -289,7 +289,6 @@ georegions <- ohicore::georegions
     dplyr::left_join(pot_aq_final, by = c('rgn_id')) %>%
        # dplyr::mutate(mar_pop = sust_tonnes_sum / popsum) %>%
     dplyr::ungroup()
-  summary(ry_new_rules)
   
   ry_new_rules = ry_new_rules %>%
     dplyr::mutate(status = ifelse(sust_tonnes_sum / potential_mar_tonnes  > 1,
