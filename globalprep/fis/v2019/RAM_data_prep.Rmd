@@ -1,0 +1,370 @@
+---
+title: "OHI 2018: Food Provision/Fisheries, Preparing RAM B/Bmsy data"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+# Summary
+
+This script prepares the RAM B/Bmsy data:
+1. Relevant data are collected from the RAM database
+2. Missing years are gapfilled when appropriate
+3. RAM and Watson species names are harmonized in a few cases
+4. RAM stocks are associated with the corresponding OHI and FAO regions
+
+
+## Updates from previous assessment
+
+After Jamie consulted with Daniel Hively, the research scientist currently working on the RAM Legacy Database, we decided it was best to use the `timeseries_values_views` table instead of the `timeseries` table. The former contains data using the most recent year of assessments for each stock. The original `timeseries` table now contains multiple assessments for the same stock. Since this table didn't have an `assessid` we shifted to using `stockid` to join the relational databases. Furthermore, to extract the previous `BdivBmsytouse-dimensionless` values from `timeseries`, we now combined `TBdivTBmsy` and `SSBdivSSBmsy` values based on the definition of the `BdivBmsytouse-dimensionless` in the `tsmetrics` table: **"General biomass time series relative to msy reference point (TB/TBmsy, or SSB/SSBmsy otherwise)"**.
+
+This year we have additional stocks without spatial information from Christopher Free (2017). We manually assigned ohi and fao region id information to the additional stocks in `fao_ohi_rgns.Rmd` using best available information on stock distribution and saved the file in `int/RAM_fao_ohi_rgns.csv`. Watson species names should be similar if not the same as the SAUP species names used prior this the 2018 assessment. 
+
+
+***
+
+# Data
+## B/Bmsy values from stock assessments 
+
+Reference: [RAM Legacy Stock Assessment Database](http://ramlegacy.org) v4.40 (6-4-2018) Shared with us by folks at UW.
+
+* Description: B/Bmsy value by stock and year (other data, which we do not use, are also available in the database)
+* Native data resolution: stock (fish stock, species and region specific)
+* Time range: 1950 - 2016
+* Format: R data files (.rds)
+
+
+## Stock range data 
+Reference: Christopher M. Free. 2017. Mapping fish stock boundaries for the original Ram Myers stock-recruit database. https://marine.rutgers.edu/~cfree/mapping-fish-stock-boundaries-for-the-original-ram-myers-stock-recruit-database/. downloaded 9/25/2017.
+
+* Downloaded: 8/20/2018
+* Description: Shapefiles for each stock describing their distribution
+* Native data resolution: Spatial shapefiles
+* Format: Shapefiles
+
+***
+
+## Setup
+
+``` {r setup, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
+```
+
+```{r, eval = FALSE}
+
+## Libraries
+library(dplyr)
+library(tidyr)
+library(readr)
+library(sf)
+library(ggplot2)
+library(here) 
+
+## highlight out when knitting
+#setwd(here::here("globalprep","fis","v2018"))
+
+source('../../../src/R/common.R')
+
+## Paths for data
+path_raw_data = file.path(dir_M, "git-annex/globalprep/fis/v2018/int/annual_catch")
+
+```
+
+## Obtain RAM B/Bmsy data
+
+The data is stored as a relational database in an R object. Check that the names of each element have not changed from last year! Update as appropriate in the below list. 
+
+The following tables are included (for full list, see loadDBdata.r in mazu):  
+
+1. timeseries  
+The time series data is a data frame containing all assessments conducted per stock with the following headers/columns:  
+(1) assessid (2) stockid (3) stocklong (4) tsid (5) tsyear (6) tsvalue
+
+2. bioparams  
+The time series data is a data frame with the following headers/columns:  
+(1) assessid (2) stockid (3) stocklong (4) bioid (5) biovalue (6) bioyear (7) bionotes  
+
+3.  timeseries_values_views  
+This stores the timeseries values, using the most recent assessment available, with timeseries type along the columns (stockid, stocklong, year, TBbest, TCbest, ERbest, BdivBmsypref, UdivUmsypref, BdivBmgtpref, UdivUmgtpref, TB, SSB, TN, R,
+TC, TL, F, ER, TBdivTBmsy, SSBdivSSBmsy, FdivFmsy, ERdivERmsy, Btouse, Ctouse, Utouse, B/Bmsytouse, U/Umsytouse,
+TB/TBmgt, SSB/SSBmgt, F/Fmgt, ER/ERmgt, B/Bmgttouse, U/Umgttouse) and stocks along the rows
+
+4. timeseries_units_views  
+This stores the timeseries units (or time series source for touse time series), with timeseries type
+along the columns (TB, SSB, TN, R, TC, TL, F, ER) and stocks along the rows
+
+5. timeseries_id_views  
+This stores the timeseries ids with timeseries id along the columns (TB, SSB, TN, R,
+TC, TL, F, ER, TB/TBmsy, SSB/SSBmsy, F/Fmsy, ER/ERmsy, Btouse, Ctouse, Utouse, B/Bmsytouse, U/Umsytouse,
+TB/TBmgt, SSB/SSBmgt, F/Fmgt, ER/ERmgt, B/Bmgttouse, U/Umgttouse) and stocks along the rows
+
+6. bioparams_values_views  
+This stores the bioparams values, with bioparam type along the columns
+(TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TB0, SSB0, M, Bmsytouse, Umsytouse, TBmgt, SSBmgt, Fmgt, ERmgt,
+Bmgttouse, Umgttouse) and stocks along the rows
+
+7. bioparams_units_views  
+This stores the bioparams units (or parameter source for touse parameters), with bioparam type
+along the columns (TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TB0, SSB0, M, TBmgt, SSBmgt, Fmgt, ERmgt) and
+stocks along the rows
+
+8. bioparams_ids_views  
+This stores the bioparams ids, with bioparam id along the columns
+(TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TB0, SSB0, M, Bmsytouse, Umsytouse, TBmgt, SSBmgt, Fmgt, ERmgt,
+Bmgttouse, Umgttouse) and stocks along the rows
+
+9. metadata  
+This stores assorted metadata associated with the stock, with datatypes along the columns
+(assessid, stockid, stocklong, scientificname, FisheryType, region, areaid, areaname,
+assessorid, mgmt, management authority) and stock by row
+
+10. tsmetrics
+Contains metadata, such as definitions and units, of `tsid` values in `timeseries` table.
+
+
+For this data prep we primarily use and consult `timeseries_values_views`, `tsmetrics`, and `metadata`
+```{r load_data, eval = FALSE}
+
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
+
+ram_bmsy <- timeseries_values_views %>%
+  select(stockid, year, TBdivTBmsy, SSBdivSSBmsy) %>% 
+  mutate(ram_bmsy = ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy)) %>% 
+  dplyr::filter(year > 1979) %>%
+  filter(!is.na(ram_bmsy)) %>% 
+  dplyr::select(stockid, year, ram_bmsy)
+
+```
+
+For future reference: Consider using management B/Bmsy values in next year's assessment.
+
+Note: In the past, we have used the B/Bmsy to use, dimensionless (BdivBmsytouse-dimensionless) values in the `timeseries_values_views` data table. According to `tsmetrics` table, this consists of TB/TBmsy (TBdivTBmsy) otherwise if NA, SSB/SSBmsy (SSBdivSSBmsy). B/Bmsy preferred values (BdivBmsypref) uses B/Bmsy (BdivBmsytouse) preferably, but if NA, then uses B/Bmgt (BdivBmgttouse) values as a substitute. The below table filters for the stocks that use BdivBmgttouse values, not currently incorporated in OHI Global from RAM. Any missing fisheries stocks are currently gapfilled instead. Investigate use of these B/Bmgt values next year. Many of them are around Iceland or European stocks.
+```{r, eval = FALSE}
+
+## Filter for rows where there is no B/Bmsy to use (TB/Tbmsy or SSB/SSBmsy) values.
+## For B/Bmsypref values, when B/Bmsy is NA, then it takes B/Bmgt values instead
+test <- timeseries_values_views %>% 
+  filter(!is.na(BdivBmsypref) & is.na(SSBdivSSBmsy) & is.na(TBdivTBmsy))
+
+## All these stocks are those that have B/Bmgt values
+unique(test$stockid)
+
+## Save into a data frame
+species_list <- test %>% 
+  select(stockid,stocklong) %>% 
+  unique() #96 unique stocks that don't currently get used in the OHI GLobal. Consider using next year
+
+write.csv(species_list, "int/RAM_addl_mgt_stocks.csv", row.names = FALSE)
+
+```
+
+## Gapfill RAM data when there are missing years
+
+For each stock: 
+- Missing years are gapfilled using a linear regression model that includes data from 2001 to 2015 (2015 is the final year of Watson data). To be included in the gapfilling, there have to be 5 or more years of B/Bmsy data occuring over the last 11 years of data, from 2005 to 2015.
+- We convert any predicted RAM B/Bmsy value less than the minimum observed B/Bmsy value to that the minimum observed value, as there are some negative predicted values.
+
+Summary: 
+- There are 389 RAM stocks with at least 5 years of B/Bmsy data from 2005 to 2015. 
+- 205 of these stocks have at least 1 year of gapfilled data.  
+- A few of the predicted B/Bmsy values go below zero. We convert anything with a RAM B/Bmsy value < 0.0026 to 0.0026, which is the minimum observed B/Bmsy value in the data.
+
+```{r gapfill, eval = FALSE}
+
+## gapfill ram_bmsy
+ram_gf_check <- ram_bmsy %>%
+  filter(year >= 2001) %>%
+  spread(year, ram_bmsy) 
+## based on this it seams reasonable to gap-fill missing values
+
+# identify stocks for gapfilling (those with 5 or more years of data since 2005).
+# NOTE: we potentially gapfill to 2001, but we want stocks with adequate *recent* data 
+ram_bmsy_gf <- ram_bmsy %>%
+  filter(year >= 2001 & year <= 2015) %>%   # 2015 corresponds to the final year of Watson catch data
+  group_by(stockid) %>%
+  mutate(years_data_2005_now = length(ram_bmsy[year >= 2005])) %>%
+  mutate(years_data_2001_now = length(ram_bmsy[year >= 2001])) %>%
+  ungroup() %>%
+  filter(years_data_2005_now >= 5)
+
+## Get rows for stocks/years with no B/Bmsy (identified as NA B/Bmsy value for now)
+ram_bmsy_gf <- ram_bmsy_gf %>%
+  spread(year, ram_bmsy) %>% 
+  gather("year", "ram_bmsy", -stockid, -years_data_2005_now, -years_data_2001_now) %>%
+  mutate(year = as.numeric(year)) 
+
+## gapfilling record keeping
+ram_bmsy_gf <- ram_bmsy_gf %>%   
+  mutate(gapfilled = NA) %>%
+  mutate(gapfilled = ifelse(years_data_2001_now == 15, gapfilled, 
+                            paste(15 - years_data_2001_now, "years gf", sep = " ")))
+
+## see unique values of stocks
+tmp <- ram_bmsy_gf %>%
+  dplyr::select(stockid, gapfilled) %>%
+  unique()
+
+## check out gapfilling stats
+length(tmp$gapfilled)   # 296 stocks with at least 5 years of data in past 11 years
+table(tmp$gapfilled)    
+sum(table(tmp$gapfilled))  # 216 stocks have at least one year of B/Bmsy values gapfilled
+
+## regression model for prediction for each stock
+ram_bmsy_gf <- ram_bmsy_gf %>%
+  group_by(stockid) %>%
+  do({
+    mod <- lm(ram_bmsy ~ year, data=.)  
+    ram_bmsy_predict <- predict(mod, newdata=.[c('year')])
+    data.frame(., ram_bmsy_predict)
+  }) %>%
+  ungroup()
+
+summary(ram_bmsy_gf) # a few of the predicted B/Bmsy values go below zero.  
+
+## We convert anything with a RAM BBmsy value < 0.0026 to 0.0026, which is the minimum observed B/Bmsy value in the data; add method documentation
+ram_bmsy_gf <- ram_bmsy_gf %>%
+  mutate(ram_bmsy_predict = ifelse(ram_bmsy_predict < 0.0026, 0.0026, ram_bmsy_predict)) 
+
+## gapfilling record keeping
+ram_bmsy_gf_final <- ram_bmsy_gf %>%
+  mutate(method = ifelse(is.na(ram_bmsy), paste0("lm, ", gapfilled), NA)) %>%
+  mutate(gapfilled = ifelse(is.na(ram_bmsy), "1", "0")) %>%
+  mutate(ram_bmsy = ifelse(is.na(ram_bmsy), ram_bmsy_predict, ram_bmsy)) %>%
+  dplyr::select(stockid, year, ram_bmsy, gapfilled, method) 
+
+write.csv(ram_bmsy_gf_final, "int/ram_stock_bmsy_gf.csv", row.names=FALSE)
+
+```
+
+Get a general idea of how well the model predicts missing data based on observed and model predicted values.  This model appears to do fairly well. 
+```{r gf error est, eval=FALSE}
+
+plot(ram_bmsy_gf$ram_bmsy, ram_bmsy_gf$ram_bmsy_predict)
+abline(0,1, col="red")
+
+plot(log(ram_bmsy_gf$ram_bmsy), log(ram_bmsy_gf$ram_bmsy_predict))
+abline(0,1, col="red")
+
+mod <- lm(ram_bmsy ~ ram_bmsy_predict, data=ram_bmsy_gf)
+summary(mod)
+```
+
+## Standardize species names
+
+In most cases, the RAM and Watson data use the same species names, but there are a few exceptions.  The following code identifies species in the RAM data that are not in the Watson data. In these cases, different species names may be used (although not necessarily because some of the species may be present in RAM, but not Watson, for other reasons). For these species, I used fishbase to explore synonyms and create a table to harmonize the RAM species names with the Watson species names (saved as: int/RAM_species_to_Watson.csv).
+
+```{r name harmonize, eval = FALSE}
+
+# get list of RAM species, scientific name
+ram_sp <- ram_bmsy_gf_final %>%
+  left_join(data.frame(metadata), by = "stockid") %>%
+  dplyr::select(scientificname) %>%
+  unique() %>%
+  arrange(scientificname)
+
+# Watson species, sci name (read in the datatable that includes TaxonKey)
+wat_sp <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2018/int/stock_catch_by_rgn_taxa.csv')) %>% 
+  dplyr::rename(wat_scientificname = TaxonName) %>%
+  dplyr::select(wat_scientificname) %>%
+  unique() %>%
+  arrange(wat_scientificname)
+
+# compare names - what's in RAM that's not in Watson
+tmp <- sort(setdiff(ram_sp$scientificname, wat_sp$wat_scientificname))
+tmp2 <- sort(setdiff(wat_sp$wat_scientificname, ram_sp$scientificname))
+
+write.csv(tmp, "int/unmatched_RAM_species.csv", row.names=FALSE)
+write.csv(tmp2, "int/Watson_species_no_RAM.csv", row.names=FALSE)
+
+# Then I hand-looked up each of the missing ones to generate this list - most still unmatched
+ram_name_corr <- read.csv("int/RAM_species_to_Watson.csv", stringsAsFactors = FALSE) %>%
+   filter(!is.na(Watson_species))  # Watson to RAM name conversion
+
+ram_name_corr # matched species, only 6
+
+```
+
+
+## Identify FAO and OHI regions for RAM stocks
+
+Identify the FAO/OHI regions where each RAM stock is located (fao and ohi regions are assigned to RAM Data in [fao_ohi_rgns.Rmd](https://mazu.nceas.ucsb.edu/rstudio/files/github/ohiprep_v2018/globalprep/fis/v2018/fao_ohi_rgns.html).
+
+If there are many differences between RAM spatial file and RAM metadata, check the fao_ohi_rgns.Rmd prep again. 
+
+
+```{r final, eval = FALSE}
+
+## Read in RAM spatial stocks file
+ram_spatial <- read.csv("int/RAM_fao_ohi_rgns.csv", stringsAsFactors = FALSE)
+
+ram_meta <- metadata %>% 
+  dplyr::select(stockid, stocklong, scientificname)
+
+setdiff(ram_spatial$stockid, ram_meta$stockid) # make sure all the spatial data has corresponding metadata (should be 0)
+
+# join with metadata to get scientific name
+ram_spatial <- ram_spatial %>%
+  select(-stocklong) %>%
+  left_join(ram_meta, by = c("stockid")) %>%
+  rename(RAM_species = scientificname)
+
+```
+
+
+
+### Final formatting
+
+Harmonize names between RAM and Watson data.
+```{r, eval=FALSE}
+
+# correct names in a few cases to match with Watson names
+ram_name_corr <- read.csv("int/RAM_species_to_Watson.csv", stringsAsFactors = FALSE) %>%
+  filter(!is.na(Watson_species))  # Watson to RAM name conversion
+
+ram_spatial <- ram_spatial %>%
+  left_join(ram_name_corr, by="RAM_species") %>%
+  dplyr::mutate(species = ifelse(!is.na(Watson_species), Watson_species, RAM_species)) %>%
+  dplyr::select(rgn_id, fao_id, stockid, stocklong, species, RAM_area_m2)
+
+length(unique(ram_spatial$stockid)) # 345 RAM stocks with B/Bmsy data
+
+## filter out the regions that are not in an eez
+# ram_spatial <- filter(ram_spatial, rgn_id < 250)
+# length(unique(ram_spatial$stockid))
+```
+
+
+Re-name `stockid` column to `stockid_ram` and create new column `stockid` that matches with the `stockid` column in the CMSY data table prepared in [calculate_bbmsy.Rmd](https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/calculate_bbmsy.html).
+
+```{r, eval = FALSE}
+## Combine RAM spatial data with B/Bmsy data
+ram_bmsy_gf <- read.csv("int/ram_stock_bmsy_gf.csv")
+
+# check every stock has a location:
+setdiff(ram_bmsy_gf$stockid, ram_spatial$stockid) # should be 0: every ram stock should have ohi/fao rgn
+setdiff(ram_spatial$stockid, ram_bmsy_gf$stockid) # these are stocks that were dropped due to insufficient years of data
+
+ram_data <- ram_bmsy_gf %>% 
+  left_join(ram_spatial, by="stockid") %>%
+  rename(stockid_ram = stockid) %>% 
+  dplyr::mutate(stockid = paste(species, fao_id, sep="-")) %>%
+  dplyr::mutate(stockid = gsub(" ", "_", stockid)) %>%
+  dplyr::select(rgn_id, stockid, stockid_ram, stocklong, year, RAM_area_m2, ram_bmsy, gapfilled, method) %>%
+  unique()
+
+write.csv(ram_data, "int/ram_bmsy.csv", row.names=FALSE)
+
+```

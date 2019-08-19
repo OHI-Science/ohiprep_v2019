@@ -1,0 +1,500 @@
+---
+title: "OHI 2018: Food Provision, Investigate Differences"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+# Summary
+
+Data check during data prep.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# Setup
+```{r}
+
+## Libraries
+library(dplyr)
+library(tidyr)
+library(readr)
+library(sf)
+library(ggplot2)
+library(stringr)
+library(here) 
+setwd(here::here("globalprep","fis","v2018"))
+
+source('../../../src/R/common.R')
+
+```
+
+# Initial Exploration of RAM v4.40 and RAM v3.80 Differences
+
+Note: When loading old and new, make sure to clear environment if there is evera  situation where you are unsure whether the table you are wrangling with is from the new or old data (they have diff table names, so not all get replaced when loading a new version of RAM).
+
+## Compare `metadata` to `timeseries` for both new and old versions
+
+Save New and Old RAM metadata and timeseries data to unqiue variables for comparison. Old data checks out but new data has more unqiue `assessid` and `stockid` entries in the `timeseries` data than in the `metadata`. 
+```{r}
+## Check unique stockid in new RAM data
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
+
+## save newest metadata to unique variable 
+RAM4.40_meta = as.data.frame(metadata)
+RAM4.40_data = as.data.frame(timeseries)
+
+## Check length in metadata
+length(unique(RAM4.40_meta$assessid)) #1252 unique entries
+length(unique(RAM4.40_meta$stockid)) # same number of stockids as assessids
+length(unique(RAM4.40_meta$stocklong)) # same number of stocklong as the above two
+
+
+## Check length in timeseries data
+length(unique(RAM4.40_data$assessid)) # 1814 unique entries, more than in metadata
+length(unique(RAM4.40_data$stockid)) # 1290 unique, ~500 fewer..
+length(unique(RAM4.40_data$stocklong)) #1291 unique
+
+setdiff(RAM4.40_data$assessid, RAM4.40_meta$assessid) #563 diff in data not in meta
+setdiff(RAM4.40_data$stockid, RAM4.40_meta$stockid) #39 stockids in data not in meta
+
+
+## old stocks 
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2017/RAM v3.80/DB Files With Assessment Data/DBdata.RData"))
+
+RAM3.80_meta = as.data.frame(meta.data)
+RAM3.80_data = as.data.frame(timeseries)
+
+## Check length
+length(unique(RAM3.80_meta$assessid)) # 1058
+length(unique(RAM3.80_meta$stockid)) # 1058
+length(unique(RAM3.80_meta$assessid)) # 1058
+
+length(unique(RAM3.80_data$assessid)) # 1057 
+length(unique(RAM3.80_data$stockid)) # 1057
+length(unique(RAM3.80_data$stocklong)) # 1057
+
+setdiff(RAM3.80_data$assessid, RAM3.80_meta$assessid)
+setdiff(RAM3.80_data$stockid, RAM3.80_meta$stockid)
+
+```
+
+## Investigate New RAM Database filtered for B/Bmsy data
+```{r}
+
+ram_bmsy <- RAM4.40_data %>%
+  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
+  dplyr::filter(!is.na(tsvalue)) %>%
+  dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
+  dplyr::filter(tsyear > 1979) %>%
+  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
+
+length(unique(ram_bmsy$assessid)) # 473 unique entries
+length(unique(ram_bmsy$stockid)) # 353
+length(unique(ram_bmsy$stocklong)) # 353
+
+setdiff(ram_bmsy$assessid, RAM4.40_meta$assessid) # 155 diffs
+setdiff(ram_bmsy$stockid, RAM4.40_meta$stockid) # 8 diffs
+
+
+```
+
+## Check a stock that is in `ram_spatial` not `raw_meta`
+
+Try looking at stockid BIGEYEWPO, in ram_spatial but not raw_meta. ram_spatial combines last year's stock and this year's stock. Check to see if BIGEYEWPO is in old RAM database
+```{r}
+
+## See if BIGEYEWPO is in this vector - it is not
+new_stockid <- unique(ram_bmsy$stockid)
+
+## Check to see if BIGEYEWPO is in old stock data
+ram_bmsy_old <- data.frame(RAM3.80_data) %>%
+  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>%
+  dplyr::filter(!is.na(tsvalue)) %>%
+  dplyr::mutate(tsyear = as.numeric(as.character(tsyear))) %>%
+  dplyr::filter(tsyear > 1979) %>%
+  dplyr::select(assessid, year=tsyear, ram_bmsy = tsvalue, stockid, stocklong)
+
+## YES, BIGEYEWPO is in the old stock data. Maybe we should be be using the new RAM stock data instead of joining the added stocks to the old stocks?
+old_stockid <-  unique(ram_bmsy_old$stockid)
+
+
+## Compare stockid in raw_meta for v4.40 RAM data versus stockid in timeseries.. should match
+setdiff(ram_bmsy$stockid,ram_meta$stockid)
+
+```
+
+***
+
+# Check Stock Name Changes
+
+Do comparison with documented stock name changes. 
+```{r}
+
+## from fao_ohi_rgns.Rmd
+newStocks <- data.frame(stockid = setdiff(new_stockid, old_stockid)) # there are 101 diff stock names
+
+## import stock name changes
+## gather to make it easier to search for updated stocks
+changes <- read_csv(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Documents/Stock_Change_History_060418.csv"))
+
+changes <- changes %>% 
+  gather("temp","stock_changes", contains("stock")) %>% 
+  select(outdated, stock_changes) %>% 
+  na.omit()
+
+## List of species that have documented stock changes - reconcile with the Stock Change History file
+stock_change_match <- newStocks %>% 
+  filter(stockid %in% changes$stock_changes)
+
+## from RAM_data_prep.Rmd
+ram_spatial <- read.csv("int/RAM_fao_ohi_rgns.csv", stringsAsFactors = FALSE)
+ram_meta <- data.frame(metadata) %>%
+  dplyr::select(assessid, stockid, scientificname)
+
+diff <- setdiff(ram_spatial$stockid, ram_meta$stockid)
+
+stock_change_match <- stock_change_match %>% 
+  filter(stockid %in% diff)
+```
+
+
+***
+
+# Investigate Multiple `assessid` in RAM v4.40 Database
+
+## Identify the number of assessments per stock
+```{r}
+## see unique pairs of assess and stockid
+test <- RAM4.40_data %>% 
+  select(assessid, stockid) %>% 
+  unique() %>% 
+  group_by(stockid) %>% 
+  summarize(num = length(assessid))
+```
+
+## Check stocks with multiple assessments
+
+Check `ALPLAICBSAI` which has 2 assessments
+```{r}
+test <- ram_bmsy %>% 
+  filter(stockid == "ALPLAICBSAI") %>% 
+  spread(assessid, ram_bmsy)
+
+plot(test$`AFSC-ALPLAICBSAI-1972-2010-STACHURA`,test$`AFSC-ALPLAICBSAI-1975-2015-SISIMP2016`)
+abline(0,1, col="red")
+```
+
+ANGLVIIIc-IXa has 6 assessments, take a look
+```{r}
+test2 <- ram_bmsy %>% 
+  filter(stockid == "ANGLVIIIc-IXa")
+
+unique(test2$assessid)
+
+test3 <- test2 %>% 
+  spread(assessid, tsvalue)
+```
+
+***
+
+# Explore `timeseries_` tables
+
+Found out that `metadata` data table contains only the most recent assessments, and `timeseries` contain all assessments ever conducted and collected by RAM. Check the following `timeseries_XXX` tables:
+
+- timeseries_assessment
+- timeseries_ids_views
+- timeseries_notes_views
+- timeseries_sources_views
+- timeseries_units_views
+- timeseries_values_views
+- timeseries_years_views
+
+Can use `ALPLAICBSAI` stock id, which has two assessments in `timeseries` to check.
+
+Summary: `metadata` table has 1:1 assessid and stockid values.
+```{r}
+
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
+
+# timeseries
+ram_bmsy <- timeseries %>%
+  dplyr::filter(tsid == "BdivBmsytouse-dimensionless") %>% 
+  # filter(assessid == "AFSC-ALPLAICBSAI-1975-2015-SISIMP2016") %>% 
+  select(assessid, stockid, stocklong, year = tsyear, BBmsy = tsvalue)
+
+# timeseries views: If I only retain BdivBmsypref
+ram_bmsy_new <- timeseries_values_views %>% 
+  #filter(stockid == "ALPLAICBSAI") %>% 
+  select(stockid, stocklong, year, BdivBmsypref)
+
+# length of stockids in the two tables
+length(unique(ram_bmsy$stockid)); length(unique(ram_bmsy_new$stockid)) # more in ts_values_views
+
+# diff between unique stockids in the two tables
+setdiff(unique(ram_bmsy$stockid), unique(ram_bmsy_new$stockid)) # 8 diffs 
+setdiff(unique(ram_bmsy_new$stockid), unique(ram_bmsy$stockid)) # 86 diffs
+
+# diff between metadata list of stockids and those in the two tables
+setdiff(unique(ram_bmsy$stockid), unique(metadata$stockid)) # 8 diffs..
+setdiff(unique(ram_bmsy_new$stockid), unique(metadata$stockid)) # no diffs!!
+
+
+
+# timeseries views: If I only retain SSBdivSSBmsy
+ram_bmsy_new <- timeseries_values_views %>% 
+  #filter(stockid == "ALPLAICBSAI") %>% 
+  select(stockid, stocklong, year, SSBdivSSBmsy) %>% 
+  na.omit() 
+
+setdiff(unique(ram_bmsy$stockid), unique(ram_bmsy_new$stockid)) # 72 diffs.. 
+setdiff(unique(ram_bmsy_new$stockid), unique(ram_bmsy$stockid)) # 0 diffs
+
+
+# timeseries views: If I only retain TBdivTBmsy and SSBdivSSBmsy
+ram_bmsy_new <- timeseries_values_views %>% 
+  #filter(stockid == "ALPLAICBSAI") %>% 
+  select(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy, BdivBmsypref) 
+
+setdiff(unique(ram_bmsy$stockid), unique(ram_bmsy_new$stockid)) # 72 diffs.. 
+setdiff(unique(ram_bmsy_new$stockid), unique(ram_bmsy$stockid)) # 0 diffs
+
+
+
+
+
+# compare B/Bmsy values for a single stock- change above
+check <- ram_bmsy %>% 
+  left_join(ram_bmsy_new, by = c("stockid", "stocklong", "year"))
+
+plot(check$BBmsy, check$BBmsy_ts)
+abline(0,1,col="red")
+plot(check$BBmsy_ts, check$BBmsy_ts2)
+abline(0,1,col="red")
+
+
+```
+
+***
+
+# Investigate Using `timeseries_values_views`
+
+Talked to Mel about grabbing most recent/best prioritization from `timeseries_values_views`. Note: After joining `timeseries` to `timeseries_values_views` by `stockid`, create a new column with the relationship we think is occurring between B/Bmsytouse, TB/TBmsy, and SSB/SSBmsy. And then compare with B/Bmsytouse column. There should be at least one assessid per stockid that matches.
+
+1. from `timeseries_values_views`: select TB/TBmsy and SSB/SSBmsy
+2. In `timeseries`, filter out the BdivBmsytouse.
+3. Then join with the filtered `timeseries_values_views`. The `timeseries_values_views` should be repeated in the cases where more than one assessment was performed on a stock.
+4. Create new column selecting TB/TBmsy when available, and if not available select SSB/SSBmsy
+5. Subtract new column from B/Bmsytouse values. If TB/TBmsy is used preferentially for BdivBmsytouse, then every stock will have at least one assessment that is equal to zero.
+5. If this is the case, then I think we can feel comfortable filtering the TB/TBmsy values from the `timeseries_values_views`. 
+6. Then removing the stocks in this list from `timeseries_values_views` 
+7. filtering the remaining stocks for SSB/SSBmsy.  
+8. Then combining the TB/TBmsy and SSB/SSBmsy data into a BdivBmsytouse variable.
+
+
+STEP 1-3
+from `timeseries_values_views`: select TB/TBmsy and SSB/SSBmsy, filter out BdivBmsytouse in `timeseries`, and join.
+```{r}
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
+
+## filter for TB/TBmsy and SSB/SSBmsy
+tb_ssb <- timeseries_values_views %>% 
+  select(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy)
+
+## filter for B/Bmsy to use (BdivBmsytouse) from the timeseries table we used to use
+bbmsy_touse <- timeseries %>% 
+  filter(tsid == "BdivBmsytouse-dimensionless") %>% 
+  select(-tsid) %>% 
+  rename(year = tsyear, BdivBmsytouse = tsvalue)
+
+# join old timeseries with new timeseries table
+compare <- bbmsy_touse %>% 
+  full_join(tb_ssb, by = c("stockid","stocklong","year"))
+```
+
+Check joined table info
+```{r}
+
+# number of unique asssessments and stocks
+dim(compare) # 58,715 rows, 7 col
+summary(compare) # 35,075 NAs in BdivBmsytouse, 47,810 NAs in TBdivTBmsy, 38,739 NAs in SSBdivSSBmsy
+length(unique(compare$assessid)) # 474
+length(unique(compare$stockid)) # 1259
+
+## find diffs between the tables and against metadata table
+setdiff(unique(tb_tbmsy$stockid), unique(bbmsy_touse$stockid)) # 906 diff
+setdiff(unique(bbmsy_touse$stockid), unique(tb_tbmsy$stockid)) # 8 diff
+setdiff(unique(compare$stockid), unique(metadata$stockid)) # 9 diff all due to stock name changes documented in "Stock Change History (6-1-18) except HOGFISHEGM and HOGFISHSEFL
+
+## compare table
+## some stockids from timseries_values_views have no assess id, aka no matching value in timeseries
+
+## check rows where assessid = NA
+check_assess_NA <- compare %>% 
+  filter(is.na(assessid))
+
+summary(check_assess_NA)
+
+sum(is.na(check_assess_NA$assessid))
+
+## number of missing assessments matches the number of missing BdivBmsytouse, TBdivTBmsy, and SSBdivSSBmsy. remove rows with missing assessments from the joined table
+
+compare <- compare %>% 
+  filter(!is.na(assessid))
+
+sum(is.na(compare$assessid)) # should be 0
+
+```
+
+number of missing assessments matches the number of missing BdivBmsytouse, TBdivTBmsy, and SSBdivSSBmsy. remove rows with missing assessments from the joined table
+```{r}
+
+compare <- compare %>% 
+  filter(!is.na(assessid))
+
+sum(is.na(compare$assessid)) # should be 0
+
+```
+
+STEP 4. 
+Create new column selecting TB/TBmsy when available, and if not available select SSB/SSBmsy
+
+```{r}
+
+check_bbmsy <- compare %>% 
+  mutate(new_bbmsy = ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy))
+
+```
+
+STEP 5. 
+Subtract new column from B/Bmsytouse values. If TB/TBmsy is used preferentially for BdivBmsytouse, then every stock will have at least one assessment that is equal to zero.
+
+```{r}
+
+check_bbmsy <- check_bbmsy %>% 
+  mutate(check = new_bbmsy - BdivBmsytouse)
+
+```
+
+Check Results
+
+```{r}
+
+## remove rows where there is no BdivBmsytouse value OR a new BBMSY value (which means NA for both TB/TBmsy AND SSB/SSBmsy)
+results <- check_bbmsy %>% 
+  filter(!is.na(new_bbmsy) & !is.na(BdivBmsytouse))
+
+length(unique(results$stockid)) #345
+length(unique(results$assessid)) #465
+
+## filter for rows where new_bbmsy matches BdivBmsytouse
+results <- results %>% 
+  filter(check == 0)
+
+length(unique(results$stockid)) #345 !!!! SAME. GREAT. 
+length(unique(results$assessid)) #387
+
+lastcheck <- results %>% 
+  group_by(year, stockid) %>% 
+  mutate(assessnum = length(unique(assessid))) %>% 
+  ungroup() %>% 
+  filter(assessnum > 1)
+
+unique(lastheck$stockid) ## only 5 stock ids have multiple assessments still, because the diff assess have the same values
+
+
+## plot each of the five stock ids, and set color to assessid to make sure values are overlapping - should be a single dot visible per year!!
+ggplot(lastcheck %>% filter(stockid == "ALBASATL"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
+
+ggplot(lastcheck %>% filter(stockid == "CHAKESA"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
+
+ggplot(lastcheck %>% filter(stockid == "GHALV-VI-XII-XIV"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
+
+ggplot(lastcheck %>% filter(stockid == "ANGLVIIIc-IXa"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
+
+ggplot(lastcheck %>% filter(stockid == "MEGSPPIVa-VIa"), aes(x=year , y=BdivBmsytouse, col = assessid)) +
+  geom_point()
+  
+
+```
+
+***
+
+## Number of Stocks With Missing RAM Area
+
+get old ram spatial table, join stockid info
+```{r}
+old_ram_spatial <- read_csv("~/github/ohiprep_v2018/globalprep/fis/v2017/int/RAM_fao_ohi_rgns.csv")
+
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2017/RAM v3.80/DB Files With Assessment Data/DBdata.RData"))
+
+old_timeseries <- as.data.frame(timeseries) %>% 
+  select(stockid, assessid) %>% 
+  distinct()
+
+old_ram_spatial <- old_ram_spatial %>% 
+  left_join(old_timeseries, by= c("assessid")) %>% 
+  select(-assessid) %>% 
+  rename(stockid_ram =stockid)
+
+```
+
+combined watson and ram bbmsy data
+```{r}
+ram <- read.csv("int/ram_bmsy.csv") %>% # final output from RAM_data_prep
+  rename(stock_id = stockid) # to match other two data tabls
+
+mean_catch <- read.csv("data/mean_catch.csv") %>% # final output from Watson catch
+  mutate(stock_id_taxonkey = as.character(stock_id_taxonkey)) %>%
+  mutate(taxon_key = str_extract(stock_id_taxonkey, "(\\d)+$")) %>% # extract ending consecutive digits
+  mutate(stock_id = str_extract(stock_id_taxonkey, "^(\\w+).(\\d){1,2}")) %>% 
+  rename(year = Year)
+data <- mean_catch %>%
+  left_join(ram, by=c('rgn_id', 'stock_id', "year"))
+```
+
+Combine RAM-Watson data table with old ram_spatial that contains area info
+```{r}
+c_data <- data %>%
+  mutate(fao_id = as.integer(str_extract(stock_id, "(\\d+)"))) %>% 
+  left_join(old_ram_spatial, by =c("rgn_id", "fao_id", "stockid_ram"))
+```
+
+Look at values with non-missing RAM bmsy data and see how many unique stock info have missing area
+```{r}
+
+summary(c_data)
+
+## Filter for only catch with ram bbmsy data
+has_ram <- c_data %>% 
+  filter(!is.na(ram_bmsy)) 
+
+# has_ram <- c_data %>% 
+#   filter(!is.na(ram_bmsy)) %>% 
+#   select(rgn_id, stock_id, stockid_ram, RAM_area_m2) %>% 
+#   distinct()
+
+## Filter for missing RAM Area within RAM bbmsy data
+nas <- has_ram %>% 
+  filter(is.na(RAM_area_m2))
+
+dim(nas)[1]/dim(has_ram)[1] # proportion of missing RAM area
+
+
+```

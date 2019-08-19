@@ -1,0 +1,180 @@
+---
+title: "OHI 2018: Food Provision, Combining RAM and CMSY B/Bmsy data"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../src/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+# Summary
+
+This script prepares the final B/Bmsy data:
+1. Calculates the 5 year running average of B/Bmsy data generated using the CMSY method
+2. Obtains a B/Bmsy value for each catch record (each FAO/OHI/year/species combination), prioritizing RAM data
+
+
+## Updates from previous assessment
+Have not completed this prep script yet for 2018.
+
+***
+
+# Data
+
+B/Bmsy values from the RAM Legacy Stock Assessment data are generated in RAM_data_prep.Rmd
+
+B/Bmsy values from the CMSY method are generated in calculate_bbmsy.Rmd
+
+Mean catch data created in catch_data_prep.Rmd
+
+***
+
+## Setup
+
+``` {r setup, message = FALSE, warning = FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE, eval=FALSE)
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(zoo)
+library(stringr)
+
+source('../../../src/R/common.R')
+```
+
+## Prepare B/Bmsy values from CMSY model
+
+For the CMSY generated B/Bmsy values we use the five year running mean of the values to smooth the data and to account for model uncertainty.
+
+```{r CMSY mean}
+
+cmsy <- read.csv('output/cmsy_bbmsy.csv') %>%
+  filter(!is.na(bbmsy_mean)) %>%
+    dplyr::select(stock_id, year, bbmsy_q2.5,bbmsy_q97.5,bbmsy_sd, bbmsy_mean, model) %>%
+    arrange(stock_id, year) %>%
+    group_by(stock_id) %>%
+    mutate(mean_5year = rollmean(bbmsy_mean, 5, align="right", fill=NA))
+
+write.csv(cmsy, "int/cmsy_b_bmsy_mean5yrs.csv", row.names=FALSE)
+
+```
+
+## Combine RAM and CMSY B/Bmsy values and Watson catch data
+
+A few regions have multiple RAM stocks for the same species (see scientific name). In these cases, we will average the B/Bmsy values of the species, weighted by the area of the RAM stock.
+
+Read in the three data tables:
+```{r combine}
+
+cmsy <- read.csv('int/cmsy_b_bmsy_mean5yrs.csv') %>%
+  select(stock_id, year, cmsy_bbmsy=mean_5year)
+
+ram <- read.csv("int/ram_bmsy.csv") %>% # final output from RAM_data_prep
+  rename(stock_id = stockid) # to match other two data tabls
+
+mean_catch <- read.csv("output/mean_catch.csv", stringsAsFactors = FALSE) %>% # final output from Watson catch
+  mutate(taxon_key = str_extract(stock_id_taxonkey, "(\\d)+$")) %>% # extract ending consecutive digits
+  mutate(stock_id = str_extract(stock_id_taxonkey, "^(\\w+).(\\d){1,2}")) 
+
+```
+
+Check number of Watson stocks that have CMSY or RAM B/Bmsy values:
+```{r}
+## Watson v RAM BBMSY
+setdiff(ram$stock_id, mean_catch$stock_id)
+setdiff(mean_catch$stock_id, ram$stock_id)
+intersect(ram$stock_id, mean_catch$stock_id) #291 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids)
+
+## Watson v CMSY
+setdiff(cmsy$stock_id, mean_catch$stock_id)
+setdiff(mean_catch$stock_id, cmsy$stock_id)
+intersect(mean_catch$stock_id, cmsy$stock_id) #806 stocks with CMSY-B/Bmsy data
+```
+
+Combine Watson to RAM-B/Bmsy:
+```{r}
+
+data <- mean_catch %>%
+  left_join(ram, by=c('rgn_id', 'stock_id', "year")) # 561,834 catch records (catch from specific fao and ohi regions) when joined with ram increases to 564,318 because there are multiple stocks for some species 
+
+sum(!is.na(data$ram_bmsy))/nrow(data) # about 5.5% of catch records have RAM data
+sum(data$mean_catch[!is.na(data$ram_bmsy)])/sum(data$mean_catch) # about 29% of tons of catch have RAM data
+
+```
+
+Save & view duplicate stocks:
+```{r}
+
+sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 4098 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid)
+
+## save the duplicate stock values to take a look at an example
+tmp <- data[duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_")), ]
+
+## Examples of a region with multiple RAM stocks of the same species
+filter(data, rgn_id == 9, year == 2001, stock_id == "Thunnus_alalunga-71") # stocks ALBANPAC and ALBASPAC are the same species; neab catch 969 tonnes
+filter(data, rgn_id == 9, year == 2001, stock_id == "Tetrapturus_audax-71") # stocks STMARLINWCNPAC and STMARLINSWPO are the same species; mean catch 104 tonnes
+
+```
+
+Regions with multiple stocks of the same species will have B/Bmsy values averaged, weighted by the area of the RAM stock within the region 
+```{r}
+
+## Group by location, year, and species before taking a weighted mean of the catch
+data <- data %>%
+  group_by(rgn_id, taxon_key, stock_id, year, mean_catch) %>%   
+  summarize(ram_bmsy = ifelse(all(!is.na(RAM_area_m2)), weighted.mean(ram_bmsy, RAM_area_m2, na.rm=TRUE), mean(ram_bmsy, na.rm = TRUE)),
+            gapfilled = ifelse(all(is.na(gapfilled)), NA, max(gapfilled, na.rm=TRUE)),
+            method = paste(method, collapse = ", ")) %>%
+  ungroup()
+
+## check that averaging went ok - compare with mean catch values earlier (969 and 104)
+filter(data, rgn_id == 9, year == 2001, stock_id == "Thunnus_alalunga-71")
+filter(data, rgn_id == 9, year == 2001, stock_id == "Tetrapturus_audax-71")
+
+## check example of duplicate stock catch with ram_bmsy but no RAM_area_m2 value, ram_bmsy should not be NA (should be 2.2 tonnes, checked)
+filter(data, rgn_id == 20, year == 2001, stock_id ==  "Todarodes_pacificus-61")
+
+
+# add in the B/Bmsy values from the CMSY approach
+data <- data %>%
+  left_join(cmsy, by=c("stock_id", "year"))
+
+```
+
+A lot of the NAs for both RAM-bmsy and CMSY are due to unmatched Watson-RAM stocks
+
+### Formatting and saving final data
+
+B/Bmsy values for each catch record are generated (for the species where this is possible) and saved. A corresponding gapfilling dataset is also saved.
+```{r save}
+
+ data_gf <- data %>%
+   mutate(bmsy_data_source = ifelse(!is.na(ram_bmsy), "RAM", NA)) %>%
+   mutate(bmsy_data_source = ifelse(is.na(bmsy_data_source) & !is.na(cmsy_bbmsy), "CMSY", bmsy_data_source)) %>%
+   mutate(bbmsy = ifelse(is.na(ram_bmsy), cmsy_bbmsy, ram_bmsy)) %>%
+   select(rgn_id, stock_id, taxon_key, year, bbmsy, bmsy_data_source, RAM_gapfilled=method, mean_catch) %>%
+   filter(year >= 2001)
+
+
+write.csv(data_gf, "output/fis_bbmsy_gf.csv", row.names=FALSE) 
+ 
+bbmsy <- data_gf %>%
+  select(rgn_id, stock_id, year, bbmsy) %>%
+  filter(!is.na(bbmsy))
+
+write.csv(bbmsy, "output/fis_bbmsy.csv", row.names=FALSE) 
+
+```
+
