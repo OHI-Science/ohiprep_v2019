@@ -116,6 +116,6 @@ taxon_res3 <- taxon_res2 %>%
 We will have to leave the rest as NA (there aren't very many). This will cause the CMSY model to default to Medium resilience but will not remove them from assessment.
 
 ```{r}
-write.csv(taxon_res3,file = 'int/taxon_resilience_lookup.csv')
+write.csv(taxon_res3,file = 'output/taxon_resilience_lookup.csv')
 ```       
 

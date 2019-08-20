@@ -20,7 +20,7 @@ editor_options:
 
 # Summary
 
-This script takes the Watson 2018 catch data, provided at a resolution of half-degree cells globally, and creates 3 data layers:
+This script takes the Watson 2019 catch data, provided at a resolution of half-degree cells globally, and creates 3 data layers:
 
 1. Catch data aggregated to **stock levels** to calculate B/Bmsy values. For the Ocean Health Index, we assume a stock is represented by the FAO region in which the species is caught.  We also use these data to aggregate to OHI/FAO region to weight the B/Bmsy values. In order to aggregate to FAO regions, we associate each cell to the FAO region and the OHI region in which it is located.
 
@@ -349,20 +349,6 @@ plot(cell_na_plot, add=TRUE)
 
 ***
 
-# Prep data for B/Bmsy calculations
-
-Catch-MSY is the model we use to estimate stock status for all global stocks. This model requires information about the resilience of each species in addition to the catch data for each year.
-
-Load taxonomic resilience information, created in `species_resilience_lookup_table.Rmd`. The species resilience prep file did not produce any new Resilience information this year. Use 2017 taxon resilience lookup table.
-
-```{r resilience,eval=F}
-
-## add the taxon_resilence data to catch for b/bmsy calculations
-taxon_res = read_csv('../v2017/data/taxon_resilience_lookup.csv') %>%
-              dplyr::select(CommonName=common, Resilience)
-
-```
-
 ## Wrangle
 
 Filter out all stocks that don't meet our conditions:
@@ -378,7 +364,7 @@ Filter out all stocks that don't meet our conditions:
 min_yrs = 20
 min_tons = 1000
 
-## read in catch data created above (commented out landings only stock data table)
+## read in catch data created above
 df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn_taxa.csv'))
 
 
@@ -396,15 +382,7 @@ stks <- df %>%
               dplyr::ungroup() %>%
               dplyr::filter(avg_ann_catch >= min_tons,        #keep only those stocks that meet our conditions
                               nyrs >= min_yrs) %>%
-              #dplyr::left_join(taxon_res, by = "CommonName") %>%                  #add resilience information
               dplyr::select(year, TaxonName, CommonName, fao_rgn, stock_id, TaxonKey, tons) #Resilience
-
-## check on stocks that don't have a resilience
-no_res <- filter(stks, is.na(Resilience)) %>%
-          dplyr::select(TaxonName, CommonName) %>%
-          distinct()
-    
-nrow(no_res) # 271 species do not have a Resilience. These will get assigned a Medium Resilience by default by the CMSY model. (255 species don't have a Resilience for the Landings only data)
 
 write.csv(stks, file = 'output/stock_catch_no_res.csv', row.names = FALSE)
 
@@ -419,13 +397,13 @@ Load taxonomic resilience information, created in `species_resilience_lookup_tab
 ```{r resilience,eval=F}
 
 ## add the taxon_resilence data to catch for b/bmsy calculations
-taxon_res = read_csv('int/taxon_resilience_lookup.csv') %>%
+taxon_res = read_csv('output/taxon_resilience_lookup.csv') %>%
               dplyr::select(CommonName=common, Resilience)
 
 ```
 
 ## More Wrangling
- - We must add the resilience information to the stks dataframe created above, and re write it to the output folder. 
+ - Add the resilience information to the stks dataframe created above, and re-write it to the output folder. 
  
 ```{r prep_data_bbmsy1, eval=FALSE}
 stks_res <- stks %>%
@@ -690,8 +668,6 @@ old_filt <- old %>%
   
 check <- old_filt %>% 
   left_join(new_filt, by = c("rgn_id","year"))
- # mutate(new_mean_catch = ifelse(is.na(new_mean_catch), 0, new_mean_catch)) %>%
-#  mutate(old_mean_catch = ifelse(is.na(old_mean_catch), 0, old_mean_catch))
 
 ## For quick plot
 plot(check$old_fis_catch,check$new_fis_catch)
