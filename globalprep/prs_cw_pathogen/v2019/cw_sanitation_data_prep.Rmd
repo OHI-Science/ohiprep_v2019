@@ -26,17 +26,15 @@ This document describes the steps for preparing the pathogen pollution and patho
 The percentage of the population with access to improved sanitation facilities (World Health Organization and United Nations Children’s Fund, Joint Monitoring Programme, 2011) was used in combination with measurements of coastal population as a proxy for pathogens in coastal waters. Access to improved sanitation facilities is defined as the percentage of the population in a country with at least adequate access to disposal facilities that can effectively prevent human, animal, and insect contact with excreta. These data are a country-wide average (not specific to the coastal region). 
 
 # Updates from previous assessment
-Data source (WHO-UNICEF) updated the way they report the data. The 2018 assesment is calculated using the "At least Basic" variable because it is consistent with what have been used in previous assesmentes and the data is more complete. 
+Data source (WHO-UNICEF) now reports sanitation data for three different sectors: households, schools, and health care facilities. We decided to use the household data as it is most likely to include the greatest number of citizens of each region, and be most comparable with previous datasets. 
 
-Other changes include:
+WHO-UNICEF also changed how they report the percentages of the population with access to basic sanitation.  In previous years, some regions were reported with 100% of the population having basic access, which are now denoted as >99 in the raw data. We converted this value to 99.5% as there were other regions with 99%. The data now cover years 2000-2017, vs. last year's assessment which had data for 2000-2015.
 
-1.  Improved gapfilling.  Previously, sanitation data was gapfilled using only UN georegion averages.  Now it is based on a: 1) uninhabited regions (perfect scores for these); 2) within country linear regression model to gapfill missing years for a region that otherwise has data; 3) UN georegion averages when no years of data are available.
-2. instead of defining the reference point as the max value across all years with a 10% buffer (so the highest pressure was 0.9), we use the 99th quantile across year/region with no buffer (so the highest pressure is now 1).  We also constrain the reference point to the first 10 years of data (vs. all available years of data).
-3. New population data
-4. Updated sanitation data from WHO-UNICEF (although no new years)
+Updates on our end: 
 
-v2019:
-Reporting Caribbean Netherlands regions at a higher resolution as sanitation data for them have been backfilled as of this year. 
+1. We changed the reporting of the Caribbean Netherlands regions to be at a higher resolution, as historical sanitation data for them have been backfilled by WHO-UNICEF as of this year. 
+2. We also changed the way uninhabited regions (which we assign perfect scores in this layer) are identified. The code was changed to match the methods for other goals (AO, etc), which use the low_pop() function in common.R and filter out low population/uninhabited regions.
+
 
 
 **Consider for future assesments:** make the "Safely managed" data more complete, and reconsider whether these data would be better to use.
@@ -171,8 +169,9 @@ Add rgn_id and merge duplicate regions using a mean weighted by population.
 rgn_sani <- name_2_rgn(sani_improved, 
                         fld_name     = 'country',
                         flds_unique  = c('country','year')) 
-# Non-matched regions: Eswatini (landlocked), Isle of Man (not reported in OHI), North Macedonia (landlocked), West Bank/Gaza (disputed)
-## Check list in warning to make sure all countries removed are not of interest for the OHI global assesment. In this case West Bank and Gaza Strip is not considered because it is a disputed area and Isle of Man is not consider an OHI region. Eswatini and North Macedonia both come up but they are landlocked.
+
+## Check list in warning to make sure all countries removed are not of interest for the OHI global assesment. 
+# v2019 non-matched regions: Eswatini (landlocked), Isle of Man (not reported in OHI), North Macedonia (landlocked), West Bank/Gaza (disputed)
 
 ##Check for duplicate regions.
 sort(table(rgn_sani$rgn_id)) #for this analysis, regions which are duplicated are: rgn_id = 209, 140, 116, 13
@@ -426,7 +425,7 @@ write.csv(master_refs, "globalprep/supplementary_information/v2019/reference_poi
 
 master_refs <- read.csv(here("globalprep/supplementary_information/v2019/reference_points_pressures.csv")) 
 ref_value <- as.numeric(as.character(master_refs$ref_point[master_refs$pressure == "Sanitation"])) 
-ref_value
+ref_value #7.10
 
 unsani_prs <- unsani_pop %>%
   dplyr::mutate(pressure_score = propWO_x_pop_log / ref_value) %>% 
@@ -519,8 +518,8 @@ ggplotly(ggplot(compare, aes(y = trend, x = trend_2018, labels = rgn_id)) +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
 # Several regions have large variation in trend between v2019 and v2018
-# v2019 trend = -1: 31, 48, 161, 140, 206, 86, 183, 39 
-# v2019 trend = 0: 81, 152, 80, 206
+# v2019 trend = -1: 70, 206, 86, 31
+# v2019 trend = 1: 81
 
 
 # Outlier investigation 
