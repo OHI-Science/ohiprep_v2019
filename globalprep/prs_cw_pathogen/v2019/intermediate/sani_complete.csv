@@ -1,94 +1,94 @@
 rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
-1,Cocos Islands,2000,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2001,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2002,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2003,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2004,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2005,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2006,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2007,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2008,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2009,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2010,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2011,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2012,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2013,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2014,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2015,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2016,1,1,UN georegion avg. (r2)
-1,Cocos Islands,2017,1,1,UN georegion avg. (r2)
-2,Christmas Island,2000,1,1,UN georegion avg. (r2)
-2,Christmas Island,2001,1,1,UN georegion avg. (r2)
-2,Christmas Island,2002,1,1,UN georegion avg. (r2)
-2,Christmas Island,2003,1,1,UN georegion avg. (r2)
-2,Christmas Island,2004,1,1,UN georegion avg. (r2)
-2,Christmas Island,2005,1,1,UN georegion avg. (r2)
-2,Christmas Island,2006,1,1,UN georegion avg. (r2)
-2,Christmas Island,2007,1,1,UN georegion avg. (r2)
-2,Christmas Island,2008,1,1,UN georegion avg. (r2)
-2,Christmas Island,2009,1,1,UN georegion avg. (r2)
-2,Christmas Island,2010,1,1,UN georegion avg. (r2)
-2,Christmas Island,2011,1,1,UN georegion avg. (r2)
-2,Christmas Island,2012,1,1,UN georegion avg. (r2)
-2,Christmas Island,2013,1,1,UN georegion avg. (r2)
-2,Christmas Island,2014,1,1,UN georegion avg. (r2)
-2,Christmas Island,2015,1,1,UN georegion avg. (r2)
-2,Christmas Island,2016,1,1,UN georegion avg. (r2)
-2,Christmas Island,2017,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2000,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2001,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2002,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2003,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2004,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2005,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2006,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2007,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2008,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2009,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2010,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2011,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2012,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2013,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2014,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2015,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2016,1,1,UN georegion avg. (r2)
-3,Norfolk Island,2017,1,1,UN georegion avg. (r2)
-4,Macquarie Island,2000,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2001,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2002,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2003,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2004,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2005,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2006,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2007,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2008,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2009,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2010,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2011,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2012,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2013,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2014,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2015,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2016,1,1,"uninhabited, perfect score"
-4,Macquarie Island,2017,1,1,"uninhabited, perfect score"
-5,New Caledonia,2000,1,0,NA
-5,New Caledonia,2001,1,0,NA
-5,New Caledonia,2002,1,0,NA
-5,New Caledonia,2003,1,0,NA
-5,New Caledonia,2004,1,0,NA
-5,New Caledonia,2005,1,0,NA
-5,New Caledonia,2006,1,0,NA
-5,New Caledonia,2007,1,0,NA
-5,New Caledonia,2008,1,0,NA
-5,New Caledonia,2009,1,0,NA
-5,New Caledonia,2010,1,0,NA
-5,New Caledonia,2011,1,0,NA
-5,New Caledonia,2012,1,0,NA
-5,New Caledonia,2013,1,0,NA
-5,New Caledonia,2014,1,0,NA
-5,New Caledonia,2015,1,0,NA
-5,New Caledonia,2016,1,0,NA
-5,New Caledonia,2017,1,0,NA
+1,Cocos Islands,2000,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2001,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2002,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2003,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2004,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2005,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2006,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2007,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2008,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2009,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2010,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2011,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2012,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2013,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2014,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2015,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2016,0.995,1,UN georegion avg. (r2)
+1,Cocos Islands,2017,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2000,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2001,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2002,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2003,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2004,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2005,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2006,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2007,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2008,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2009,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2010,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2011,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2012,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2013,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2014,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2015,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2016,0.995,1,UN georegion avg. (r2)
+2,Christmas Island,2017,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2000,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2001,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2002,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2003,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2004,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2005,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2006,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2007,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2008,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2009,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2010,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2011,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2012,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2013,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2014,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2015,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2016,0.995,1,UN georegion avg. (r2)
+3,Norfolk Island,2017,0.995,1,UN georegion avg. (r2)
+4,Macquarie Island,2000,1,0,No est. human population
+4,Macquarie Island,2001,1,0,No est. human population
+4,Macquarie Island,2002,1,0,No est. human population
+4,Macquarie Island,2003,1,0,No est. human population
+4,Macquarie Island,2004,1,0,No est. human population
+4,Macquarie Island,2005,1,0,No est. human population
+4,Macquarie Island,2006,1,0,No est. human population
+4,Macquarie Island,2007,1,0,No est. human population
+4,Macquarie Island,2008,1,0,No est. human population
+4,Macquarie Island,2009,1,0,No est. human population
+4,Macquarie Island,2010,1,0,No est. human population
+4,Macquarie Island,2011,1,0,No est. human population
+4,Macquarie Island,2012,1,0,No est. human population
+4,Macquarie Island,2013,1,0,No est. human population
+4,Macquarie Island,2014,1,0,No est. human population
+4,Macquarie Island,2015,1,0,No est. human population
+4,Macquarie Island,2016,1,0,No est. human population
+4,Macquarie Island,2017,1,0,No est. human population
+5,New Caledonia,2000,0.995,0,NA
+5,New Caledonia,2001,0.995,0,NA
+5,New Caledonia,2002,0.995,0,NA
+5,New Caledonia,2003,0.995,0,NA
+5,New Caledonia,2004,0.995,0,NA
+5,New Caledonia,2005,0.995,0,NA
+5,New Caledonia,2006,0.995,0,NA
+5,New Caledonia,2007,0.995,0,NA
+5,New Caledonia,2008,0.995,0,NA
+5,New Caledonia,2009,0.995,0,NA
+5,New Caledonia,2010,0.995,0,NA
+5,New Caledonia,2011,0.995,0,NA
+5,New Caledonia,2012,0.995,0,NA
+5,New Caledonia,2013,0.995,0,NA
+5,New Caledonia,2014,0.995,0,NA
+5,New Caledonia,2015,0.995,0,NA
+5,New Caledonia,2016,0.995,0,NA
+5,New Caledonia,2017,0.995,0,NA
 6,Vanuatu,2000,0.62,0,NA
 6,Vanuatu,2001,0.62,0,NA
 6,Vanuatu,2002,0.62,0,NA
@@ -125,24 +125,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 7,Solomon Islands,2015,0.32,0,NA
 7,Solomon Islands,2016,0.33,0,NA
 7,Solomon Islands,2017,0.34,0,NA
-8,Palau,2000,1,0,NA
-8,Palau,2001,1,0,NA
-8,Palau,2002,1,0,NA
-8,Palau,2003,1,0,NA
-8,Palau,2004,1,0,NA
-8,Palau,2005,1,0,NA
-8,Palau,2006,1,0,NA
-8,Palau,2007,1,0,NA
-8,Palau,2008,1,0,NA
-8,Palau,2009,1,0,NA
-8,Palau,2010,1,0,NA
-8,Palau,2011,1,0,NA
-8,Palau,2012,1,0,NA
-8,Palau,2013,1,0,NA
-8,Palau,2014,1,0,NA
-8,Palau,2015,1,0,NA
-8,Palau,2016,1,0,NA
-8,Palau,2017,1,0,NA
+8,Palau,2000,0.995,0,NA
+8,Palau,2001,0.995,0,NA
+8,Palau,2002,0.995,0,NA
+8,Palau,2003,0.995,0,NA
+8,Palau,2004,0.995,0,NA
+8,Palau,2005,0.995,0,NA
+8,Palau,2006,0.995,0,NA
+8,Palau,2007,0.995,0,NA
+8,Palau,2008,0.995,0,NA
+8,Palau,2009,0.995,0,NA
+8,Palau,2010,0.995,0,NA
+8,Palau,2011,0.995,0,NA
+8,Palau,2012,0.995,0,NA
+8,Palau,2013,0.995,0,NA
+8,Palau,2014,0.995,0,NA
+8,Palau,2015,0.995,0,NA
+8,Palau,2016,0.995,0,NA
+8,Palau,2017,0.995,0,NA
 9,Micronesia,2000,0.25,0,NA
 9,Micronesia,2001,0.29,0,NA
 9,Micronesia,2002,0.33,0,NA
@@ -197,24 +197,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 11,Marshall Islands,2015,0.83,0,NA
 11,Marshall Islands,2016,0.83,0,NA
 11,Marshall Islands,2017,0.83,0,NA
-12,Wake Island,2000,1,1,"uninhabited, perfect score"
-12,Wake Island,2001,1,1,"uninhabited, perfect score"
-12,Wake Island,2002,1,1,"uninhabited, perfect score"
-12,Wake Island,2003,1,1,"uninhabited, perfect score"
-12,Wake Island,2004,1,1,"uninhabited, perfect score"
-12,Wake Island,2005,1,1,"uninhabited, perfect score"
-12,Wake Island,2006,1,1,"uninhabited, perfect score"
-12,Wake Island,2007,1,1,"uninhabited, perfect score"
-12,Wake Island,2008,1,1,"uninhabited, perfect score"
-12,Wake Island,2009,1,1,"uninhabited, perfect score"
-12,Wake Island,2010,1,1,"uninhabited, perfect score"
-12,Wake Island,2011,1,1,"uninhabited, perfect score"
-12,Wake Island,2012,1,1,"uninhabited, perfect score"
-12,Wake Island,2013,1,1,"uninhabited, perfect score"
-12,Wake Island,2014,1,1,"uninhabited, perfect score"
-12,Wake Island,2015,1,1,"uninhabited, perfect score"
-12,Wake Island,2016,1,1,"uninhabited, perfect score"
-12,Wake Island,2017,1,1,"uninhabited, perfect score"
+12,Wake Island,2000,1,0,No est. human population
+12,Wake Island,2001,1,0,No est. human population
+12,Wake Island,2002,1,0,No est. human population
+12,Wake Island,2003,1,0,No est. human population
+12,Wake Island,2004,1,0,No est. human population
+12,Wake Island,2005,1,0,No est. human population
+12,Wake Island,2006,1,0,No est. human population
+12,Wake Island,2007,1,0,No est. human population
+12,Wake Island,2008,1,0,No est. human population
+12,Wake Island,2009,1,0,No est. human population
+12,Wake Island,2010,1,0,No est. human population
+12,Wake Island,2011,1,0,No est. human population
+12,Wake Island,2012,1,0,No est. human population
+12,Wake Island,2013,1,0,No est. human population
+12,Wake Island,2014,1,0,No est. human population
+12,Wake Island,2015,1,0,No est. human population
+12,Wake Island,2016,1,0,No est. human population
+12,Wake Island,2017,1,0,No est. human population
 13,Northern Mariana Islands and Guam,2000,0.846875,0,NA
 13,Northern Mariana Islands and Guam,2001,0.8501333333333333,0,NA
 13,Northern Mariana Islands and Guam,2002,0.8503097345132743,0,NA
@@ -233,24 +233,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 13,Northern Mariana Islands and Guam,2015,0.8695852534562212,0,NA
 13,Northern Mariana Islands and Guam,2016,0.8722477064220183,0,NA
 13,Northern Mariana Islands and Guam,2017,0.79,0,NA
-14,Taiwan,2000,0.8217501483513687,1,UN georegion avg. (r2)
-14,Taiwan,2001,0.8257055093398888,1,UN georegion avg. (r2)
-14,Taiwan,2002,0.8354918814529733,1,UN georegion avg. (r2)
-14,Taiwan,2003,0.8404648979116263,1,UN georegion avg. (r2)
-14,Taiwan,2004,0.8454378029861956,1,UN georegion avg. (r2)
-14,Taiwan,2005,0.8504111853495647,1,UN georegion avg. (r2)
-14,Taiwan,2006,0.8553850849020522,1,UN georegion avg. (r2)
-14,Taiwan,2007,0.8603721852885208,1,UN georegion avg. (r2)
-14,Taiwan,2008,0.8678466520640394,1,UN georegion avg. (r2)
-14,Taiwan,2009,0.8728211340118951,1,UN georegion avg. (r2)
-14,Taiwan,2010,0.8802955395162353,1,UN georegion avg. (r2)
-14,Taiwan,2011,0.8852827333534127,1,UN georegion avg. (r2)
-14,Taiwan,2012,0.8902570344460883,1,UN georegion avg. (r2)
-14,Taiwan,2013,0.8952443105539656,1,UN georegion avg. (r2)
-14,Taiwan,2014,0.902718840911612,1,UN georegion avg. (r2)
-14,Taiwan,2015,0.9101805985294903,1,UN georegion avg. (r2)
-14,Taiwan,2016,0.9126682357494278,1,UN georegion avg. (r2)
-14,Taiwan,2017,0.9201429459192791,1,UN georegion avg. (r2)
+14,Taiwan,2000,0.8192501483513688,1,UN georegion avg. (r2)
+14,Taiwan,2001,0.8232055093398888,1,UN georegion avg. (r2)
+14,Taiwan,2002,0.8329918814529733,1,UN georegion avg. (r2)
+14,Taiwan,2003,0.8379648979116262,1,UN georegion avg. (r2)
+14,Taiwan,2004,0.8429378029861956,1,UN georegion avg. (r2)
+14,Taiwan,2005,0.8479111853495648,1,UN georegion avg. (r2)
+14,Taiwan,2006,0.8528850849020522,1,UN georegion avg. (r2)
+14,Taiwan,2007,0.8578721852885207,1,UN georegion avg. (r2)
+14,Taiwan,2008,0.8653466520640394,1,UN georegion avg. (r2)
+14,Taiwan,2009,0.870321134011895,1,UN georegion avg. (r2)
+14,Taiwan,2010,0.8777955395162352,1,UN georegion avg. (r2)
+14,Taiwan,2011,0.8827827333534127,1,UN georegion avg. (r2)
+14,Taiwan,2012,0.8877570344460882,1,UN georegion avg. (r2)
+14,Taiwan,2013,0.8927443105539656,1,UN georegion avg. (r2)
+14,Taiwan,2014,0.900218840911612,1,UN georegion avg. (r2)
+14,Taiwan,2015,0.9076805985294902,1,UN georegion avg. (r2)
+14,Taiwan,2016,0.9101682357494278,1,UN georegion avg. (r2)
+14,Taiwan,2017,0.9176429459192791,1,UN georegion avg. (r2)
 15,Philippines,2000,0.62,0,NA
 15,Philippines,2001,0.63,0,NA
 15,Philippines,2002,0.63,0,NA
@@ -269,24 +269,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 15,Philippines,2015,0.74,0,NA
 15,Philippines,2016,0.75,0,NA
 15,Philippines,2017,0.77,0,NA
-16,Australia,2000,1,0,NA
-16,Australia,2001,1,0,NA
-16,Australia,2002,1,0,NA
-16,Australia,2003,1,0,NA
-16,Australia,2004,1,0,NA
-16,Australia,2005,1,0,NA
-16,Australia,2006,1,0,NA
-16,Australia,2007,1,0,NA
-16,Australia,2008,1,0,NA
-16,Australia,2009,1,0,NA
-16,Australia,2010,1,0,NA
-16,Australia,2011,1,0,NA
-16,Australia,2012,1,0,NA
-16,Australia,2013,1,0,NA
-16,Australia,2014,1,0,NA
-16,Australia,2015,1,0,NA
-16,Australia,2016,1,0,NA
-16,Australia,2017,1,0,NA
+16,Australia,2000,0.995,0,NA
+16,Australia,2001,0.995,0,NA
+16,Australia,2002,0.995,0,NA
+16,Australia,2003,0.995,0,NA
+16,Australia,2004,0.995,0,NA
+16,Australia,2005,0.995,0,NA
+16,Australia,2006,0.995,0,NA
+16,Australia,2007,0.995,0,NA
+16,Australia,2008,0.995,0,NA
+16,Australia,2009,0.995,0,NA
+16,Australia,2010,0.995,0,NA
+16,Australia,2011,0.995,0,NA
+16,Australia,2012,0.995,0,NA
+16,Australia,2013,0.995,0,NA
+16,Australia,2014,0.995,0,NA
+16,Australia,2015,0.995,0,NA
+16,Australia,2016,0.995,0,NA
+16,Australia,2017,0.995,0,NA
 17,Papua New Guinea,2000,0.21,0,NA
 17,Papua New Guinea,2001,0.21,0,NA
 17,Papua New Guinea,2002,0.21,0,NA
@@ -341,24 +341,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 19,Tuvalu,2015,0.84,0,NA
 19,Tuvalu,2016,0.84,0,NA
 19,Tuvalu,2017,0.84,0,NA
-20,South Korea,2000,1,0,NA
-20,South Korea,2001,1,0,NA
-20,South Korea,2002,1,0,NA
-20,South Korea,2003,1,0,NA
-20,South Korea,2004,1,0,NA
-20,South Korea,2005,1,0,NA
-20,South Korea,2006,1,0,NA
-20,South Korea,2007,1,0,NA
-20,South Korea,2008,1,0,NA
-20,South Korea,2009,1,0,NA
-20,South Korea,2010,1,0,NA
-20,South Korea,2011,1,0,NA
-20,South Korea,2012,1,0,NA
-20,South Korea,2013,1,0,NA
-20,South Korea,2014,1,0,NA
-20,South Korea,2015,1,0,NA
-20,South Korea,2016,1,0,NA
-20,South Korea,2017,1,0,NA
+20,South Korea,2000,0.995,0,NA
+20,South Korea,2001,0.995,0,NA
+20,South Korea,2002,0.995,0,NA
+20,South Korea,2003,0.995,0,NA
+20,South Korea,2004,0.995,0,NA
+20,South Korea,2005,0.995,0,NA
+20,South Korea,2006,0.995,0,NA
+20,South Korea,2007,0.995,0,NA
+20,South Korea,2008,0.995,0,NA
+20,South Korea,2009,0.995,0,NA
+20,South Korea,2010,0.995,0,NA
+20,South Korea,2011,0.995,0,NA
+20,South Korea,2012,0.995,0,NA
+20,South Korea,2013,0.995,0,NA
+20,South Korea,2014,0.995,0,NA
+20,South Korea,2015,0.995,0,NA
+20,South Korea,2016,0.995,0,NA
+20,South Korea,2017,0.995,0,NA
 21,North Korea,2000,0.7248823529411776,1,lm prediction based on year
 21,North Korea,2001,0.7307500000000005,1,lm prediction based on year
 21,North Korea,2002,0.75,0,NA
@@ -413,24 +413,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 25,Thailand,2015,0.98,0,NA
 25,Thailand,2016,0.98,0,NA
 25,Thailand,2017,0.99,0,NA
-26,Andaman and Nicobar,2000,0.6557720588235293,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2001,0.663875,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2002,0.6719999999999999,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2003,0.6799999999999999,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2004,0.689,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2005,0.697,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2006,0.705,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2007,0.714,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2008,0.723,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2009,0.732,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2010,0.742,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2011,0.752,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2012,0.761,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2013,0.769,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2014,0.777,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2015,0.786,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2016,0.7959999999999999,1,UN georegion avg. (r2)
-26,Andaman and Nicobar,2017,0.8059999999999999,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2000,0.6552720588235292,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2001,0.6633749999999999,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2002,0.6714999999999999,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2003,0.6794999999999999,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2004,0.6884999999999999,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2005,0.6964999999999999,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2006,0.7044999999999999,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2007,0.7135,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2008,0.7225,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2009,0.7315,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2010,0.7414999999999999,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2011,0.751,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2012,0.76,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2013,0.768,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2014,0.776,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2015,0.785,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2016,0.7949999999999999,1,UN georegion avg. (r2)
+26,Andaman and Nicobar,2017,0.8049999999999999,1,UN georegion avg. (r2)
 28,Comoro Islands,2000,0.29,0,NA
 28,Comoro Islands,2001,0.3,0,NA
 28,Comoro Islands,2002,0.31,0,NA
@@ -467,24 +467,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 29,Mayotte,2015,0.77,0,NA
 29,Mayotte,2016,0.77,0,NA
 29,Mayotte,2017,0.7700000000000001,1,lm prediction based on year
-30,Glorioso Islands,2000,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2001,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2002,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2003,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2004,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2005,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2006,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2007,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2008,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2009,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2010,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2011,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2012,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2013,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2014,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2015,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2016,1,1,"uninhabited, perfect score"
-30,Glorioso Islands,2017,1,1,"uninhabited, perfect score"
+30,Glorioso Islands,2000,1,0,No est. human population
+30,Glorioso Islands,2001,1,0,No est. human population
+30,Glorioso Islands,2002,1,0,No est. human population
+30,Glorioso Islands,2003,1,0,No est. human population
+30,Glorioso Islands,2004,1,0,No est. human population
+30,Glorioso Islands,2005,1,0,No est. human population
+30,Glorioso Islands,2006,1,0,No est. human population
+30,Glorioso Islands,2007,1,0,No est. human population
+30,Glorioso Islands,2008,1,0,No est. human population
+30,Glorioso Islands,2009,1,0,No est. human population
+30,Glorioso Islands,2010,1,0,No est. human population
+30,Glorioso Islands,2011,1,0,No est. human population
+30,Glorioso Islands,2012,1,0,No est. human population
+30,Glorioso Islands,2013,1,0,No est. human population
+30,Glorioso Islands,2014,1,0,No est. human population
+30,Glorioso Islands,2015,1,0,No est. human population
+30,Glorioso Islands,2016,1,0,No est. human population
+30,Glorioso Islands,2017,1,0,No est. human population
 31,Seychelles,2000,0.94,0,NA
 31,Seychelles,2001,0.95,0,NA
 31,Seychelles,2002,0.95,0,NA
@@ -497,102 +497,102 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 31,Seychelles,2009,0.98,0,NA
 31,Seychelles,2010,0.98,0,NA
 31,Seychelles,2011,0.99,0,NA
-31,Seychelles,2012,1,0,NA
-31,Seychelles,2013,1,0,NA
-31,Seychelles,2014,1,0,NA
-31,Seychelles,2015,1,0,NA
-31,Seychelles,2016,1,0,NA
-31,Seychelles,2017,1,0,NA
-32,R_union,2000,0.9891911764705881,1,lm prediction based on year
+31,Seychelles,2012,0.995,0,NA
+31,Seychelles,2013,0.995,0,NA
+31,Seychelles,2014,0.995,0,NA
+31,Seychelles,2015,0.995,0,NA
+31,Seychelles,2016,0.995,0,NA
+31,Seychelles,2017,0.995,0,NA
+32,R_union,2000,0.9895955882352945,1,lm prediction based on year
 32,R_union,2001,0.99,0,NA
 32,R_union,2002,0.99,0,NA
 32,R_union,2003,0.99,0,NA
 32,R_union,2004,0.99,0,NA
 32,R_union,2005,0.99,0,NA
 32,R_union,2006,0.99,0,NA
-32,R_union,2007,1,0,NA
-32,R_union,2008,1,0,NA
-32,R_union,2009,1,0,NA
-32,R_union,2010,1,0,NA
-32,R_union,2011,1,0,NA
-32,R_union,2012,1,0,NA
-32,R_union,2013,1,0,NA
-32,R_union,2014,1,0,NA
-32,R_union,2015,1,0,NA
-32,R_union,2016,1,0,NA
-32,R_union,2017,1,0,NA
-33,Juan de Nova Island,2000,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2001,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2002,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2003,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2004,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2005,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2006,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2007,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2008,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2009,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2010,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2011,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2012,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2013,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2014,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2015,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2016,1,1,"uninhabited, perfect score"
-33,Juan de Nova Island,2017,1,1,"uninhabited, perfect score"
-34,Bassas da India,2000,1,1,"uninhabited, perfect score"
-34,Bassas da India,2001,1,1,"uninhabited, perfect score"
-34,Bassas da India,2002,1,1,"uninhabited, perfect score"
-34,Bassas da India,2003,1,1,"uninhabited, perfect score"
-34,Bassas da India,2004,1,1,"uninhabited, perfect score"
-34,Bassas da India,2005,1,1,"uninhabited, perfect score"
-34,Bassas da India,2006,1,1,"uninhabited, perfect score"
-34,Bassas da India,2007,1,1,"uninhabited, perfect score"
-34,Bassas da India,2008,1,1,"uninhabited, perfect score"
-34,Bassas da India,2009,1,1,"uninhabited, perfect score"
-34,Bassas da India,2010,1,1,"uninhabited, perfect score"
-34,Bassas da India,2011,1,1,"uninhabited, perfect score"
-34,Bassas da India,2012,1,1,"uninhabited, perfect score"
-34,Bassas da India,2013,1,1,"uninhabited, perfect score"
-34,Bassas da India,2014,1,1,"uninhabited, perfect score"
-34,Bassas da India,2015,1,1,"uninhabited, perfect score"
-34,Bassas da India,2016,1,1,"uninhabited, perfect score"
-34,Bassas da India,2017,1,1,"uninhabited, perfect score"
-35,Ile Europa,2000,1,1,"uninhabited, perfect score"
-35,Ile Europa,2001,1,1,"uninhabited, perfect score"
-35,Ile Europa,2002,1,1,"uninhabited, perfect score"
-35,Ile Europa,2003,1,1,"uninhabited, perfect score"
-35,Ile Europa,2004,1,1,"uninhabited, perfect score"
-35,Ile Europa,2005,1,1,"uninhabited, perfect score"
-35,Ile Europa,2006,1,1,"uninhabited, perfect score"
-35,Ile Europa,2007,1,1,"uninhabited, perfect score"
-35,Ile Europa,2008,1,1,"uninhabited, perfect score"
-35,Ile Europa,2009,1,1,"uninhabited, perfect score"
-35,Ile Europa,2010,1,1,"uninhabited, perfect score"
-35,Ile Europa,2011,1,1,"uninhabited, perfect score"
-35,Ile Europa,2012,1,1,"uninhabited, perfect score"
-35,Ile Europa,2013,1,1,"uninhabited, perfect score"
-35,Ile Europa,2014,1,1,"uninhabited, perfect score"
-35,Ile Europa,2015,1,1,"uninhabited, perfect score"
-35,Ile Europa,2016,1,1,"uninhabited, perfect score"
-35,Ile Europa,2017,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2000,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2001,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2002,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2003,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2004,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2005,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2006,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2007,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2008,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2009,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2010,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2011,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2012,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2013,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2014,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2015,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2016,1,1,"uninhabited, perfect score"
-36,Ile Tromelin,2017,1,1,"uninhabited, perfect score"
+32,R_union,2007,0.995,0,NA
+32,R_union,2008,0.995,0,NA
+32,R_union,2009,0.995,0,NA
+32,R_union,2010,0.995,0,NA
+32,R_union,2011,0.995,0,NA
+32,R_union,2012,0.995,0,NA
+32,R_union,2013,0.995,0,NA
+32,R_union,2014,0.995,0,NA
+32,R_union,2015,0.995,0,NA
+32,R_union,2016,0.995,0,NA
+32,R_union,2017,0.995,0,NA
+33,Juan de Nova Island,2000,1,0,No est. human population
+33,Juan de Nova Island,2001,1,0,No est. human population
+33,Juan de Nova Island,2002,1,0,No est. human population
+33,Juan de Nova Island,2003,1,0,No est. human population
+33,Juan de Nova Island,2004,1,0,No est. human population
+33,Juan de Nova Island,2005,1,0,No est. human population
+33,Juan de Nova Island,2006,1,0,No est. human population
+33,Juan de Nova Island,2007,1,0,No est. human population
+33,Juan de Nova Island,2008,1,0,No est. human population
+33,Juan de Nova Island,2009,1,0,No est. human population
+33,Juan de Nova Island,2010,1,0,No est. human population
+33,Juan de Nova Island,2011,1,0,No est. human population
+33,Juan de Nova Island,2012,1,0,No est. human population
+33,Juan de Nova Island,2013,1,0,No est. human population
+33,Juan de Nova Island,2014,1,0,No est. human population
+33,Juan de Nova Island,2015,1,0,No est. human population
+33,Juan de Nova Island,2016,1,0,No est. human population
+33,Juan de Nova Island,2017,1,0,No est. human population
+34,Bassas da India,2000,1,0,No est. human population
+34,Bassas da India,2001,1,0,No est. human population
+34,Bassas da India,2002,1,0,No est. human population
+34,Bassas da India,2003,1,0,No est. human population
+34,Bassas da India,2004,1,0,No est. human population
+34,Bassas da India,2005,1,0,No est. human population
+34,Bassas da India,2006,1,0,No est. human population
+34,Bassas da India,2007,1,0,No est. human population
+34,Bassas da India,2008,1,0,No est. human population
+34,Bassas da India,2009,1,0,No est. human population
+34,Bassas da India,2010,1,0,No est. human population
+34,Bassas da India,2011,1,0,No est. human population
+34,Bassas da India,2012,1,0,No est. human population
+34,Bassas da India,2013,1,0,No est. human population
+34,Bassas da India,2014,1,0,No est. human population
+34,Bassas da India,2015,1,0,No est. human population
+34,Bassas da India,2016,1,0,No est. human population
+34,Bassas da India,2017,1,0,No est. human population
+35,Ile Europa,2000,1,0,No est. human population
+35,Ile Europa,2001,1,0,No est. human population
+35,Ile Europa,2002,1,0,No est. human population
+35,Ile Europa,2003,1,0,No est. human population
+35,Ile Europa,2004,1,0,No est. human population
+35,Ile Europa,2005,1,0,No est. human population
+35,Ile Europa,2006,1,0,No est. human population
+35,Ile Europa,2007,1,0,No est. human population
+35,Ile Europa,2008,1,0,No est. human population
+35,Ile Europa,2009,1,0,No est. human population
+35,Ile Europa,2010,1,0,No est. human population
+35,Ile Europa,2011,1,0,No est. human population
+35,Ile Europa,2012,1,0,No est. human population
+35,Ile Europa,2013,1,0,No est. human population
+35,Ile Europa,2014,1,0,No est. human population
+35,Ile Europa,2015,1,0,No est. human population
+35,Ile Europa,2016,1,0,No est. human population
+35,Ile Europa,2017,1,0,No est. human population
+36,Ile Tromelin,2000,1,0,No est. human population
+36,Ile Tromelin,2001,1,0,No est. human population
+36,Ile Tromelin,2002,1,0,No est. human population
+36,Ile Tromelin,2003,1,0,No est. human population
+36,Ile Tromelin,2004,1,0,No est. human population
+36,Ile Tromelin,2005,1,0,No est. human population
+36,Ile Tromelin,2006,1,0,No est. human population
+36,Ile Tromelin,2007,1,0,No est. human population
+36,Ile Tromelin,2008,1,0,No est. human population
+36,Ile Tromelin,2009,1,0,No est. human population
+36,Ile Tromelin,2010,1,0,No est. human population
+36,Ile Tromelin,2011,1,0,No est. human population
+36,Ile Tromelin,2012,1,0,No est. human population
+36,Ile Tromelin,2013,1,0,No est. human population
+36,Ile Tromelin,2014,1,0,No est. human population
+36,Ile Tromelin,2015,1,0,No est. human population
+36,Ile Tromelin,2016,1,0,No est. human population
+36,Ile Tromelin,2017,1,0,No est. human population
 37,Mauritius,2000,0.9,0,NA
 37,Mauritius,2001,0.9,0,NA
 37,Mauritius,2002,0.91,0,NA
@@ -626,9 +626,9 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 38,British Indian Ocean Territory,2012,0.6916666666666667,1,UN georegion avg. (r2)
 38,British Indian Ocean Territory,2013,0.705,1,UN georegion avg. (r2)
 38,British Indian Ocean Territory,2014,0.7183333333333334,1,UN georegion avg. (r2)
-38,British Indian Ocean Territory,2015,0.7316666666666667,1,UN georegion avg. (r2)
-38,British Indian Ocean Territory,2016,0.7416666666666667,1,UN georegion avg. (r2)
-38,British Indian Ocean Territory,2017,0.7533333333333333,1,UN georegion avg. (r2)
+38,British Indian Ocean Territory,2015,0.7308333333333333,1,UN georegion avg. (r2)
+38,British Indian Ocean Territory,2016,0.7408333333333333,1,UN georegion avg. (r2)
+38,British Indian Ocean Territory,2017,0.7525,1,UN georegion avg. (r2)
 39,Maldives,2000,0.74,0,NA
 39,Maldives,2001,0.76,0,NA
 39,Maldives,2002,0.78,0,NA
@@ -644,9 +644,9 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 39,Maldives,2012,0.94,0,NA
 39,Maldives,2013,0.96,0,NA
 39,Maldives,2014,0.98,0,NA
-39,Maldives,2015,1,0,NA
-39,Maldives,2016,1,0,NA
-39,Maldives,2017,1,0,NA
+39,Maldives,2015,0.995,0,NA
+39,Maldives,2016,0.995,0,NA
+39,Maldives,2017,0.995,0,NA
 40,Sri Lanka,2000,0.85,0,NA
 40,Sri Lanka,2001,0.85,0,NA
 40,Sri Lanka,2002,0.86,0,NA
@@ -804,11 +804,11 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 48,Oman,2010,0.97,0,NA
 48,Oman,2011,0.98,0,NA
 48,Oman,2012,0.99,0,NA
-48,Oman,2013,1,0,NA
-48,Oman,2014,1,0,NA
-48,Oman,2015,1,0,NA
-48,Oman,2016,1,0,NA
-48,Oman,2017,1,0,NA
+48,Oman,2013,0.995,0,NA
+48,Oman,2014,0.995,0,NA
+48,Oman,2015,0.995,0,NA
+48,Oman,2016,0.995,0,NA
+48,Oman,2017,0.995,0,NA
 49,Sudan,2000,0.21,0,NA
 49,Sudan,2001,0.21,0,NA
 49,Sudan,2002,0.21,0,NA
@@ -835,52 +835,52 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 50,Saudi Arabia,2005,0.99,0,NA
 50,Saudi Arabia,2006,0.99,0,NA
 50,Saudi Arabia,2007,0.99,0,NA
-50,Saudi Arabia,2008,1,0,NA
-50,Saudi Arabia,2009,1,0,NA
-50,Saudi Arabia,2010,1,0,NA
-50,Saudi Arabia,2011,1,0,NA
-50,Saudi Arabia,2012,1,0,NA
-50,Saudi Arabia,2013,1,0,NA
-50,Saudi Arabia,2014,1,0,NA
-50,Saudi Arabia,2015,1,0,NA
-50,Saudi Arabia,2016,1,0,NA
-50,Saudi Arabia,2017,1,0,NA
-51,Kuwait,2000,1,0,NA
-51,Kuwait,2001,1,0,NA
-51,Kuwait,2002,1,0,NA
-51,Kuwait,2003,1,0,NA
-51,Kuwait,2004,1,0,NA
-51,Kuwait,2005,1,0,NA
-51,Kuwait,2006,1,0,NA
-51,Kuwait,2007,1,0,NA
-51,Kuwait,2008,1,0,NA
-51,Kuwait,2009,1,0,NA
-51,Kuwait,2010,1,0,NA
-51,Kuwait,2011,1,0,NA
-51,Kuwait,2012,1,0,NA
-51,Kuwait,2013,1,0,NA
-51,Kuwait,2014,1,0,NA
-51,Kuwait,2015,1,0,NA
-51,Kuwait,2016,1,0,NA
-51,Kuwait,2017,1,0,NA
-52,Bahrain,2000,1,0,NA
-52,Bahrain,2001,1,0,NA
-52,Bahrain,2002,1,0,NA
-52,Bahrain,2003,1,0,NA
-52,Bahrain,2004,1,0,NA
-52,Bahrain,2005,1,0,NA
-52,Bahrain,2006,1,0,NA
-52,Bahrain,2007,1,0,NA
-52,Bahrain,2008,1,0,NA
-52,Bahrain,2009,1,0,NA
-52,Bahrain,2010,1,0,NA
-52,Bahrain,2011,1,0,NA
-52,Bahrain,2012,1,0,NA
-52,Bahrain,2013,1,0,NA
-52,Bahrain,2014,1,0,NA
-52,Bahrain,2015,1,0,NA
-52,Bahrain,2016,1,0,NA
-52,Bahrain,2017,1,0,NA
+50,Saudi Arabia,2008,0.995,0,NA
+50,Saudi Arabia,2009,0.995,0,NA
+50,Saudi Arabia,2010,0.995,0,NA
+50,Saudi Arabia,2011,0.995,0,NA
+50,Saudi Arabia,2012,0.995,0,NA
+50,Saudi Arabia,2013,0.995,0,NA
+50,Saudi Arabia,2014,0.995,0,NA
+50,Saudi Arabia,2015,0.995,0,NA
+50,Saudi Arabia,2016,0.995,0,NA
+50,Saudi Arabia,2017,0.995,0,NA
+51,Kuwait,2000,0.995,0,NA
+51,Kuwait,2001,0.995,0,NA
+51,Kuwait,2002,0.995,0,NA
+51,Kuwait,2003,0.995,0,NA
+51,Kuwait,2004,0.995,0,NA
+51,Kuwait,2005,0.995,0,NA
+51,Kuwait,2006,0.995,0,NA
+51,Kuwait,2007,0.995,0,NA
+51,Kuwait,2008,0.995,0,NA
+51,Kuwait,2009,0.995,0,NA
+51,Kuwait,2010,0.995,0,NA
+51,Kuwait,2011,0.995,0,NA
+51,Kuwait,2012,0.995,0,NA
+51,Kuwait,2013,0.995,0,NA
+51,Kuwait,2014,0.995,0,NA
+51,Kuwait,2015,0.995,0,NA
+51,Kuwait,2016,0.995,0,NA
+51,Kuwait,2017,0.995,0,NA
+52,Bahrain,2000,0.995,0,NA
+52,Bahrain,2001,0.995,0,NA
+52,Bahrain,2002,0.995,0,NA
+52,Bahrain,2003,0.995,0,NA
+52,Bahrain,2004,0.995,0,NA
+52,Bahrain,2005,0.995,0,NA
+52,Bahrain,2006,0.995,0,NA
+52,Bahrain,2007,0.995,0,NA
+52,Bahrain,2008,0.995,0,NA
+52,Bahrain,2009,0.995,0,NA
+52,Bahrain,2010,0.995,0,NA
+52,Bahrain,2011,0.995,0,NA
+52,Bahrain,2012,0.995,0,NA
+52,Bahrain,2013,0.995,0,NA
+52,Bahrain,2014,0.995,0,NA
+52,Bahrain,2015,0.995,0,NA
+52,Bahrain,2016,0.995,0,NA
+52,Bahrain,2017,0.995,0,NA
 53,Pakistan,2000,0.31,0,NA
 53,Pakistan,2001,0.33,0,NA
 53,Pakistan,2002,0.35,0,NA
@@ -917,24 +917,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 54,United Arab Emirates,2015,0.99,0,NA
 54,United Arab Emirates,2016,0.99,0,NA
 54,United Arab Emirates,2017,0.99,0,NA
-55,Azores,2000,0.9617673235855043,1,UN georegion avg. (r2)
-55,Azores,2001,0.9633725365543537,1,UN georegion avg. (r2)
-55,Azores,2002,0.9667959313413849,1,UN georegion avg. (r2)
-55,Azores,2003,0.9684011443102344,1,UN georegion avg. (r2)
-55,Azores,2004,0.9690972663699928,1,UN georegion avg. (r2)
-55,Azores,2005,0.9707024793388421,1,UN georegion avg. (r2)
-55,Azores,2006,0.9718181818181818,1,UN georegion avg. (r2)
-55,Azores,2007,0.9736363636363636,1,UN georegion avg. (r2)
-55,Azores,2008,0.9754545454545455,1,UN georegion avg. (r2)
-55,Azores,2009,0.9772727272727273,1,UN georegion avg. (r2)
-55,Azores,2010,0.9790909090909091,1,UN georegion avg. (r2)
-55,Azores,2011,0.9809090909090908,1,UN georegion avg. (r2)
-55,Azores,2012,0.9827272727272727,1,UN georegion avg. (r2)
-55,Azores,2013,0.9836363636363636,1,UN georegion avg. (r2)
-55,Azores,2014,0.9854545454545455,1,UN georegion avg. (r2)
-55,Azores,2015,0.9863636363636363,1,UN georegion avg. (r2)
-55,Azores,2016,0.9872727272727273,1,UN georegion avg. (r2)
-55,Azores,2017,0.9872727272727273,1,UN georegion avg. (r2)
+55,Azores,2000,0.9599491417673225,1,UN georegion avg. (r2)
+55,Azores,2001,0.9615543547361719,1,UN georegion avg. (r2)
+55,Azores,2002,0.964977749523203,1,UN georegion avg. (r2)
+55,Azores,2003,0.9665829624920526,1,UN georegion avg. (r2)
+55,Azores,2004,0.967279084551811,1,UN georegion avg. (r2)
+55,Azores,2005,0.9688842975206603,1,UN georegion avg. (r2)
+55,Azores,2006,0.97,1,UN georegion avg. (r2)
+55,Azores,2007,0.9718181818181818,1,UN georegion avg. (r2)
+55,Azores,2008,0.9736363636363636,1,UN georegion avg. (r2)
+55,Azores,2009,0.9754545454545455,1,UN georegion avg. (r2)
+55,Azores,2010,0.9772727272727273,1,UN georegion avg. (r2)
+55,Azores,2011,0.9790909090909091,1,UN georegion avg. (r2)
+55,Azores,2012,0.9804545454545455,1,UN georegion avg. (r2)
+55,Azores,2013,0.9813636363636363,1,UN georegion avg. (r2)
+55,Azores,2014,0.9831818181818182,1,UN georegion avg. (r2)
+55,Azores,2015,0.9840909090909091,1,UN georegion avg. (r2)
+55,Azores,2016,0.985,1,UN georegion avg. (r2)
+55,Azores,2017,0.985,1,UN georegion avg. (r2)
 56,Cape Verde,2000,0.4,0,NA
 56,Cape Verde,2001,0.42,0,NA
 56,Cape Verde,2002,0.44,0,NA
@@ -953,78 +953,78 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 56,Cape Verde,2015,0.7,0,NA
 56,Cape Verde,2016,0.72,0,NA
 56,Cape Verde,2017,0.74,0,NA
-57,Madeira,2000,0.9617673235855043,1,UN georegion avg. (r2)
-57,Madeira,2001,0.9633725365543537,1,UN georegion avg. (r2)
-57,Madeira,2002,0.9667959313413849,1,UN georegion avg. (r2)
-57,Madeira,2003,0.9684011443102344,1,UN georegion avg. (r2)
-57,Madeira,2004,0.9690972663699928,1,UN georegion avg. (r2)
-57,Madeira,2005,0.9707024793388421,1,UN georegion avg. (r2)
-57,Madeira,2006,0.9718181818181818,1,UN georegion avg. (r2)
-57,Madeira,2007,0.9736363636363636,1,UN georegion avg. (r2)
-57,Madeira,2008,0.9754545454545455,1,UN georegion avg. (r2)
-57,Madeira,2009,0.9772727272727273,1,UN georegion avg. (r2)
-57,Madeira,2010,0.9790909090909091,1,UN georegion avg. (r2)
-57,Madeira,2011,0.9809090909090908,1,UN georegion avg. (r2)
-57,Madeira,2012,0.9827272727272727,1,UN georegion avg. (r2)
-57,Madeira,2013,0.9836363636363636,1,UN georegion avg. (r2)
-57,Madeira,2014,0.9854545454545455,1,UN georegion avg. (r2)
-57,Madeira,2015,0.9863636363636363,1,UN georegion avg. (r2)
-57,Madeira,2016,0.9872727272727273,1,UN georegion avg. (r2)
-57,Madeira,2017,0.9872727272727273,1,UN georegion avg. (r2)
-58,Canary Islands,2000,0.9617673235855043,1,UN georegion avg. (r2)
-58,Canary Islands,2001,0.9633725365543537,1,UN georegion avg. (r2)
-58,Canary Islands,2002,0.9667959313413849,1,UN georegion avg. (r2)
-58,Canary Islands,2003,0.9684011443102344,1,UN georegion avg. (r2)
-58,Canary Islands,2004,0.9690972663699928,1,UN georegion avg. (r2)
-58,Canary Islands,2005,0.9707024793388421,1,UN georegion avg. (r2)
-58,Canary Islands,2006,0.9718181818181818,1,UN georegion avg. (r2)
-58,Canary Islands,2007,0.9736363636363636,1,UN georegion avg. (r2)
-58,Canary Islands,2008,0.9754545454545455,1,UN georegion avg. (r2)
-58,Canary Islands,2009,0.9772727272727273,1,UN georegion avg. (r2)
-58,Canary Islands,2010,0.9790909090909091,1,UN georegion avg. (r2)
-58,Canary Islands,2011,0.9809090909090908,1,UN georegion avg. (r2)
-58,Canary Islands,2012,0.9827272727272727,1,UN georegion avg. (r2)
-58,Canary Islands,2013,0.9836363636363636,1,UN georegion avg. (r2)
-58,Canary Islands,2014,0.9854545454545455,1,UN georegion avg. (r2)
-58,Canary Islands,2015,0.9863636363636363,1,UN georegion avg. (r2)
-58,Canary Islands,2016,0.9872727272727273,1,UN georegion avg. (r2)
-58,Canary Islands,2017,0.9872727272727273,1,UN georegion avg. (r2)
-59,Belgium,2000,1,0,NA
-59,Belgium,2001,1,0,NA
-59,Belgium,2002,1,0,NA
-59,Belgium,2003,1,0,NA
-59,Belgium,2004,1,0,NA
-59,Belgium,2005,1,0,NA
-59,Belgium,2006,1,0,NA
-59,Belgium,2007,1,0,NA
-59,Belgium,2008,1,0,NA
-59,Belgium,2009,1,0,NA
-59,Belgium,2010,1,0,NA
-59,Belgium,2011,1,0,NA
-59,Belgium,2012,1,0,NA
-59,Belgium,2013,1,0,NA
-59,Belgium,2014,1,0,NA
-59,Belgium,2015,1,0,NA
-59,Belgium,2016,1,0,NA
-59,Belgium,2017,1,0,NA
-60,Gibraltar,2000,1,0,NA
-60,Gibraltar,2001,1,0,NA
-60,Gibraltar,2002,1,0,NA
-60,Gibraltar,2003,1,0,NA
-60,Gibraltar,2004,1,0,NA
-60,Gibraltar,2005,1,0,NA
-60,Gibraltar,2006,1,0,NA
-60,Gibraltar,2007,1,0,NA
-60,Gibraltar,2008,1,0,NA
-60,Gibraltar,2009,1,0,NA
-60,Gibraltar,2010,1,0,NA
-60,Gibraltar,2011,1,0,NA
-60,Gibraltar,2012,1,0,NA
-60,Gibraltar,2013,1,0,NA
-60,Gibraltar,2014,1,0,NA
-60,Gibraltar,2015,1,0,NA
-60,Gibraltar,2016,1,0,NA
-60,Gibraltar,2017,1,0,NA
+57,Madeira,2000,0.9599491417673225,1,UN georegion avg. (r2)
+57,Madeira,2001,0.9615543547361719,1,UN georegion avg. (r2)
+57,Madeira,2002,0.964977749523203,1,UN georegion avg. (r2)
+57,Madeira,2003,0.9665829624920526,1,UN georegion avg. (r2)
+57,Madeira,2004,0.967279084551811,1,UN georegion avg. (r2)
+57,Madeira,2005,0.9688842975206603,1,UN georegion avg. (r2)
+57,Madeira,2006,0.97,1,UN georegion avg. (r2)
+57,Madeira,2007,0.9718181818181818,1,UN georegion avg. (r2)
+57,Madeira,2008,0.9736363636363636,1,UN georegion avg. (r2)
+57,Madeira,2009,0.9754545454545455,1,UN georegion avg. (r2)
+57,Madeira,2010,0.9772727272727273,1,UN georegion avg. (r2)
+57,Madeira,2011,0.9790909090909091,1,UN georegion avg. (r2)
+57,Madeira,2012,0.9804545454545455,1,UN georegion avg. (r2)
+57,Madeira,2013,0.9813636363636363,1,UN georegion avg. (r2)
+57,Madeira,2014,0.9831818181818182,1,UN georegion avg. (r2)
+57,Madeira,2015,0.9840909090909091,1,UN georegion avg. (r2)
+57,Madeira,2016,0.985,1,UN georegion avg. (r2)
+57,Madeira,2017,0.985,1,UN georegion avg. (r2)
+58,Canary Islands,2000,0.9599491417673225,1,UN georegion avg. (r2)
+58,Canary Islands,2001,0.9615543547361719,1,UN georegion avg. (r2)
+58,Canary Islands,2002,0.964977749523203,1,UN georegion avg. (r2)
+58,Canary Islands,2003,0.9665829624920526,1,UN georegion avg. (r2)
+58,Canary Islands,2004,0.967279084551811,1,UN georegion avg. (r2)
+58,Canary Islands,2005,0.9688842975206603,1,UN georegion avg. (r2)
+58,Canary Islands,2006,0.97,1,UN georegion avg. (r2)
+58,Canary Islands,2007,0.9718181818181818,1,UN georegion avg. (r2)
+58,Canary Islands,2008,0.9736363636363636,1,UN georegion avg. (r2)
+58,Canary Islands,2009,0.9754545454545455,1,UN georegion avg. (r2)
+58,Canary Islands,2010,0.9772727272727273,1,UN georegion avg. (r2)
+58,Canary Islands,2011,0.9790909090909091,1,UN georegion avg. (r2)
+58,Canary Islands,2012,0.9804545454545455,1,UN georegion avg. (r2)
+58,Canary Islands,2013,0.9813636363636363,1,UN georegion avg. (r2)
+58,Canary Islands,2014,0.9831818181818182,1,UN georegion avg. (r2)
+58,Canary Islands,2015,0.9840909090909091,1,UN georegion avg. (r2)
+58,Canary Islands,2016,0.985,1,UN georegion avg. (r2)
+58,Canary Islands,2017,0.985,1,UN georegion avg. (r2)
+59,Belgium,2000,0.995,0,NA
+59,Belgium,2001,0.995,0,NA
+59,Belgium,2002,0.995,0,NA
+59,Belgium,2003,0.995,0,NA
+59,Belgium,2004,0.995,0,NA
+59,Belgium,2005,0.995,0,NA
+59,Belgium,2006,0.995,0,NA
+59,Belgium,2007,0.995,0,NA
+59,Belgium,2008,0.995,0,NA
+59,Belgium,2009,0.995,0,NA
+59,Belgium,2010,0.995,0,NA
+59,Belgium,2011,0.995,0,NA
+59,Belgium,2012,0.995,0,NA
+59,Belgium,2013,0.995,0,NA
+59,Belgium,2014,0.995,0,NA
+59,Belgium,2015,0.995,0,NA
+59,Belgium,2016,0.995,0,NA
+59,Belgium,2017,0.995,0,NA
+60,Gibraltar,2000,0.995,0,NA
+60,Gibraltar,2001,0.995,0,NA
+60,Gibraltar,2002,0.995,0,NA
+60,Gibraltar,2003,0.995,0,NA
+60,Gibraltar,2004,0.995,0,NA
+60,Gibraltar,2005,0.995,0,NA
+60,Gibraltar,2006,0.995,0,NA
+60,Gibraltar,2007,0.995,0,NA
+60,Gibraltar,2008,0.995,0,NA
+60,Gibraltar,2009,0.995,0,NA
+60,Gibraltar,2010,0.995,0,NA
+60,Gibraltar,2011,0.995,0,NA
+60,Gibraltar,2012,0.995,0,NA
+60,Gibraltar,2013,0.995,0,NA
+60,Gibraltar,2014,0.995,0,NA
+60,Gibraltar,2015,0.995,0,NA
+60,Gibraltar,2016,0.995,0,NA
+60,Gibraltar,2017,0.995,0,NA
 61,Tunisia,2000,0.77,0,NA
 61,Tunisia,2001,0.78,0,NA
 61,Tunisia,2002,0.79,0,NA
@@ -1071,14 +1071,14 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 63,Western Sahara,2007,0.7683333333333333,1,UN georegion avg. (r2)
 63,Western Sahara,2008,0.7766666666666666,1,UN georegion avg. (r2)
 63,Western Sahara,2009,0.7833333333333333,1,UN georegion avg. (r2)
-63,Western Sahara,2010,0.7916666666666667,1,UN georegion avg. (r2)
-63,Western Sahara,2011,0.8016666666666666,1,UN georegion avg. (r2)
-63,Western Sahara,2012,0.8066666666666666,1,UN georegion avg. (r2)
-63,Western Sahara,2013,0.8133333333333334,1,UN georegion avg. (r2)
-63,Western Sahara,2014,0.82,1,UN georegion avg. (r2)
-63,Western Sahara,2015,0.8233333333333334,1,UN georegion avg. (r2)
-63,Western Sahara,2016,0.8283333333333334,1,UN georegion avg. (r2)
-63,Western Sahara,2017,0.8316666666666667,1,UN georegion avg. (r2)
+63,Western Sahara,2010,0.7908333333333334,1,UN georegion avg. (r2)
+63,Western Sahara,2011,0.8008333333333333,1,UN georegion avg. (r2)
+63,Western Sahara,2012,0.8058333333333333,1,UN georegion avg. (r2)
+63,Western Sahara,2013,0.8125,1,UN georegion avg. (r2)
+63,Western Sahara,2014,0.8191666666666667,1,UN georegion avg. (r2)
+63,Western Sahara,2015,0.8225,1,UN georegion avg. (r2)
+63,Western Sahara,2016,0.8275,1,UN georegion avg. (r2)
+63,Western Sahara,2017,0.8308333333333333,1,UN georegion avg. (r2)
 64,Mauritania,2000,0.17,0,NA
 64,Mauritania,2001,0.18,0,NA
 64,Mauritania,2002,0.2,0,NA
@@ -1143,32 +1143,32 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 67,Libya,2007,0.99,0,NA
 67,Libya,2008,0.99,0,NA
 67,Libya,2009,0.99,0,NA
-67,Libya,2010,1,0,NA
-67,Libya,2011,1,0,NA
-67,Libya,2012,1,0,NA
-67,Libya,2013,1,0,NA
-67,Libya,2014,1,0,NA
-67,Libya,2015,1,0,NA
-67,Libya,2016,1,0,NA
-67,Libya,2017,1,0,NA
-68,Malta,2000,1,0,NA
-68,Malta,2001,1,0,NA
-68,Malta,2002,1,0,NA
-68,Malta,2003,1,0,NA
-68,Malta,2004,1,0,NA
-68,Malta,2005,1,0,NA
-68,Malta,2006,1,0,NA
-68,Malta,2007,1,0,NA
-68,Malta,2008,1,0,NA
-68,Malta,2009,1,0,NA
-68,Malta,2010,1,0,NA
-68,Malta,2011,1,0,NA
-68,Malta,2012,1,0,NA
-68,Malta,2013,1,0,NA
-68,Malta,2014,1,0,NA
-68,Malta,2015,1,0,NA
-68,Malta,2016,1,0,NA
-68,Malta,2017,1,0,NA
+67,Libya,2010,0.995,0,NA
+67,Libya,2011,0.995,0,NA
+67,Libya,2012,0.995,0,NA
+67,Libya,2013,0.995,0,NA
+67,Libya,2014,0.995,0,NA
+67,Libya,2015,0.995,0,NA
+67,Libya,2016,0.995,0,NA
+67,Libya,2017,0.995,0,NA
+68,Malta,2000,0.995,0,NA
+68,Malta,2001,0.995,0,NA
+68,Malta,2002,0.995,0,NA
+68,Malta,2003,0.995,0,NA
+68,Malta,2004,0.995,0,NA
+68,Malta,2005,0.995,0,NA
+68,Malta,2006,0.995,0,NA
+68,Malta,2007,0.995,0,NA
+68,Malta,2008,0.995,0,NA
+68,Malta,2009,0.995,0,NA
+68,Malta,2010,0.995,0,NA
+68,Malta,2011,0.995,0,NA
+68,Malta,2012,0.995,0,NA
+68,Malta,2013,0.995,0,NA
+68,Malta,2014,0.995,0,NA
+68,Malta,2015,0.995,0,NA
+68,Malta,2016,0.995,0,NA
+68,Malta,2017,0.995,0,NA
 69,Latvia,2000,0.88,0,NA
 69,Latvia,2001,0.88,0,NA
 69,Latvia,2002,0.89,0,NA
@@ -1187,24 +1187,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 69,Latvia,2015,0.91,0,NA
 69,Latvia,2016,0.92,0,NA
 69,Latvia,2017,0.92,0,NA
-70,Estonia,2000,1,0,NA
-70,Estonia,2001,1,0,NA
-70,Estonia,2002,1,0,NA
-70,Estonia,2003,1,0,NA
-70,Estonia,2004,1,0,NA
-70,Estonia,2005,1,0,NA
-70,Estonia,2006,1,0,NA
-70,Estonia,2007,1,0,NA
-70,Estonia,2008,1,0,NA
-70,Estonia,2009,1,0,NA
-70,Estonia,2010,1,0,NA
-70,Estonia,2011,1,0,NA
-70,Estonia,2012,1,0,NA
-70,Estonia,2013,1,0,NA
-70,Estonia,2014,1,0,NA
-70,Estonia,2015,1,0,NA
-70,Estonia,2016,1,0,NA
-70,Estonia,2017,1,0,NA
+70,Estonia,2000,0.995,0,NA
+70,Estonia,2001,0.995,0,NA
+70,Estonia,2002,0.995,0,NA
+70,Estonia,2003,0.995,0,NA
+70,Estonia,2004,0.995,0,NA
+70,Estonia,2005,0.995,0,NA
+70,Estonia,2006,0.995,0,NA
+70,Estonia,2007,0.995,0,NA
+70,Estonia,2008,0.995,0,NA
+70,Estonia,2009,0.995,0,NA
+70,Estonia,2010,0.995,0,NA
+70,Estonia,2011,0.995,0,NA
+70,Estonia,2012,0.995,0,NA
+70,Estonia,2013,0.995,0,NA
+70,Estonia,2014,0.995,0,NA
+70,Estonia,2015,0.995,0,NA
+70,Estonia,2016,0.995,0,NA
+70,Estonia,2017,0.995,0,NA
 71,Bulgaria,2000,0.86,0,NA
 71,Bulgaria,2001,0.86,0,NA
 71,Bulgaria,2002,0.86,0,NA
@@ -1349,24 +1349,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 78,Lebanon,2015,0.95,0,NA
 78,Lebanon,2016,0.97,0,NA
 78,Lebanon,2017,0.98,0,NA
-79,Israel,2000,1,0,NA
-79,Israel,2001,1,0,NA
-79,Israel,2002,1,0,NA
-79,Israel,2003,1,0,NA
-79,Israel,2004,1,0,NA
-79,Israel,2005,1,0,NA
-79,Israel,2006,1,0,NA
-79,Israel,2007,1,0,NA
-79,Israel,2008,1,0,NA
-79,Israel,2009,1,0,NA
-79,Israel,2010,1,0,NA
-79,Israel,2011,1,0,NA
-79,Israel,2012,1,0,NA
-79,Israel,2013,1,0,NA
-79,Israel,2014,1,0,NA
-79,Israel,2015,1,0,NA
-79,Israel,2016,1,0,NA
-79,Israel,2017,1,0,NA
+79,Israel,2000,0.995,0,NA
+79,Israel,2001,0.995,0,NA
+79,Israel,2002,0.995,0,NA
+79,Israel,2003,0.995,0,NA
+79,Israel,2004,0.995,0,NA
+79,Israel,2005,0.995,0,NA
+79,Israel,2006,0.995,0,NA
+79,Israel,2007,0.995,0,NA
+79,Israel,2008,0.995,0,NA
+79,Israel,2009,0.995,0,NA
+79,Israel,2010,0.995,0,NA
+79,Israel,2011,0.995,0,NA
+79,Israel,2012,0.995,0,NA
+79,Israel,2013,0.995,0,NA
+79,Israel,2014,0.995,0,NA
+79,Israel,2015,0.995,0,NA
+79,Israel,2016,0.995,0,NA
+79,Israel,2017,0.995,0,NA
 80,Greece,2000,0.97,0,NA
 80,Greece,2001,0.97,0,NA
 80,Greece,2002,0.98,0,NA
@@ -1385,24 +1385,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 80,Greece,2015,0.99,0,NA
 80,Greece,2016,0.99,0,NA
 80,Greece,2017,0.99,0,NA
-81,Cyprus,2000,1,0,NA
-81,Cyprus,2001,1,0,NA
-81,Cyprus,2002,1,0,NA
-81,Cyprus,2003,1,0,NA
-81,Cyprus,2004,1,0,NA
-81,Cyprus,2005,1,0,NA
-81,Cyprus,2006,1,0,NA
-81,Cyprus,2007,1,0,NA
-81,Cyprus,2008,1,0,NA
-81,Cyprus,2009,1,0,NA
-81,Cyprus,2010,1,0,NA
-81,Cyprus,2011,1,0,NA
-81,Cyprus,2012,1,0,NA
-81,Cyprus,2013,1,0,NA
-81,Cyprus,2014,1,0,NA
-81,Cyprus,2015,1,0,NA
-81,Cyprus,2016,1,0,NA
-81,Cyprus,2017,1,0,NA
+81,Cyprus,2000,0.995,0,NA
+81,Cyprus,2001,0.995,0,NA
+81,Cyprus,2002,0.995,0,NA
+81,Cyprus,2003,0.995,0,NA
+81,Cyprus,2004,0.995,0,NA
+81,Cyprus,2005,0.995,0,NA
+81,Cyprus,2006,0.995,0,NA
+81,Cyprus,2007,0.995,0,NA
+81,Cyprus,2008,0.995,0,NA
+81,Cyprus,2009,0.995,0,NA
+81,Cyprus,2010,0.995,0,NA
+81,Cyprus,2011,0.995,0,NA
+81,Cyprus,2012,0.995,0,NA
+81,Cyprus,2013,0.995,0,NA
+81,Cyprus,2014,0.995,0,NA
+81,Cyprus,2015,0.995,0,NA
+81,Cyprus,2016,0.995,0,NA
+81,Cyprus,2017,0.995,0,NA
 82,Albania,2000,0.88,0,NA
 82,Albania,2001,0.89,0,NA
 82,Albania,2002,0.9,0,NA
@@ -1439,186 +1439,186 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 84,Algeria,2015,0.87,0,NA
 84,Algeria,2016,0.88,0,NA
 84,Algeria,2017,0.88,0,NA
-85,Ascension,2000,0.9667417279411765,1,UN georegion avg. (r2)
-85,Ascension,2001,0.967421875,1,UN georegion avg. (r2)
-85,Ascension,2002,0.968125,1,UN georegion avg. (r2)
-85,Ascension,2003,0.96875,1,UN georegion avg. (r2)
-85,Ascension,2004,0.96875,1,UN georegion avg. (r2)
-85,Ascension,2005,0.969375,1,UN georegion avg. (r2)
-85,Ascension,2006,0.9700000000000001,1,UN georegion avg. (r2)
-85,Ascension,2007,0.9706250000000001,1,UN georegion avg. (r2)
-85,Ascension,2008,0.971875,1,UN georegion avg. (r2)
-85,Ascension,2009,0.971875,1,UN georegion avg. (r2)
-85,Ascension,2010,0.973125,1,UN georegion avg. (r2)
-85,Ascension,2011,0.97375,1,UN georegion avg. (r2)
-85,Ascension,2012,0.974375,1,UN georegion avg. (r2)
-85,Ascension,2013,0.974375,1,UN georegion avg. (r2)
-85,Ascension,2014,0.975,1,UN georegion avg. (r2)
-85,Ascension,2015,0.975,1,UN georegion avg. (r2)
-85,Ascension,2016,0.97625,1,UN georegion avg. (r2)
-85,Ascension,2017,0.9762500000000001,1,UN georegion avg. (r2)
-86,Saint Helena,2000,0.9878676470588232,1,lm prediction based on year
-86,Saint Helena,2001,0.9887499999999998,1,lm prediction based on year
+85,Ascension,2000,0.9646208639705882,1,UN georegion avg. (r2)
+85,Ascension,2001,0.9652734375,1,UN georegion avg. (r2)
+85,Ascension,2002,0.9659375,1,UN georegion avg. (r2)
+85,Ascension,2003,0.9665625,1,UN georegion avg. (r2)
+85,Ascension,2004,0.9665625,1,UN georegion avg. (r2)
+85,Ascension,2005,0.9671875000000001,1,UN georegion avg. (r2)
+85,Ascension,2006,0.9678125000000001,1,UN georegion avg. (r2)
+85,Ascension,2007,0.9684375000000001,1,UN georegion avg. (r2)
+85,Ascension,2008,0.9693750000000001,1,UN georegion avg. (r2)
+85,Ascension,2009,0.969375,1,UN georegion avg. (r2)
+85,Ascension,2010,0.970625,1,UN georegion avg. (r2)
+85,Ascension,2011,0.97125,1,UN georegion avg. (r2)
+85,Ascension,2012,0.971875,1,UN georegion avg. (r2)
+85,Ascension,2013,0.971875,1,UN georegion avg. (r2)
+85,Ascension,2014,0.9725,1,UN georegion avg. (r2)
+85,Ascension,2015,0.9725,1,UN georegion avg. (r2)
+85,Ascension,2016,0.97375,1,UN georegion avg. (r2)
+85,Ascension,2017,0.97375,1,UN georegion avg. (r2)
+86,Saint Helena,2000,0.9889338235294115,1,lm prediction based on year
+86,Saint Helena,2001,0.9893749999999998,1,lm prediction based on year
 86,Saint Helena,2002,0.99,0,NA
 86,Saint Helena,2003,0.99,0,NA
 86,Saint Helena,2004,0.99,0,NA
 86,Saint Helena,2005,0.99,0,NA
 86,Saint Helena,2006,0.99,0,NA
 86,Saint Helena,2007,0.99,0,NA
-86,Saint Helena,2008,1,0,NA
-86,Saint Helena,2009,1,0,NA
-86,Saint Helena,2010,1,0,NA
-86,Saint Helena,2011,1,0,NA
-86,Saint Helena,2012,1,0,NA
-86,Saint Helena,2013,1,0,NA
-86,Saint Helena,2014,1,0,NA
-86,Saint Helena,2015,1,0,NA
-86,Saint Helena,2016,1,0,NA
-86,Saint Helena,2017,1,0,NA
-88,Tristan da Cunha,2000,0.9667417279411765,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2001,0.967421875,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2002,0.968125,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2003,0.96875,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2004,0.96875,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2005,0.969375,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2006,0.9700000000000001,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2007,0.9706250000000001,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2008,0.971875,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2009,0.971875,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2010,0.973125,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2011,0.97375,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2012,0.974375,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2013,0.974375,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2014,0.975,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2015,0.975,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2016,0.97625,1,UN georegion avg. (r2)
-88,Tristan da Cunha,2017,0.9762500000000001,1,UN georegion avg. (r2)
-89,South Georgia and the South Sandwich Islands,2000,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2001,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2002,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2003,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2004,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2005,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2006,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2007,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2008,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2009,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2010,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2011,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2012,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2013,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2014,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2015,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2016,1,1,"uninhabited, perfect score"
-89,South Georgia and the South Sandwich Islands,2017,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2000,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2001,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2002,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2003,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2004,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2005,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2006,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2007,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2008,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2009,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2010,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2011,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2012,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2013,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2014,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2015,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2016,1,1,"uninhabited, perfect score"
-90,Prince Edward Islands,2017,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2000,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2001,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2002,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2003,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2004,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2005,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2006,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2007,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2008,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2009,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2010,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2011,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2012,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2013,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2014,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2015,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2016,1,1,"uninhabited, perfect score"
-91,Crozet Islands,2017,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2000,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2001,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2002,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2003,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2004,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2005,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2006,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2007,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2008,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2009,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2010,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2011,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2012,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2013,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2014,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2015,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2016,1,1,"uninhabited, perfect score"
-92,Amsterdam Island and Saint Paul Island,2017,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2000,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2001,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2002,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2003,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2004,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2005,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2006,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2007,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2008,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2009,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2010,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2011,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2012,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2013,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2014,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2015,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2016,1,1,"uninhabited, perfect score"
-93,Kerguelen Islands,2017,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2000,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2001,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2002,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2003,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2004,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2005,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2006,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2007,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2008,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2009,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2010,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2011,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2012,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2013,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2014,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2015,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2016,1,1,"uninhabited, perfect score"
-94,Heard and McDonald Islands,2017,1,1,"uninhabited, perfect score"
-95,Falkland Islands,2000,1,0,NA
-95,Falkland Islands,2001,1,0,NA
-95,Falkland Islands,2002,1,0,NA
-95,Falkland Islands,2003,1,0,NA
-95,Falkland Islands,2004,1,0,NA
-95,Falkland Islands,2005,1,0,NA
-95,Falkland Islands,2006,1,0,NA
-95,Falkland Islands,2007,1,0,NA
-95,Falkland Islands,2008,1,0,NA
-95,Falkland Islands,2009,1,0,NA
-95,Falkland Islands,2010,1,0,NA
-95,Falkland Islands,2011,1,0,NA
-95,Falkland Islands,2012,1,0,NA
-95,Falkland Islands,2013,1,0,NA
-95,Falkland Islands,2014,1,0,NA
-95,Falkland Islands,2015,1,0,NA
-95,Falkland Islands,2016,1,0,NA
-95,Falkland Islands,2017,1,0,NA
+86,Saint Helena,2008,0.995,0,NA
+86,Saint Helena,2009,0.995,0,NA
+86,Saint Helena,2010,0.995,0,NA
+86,Saint Helena,2011,0.995,0,NA
+86,Saint Helena,2012,0.995,0,NA
+86,Saint Helena,2013,0.995,0,NA
+86,Saint Helena,2014,0.995,0,NA
+86,Saint Helena,2015,0.995,0,NA
+86,Saint Helena,2016,0.995,0,NA
+86,Saint Helena,2017,0.995,0,NA
+88,Tristan da Cunha,2000,0.9646208639705882,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2001,0.9652734375,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2002,0.9659375,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2003,0.9665625,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2004,0.9665625,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2005,0.9671875000000001,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2006,0.9678125000000001,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2007,0.9684375000000001,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2008,0.9693750000000001,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2009,0.969375,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2010,0.970625,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2011,0.97125,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2012,0.971875,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2013,0.971875,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2014,0.9725,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2015,0.9725,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2016,0.97375,1,UN georegion avg. (r2)
+88,Tristan da Cunha,2017,0.97375,1,UN georegion avg. (r2)
+89,South Georgia and the South Sandwich Islands,2000,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2001,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2002,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2003,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2004,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2005,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2006,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2007,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2008,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2009,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2010,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2011,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2012,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2013,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2014,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2015,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2016,1,0,No est. human population
+89,South Georgia and the South Sandwich Islands,2017,1,0,No est. human population
+90,Prince Edward Islands,2000,1,0,No est. human population
+90,Prince Edward Islands,2001,1,0,No est. human population
+90,Prince Edward Islands,2002,1,0,No est. human population
+90,Prince Edward Islands,2003,1,0,No est. human population
+90,Prince Edward Islands,2004,1,0,No est. human population
+90,Prince Edward Islands,2005,1,0,No est. human population
+90,Prince Edward Islands,2006,1,0,No est. human population
+90,Prince Edward Islands,2007,1,0,No est. human population
+90,Prince Edward Islands,2008,1,0,No est. human population
+90,Prince Edward Islands,2009,1,0,No est. human population
+90,Prince Edward Islands,2010,1,0,No est. human population
+90,Prince Edward Islands,2011,1,0,No est. human population
+90,Prince Edward Islands,2012,1,0,No est. human population
+90,Prince Edward Islands,2013,1,0,No est. human population
+90,Prince Edward Islands,2014,1,0,No est. human population
+90,Prince Edward Islands,2015,1,0,No est. human population
+90,Prince Edward Islands,2016,1,0,No est. human population
+90,Prince Edward Islands,2017,1,0,No est. human population
+91,Crozet Islands,2000,1,0,No est. human population
+91,Crozet Islands,2001,1,0,No est. human population
+91,Crozet Islands,2002,1,0,No est. human population
+91,Crozet Islands,2003,1,0,No est. human population
+91,Crozet Islands,2004,1,0,No est. human population
+91,Crozet Islands,2005,1,0,No est. human population
+91,Crozet Islands,2006,1,0,No est. human population
+91,Crozet Islands,2007,1,0,No est. human population
+91,Crozet Islands,2008,1,0,No est. human population
+91,Crozet Islands,2009,1,0,No est. human population
+91,Crozet Islands,2010,1,0,No est. human population
+91,Crozet Islands,2011,1,0,No est. human population
+91,Crozet Islands,2012,1,0,No est. human population
+91,Crozet Islands,2013,1,0,No est. human population
+91,Crozet Islands,2014,1,0,No est. human population
+91,Crozet Islands,2015,1,0,No est. human population
+91,Crozet Islands,2016,1,0,No est. human population
+91,Crozet Islands,2017,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2000,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2001,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2002,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2003,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2004,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2005,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2006,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2007,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2008,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2009,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2010,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2011,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2012,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2013,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2014,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2015,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2016,1,0,No est. human population
+92,Amsterdam Island and Saint Paul Island,2017,1,0,No est. human population
+93,Kerguelen Islands,2000,1,0,No est. human population
+93,Kerguelen Islands,2001,1,0,No est. human population
+93,Kerguelen Islands,2002,1,0,No est. human population
+93,Kerguelen Islands,2003,1,0,No est. human population
+93,Kerguelen Islands,2004,1,0,No est. human population
+93,Kerguelen Islands,2005,1,0,No est. human population
+93,Kerguelen Islands,2006,1,0,No est. human population
+93,Kerguelen Islands,2007,1,0,No est. human population
+93,Kerguelen Islands,2008,1,0,No est. human population
+93,Kerguelen Islands,2009,1,0,No est. human population
+93,Kerguelen Islands,2010,1,0,No est. human population
+93,Kerguelen Islands,2011,1,0,No est. human population
+93,Kerguelen Islands,2012,1,0,No est. human population
+93,Kerguelen Islands,2013,1,0,No est. human population
+93,Kerguelen Islands,2014,1,0,No est. human population
+93,Kerguelen Islands,2015,1,0,No est. human population
+93,Kerguelen Islands,2016,1,0,No est. human population
+93,Kerguelen Islands,2017,1,0,No est. human population
+94,Heard and McDonald Islands,2000,1,0,No est. human population
+94,Heard and McDonald Islands,2001,1,0,No est. human population
+94,Heard and McDonald Islands,2002,1,0,No est. human population
+94,Heard and McDonald Islands,2003,1,0,No est. human population
+94,Heard and McDonald Islands,2004,1,0,No est. human population
+94,Heard and McDonald Islands,2005,1,0,No est. human population
+94,Heard and McDonald Islands,2006,1,0,No est. human population
+94,Heard and McDonald Islands,2007,1,0,No est. human population
+94,Heard and McDonald Islands,2008,1,0,No est. human population
+94,Heard and McDonald Islands,2009,1,0,No est. human population
+94,Heard and McDonald Islands,2010,1,0,No est. human population
+94,Heard and McDonald Islands,2011,1,0,No est. human population
+94,Heard and McDonald Islands,2012,1,0,No est. human population
+94,Heard and McDonald Islands,2013,1,0,No est. human population
+94,Heard and McDonald Islands,2014,1,0,No est. human population
+94,Heard and McDonald Islands,2015,1,0,No est. human population
+94,Heard and McDonald Islands,2016,1,0,No est. human population
+94,Heard and McDonald Islands,2017,1,0,No est. human population
+95,Falkland Islands,2000,0.995,0,NA
+95,Falkland Islands,2001,0.995,0,NA
+95,Falkland Islands,2002,0.995,0,NA
+95,Falkland Islands,2003,0.995,0,NA
+95,Falkland Islands,2004,0.995,0,NA
+95,Falkland Islands,2005,0.995,0,NA
+95,Falkland Islands,2006,0.995,0,NA
+95,Falkland Islands,2007,0.995,0,NA
+95,Falkland Islands,2008,0.995,0,NA
+95,Falkland Islands,2009,0.995,0,NA
+95,Falkland Islands,2010,0.995,0,NA
+95,Falkland Islands,2011,0.995,0,NA
+95,Falkland Islands,2012,0.995,0,NA
+95,Falkland Islands,2013,0.995,0,NA
+95,Falkland Islands,2014,0.995,0,NA
+95,Falkland Islands,2015,0.995,0,NA
+95,Falkland Islands,2016,0.995,0,NA
+95,Falkland Islands,2017,0.995,0,NA
 96,Sierra Leone,2000,0.1,0,NA
 96,Sierra Leone,2001,0.1,0,NA
 96,Sierra Leone,2002,0.11,0,NA
@@ -1781,24 +1781,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 104,Equatorial Guinea,2015,0.66,0,NA
 104,Equatorial Guinea,2016,0.66,0,NA
 104,Equatorial Guinea,2017,0.66,0,NA
-105,Bouvet Island,2000,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2001,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2002,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2003,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2004,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2005,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2006,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2007,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2008,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2009,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2010,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2011,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2012,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2013,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2014,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2015,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2016,1,1,"uninhabited, perfect score"
-105,Bouvet Island,2017,1,1,"uninhabited, perfect score"
+105,Bouvet Island,2000,1,0,No est. human population
+105,Bouvet Island,2001,1,0,No est. human population
+105,Bouvet Island,2002,1,0,No est. human population
+105,Bouvet Island,2003,1,0,No est. human population
+105,Bouvet Island,2004,1,0,No est. human population
+105,Bouvet Island,2005,1,0,No est. human population
+105,Bouvet Island,2006,1,0,No est. human population
+105,Bouvet Island,2007,1,0,No est. human population
+105,Bouvet Island,2008,1,0,No est. human population
+105,Bouvet Island,2009,1,0,No est. human population
+105,Bouvet Island,2010,1,0,No est. human population
+105,Bouvet Island,2011,1,0,No est. human population
+105,Bouvet Island,2012,1,0,No est. human population
+105,Bouvet Island,2013,1,0,No est. human population
+105,Bouvet Island,2014,1,0,No est. human population
+105,Bouvet Island,2015,1,0,No est. human population
+105,Bouvet Island,2016,1,0,No est. human population
+105,Bouvet Island,2017,1,0,No est. human population
 106,Ghana,2000,0.09,0,NA
 106,Ghana,2001,0.09,0,NA
 106,Ghana,2002,0.09,0,NA
@@ -1817,42 +1817,42 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 106,Ghana,2015,0.17,0,NA
 106,Ghana,2016,0.18,0,NA
 106,Ghana,2017,0.18,0,NA
-107,Clipperton Island,2000,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2001,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2002,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2003,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2004,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2005,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2006,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2007,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2008,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2009,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2010,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2011,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2012,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2013,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2014,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2015,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2016,1,1,"uninhabited, perfect score"
-107,Clipperton Island,2017,1,1,"uninhabited, perfect score"
-108,Bermuda,2000,1,0,NA
-108,Bermuda,2001,1,0,NA
-108,Bermuda,2002,1,0,NA
-108,Bermuda,2003,1,0,NA
-108,Bermuda,2004,1,0,NA
-108,Bermuda,2005,1,0,NA
-108,Bermuda,2006,1,0,NA
-108,Bermuda,2007,1,0,NA
-108,Bermuda,2008,1,0,NA
-108,Bermuda,2009,1,0,NA
-108,Bermuda,2010,1,0,NA
-108,Bermuda,2011,1,0,NA
-108,Bermuda,2012,1,0,NA
-108,Bermuda,2013,1,0,NA
-108,Bermuda,2014,1,0,NA
-108,Bermuda,2015,1,0,NA
-108,Bermuda,2016,1,0,NA
-108,Bermuda,2017,1,0,NA
+107,Clipperton Island,2000,1,0,No est. human population
+107,Clipperton Island,2001,1,0,No est. human population
+107,Clipperton Island,2002,1,0,No est. human population
+107,Clipperton Island,2003,1,0,No est. human population
+107,Clipperton Island,2004,1,0,No est. human population
+107,Clipperton Island,2005,1,0,No est. human population
+107,Clipperton Island,2006,1,0,No est. human population
+107,Clipperton Island,2007,1,0,No est. human population
+107,Clipperton Island,2008,1,0,No est. human population
+107,Clipperton Island,2009,1,0,No est. human population
+107,Clipperton Island,2010,1,0,No est. human population
+107,Clipperton Island,2011,1,0,No est. human population
+107,Clipperton Island,2012,1,0,No est. human population
+107,Clipperton Island,2013,1,0,No est. human population
+107,Clipperton Island,2014,1,0,No est. human population
+107,Clipperton Island,2015,1,0,No est. human population
+107,Clipperton Island,2016,1,0,No est. human population
+107,Clipperton Island,2017,1,0,No est. human population
+108,Bermuda,2000,0.995,0,NA
+108,Bermuda,2001,0.995,0,NA
+108,Bermuda,2002,0.995,0,NA
+108,Bermuda,2003,0.995,0,NA
+108,Bermuda,2004,0.995,0,NA
+108,Bermuda,2005,0.995,0,NA
+108,Bermuda,2006,0.995,0,NA
+108,Bermuda,2007,0.995,0,NA
+108,Bermuda,2008,0.995,0,NA
+108,Bermuda,2009,0.995,0,NA
+108,Bermuda,2010,0.995,0,NA
+108,Bermuda,2011,0.995,0,NA
+108,Bermuda,2012,0.995,0,NA
+108,Bermuda,2013,0.995,0,NA
+108,Bermuda,2014,0.995,0,NA
+108,Bermuda,2015,0.995,0,NA
+108,Bermuda,2016,0.995,0,NA
+108,Bermuda,2017,0.995,0,NA
 110,Bahamas,2000,0.88,0,NA
 110,Bahamas,2001,0.88,0,NA
 110,Bahamas,2002,0.89,0,NA
@@ -1964,21 +1964,21 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 116,Puerto Rico and Virgin Islands of the United States,2000,0.9705581157194061,0,NA
 116,Puerto Rico and Virgin Islands of the United States,2001,0.9705576873880788,0,NA
 116,Puerto Rico and Virgin Islands of the United States,2002,0.9705582586427657,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2003,0.9708318356867779,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2004,0.9708341915550979,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2005,0.9708365608055771,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2006,0.9708311755567064,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2007,0.9708333333333333,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2008,0.9708352849336456,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2009,0.970829853862213,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2010,0.9708318074810358,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2011,0.9708339889850511,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2012,0.9708359621451104,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2013,0.9708302583025831,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2014,0.9708320126782884,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2015,0.970833553850225,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2016,0.970834879406308,0,NA
-116,Puerto Rico and Virgin Islands of the United States,2017,0.9708359872611465,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2003,0.9706931964056482,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2004,0.9706951596292482,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2005,0.9706971340046475,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2006,0.9706926462972553,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2007,0.9706944444444444,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2008,0.970696070778038,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2009,0.9706915448851775,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2010,0.9706931729008632,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2011,0.970694990820876,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2012,0.9706966351209253,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2013,0.9706918819188192,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2014,0.9706933438985736,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2015,0.9706946282085208,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2016,0.97069573283859,0,NA
+116,Puerto Rico and Virgin Islands of the United States,2017,0.9706966560509555,0,NA
 117,British Virgin Islands,2000,0.97,0,NA
 117,British Virgin Islands,2001,0.97,0,NA
 117,British Virgin Islands,2002,0.97,0,NA
@@ -2375,7 +2375,7 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 139,Venezuela,2015,0.94,0,NA
 139,Venezuela,2016,0.94,0,NA
 139,Venezuela,2017,0.94,0,NA
-140,Guadeloupe and Martinique,2000,0.9614034839111802,1,lm prediction based on year
+140,Guadeloupe and Martinique,2000,0.9629561565912308,1,lm prediction based on year
 140,Guadeloupe and Martinique,2001,0.97,0,NA
 140,Guadeloupe and Martinique,2002,0.97,0,NA
 140,Guadeloupe and Martinique,2003,0.97,0,NA
@@ -2389,10 +2389,10 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 140,Guadeloupe and Martinique,2011,0.98,0,NA
 140,Guadeloupe and Martinique,2012,0.984638196915777,0,NA
 140,Guadeloupe and Martinique,2013,0.99,0,NA
-140,Guadeloupe and Martinique,2014,0.994618138424821,0,NA
-140,Guadeloupe and Martinique,2015,1,0,NA
-140,Guadeloupe and Martinique,2016,1,0,NA
-140,Guadeloupe and Martinique,2017,1,0,NA
+140,Guadeloupe and Martinique,2014,0.9923090692124105,0,NA
+140,Guadeloupe and Martinique,2015,0.995,0,NA
+140,Guadeloupe and Martinique,2016,0.995,0,NA
+140,Guadeloupe and Martinique,2017,0.995,0,NA
 141,Faeroe Islands,2000,0.9099999999999993,1,lm prediction based on year
 141,Faeroe Islands,2001,0.9099999999999993,1,lm prediction based on year
 141,Faeroe Islands,2002,0.9099999999999994,1,lm prediction based on year
@@ -2429,60 +2429,60 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 143,Iceland,2015,0.99,0,NA
 143,Iceland,2016,0.99,0,NA
 143,Iceland,2017,0.99,0,NA
-144,Jan Mayen,2000,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2001,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2002,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2003,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2004,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2005,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2006,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2007,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2008,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2009,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2010,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2011,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2012,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2013,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2014,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2015,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2016,1,1,"uninhabited, perfect score"
-144,Jan Mayen,2017,1,1,"uninhabited, perfect score"
-145,Greenland,2000,1,0,NA
-145,Greenland,2001,1,0,NA
-145,Greenland,2002,1,0,NA
-145,Greenland,2003,1,0,NA
-145,Greenland,2004,1,0,NA
-145,Greenland,2005,1,0,NA
-145,Greenland,2006,1,0,NA
-145,Greenland,2007,1,0,NA
-145,Greenland,2008,1,0,NA
-145,Greenland,2009,1,0,NA
-145,Greenland,2010,1,0,NA
-145,Greenland,2011,1,0,NA
-145,Greenland,2012,1,0,NA
-145,Greenland,2013,1,0,NA
-145,Greenland,2014,1,0,NA
-145,Greenland,2015,1,0,NA
-145,Greenland,2016,1,0,NA
-145,Greenland,2017,1,0,NA
-146,Pitcairn,2000,0.87931862745098055,1,UN georegion avg. (r2)
-146,Pitcairn,2001,0.8817222222222223,1,UN georegion avg. (r2)
-146,Pitcairn,2002,0.8833333333333333,1,UN georegion avg. (r2)
-146,Pitcairn,2003,0.8833333333333333,1,UN georegion avg. (r2)
-146,Pitcairn,2004,0.8844444444444445,1,UN georegion avg. (r2)
-146,Pitcairn,2005,0.8855555555555555,1,UN georegion avg. (r2)
-146,Pitcairn,2006,0.8911111111111111,1,UN georegion avg. (r2)
-146,Pitcairn,2007,0.8922222222222222,1,UN georegion avg. (r2)
-146,Pitcairn,2008,0.8988888888888888,1,UN georegion avg. (r2)
+144,Jan Mayen,2000,1,0,No est. human population
+144,Jan Mayen,2001,1,0,No est. human population
+144,Jan Mayen,2002,1,0,No est. human population
+144,Jan Mayen,2003,1,0,No est. human population
+144,Jan Mayen,2004,1,0,No est. human population
+144,Jan Mayen,2005,1,0,No est. human population
+144,Jan Mayen,2006,1,0,No est. human population
+144,Jan Mayen,2007,1,0,No est. human population
+144,Jan Mayen,2008,1,0,No est. human population
+144,Jan Mayen,2009,1,0,No est. human population
+144,Jan Mayen,2010,1,0,No est. human population
+144,Jan Mayen,2011,1,0,No est. human population
+144,Jan Mayen,2012,1,0,No est. human population
+144,Jan Mayen,2013,1,0,No est. human population
+144,Jan Mayen,2014,1,0,No est. human population
+144,Jan Mayen,2015,1,0,No est. human population
+144,Jan Mayen,2016,1,0,No est. human population
+144,Jan Mayen,2017,1,0,No est. human population
+145,Greenland,2000,0.995,0,NA
+145,Greenland,2001,0.995,0,NA
+145,Greenland,2002,0.995,0,NA
+145,Greenland,2003,0.995,0,NA
+145,Greenland,2004,0.995,0,NA
+145,Greenland,2005,0.995,0,NA
+145,Greenland,2006,0.995,0,NA
+145,Greenland,2007,0.995,0,NA
+145,Greenland,2008,0.995,0,NA
+145,Greenland,2009,0.995,0,NA
+145,Greenland,2010,0.995,0,NA
+145,Greenland,2011,0.995,0,NA
+145,Greenland,2012,0.995,0,NA
+145,Greenland,2013,0.995,0,NA
+145,Greenland,2014,0.995,0,NA
+145,Greenland,2015,0.995,0,NA
+145,Greenland,2016,0.995,0,NA
+145,Greenland,2017,0.995,0,NA
+146,Pitcairn,2000,0.8789616013071897,1,UN georegion avg. (r2)
+146,Pitcairn,2001,0.8813333333333334,1,UN georegion avg. (r2)
+146,Pitcairn,2002,0.8827777777777778,1,UN georegion avg. (r2)
+146,Pitcairn,2003,0.8827777777777778,1,UN georegion avg. (r2)
+146,Pitcairn,2004,0.8838888888888888,1,UN georegion avg. (r2)
+146,Pitcairn,2005,0.885,1,UN georegion avg. (r2)
+146,Pitcairn,2006,0.8905555555555555,1,UN georegion avg. (r2)
+146,Pitcairn,2007,0.8916666666666667,1,UN georegion avg. (r2)
+146,Pitcairn,2008,0.8983333333333333,1,UN georegion avg. (r2)
 146,Pitcairn,2009,0.8988888888888888,1,UN georegion avg. (r2)
 146,Pitcairn,2010,0.9,1,UN georegion avg. (r2)
 146,Pitcairn,2011,0.9022222222222223,1,UN georegion avg. (r2)
 146,Pitcairn,2012,0.9033333333333333,1,UN georegion avg. (r2)
 146,Pitcairn,2013,0.9055555555555556,1,UN georegion avg. (r2)
 146,Pitcairn,2014,0.9077777777777778,1,UN georegion avg. (r2)
-146,Pitcairn,2015,0.9088888888888889,1,UN georegion avg. (r2)
-146,Pitcairn,2016,0.91,1,UN georegion avg. (r2)
-146,Pitcairn,2017,0.9088888888888889,1,UN georegion avg. (r2)
+146,Pitcairn,2015,0.9083333333333333,1,UN georegion avg. (r2)
+146,Pitcairn,2016,0.9094444444444444,1,UN georegion avg. (r2)
+146,Pitcairn,2017,0.9083333333333333,1,UN georegion avg. (r2)
 147,French Polynesia,2000,0.98,0,NA
 147,French Polynesia,2001,0.98,0,NA
 147,French Polynesia,2002,0.98,0,NA
@@ -2501,60 +2501,60 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 147,French Polynesia,2015,0.97,0,NA
 147,French Polynesia,2016,0.97,0,NA
 147,French Polynesia,2017,0.97,0,NA
-148,Line Group,2000,0.631783088235294,1,UN georegion avg. (r2)
-148,Line Group,2001,0.6416888888888889,1,UN georegion avg. (r2)
-148,Line Group,2002,0.6517182890855457,1,UN georegion avg. (r2)
-148,Line Group,2003,0.6602148148148148,1,UN georegion avg. (r2)
-148,Line Group,2004,0.6719494047619048,1,UN georegion avg. (r2)
-148,Line Group,2005,0.6820870870870871,1,UN georegion avg. (r2)
-148,Line Group,2006,0.693921568627451,1,UN georegion avg. (r2)
-148,Line Group,2007,0.7040639269406392,1,UN georegion avg. (r2)
-148,Line Group,2008,0.7142824074074074,1,UN georegion avg. (r2)
-148,Line Group,2009,0.7243565891472868,1,UN georegion avg. (r2)
-148,Line Group,2010,0.7345070422535211,1,UN georegion avg. (r2)
-148,Line Group,2011,0.7432866043613707,1,UN georegion avg. (r2)
-148,Line Group,2012,0.7549532710280373,1,UN georegion avg. (r2)
-148,Line Group,2013,0.7632866043613707,1,UN georegion avg. (r2)
-148,Line Group,2014,0.7733100775193799,1,UN georegion avg. (r2)
-148,Line Group,2015,0.7815975422427035,1,UN georegion avg. (r2)
-148,Line Group,2016,0.785374617737003,1,UN georegion avg. (r2)
-148,Line Group,2017,0.7733333333333333,1,UN georegion avg. (r2)
-149,Jarvis Island,2000,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2001,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2002,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2003,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2004,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2005,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2006,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2007,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2008,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2009,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2010,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2011,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2012,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2013,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2014,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2015,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2016,1,1,"uninhabited, perfect score"
-149,Jarvis Island,2017,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2000,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2001,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2002,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2003,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2004,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2005,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2006,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2007,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2008,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2009,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2010,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2011,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2012,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2013,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2014,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2015,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2016,1,1,"uninhabited, perfect score"
-150,Palmyra Atoll,2017,1,1,"uninhabited, perfect score"
+148,Line Islands (Kiribati),2000,0.6309497549019607,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2001,0.6408555555555555,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2002,0.6508849557522124,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2003,0.6593814814814815,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2004,0.6711160714285714,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2005,0.6812537537537537,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2006,0.6930882352941177,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2007,0.703230593607306,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2008,0.7134490740740741,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2009,0.7235232558139535,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2010,0.7336737089201878,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2011,0.7424532710280374,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2012,0.7541199376947041,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2013,0.7624532710280374,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2014,0.7724767441860465,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2015,0.7807642089093701,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2016,0.7845412844036697,1,UN georegion avg. (r2)
+148,Line Islands (Kiribati),2017,0.7725,1,UN georegion avg. (r2)
+149,Jarvis Island,2000,1,0,No est. human population
+149,Jarvis Island,2001,1,0,No est. human population
+149,Jarvis Island,2002,1,0,No est. human population
+149,Jarvis Island,2003,1,0,No est. human population
+149,Jarvis Island,2004,1,0,No est. human population
+149,Jarvis Island,2005,1,0,No est. human population
+149,Jarvis Island,2006,1,0,No est. human population
+149,Jarvis Island,2007,1,0,No est. human population
+149,Jarvis Island,2008,1,0,No est. human population
+149,Jarvis Island,2009,1,0,No est. human population
+149,Jarvis Island,2010,1,0,No est. human population
+149,Jarvis Island,2011,1,0,No est. human population
+149,Jarvis Island,2012,1,0,No est. human population
+149,Jarvis Island,2013,1,0,No est. human population
+149,Jarvis Island,2014,1,0,No est. human population
+149,Jarvis Island,2015,1,0,No est. human population
+149,Jarvis Island,2016,1,0,No est. human population
+149,Jarvis Island,2017,1,0,No est. human population
+150,Palmyra Atoll,2000,1,0,No est. human population
+150,Palmyra Atoll,2001,1,0,No est. human population
+150,Palmyra Atoll,2002,1,0,No est. human population
+150,Palmyra Atoll,2003,1,0,No est. human population
+150,Palmyra Atoll,2004,1,0,No est. human population
+150,Palmyra Atoll,2005,1,0,No est. human population
+150,Palmyra Atoll,2006,1,0,No est. human population
+150,Palmyra Atoll,2007,1,0,No est. human population
+150,Palmyra Atoll,2008,1,0,No est. human population
+150,Palmyra Atoll,2009,1,0,No est. human population
+150,Palmyra Atoll,2010,1,0,No est. human population
+150,Palmyra Atoll,2011,1,0,No est. human population
+150,Palmyra Atoll,2012,1,0,No est. human population
+150,Palmyra Atoll,2013,1,0,No est. human population
+150,Palmyra Atoll,2014,1,0,No est. human population
+150,Palmyra Atoll,2015,1,0,No est. human population
+150,Palmyra Atoll,2016,1,0,No est. human population
+150,Palmyra Atoll,2017,1,0,No est. human population
 151,American Samoa,2000,0.65,0,NA
 151,American Samoa,2001,0.65,0,NA
 151,American Samoa,2002,0.65,0,NA
@@ -2609,15 +2609,15 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 153,Cook Islands,2015,0.98,0,NA
 153,Cook Islands,2016,0.98,0,NA
 153,Cook Islands,2017,0.98,0,NA
-154,Niue,2000,1,0,NA
-154,Niue,2001,1,0,NA
-154,Niue,2002,1,0,NA
-154,Niue,2003,1,0,NA
-154,Niue,2004,1,0,NA
-154,Niue,2005,1,0,NA
-154,Niue,2006,1,0,NA
-154,Niue,2007,1,0,NA
-154,Niue,2008,1,0,NA
+154,Niue,2000,0.995,0,NA
+154,Niue,2001,0.995,0,NA
+154,Niue,2002,0.995,0,NA
+154,Niue,2003,0.995,0,NA
+154,Niue,2004,0.995,0,NA
+154,Niue,2005,0.995,0,NA
+154,Niue,2006,0.995,0,NA
+154,Niue,2007,0.995,0,NA
+154,Niue,2008,0.995,0,NA
 154,Niue,2009,0.99,0,NA
 154,Niue,2010,0.98,0,NA
 154,Niue,2011,0.98,0,NA
@@ -2663,62 +2663,62 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 156,Tokelau,2015,0.94,0,NA
 156,Tokelau,2016,0.96,0,NA
 156,Tokelau,2017,0.97,0,NA
-157,Phoenix Group,2000,0.631783088235294,1,UN georegion avg. (r2)
-157,Phoenix Group,2001,0.6416888888888889,1,UN georegion avg. (r2)
-157,Phoenix Group,2002,0.6517182890855457,1,UN georegion avg. (r2)
-157,Phoenix Group,2003,0.6602148148148148,1,UN georegion avg. (r2)
-157,Phoenix Group,2004,0.6719494047619048,1,UN georegion avg. (r2)
-157,Phoenix Group,2005,0.6820870870870871,1,UN georegion avg. (r2)
-157,Phoenix Group,2006,0.693921568627451,1,UN georegion avg. (r2)
-157,Phoenix Group,2007,0.7040639269406392,1,UN georegion avg. (r2)
-157,Phoenix Group,2008,0.7142824074074074,1,UN georegion avg. (r2)
-157,Phoenix Group,2009,0.7243565891472868,1,UN georegion avg. (r2)
-157,Phoenix Group,2010,0.7345070422535211,1,UN georegion avg. (r2)
-157,Phoenix Group,2011,0.7432866043613707,1,UN georegion avg. (r2)
-157,Phoenix Group,2012,0.7549532710280373,1,UN georegion avg. (r2)
-157,Phoenix Group,2013,0.7632866043613707,1,UN georegion avg. (r2)
-157,Phoenix Group,2014,0.7733100775193799,1,UN georegion avg. (r2)
-157,Phoenix Group,2015,0.7815975422427035,1,UN georegion avg. (r2)
-157,Phoenix Group,2016,0.785374617737003,1,UN georegion avg. (r2)
-157,Phoenix Group,2017,0.7733333333333333,1,UN georegion avg. (r2)
-158,Howland Island and Baker Island,2000,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2001,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2002,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2003,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2004,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2005,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2006,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2007,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2008,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2009,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2010,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2011,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2012,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2013,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2014,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2015,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2016,1,1,"uninhabited, perfect score"
-158,Howland Island and Baker Island,2017,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2000,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2001,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2002,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2003,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2004,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2005,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2006,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2007,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2008,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2009,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2010,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2011,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2012,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2013,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2014,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2015,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2016,1,1,"uninhabited, perfect score"
-159,Johnston Atoll,2017,1,1,"uninhabited, perfect score"
-161,Wallis and Futuna,2000,0.9315147058823534,1,lm prediction based on year
-161,Wallis and Futuna,2001,0.9355000000000002,1,lm prediction based on year
+157,Phoenix Islands (Kiribati),2000,0.6309497549019607,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2001,0.6408555555555555,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2002,0.6508849557522124,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2003,0.6593814814814815,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2004,0.6711160714285714,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2005,0.6812537537537537,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2006,0.6930882352941177,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2007,0.703230593607306,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2008,0.7134490740740741,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2009,0.7235232558139535,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2010,0.7336737089201878,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2011,0.7424532710280374,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2012,0.7541199376947041,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2013,0.7624532710280374,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2014,0.7724767441860465,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2015,0.7807642089093701,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2016,0.7845412844036697,1,UN georegion avg. (r2)
+157,Phoenix Islands (Kiribati),2017,0.7725,1,UN georegion avg. (r2)
+158,Howland Island and Baker Island,2000,1,0,No est. human population
+158,Howland Island and Baker Island,2001,1,0,No est. human population
+158,Howland Island and Baker Island,2002,1,0,No est. human population
+158,Howland Island and Baker Island,2003,1,0,No est. human population
+158,Howland Island and Baker Island,2004,1,0,No est. human population
+158,Howland Island and Baker Island,2005,1,0,No est. human population
+158,Howland Island and Baker Island,2006,1,0,No est. human population
+158,Howland Island and Baker Island,2007,1,0,No est. human population
+158,Howland Island and Baker Island,2008,1,0,No est. human population
+158,Howland Island and Baker Island,2009,1,0,No est. human population
+158,Howland Island and Baker Island,2010,1,0,No est. human population
+158,Howland Island and Baker Island,2011,1,0,No est. human population
+158,Howland Island and Baker Island,2012,1,0,No est. human population
+158,Howland Island and Baker Island,2013,1,0,No est. human population
+158,Howland Island and Baker Island,2014,1,0,No est. human population
+158,Howland Island and Baker Island,2015,1,0,No est. human population
+158,Howland Island and Baker Island,2016,1,0,No est. human population
+158,Howland Island and Baker Island,2017,1,0,No est. human population
+159,Johnston Atoll,2000,1,0,No est. human population
+159,Johnston Atoll,2001,1,0,No est. human population
+159,Johnston Atoll,2002,1,0,No est. human population
+159,Johnston Atoll,2003,1,0,No est. human population
+159,Johnston Atoll,2004,1,0,No est. human population
+159,Johnston Atoll,2005,1,0,No est. human population
+159,Johnston Atoll,2006,1,0,No est. human population
+159,Johnston Atoll,2007,1,0,No est. human population
+159,Johnston Atoll,2008,1,0,No est. human population
+159,Johnston Atoll,2009,1,0,No est. human population
+159,Johnston Atoll,2010,1,0,No est. human population
+159,Johnston Atoll,2011,1,0,No est. human population
+159,Johnston Atoll,2012,1,0,No est. human population
+159,Johnston Atoll,2013,1,0,No est. human population
+159,Johnston Atoll,2014,1,0,No est. human population
+159,Johnston Atoll,2015,1,0,No est. human population
+159,Johnston Atoll,2016,1,0,No est. human population
+159,Johnston Atoll,2017,1,0,No est. human population
+161,Wallis and Futuna,2000,0.9333014705882361,1,lm prediction based on year
+161,Wallis and Futuna,2001,0.9370000000000003,1,lm prediction based on year
 161,Wallis and Futuna,2002,0.95,0,NA
 161,Wallis and Futuna,2003,0.95,0,NA
 161,Wallis and Futuna,2004,0.95,0,NA
@@ -2732,45 +2732,45 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 161,Wallis and Futuna,2012,0.98,0,NA
 161,Wallis and Futuna,2013,0.98,0,NA
 161,Wallis and Futuna,2014,0.99,0,NA
-161,Wallis and Futuna,2015,1,0,NA
-161,Wallis and Futuna,2016,1,0,NA
-161,Wallis and Futuna,2017,1,0,NA
-162,New Zealand,2000,1,0,NA
-162,New Zealand,2001,1,0,NA
-162,New Zealand,2002,1,0,NA
-162,New Zealand,2003,1,0,NA
-162,New Zealand,2004,1,0,NA
-162,New Zealand,2005,1,0,NA
-162,New Zealand,2006,1,0,NA
-162,New Zealand,2007,1,0,NA
-162,New Zealand,2008,1,0,NA
-162,New Zealand,2009,1,0,NA
-162,New Zealand,2010,1,0,NA
-162,New Zealand,2011,1,0,NA
-162,New Zealand,2012,1,0,NA
-162,New Zealand,2013,1,0,NA
-162,New Zealand,2014,1,0,NA
-162,New Zealand,2015,1,0,NA
-162,New Zealand,2016,1,0,NA
-162,New Zealand,2017,1,0,NA
-163,United States,2000,1,0,NA
-163,United States,2001,1,0,NA
-163,United States,2002,1,0,NA
-163,United States,2003,1,0,NA
-163,United States,2004,1,0,NA
-163,United States,2005,1,0,NA
-163,United States,2006,1,0,NA
-163,United States,2007,1,0,NA
-163,United States,2008,1,0,NA
-163,United States,2009,1,0,NA
-163,United States,2010,1,0,NA
-163,United States,2011,1,0,NA
-163,United States,2012,1,0,NA
-163,United States,2013,1,0,NA
-163,United States,2014,1,0,NA
-163,United States,2015,1,0,NA
-163,United States,2016,1,0,NA
-163,United States,2017,1,0,NA
+161,Wallis and Futuna,2015,0.995,0,NA
+161,Wallis and Futuna,2016,0.995,0,NA
+161,Wallis and Futuna,2017,0.995,0,NA
+162,New Zealand,2000,0.995,0,NA
+162,New Zealand,2001,0.995,0,NA
+162,New Zealand,2002,0.995,0,NA
+162,New Zealand,2003,0.995,0,NA
+162,New Zealand,2004,0.995,0,NA
+162,New Zealand,2005,0.995,0,NA
+162,New Zealand,2006,0.995,0,NA
+162,New Zealand,2007,0.995,0,NA
+162,New Zealand,2008,0.995,0,NA
+162,New Zealand,2009,0.995,0,NA
+162,New Zealand,2010,0.995,0,NA
+162,New Zealand,2011,0.995,0,NA
+162,New Zealand,2012,0.995,0,NA
+162,New Zealand,2013,0.995,0,NA
+162,New Zealand,2014,0.995,0,NA
+162,New Zealand,2015,0.995,0,NA
+162,New Zealand,2016,0.995,0,NA
+162,New Zealand,2017,0.995,0,NA
+163,United States,2000,0.995,0,NA
+163,United States,2001,0.995,0,NA
+163,United States,2002,0.995,0,NA
+163,United States,2003,0.995,0,NA
+163,United States,2004,0.995,0,NA
+163,United States,2005,0.995,0,NA
+163,United States,2006,0.995,0,NA
+163,United States,2007,0.995,0,NA
+163,United States,2008,0.995,0,NA
+163,United States,2009,0.995,0,NA
+163,United States,2010,0.995,0,NA
+163,United States,2011,0.995,0,NA
+163,United States,2012,0.995,0,NA
+163,United States,2013,0.995,0,NA
+163,United States,2014,0.995,0,NA
+163,United States,2015,0.995,0,NA
+163,United States,2016,0.995,0,NA
+163,United States,2017,0.995,0,NA
 164,Belize,2000,0.82,0,NA
 164,Belize,2001,0.83,0,NA
 164,Belize,2002,0.83,0,NA
@@ -2915,60 +2915,60 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 173,Uruguay,2015,0.96,0,NA
 173,Uruguay,2016,0.96,0,NA
 173,Uruguay,2017,0.97,0,NA
-174,Finland,2000,1,0,NA
-174,Finland,2001,1,0,NA
-174,Finland,2002,1,0,NA
-174,Finland,2003,1,0,NA
-174,Finland,2004,1,0,NA
-174,Finland,2005,1,0,NA
-174,Finland,2006,1,0,NA
-174,Finland,2007,1,0,NA
-174,Finland,2008,1,0,NA
-174,Finland,2009,1,0,NA
-174,Finland,2010,1,0,NA
-174,Finland,2011,1,0,NA
-174,Finland,2012,1,0,NA
-174,Finland,2013,1,0,NA
-174,Finland,2014,1,0,NA
-174,Finland,2015,1,0,NA
-174,Finland,2016,1,0,NA
-174,Finland,2017,1,0,NA
-175,Denmark,2000,1,0,NA
-175,Denmark,2001,1,0,NA
-175,Denmark,2002,1,0,NA
-175,Denmark,2003,1,0,NA
-175,Denmark,2004,1,0,NA
-175,Denmark,2005,1,0,NA
-175,Denmark,2006,1,0,NA
-175,Denmark,2007,1,0,NA
-175,Denmark,2008,1,0,NA
-175,Denmark,2009,1,0,NA
-175,Denmark,2010,1,0,NA
-175,Denmark,2011,1,0,NA
-175,Denmark,2012,1,0,NA
-175,Denmark,2013,1,0,NA
-175,Denmark,2014,1,0,NA
-175,Denmark,2015,1,0,NA
-175,Denmark,2016,1,0,NA
-175,Denmark,2017,1,0,NA
-176,Germany,2000,1,0,NA
-176,Germany,2001,1,0,NA
-176,Germany,2002,1,0,NA
-176,Germany,2003,1,0,NA
-176,Germany,2004,1,0,NA
-176,Germany,2005,1,0,NA
-176,Germany,2006,1,0,NA
-176,Germany,2007,1,0,NA
-176,Germany,2008,1,0,NA
-176,Germany,2009,1,0,NA
-176,Germany,2010,1,0,NA
-176,Germany,2011,1,0,NA
-176,Germany,2012,1,0,NA
-176,Germany,2013,1,0,NA
-176,Germany,2014,1,0,NA
-176,Germany,2015,1,0,NA
-176,Germany,2016,1,0,NA
-176,Germany,2017,1,0,NA
+174,Finland,2000,0.995,0,NA
+174,Finland,2001,0.995,0,NA
+174,Finland,2002,0.995,0,NA
+174,Finland,2003,0.995,0,NA
+174,Finland,2004,0.995,0,NA
+174,Finland,2005,0.995,0,NA
+174,Finland,2006,0.995,0,NA
+174,Finland,2007,0.995,0,NA
+174,Finland,2008,0.995,0,NA
+174,Finland,2009,0.995,0,NA
+174,Finland,2010,0.995,0,NA
+174,Finland,2011,0.995,0,NA
+174,Finland,2012,0.995,0,NA
+174,Finland,2013,0.995,0,NA
+174,Finland,2014,0.995,0,NA
+174,Finland,2015,0.995,0,NA
+174,Finland,2016,0.995,0,NA
+174,Finland,2017,0.995,0,NA
+175,Denmark,2000,0.995,0,NA
+175,Denmark,2001,0.995,0,NA
+175,Denmark,2002,0.995,0,NA
+175,Denmark,2003,0.995,0,NA
+175,Denmark,2004,0.995,0,NA
+175,Denmark,2005,0.995,0,NA
+175,Denmark,2006,0.995,0,NA
+175,Denmark,2007,0.995,0,NA
+175,Denmark,2008,0.995,0,NA
+175,Denmark,2009,0.995,0,NA
+175,Denmark,2010,0.995,0,NA
+175,Denmark,2011,0.995,0,NA
+175,Denmark,2012,0.995,0,NA
+175,Denmark,2013,0.995,0,NA
+175,Denmark,2014,0.995,0,NA
+175,Denmark,2015,0.995,0,NA
+175,Denmark,2016,0.995,0,NA
+175,Denmark,2017,0.995,0,NA
+176,Germany,2000,0.995,0,NA
+176,Germany,2001,0.995,0,NA
+176,Germany,2002,0.995,0,NA
+176,Germany,2003,0.995,0,NA
+176,Germany,2004,0.995,0,NA
+176,Germany,2005,0.995,0,NA
+176,Germany,2006,0.995,0,NA
+176,Germany,2007,0.995,0,NA
+176,Germany,2008,0.995,0,NA
+176,Germany,2009,0.995,0,NA
+176,Germany,2010,0.995,0,NA
+176,Germany,2011,0.995,0,NA
+176,Germany,2012,0.995,0,NA
+176,Germany,2013,0.995,0,NA
+176,Germany,2014,0.995,0,NA
+176,Germany,2015,0.995,0,NA
+176,Germany,2016,0.995,0,NA
+176,Germany,2017,0.995,0,NA
 177,Netherlands,2000,0.98,0,NA
 177,Netherlands,2001,0.98,0,NA
 177,Netherlands,2002,0.98,0,NA
@@ -3023,24 +3023,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 179,France,2015,0.99,0,NA
 179,France,2016,0.99,0,NA
 179,France,2017,0.99,0,NA
-180,United Kingdom,2000,1,0,NA
-180,United Kingdom,2001,1,0,NA
-180,United Kingdom,2002,1,0,NA
-180,United Kingdom,2003,1,0,NA
-180,United Kingdom,2004,1,0,NA
-180,United Kingdom,2005,1,0,NA
-180,United Kingdom,2006,1,0,NA
-180,United Kingdom,2007,1,0,NA
-180,United Kingdom,2008,1,0,NA
-180,United Kingdom,2009,1,0,NA
-180,United Kingdom,2010,1,0,NA
-180,United Kingdom,2011,1,0,NA
-180,United Kingdom,2012,1,0,NA
-180,United Kingdom,2013,1,0,NA
-180,United Kingdom,2014,1,0,NA
-180,United Kingdom,2015,1,0,NA
-180,United Kingdom,2016,1,0,NA
-180,United Kingdom,2017,1,0,NA
+180,United Kingdom,2000,0.995,0,NA
+180,United Kingdom,2001,0.995,0,NA
+180,United Kingdom,2002,0.995,0,NA
+180,United Kingdom,2003,0.995,0,NA
+180,United Kingdom,2004,0.995,0,NA
+180,United Kingdom,2005,0.995,0,NA
+180,United Kingdom,2006,0.995,0,NA
+180,United Kingdom,2007,0.995,0,NA
+180,United Kingdom,2008,0.995,0,NA
+180,United Kingdom,2009,0.995,0,NA
+180,United Kingdom,2010,0.995,0,NA
+180,United Kingdom,2011,0.995,0,NA
+180,United Kingdom,2012,0.995,0,NA
+180,United Kingdom,2013,0.995,0,NA
+180,United Kingdom,2014,0.995,0,NA
+180,United Kingdom,2015,0.995,0,NA
+180,United Kingdom,2016,0.995,0,NA
+180,United Kingdom,2017,0.995,0,NA
 181,Ireland,2000,0.9,0,NA
 181,Ireland,2001,0.9,0,NA
 181,Ireland,2002,0.9,0,NA
@@ -3059,24 +3059,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 181,Ireland,2015,0.91,0,NA
 181,Ireland,2016,0.91,0,NA
 181,Ireland,2017,0.91,0,NA
-182,Spain,2000,1,0,NA
-182,Spain,2001,1,0,NA
-182,Spain,2002,1,0,NA
-182,Spain,2003,1,0,NA
-182,Spain,2004,1,0,NA
-182,Spain,2005,1,0,NA
-182,Spain,2006,1,0,NA
-182,Spain,2007,1,0,NA
-182,Spain,2008,1,0,NA
-182,Spain,2009,1,0,NA
-182,Spain,2010,1,0,NA
-182,Spain,2011,1,0,NA
-182,Spain,2012,1,0,NA
-182,Spain,2013,1,0,NA
-182,Spain,2014,1,0,NA
-182,Spain,2015,1,0,NA
-182,Spain,2016,1,0,NA
-182,Spain,2017,1,0,NA
+182,Spain,2000,0.995,0,NA
+182,Spain,2001,0.995,0,NA
+182,Spain,2002,0.995,0,NA
+182,Spain,2003,0.995,0,NA
+182,Spain,2004,0.995,0,NA
+182,Spain,2005,0.995,0,NA
+182,Spain,2006,0.995,0,NA
+182,Spain,2007,0.995,0,NA
+182,Spain,2008,0.995,0,NA
+182,Spain,2009,0.995,0,NA
+182,Spain,2010,0.995,0,NA
+182,Spain,2011,0.995,0,NA
+182,Spain,2012,0.995,0,NA
+182,Spain,2013,0.995,0,NA
+182,Spain,2014,0.995,0,NA
+182,Spain,2015,0.995,0,NA
+182,Spain,2016,0.995,0,NA
+182,Spain,2017,0.995,0,NA
 183,Portugal,2000,0.97,0,NA
 183,Portugal,2001,0.97,0,NA
 183,Portugal,2002,0.98,0,NA
@@ -3089,12 +3089,12 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 183,Portugal,2009,0.99,0,NA
 183,Portugal,2010,0.99,0,NA
 183,Portugal,2011,0.99,0,NA
-183,Portugal,2012,1,0,NA
-183,Portugal,2013,1,0,NA
-183,Portugal,2014,1,0,NA
-183,Portugal,2015,1,0,NA
-183,Portugal,2016,1,0,NA
-183,Portugal,2017,1,0,NA
+183,Portugal,2012,0.995,0,NA
+183,Portugal,2013,0.995,0,NA
+183,Portugal,2014,0.995,0,NA
+183,Portugal,2015,0.995,0,NA
+183,Portugal,2016,0.995,0,NA
+183,Portugal,2017,0.995,0,NA
 184,Italy,2000,0.9900000000000008,1,lm prediction based on year
 184,Italy,2001,0.9900000000000007,1,lm prediction based on year
 184,Italy,2002,0.9900000000000007,1,lm prediction based on year
@@ -3113,24 +3113,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 184,Italy,2015,0.99,0,NA
 184,Italy,2016,0.99,0,NA
 184,Italy,2017,0.99,0,NA
-185,Monaco,2000,1,0,NA
-185,Monaco,2001,1,0,NA
-185,Monaco,2002,1,0,NA
-185,Monaco,2003,1,0,NA
-185,Monaco,2004,1,0,NA
-185,Monaco,2005,1,0,NA
-185,Monaco,2006,1,0,NA
-185,Monaco,2007,1,0,NA
-185,Monaco,2008,1,0,NA
-185,Monaco,2009,1,0,NA
-185,Monaco,2010,1,0,NA
-185,Monaco,2011,1,0,NA
-185,Monaco,2012,1,0,NA
-185,Monaco,2013,1,0,NA
-185,Monaco,2014,1,0,NA
-185,Monaco,2015,1,0,NA
-185,Monaco,2016,1,0,NA
-185,Monaco,2017,1,0,NA
+185,Monaco,2000,0.995,0,NA
+185,Monaco,2001,0.995,0,NA
+185,Monaco,2002,0.995,0,NA
+185,Monaco,2003,0.995,0,NA
+185,Monaco,2004,0.995,0,NA
+185,Monaco,2005,0.995,0,NA
+185,Monaco,2006,0.995,0,NA
+185,Monaco,2007,0.995,0,NA
+185,Monaco,2008,0.995,0,NA
+185,Monaco,2009,0.995,0,NA
+185,Monaco,2010,0.995,0,NA
+185,Monaco,2011,0.995,0,NA
+185,Monaco,2012,0.995,0,NA
+185,Monaco,2013,0.995,0,NA
+185,Monaco,2014,0.995,0,NA
+185,Monaco,2015,0.995,0,NA
+185,Monaco,2016,0.995,0,NA
+185,Monaco,2017,0.995,0,NA
 186,Montenegro,2000,0.8594405594405465,1,lm prediction based on year
 186,Montenegro,2001,0.8670979020978908,1,lm prediction based on year
 186,Montenegro,2002,0.8747552447552334,1,lm prediction based on year
@@ -3167,24 +3167,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 187,Croatia,2015,0.96,0,NA
 187,Croatia,2016,0.97,0,NA
 187,Croatia,2017,0.97,0,NA
-188,Slovenia,2000,1,0,NA
-188,Slovenia,2001,1,0,NA
-188,Slovenia,2002,1,0,NA
-188,Slovenia,2003,1,0,NA
-188,Slovenia,2004,1,0,NA
-188,Slovenia,2005,1,0,NA
-188,Slovenia,2006,1,0,NA
-188,Slovenia,2007,1,0,NA
-188,Slovenia,2008,1,0,NA
-188,Slovenia,2009,1,0,NA
-188,Slovenia,2010,1,0,NA
-188,Slovenia,2011,1,0,NA
-188,Slovenia,2012,1,0,NA
-188,Slovenia,2013,1,0,NA
-188,Slovenia,2014,1,0,NA
-188,Slovenia,2015,1,0,NA
-188,Slovenia,2016,1,0,NA
-188,Slovenia,2017,1,0,NA
+188,Slovenia,2000,0.995,0,NA
+188,Slovenia,2001,0.995,0,NA
+188,Slovenia,2002,0.995,0,NA
+188,Slovenia,2003,0.995,0,NA
+188,Slovenia,2004,0.995,0,NA
+188,Slovenia,2005,0.995,0,NA
+188,Slovenia,2006,0.995,0,NA
+188,Slovenia,2007,0.995,0,NA
+188,Slovenia,2008,0.995,0,NA
+188,Slovenia,2009,0.995,0,NA
+188,Slovenia,2010,0.995,0,NA
+188,Slovenia,2011,0.995,0,NA
+188,Slovenia,2012,0.995,0,NA
+188,Slovenia,2013,0.995,0,NA
+188,Slovenia,2014,0.995,0,NA
+188,Slovenia,2015,0.995,0,NA
+188,Slovenia,2016,0.995,0,NA
+188,Slovenia,2017,0.995,0,NA
 189,Lithuania,2000,0.84,0,NA
 189,Lithuania,2001,0.85,0,NA
 189,Lithuania,2002,0.85,0,NA
@@ -3203,24 +3203,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 189,Lithuania,2015,0.92,0,NA
 189,Lithuania,2016,0.93,0,NA
 189,Lithuania,2017,0.93,0,NA
-190,Qatar,2000,1,0,NA
-190,Qatar,2001,1,0,NA
-190,Qatar,2002,1,0,NA
-190,Qatar,2003,1,0,NA
-190,Qatar,2004,1,0,NA
-190,Qatar,2005,1,0,NA
-190,Qatar,2006,1,0,NA
-190,Qatar,2007,1,0,NA
-190,Qatar,2008,1,0,NA
-190,Qatar,2009,1,0,NA
-190,Qatar,2010,1,0,NA
-190,Qatar,2011,1,0,NA
-190,Qatar,2012,1,0,NA
-190,Qatar,2013,1,0,NA
-190,Qatar,2014,1,0,NA
-190,Qatar,2015,1,0,NA
-190,Qatar,2016,1,0,NA
-190,Qatar,2017,1,0,NA
+190,Qatar,2000,0.995,0,NA
+190,Qatar,2001,0.995,0,NA
+190,Qatar,2002,0.995,0,NA
+190,Qatar,2003,0.995,0,NA
+190,Qatar,2004,0.995,0,NA
+190,Qatar,2005,0.995,0,NA
+190,Qatar,2006,0.995,0,NA
+190,Qatar,2007,0.995,0,NA
+190,Qatar,2008,0.995,0,NA
+190,Qatar,2009,0.995,0,NA
+190,Qatar,2010,0.995,0,NA
+190,Qatar,2011,0.995,0,NA
+190,Qatar,2012,0.995,0,NA
+190,Qatar,2013,0.995,0,NA
+190,Qatar,2014,0.995,0,NA
+190,Qatar,2015,0.995,0,NA
+190,Qatar,2016,0.995,0,NA
+190,Qatar,2017,0.995,0,NA
 191,Iran,2000,0.87,0,NA
 191,Iran,2001,0.87,0,NA
 191,Iran,2002,0.87,0,NA
@@ -3484,13 +3484,13 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 206,Malaysia,2008,0.98,0,NA
 206,Malaysia,2009,0.99,0,NA
 206,Malaysia,2010,0.99,0,NA
-206,Malaysia,2011,1,0,NA
-206,Malaysia,2012,1,0,NA
-206,Malaysia,2013,1,0,NA
-206,Malaysia,2014,1,0,NA
-206,Malaysia,2015,1,0,NA
-206,Malaysia,2016,1,0,NA
-206,Malaysia,2017,1,0,NA
+206,Malaysia,2011,0.995,0,NA
+206,Malaysia,2012,0.995,0,NA
+206,Malaysia,2013,0.995,0,NA
+206,Malaysia,2014,0.995,0,NA
+206,Malaysia,2015,0.995,0,NA
+206,Malaysia,2016,0.995,0,NA
+206,Malaysia,2017,0.995,0,NA
 207,Vietnam,2000,0.52,0,NA
 207,Vietnam,2001,0.54,0,NA
 207,Vietnam,2002,0.56,0,NA
@@ -3509,24 +3509,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 207,Vietnam,2015,0.8,0,NA
 207,Vietnam,2016,0.82,0,NA
 207,Vietnam,2017,0.84,0,NA
-208,Singapore,2000,1,0,NA
-208,Singapore,2001,1,0,NA
-208,Singapore,2002,1,0,NA
-208,Singapore,2003,1,0,NA
-208,Singapore,2004,1,0,NA
-208,Singapore,2005,1,0,NA
-208,Singapore,2006,1,0,NA
-208,Singapore,2007,1,0,NA
-208,Singapore,2008,1,0,NA
-208,Singapore,2009,1,0,NA
-208,Singapore,2010,1,0,NA
-208,Singapore,2011,1,0,NA
-208,Singapore,2012,1,0,NA
-208,Singapore,2013,1,0,NA
-208,Singapore,2014,1,0,NA
-208,Singapore,2015,1,0,NA
-208,Singapore,2016,1,0,NA
-208,Singapore,2017,1,0,NA
+208,Singapore,2000,0.995,0,NA
+208,Singapore,2001,0.995,0,NA
+208,Singapore,2002,0.995,0,NA
+208,Singapore,2003,0.995,0,NA
+208,Singapore,2004,0.995,0,NA
+208,Singapore,2005,0.995,0,NA
+208,Singapore,2006,0.995,0,NA
+208,Singapore,2007,0.995,0,NA
+208,Singapore,2008,0.995,0,NA
+208,Singapore,2009,0.995,0,NA
+208,Singapore,2010,0.995,0,NA
+208,Singapore,2011,0.995,0,NA
+208,Singapore,2012,0.995,0,NA
+208,Singapore,2013,0.995,0,NA
+208,Singapore,2014,0.995,0,NA
+208,Singapore,2015,0.995,0,NA
+208,Singapore,2016,0.995,0,NA
+208,Singapore,2017,0.995,0,NA
 209,China,2000,0.5621182404642975,0,NA
 209,China,2001,0.5720720373595548,0,NA
 209,China,2002,0.591967525811893,0,NA
@@ -3545,42 +3545,42 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 209,China,2015,0.8207223941179612,0,NA
 209,China,2016,0.8306729429977112,0,NA
 209,China,2017,0.8505717836771164,0,NA
-210,Japan,2000,1,0,NA
-210,Japan,2001,1,0,NA
-210,Japan,2002,1,0,NA
-210,Japan,2003,1,0,NA
-210,Japan,2004,1,0,NA
-210,Japan,2005,1,0,NA
-210,Japan,2006,1,0,NA
-210,Japan,2007,1,0,NA
-210,Japan,2008,1,0,NA
-210,Japan,2009,1,0,NA
-210,Japan,2010,1,0,NA
-210,Japan,2011,1,0,NA
-210,Japan,2012,1,0,NA
-210,Japan,2013,1,0,NA
-210,Japan,2014,1,0,NA
-210,Japan,2015,1,0,NA
-210,Japan,2016,1,0,NA
-210,Japan,2017,1,0,NA
-212,Kiribati,2000,0.24,0,NA
-212,Kiribati,2001,0.25,0,NA
-212,Kiribati,2002,0.27,0,NA
-212,Kiribati,2003,0.28,0,NA
-212,Kiribati,2004,0.3,0,NA
-212,Kiribati,2005,0.32,0,NA
-212,Kiribati,2006,0.33,0,NA
-212,Kiribati,2007,0.35,0,NA
-212,Kiribati,2008,0.36,0,NA
-212,Kiribati,2009,0.38,0,NA
-212,Kiribati,2010,0.39,0,NA
-212,Kiribati,2011,0.4,0,NA
-212,Kiribati,2012,0.42,0,NA
-212,Kiribati,2013,0.43,0,NA
-212,Kiribati,2014,0.44,0,NA
-212,Kiribati,2015,0.45,0,NA
-212,Kiribati,2016,0.47,0,NA
-212,Kiribati,2017,0.48,0,NA
+210,Japan,2000,0.995,0,NA
+210,Japan,2001,0.995,0,NA
+210,Japan,2002,0.995,0,NA
+210,Japan,2003,0.995,0,NA
+210,Japan,2004,0.995,0,NA
+210,Japan,2005,0.995,0,NA
+210,Japan,2006,0.995,0,NA
+210,Japan,2007,0.995,0,NA
+210,Japan,2008,0.995,0,NA
+210,Japan,2009,0.995,0,NA
+210,Japan,2010,0.995,0,NA
+210,Japan,2011,0.995,0,NA
+210,Japan,2012,0.995,0,NA
+210,Japan,2013,0.995,0,NA
+210,Japan,2014,0.995,0,NA
+210,Japan,2015,0.995,0,NA
+210,Japan,2016,0.995,0,NA
+210,Japan,2017,0.995,0,NA
+212,Gilbert Islands (Kiribati),2000,0.24,0,NA
+212,Gilbert Islands (Kiribati),2001,0.25,0,NA
+212,Gilbert Islands (Kiribati),2002,0.27,0,NA
+212,Gilbert Islands (Kiribati),2003,0.28,0,NA
+212,Gilbert Islands (Kiribati),2004,0.3,0,NA
+212,Gilbert Islands (Kiribati),2005,0.32,0,NA
+212,Gilbert Islands (Kiribati),2006,0.33,0,NA
+212,Gilbert Islands (Kiribati),2007,0.35,0,NA
+212,Gilbert Islands (Kiribati),2008,0.36,0,NA
+212,Gilbert Islands (Kiribati),2009,0.38,0,NA
+212,Gilbert Islands (Kiribati),2010,0.39,0,NA
+212,Gilbert Islands (Kiribati),2011,0.4,0,NA
+212,Gilbert Islands (Kiribati),2012,0.42,0,NA
+212,Gilbert Islands (Kiribati),2013,0.43,0,NA
+212,Gilbert Islands (Kiribati),2014,0.44,0,NA
+212,Gilbert Islands (Kiribati),2015,0.45,0,NA
+212,Gilbert Islands (Kiribati),2016,0.47,0,NA
+212,Gilbert Islands (Kiribati),2017,0.48,0,NA
 214,Egypt,2000,0.92,0,NA
 214,Egypt,2001,0.92,0,NA
 214,Egypt,2002,0.92,0,NA
@@ -3635,42 +3635,42 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 216,Indonesia,2015,0.69,0,NA
 216,Indonesia,2016,0.71,0,NA
 216,Indonesia,2017,0.73,0,NA
-218,Canada,2000,1,0,NA
-218,Canada,2001,1,0,NA
-218,Canada,2002,1,0,NA
-218,Canada,2003,1,0,NA
-218,Canada,2004,1,0,NA
-218,Canada,2005,1,0,NA
-218,Canada,2006,1,0,NA
-218,Canada,2007,1,0,NA
-218,Canada,2008,1,0,NA
-218,Canada,2009,1,0,NA
-218,Canada,2010,1,0,NA
-218,Canada,2011,1,0,NA
-218,Canada,2012,1,0,NA
-218,Canada,2013,1,0,NA
-218,Canada,2014,1,0,NA
-218,Canada,2015,1,0,NA
-218,Canada,2016,1,0,NA
-218,Canada,2017,1,0,NA
-219,Saint Pierre and Miquelon,2000,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2001,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2002,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2003,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2004,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2005,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2006,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2007,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2008,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2009,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2010,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2011,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2012,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2013,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2014,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2015,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2016,1,1,UN georegion avg. (r2)
-219,Saint Pierre and Miquelon,2017,1,1,UN georegion avg. (r2)
+218,Canada,2000,0.995,0,NA
+218,Canada,2001,0.995,0,NA
+218,Canada,2002,0.995,0,NA
+218,Canada,2003,0.995,0,NA
+218,Canada,2004,0.995,0,NA
+218,Canada,2005,0.995,0,NA
+218,Canada,2006,0.995,0,NA
+218,Canada,2007,0.995,0,NA
+218,Canada,2008,0.995,0,NA
+218,Canada,2009,0.995,0,NA
+218,Canada,2010,0.995,0,NA
+218,Canada,2011,0.995,0,NA
+218,Canada,2012,0.995,0,NA
+218,Canada,2013,0.995,0,NA
+218,Canada,2014,0.995,0,NA
+218,Canada,2015,0.995,0,NA
+218,Canada,2016,0.995,0,NA
+218,Canada,2017,0.995,0,NA
+219,Saint Pierre and Miquelon,2000,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2001,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2002,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2003,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2004,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2005,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2006,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2007,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2008,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2009,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2010,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2011,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2012,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2013,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2014,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2015,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2016,0.995,1,UN georegion avg. (r2)
+219,Saint Pierre and Miquelon,2017,0.995,1,UN georegion avg. (r2)
 220,Sint Maarten,2000,0.98,0,NA
 220,Sint Maarten,2001,0.98,0,NA
 220,Sint Maarten,2002,0.98,0,NA
@@ -3689,42 +3689,42 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 220,Sint Maarten,2015,0.99,0,NA
 220,Sint Maarten,2016,0.99,0,NA
 220,Sint Maarten,2017,0.99,0,NA
-221,Northern Saint-Martin,2000,0.8600726518381698,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2001,0.86261324768104,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2002,0.8663169725423246,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2003,0.8685493272476584,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2004,0.8737345996872259,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2005,0.8759569096594658,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2006,0.8811418953909891,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2007,0.8842797987786125,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2008,0.8879829287556608,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2009,0.8915122168097116,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2010,0.8955863632400384,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2011,0.8985494069994463,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2012,0.9013138577429959,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2013,0.9033640836408364,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2014,0.9064371036835096,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2015,0.9075913119252627,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2016,0.9113702580488295,1,UN georegion avg. (r2)
-221,Northern Saint-Martin,2017,0.9125783900091694,1,UN georegion avg. (r2)
-222,Sweden,2000,1,0,NA
-222,Sweden,2001,1,0,NA
-222,Sweden,2002,1,0,NA
-222,Sweden,2003,1,0,NA
-222,Sweden,2004,1,0,NA
-222,Sweden,2005,1,0,NA
-222,Sweden,2006,1,0,NA
-222,Sweden,2007,1,0,NA
-222,Sweden,2008,1,0,NA
-222,Sweden,2009,1,0,NA
-222,Sweden,2010,1,0,NA
-222,Sweden,2011,1,0,NA
-222,Sweden,2012,1,0,NA
-222,Sweden,2013,1,0,NA
-222,Sweden,2014,1,0,NA
-222,Sweden,2015,1,0,NA
-222,Sweden,2016,1,0,NA
-222,Sweden,2017,1,0,NA
+221,Northern Saint-Martin,2000,0.8599449730485421,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2001,0.8624280624958548,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2002,0.8661317873571395,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2003,0.8683590072742833,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2004,0.8735442651714537,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2005,0.8757665605186906,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2006,0.8809515794924909,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2007,0.8840894695605056,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2008,0.8877925874906383,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2009,0.8913219090698214,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2010,0.8953960434407727,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2011,0.8983590737341065,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2012,0.9011235122976556,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2013,0.9031737734044007,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2014,0.9061612615356531,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2015,0.9072157961607551,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2016,0.9109947341018769,1,UN georegion avg. (r2)
+221,Northern Saint-Martin,2017,0.9122028592236068,1,UN georegion avg. (r2)
+222,Sweden,2000,0.995,0,NA
+222,Sweden,2001,0.995,0,NA
+222,Sweden,2002,0.995,0,NA
+222,Sweden,2003,0.995,0,NA
+222,Sweden,2004,0.995,0,NA
+222,Sweden,2005,0.995,0,NA
+222,Sweden,2006,0.995,0,NA
+222,Sweden,2007,0.995,0,NA
+222,Sweden,2008,0.995,0,NA
+222,Sweden,2009,0.995,0,NA
+222,Sweden,2010,0.995,0,NA
+222,Sweden,2011,0.995,0,NA
+222,Sweden,2012,0.995,0,NA
+222,Sweden,2013,0.995,0,NA
+222,Sweden,2014,0.995,0,NA
+222,Sweden,2015,0.995,0,NA
+222,Sweden,2016,0.995,0,NA
+222,Sweden,2017,0.995,0,NA
 223,Norway,2000,0.98,0,NA
 223,Norway,2001,0.98,0,NA
 223,Norway,2002,0.98,0,NA
@@ -3757,10 +3757,10 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 224,Chile,2011,0.98,0,NA
 224,Chile,2012,0.98,0,NA
 224,Chile,2013,0.99,0,NA
-224,Chile,2014,1,0,NA
-224,Chile,2015,1,0,NA
-224,Chile,2016,1,0,NA
-224,Chile,2017,1,0,NA
+224,Chile,2014,0.995,0,NA
+224,Chile,2015,0.995,0,NA
+224,Chile,2016,0.995,0,NA
+224,Chile,2017,0.995,0,NA
 227,Jersey,2000,0.9900000000000008,1,lm prediction based on year
 227,Jersey,2001,0.9900000000000008,1,lm prediction based on year
 227,Jersey,2002,0.9900000000000007,1,lm prediction based on year
@@ -3833,24 +3833,24 @@ rgn_id,rgn_name,year,basic_sani_prop,gapfill,method
 232,Bosnia and Herzegovina,2015,0.95,0,NA
 232,Bosnia and Herzegovina,2016,0.95,0,NA
 232,Bosnia and Herzegovina,2017,0.95,0,NA
-237,Oecussi Ambeno,2000,0.6557720588235293,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2001,0.663875,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2002,0.6719999999999999,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2003,0.6799999999999999,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2004,0.689,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2005,0.697,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2006,0.705,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2007,0.714,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2008,0.723,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2009,0.732,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2010,0.742,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2011,0.752,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2012,0.761,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2013,0.769,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2014,0.777,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2015,0.786,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2016,0.7959999999999999,1,UN georegion avg. (r2)
-237,Oecussi Ambeno,2017,0.8059999999999999,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2000,0.6552720588235292,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2001,0.6633749999999999,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2002,0.6714999999999999,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2003,0.6794999999999999,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2004,0.6884999999999999,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2005,0.6964999999999999,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2006,0.7044999999999999,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2007,0.7135,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2008,0.7225,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2009,0.7315,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2010,0.7414999999999999,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2011,0.751,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2012,0.76,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2013,0.768,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2014,0.776,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2015,0.785,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2016,0.7949999999999999,1,UN georegion avg. (r2)
+237,Oecussi Ambeno,2017,0.8049999999999999,1,UN georegion avg. (r2)
 244,Curacao,2000,0.98,0,NA
 244,Curacao,2001,0.98,0,NA
 244,Curacao,2002,0.98,0,NA
