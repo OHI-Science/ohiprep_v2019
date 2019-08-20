@@ -17,7 +17,7 @@ editor_options:
 
 
 # Summary
-This document describes the steps for obtaining and wrangling the data used to calculate the fisheries management index resilience layer for the 2019 global assessment.
+This document outlines the process for developing linear models to gapfill fisheries management index scores to use as a resilience layer for the 2019 global assessment.
 
 # Data Sources
 
@@ -32,6 +32,7 @@ Add some detail about this data.
 
 **Method:** Data are not accessible in csv format from website, so points were manually entered into excel and saved as a csv (found in v2019/raw)
 
+
 ## GDP per capita 
 
 Fisheries management index scores are highly correlated with GDP, so GDP per capita per person purchasing power (gdppcpppp) was used to create linear regression models to gapfill FMI data. We used World Bank data (reported at country-scale) and gapfilled any missing GDP values using CIA data. 
@@ -44,6 +45,12 @@ Fisheries management index scores are highly correlated with GDP, so GDP per cap
 * Downloaded 7/24/19
 * Time range: 
 
+
+## SPI
+
+## WGI
+
+## UN georegions
 
 # Updates from previous assessment
 These data have not been updated since 2013, so this is an entirely new method for establishing resilience values. 
@@ -529,6 +536,7 @@ fmi_gf_gr <- fmi_georegions %>%
     data.frame(., fmi_pred) # do loop applies the model fitting and prediction to each country group
   }) %>% 
   dplyr::ungroup()
+
 
 # Plot predicted vs actual values 
 ggplotly(ggplot(fmi_gf_gr, aes(x = fmi, y = fmi_pred, labels = rgn_id)) +
