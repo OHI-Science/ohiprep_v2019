@@ -54,7 +54,7 @@ IMAS_d2019 <- file.path(dir_M, "git-annex/globalprep/_raw_data/IMAS_GlobalFisher
 
 ## Set up a watson cell ID raster
 
-Metadata for Watson 2017 Cells data [here](https://www.nature.com/articles/sdata201739/tables/2). The column name is **Seq**, but Watson 2018 data calls it **Cells**.
+Metadata for Watson 2019 Cells data [here](http://metadata.imas.utas.edu.au/geonetwork/srv/eng/metadata.show). The Cells data is within Codes.xlsx in a sheet named "Cell".
 ```{r}
 #create a raster of Cell numbers
 ## This Codes.xlsx was downloaded from the same place as the raw Watson data.
@@ -78,7 +78,7 @@ Script taken from [v2016 saup_rasters_to_ohi_rgns.R script](https://github.com/O
 
 Result of `ohi_to_wats_raster` will be a list of length 526 (the same number of rows in the shapefile **regions**). Each element in the list will be associated with at least one cell number in a range from 1 to `ncell(watson_rast)` or 259,200. 
 
-Note: When using spatial polygons (e.g. **regions**) in `extract`, the extract method returns the values of the cells of a Raster object (e.g. **watson_rast**) that are covered by a polygon. A cell is covered if its center is inside the polygon, but setting `weights = TRUE` and `normalizeWeights = FALSE` accounts from the fraction of each cell that is covered by each polygon.
+Note: When using spatial polygons (e.g. **regions**) in `extract`, the extract method returns the values of the cells of a Raster object (e.g. **cells_raster**) that are covered by a polygon. A cell is covered if its center is inside the polygon, but setting `weights = TRUE` and `normalizeWeights = FALSE` accounts from the fraction of each cell that is covered by each polygon.
 
 Extract values to create raster (this may take a while)
 ```{r}
@@ -124,7 +124,7 @@ length(setdiff(cells_raw$wat_cell_id, old_cells_raw$saup_cell_id)) #149929 diffe
 ## A few modifications to the data
 
 ### Merge land and eez areas
-Originally, we included only water areas, but some rasters were excluded because the Watson raster doesn't exactly align with our region map.
+Originally, we included only water areas, but some rasters were excluded because the cells raster doesn't exactly align with our region map.
 
 ```{r}
 
