@@ -17,22 +17,47 @@ editor_options:
 
 
 # Summary
-This document describes the steps for obtaining and wrangling the data used to calculate the fisheries management index resilience layer for the 2019 global assessment.
+This document outlines the process for developing linear models to gapfill fisheries management index scores to use as a resilience layer for the 2019 global assessment.
 
 # Data Sources
 
 The following data are used:
 
 ## Fisheries Management Index Data 
-Add some detail about this data.
 
-* [Fisheries Management Index](https://oursharedseas.com/2019-update/fisheries/#highchart-fisheries-fmindex)
+[Fisheries Management Index](https://oursharedseas.com/2019-update/fisheries/#highchart-fisheries-fmindex) data were first introduced in a 2017 paper by Melnychuk et al., *[Fisheries Management Impacts on Target Species Status](https://doi.org/10.1073/pnas.1609915114)*. Scores range from 0-1 and rate management effectiveness of fisheries in distinct regions on a stock-by-stock basis. The scores are determined by expert surveys that characterize attributes of research, management, enforcement, and socioeconomic factors. The first survey was conducted in 2016 in 28 major fishing countries that collectively account for >80% of global catch. Another survey was performed in 2018 on 40 countries, the scores from which we are using for this OHI resilience layer. 
 
 **Date retreived:** 12 July 2019
 
-**Method:** Data are not accessible in csv format from website, so points were manually entered into excel and saved as a csv (found in v2019/raw)
+**Method:** Data are not accessible in csv format from website, so points were manually entered into excel and saved as a csv (found in v2019/raw). Because FMI scores only exist for 40 out of the 220 OHI regions, we trained linear models using scores from the AO need layer (rescaled GDP per capita per person purchasing power), GDP per capita, World Governance Index (WGI), Social Progress Indicator (SPI), and UN georegion labels to determine which would be most effective for gapfilling the missing data. After comparing the models, we determined SPI and UN georegions to be the best predictors of FMI, and used these models to gapfill FMI scores for the remaining 80 regions. 20 of these regions remain NA as they are uninhabited.
 
-Data was available for only 40 regions.  We used our rescaled and gapfilled version of the Social Progress Index and UN geogregion data to estimate missing regions.
+
+## SPI
+
+*Note: These data were not updated for v2019 at the time of completing the FMI resilience layer.*
+
+**Citation**: http://www.socialprogress.org/
+
+Stern, S., A. Wares and T. Epner. 2018. Social Progress Index: 2018 Methodology Report.
+
+**Source information**: 
+http://www.socialprogress.org/ --> Download Data
+
+**Date Downloaded**: 9/21/2018
+
+**Time range**: 2014-2018
+
+**Native data resolution**: country scores
+
+**Format**:  Excel file
+
+**Description**: Social Progress Index scores and components for countries.
+
+
+## UN georegions
+
+UNgeorgn() loads a dataframe from common.R with UN geopolitical designations, and is commonly used in OHI to gapfill missing data. The distinct regions are derived from the [United Nations Statistics Division](https://unstats.un.org/unsd/methodology/m49/)Each region is assigned four labels with increasing granularity/specificity: r0_label = World (1 level), r1_label = continental regions (7 levels: Oceania, Asia, Africa, Europe, Southern Islands, Latin America and the Caribbean, and Americas), r2_label = georegions (22 levels for subregions and intermediary regions).
+
 
 # Updates from previous assessment
 These data have not been updated since 2013, so this is an entirely new method for establishing resilience values. 
