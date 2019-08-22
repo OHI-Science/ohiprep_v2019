@@ -1,5 +1,5 @@
 ---
-title: "OHI 2018: Food Provision/Fisheries, Preparing RAM B/Bmsy data"
+title: "OHI 2019: Food Provision/Fisheries, Preparing RAM B/Bmsy data"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
 pdf_document:
   toc: true
 editor_options: 
@@ -39,12 +39,14 @@ This year we have additional stocks without spatial information from Christopher
 # Data
 ## B/Bmsy values from stock assessments 
 
-Reference: [RAM Legacy Stock Assessment Database](http://ramlegacy.org) v4.40 (6-4-2018) Shared with us by folks at UW.
+Reference: [RAM Legacy Stock Assessment Database](http://ramlegacy.org) v4.44
 
+* Downloaded: 2/28/2019
 * Description: B/Bmsy value by stock and year (other data, which we do not use, are also available in the database)
 * Native data resolution: stock (fish stock, species and region specific)
 * Time range: 1950 - 2016
 * Format: R data files (.rds)
+* DOI: 10.5281/zenodo.2542919
 
 
 ## Stock range data 
@@ -74,12 +76,11 @@ library(ggplot2)
 library(here) 
 
 ## highlight out when knitting
-#setwd(here::here("globalprep","fis","v2018"))
-
-source('../../../src/R/common.R')
+setwd(here::here("globalprep/fis/v2019"))
+source('../../../workflow/R/common.R')
 
 ## Paths for data
-path_raw_data = file.path(dir_M, "git-annex/globalprep/fis/v2018/int/annual_catch")
+path_raw_data = file.path(dir_M, "git-annex/globalprep/fis/v2019/int/annual_catch")
 
 ```
 
@@ -98,47 +99,37 @@ The time series data is a data frame with the following headers/columns:
 (1) assessid (2) stockid (3) stocklong (4) bioid (5) biovalue (6) bioyear (7) bionotes  
 
 3.  timeseries_values_views  
-This stores the timeseries values, using the most recent assessment available, with timeseries type along the columns (stockid, stocklong, year, TBbest, TCbest, ERbest, BdivBmsypref, UdivUmsypref, BdivBmgtpref, UdivUmgtpref, TB, SSB, TN, R,
-TC, TL, F, ER, TBdivTBmsy, SSBdivSSBmsy, FdivFmsy, ERdivERmsy, Btouse, Ctouse, Utouse, B/Bmsytouse, U/Umsytouse,
-TB/TBmgt, SSB/SSBmgt, F/Fmgt, ER/ERmgt, B/Bmgttouse, U/Umgttouse) and stocks along the rows
+This stores the timeseries values, using the most recent assessment available, with timeseries type. The dataframe contains the following headers/columns: stockid, stocklong, year, TBbest, TCbest, ERbest, BdivBmsypref, UdivUmsypref, BdivBmgtpref, UdivUmgtpref, TB, SSB, TN, R, TC, TL, RecC, F, ER, TBdivTBmsy, SSBdivSSBmsy, FdivFmsy, ERdivERmsy, CdivMSY, TBdivTBmsy, SSBdivSSBmsy, FdivFmgt, ERdivERmgt, Cpair, TAC, Cadvised, survB, CPUE, EFFORT, and stocks along the rows.
 
 4. timeseries_units_views  
-This stores the timeseries units (or time series source for touse time series), with timeseries type
-along the columns (TB, SSB, TN, R, TC, TL, F, ER) and stocks along the rows
+This stores the timeseries units (or time series source for touse time series), with timeseries type. The dataframe contains the following headers/columns: stockid, stocklong, TBbest, TCbest, ERbest, BdivBmgtpref, UdivUmsypref, BdivBmgtpret, UdivUmgtpref, TB, SSB, TN, R, TC, TL, RecC, F, ER, TBdivTBmsy, SSBdivSSBmsy, FdivFmsy, ERdivERmsy, CdivMSY, TBdivTBmgt, SSBdivSSBmgt, FdivFmgt, ERdivERmgt, Cpair, TAC, Cadvised, survB, CPUE, EFFORT, and stocks along the rows
 
 5. timeseries_id_views  
-This stores the timeseries ids with timeseries id along the columns (TB, SSB, TN, R,
-TC, TL, F, ER, TB/TBmsy, SSB/SSBmsy, F/Fmsy, ER/ERmsy, Btouse, Ctouse, Utouse, B/Bmsytouse, U/Umsytouse,
-TB/TBmgt, SSB/SSBmgt, F/Fmgt, ER/ERmgt, B/Bmgttouse, U/Umgttouse) and stocks along the rows
+This stores the timeseries ids with timeseries id along the columns. The dataframe contains the following headers/columns: stockid, stocklong, TBbest, TCbest, ERbest, BdivBmsypref, UdivUmsypref, BdivBmgtpref, UdivUmgtpref, TB, SSB, TN, R, TC, TL, RecC, F, ER, TBdivTBmsy, SSBdivSSBmsy, FdivFmsy, ERdivERmsy, CdivMSY, TBdivTBmgt, SSBdivSSBmgt, FdivFmgt, ERdivERmgt, Cpair, TAC, Cadvised, survB, CPUE, EFFORT, and stocks along the rows.
 
 6. bioparams_values_views  
 This stores the bioparams values, with bioparam type along the columns
-(TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TB0, SSB0, M, Bmsytouse, Umsytouse, TBmgt, SSBmgt, Fmgt, ERmgt,
-Bmgttouse, Umgttouse) and stocks along the rows
+(TBmsybest, ERmsybest, MSYbest, TBmgtbest, ERmgtbest, TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TBmgt, SSBmgt, Fmgt, ERmgt, TB0, SSB0, M, TBlim, SSBlim, Flim, ERlim) and stocks along the rows.
 
 7. bioparams_units_views  
-This stores the bioparams units (or parameter source for touse parameters), with bioparam type
-along the columns (TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TB0, SSB0, M, TBmgt, SSBmgt, Fmgt, ERmgt) and
-stocks along the rows
+This stores the bioparams units, with bioparam type along the columns (TBmsybest, ERmsybest, MSYbest, TBmgtbest, ERmgtbest, TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TBmgt, SSBmgt, Fmgt, ERmgt, TB0, SSB0, M, TBlim, SSBlim, Flim, ERlim) and stocks along the rows.
 
 8. bioparams_ids_views  
 This stores the bioparams ids, with bioparam id along the columns
-(TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TB0, SSB0, M, Bmsytouse, Umsytouse, TBmgt, SSBmgt, Fmgt, ERmgt,
-Bmgttouse, Umgttouse) and stocks along the rows
+(TBmsybest, ERmsybest, MSYbest, TBmgtbest, ERmgtbest, TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TBmgt, SSBmgt, Fmgt, ERmgt, TB0, SSB0, M, TBlim, SSBlim, Flim, ERlim) and stocks along the rows.
 
 9. metadata  
 This stores assorted metadata associated with the stock, with datatypes along the columns
-(assessid, stockid, stocklong, scientificname, FisheryType, region, areaid, areaname,
-assessorid, mgmt, management authority) and stock by row
+(assessid, stockid, stocklong, assessyear, scientificname, commonname, areaname, managementauthority, assessorfull, region, FisheryType) and stock by row.
 
 10. tsmetrics
-Contains metadata, such as definitions and units, of `tsid` values in `timeseries` table.
+Contains metadata, with columns tscategory, tsshort, tslong, tsunitsshort, tsunitslong, tsunique.
 
 
 For this data prep we primarily use and consult `timeseries_values_views`, `tsmetrics`, and `metadata`
 ```{r load_data, eval = FALSE}
 
-load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2018/RAM v4.40 (6-4-18)/DB Files With Assessment Data/DBdata.RData"))
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2019/RLSADB v4.44/DB Files With Assessment Data/DBdata.RData"))
 
 ram_bmsy <- timeseries_values_views %>%
   select(stockid, year, TBdivTBmsy, SSBdivSSBmsy) %>% 
