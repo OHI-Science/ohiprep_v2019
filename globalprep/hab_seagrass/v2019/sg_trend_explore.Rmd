@@ -8,11 +8,13 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohiprep/src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
 
+Hi Gage I put eval=F in the header of everything so that it would knit, but you might want to remove some of those if there are figures you want to see in the knitted doc.  
+-Molly
 
 ```{r setup, include=FALSE}
 
@@ -36,7 +38,7 @@ zones_all <- fasterize(regions,
 ```
 
 ## seagrass data
-```{r}
+```{r eval=F}
 
 seagrass <- raster(file.path(dir_M, "/git-annex/globalprep/hab_seagrass/v2019/int/combined_pt_py_adjusted.tif"))
 
@@ -47,7 +49,7 @@ seagrass_points <- rasterToPoints(seagrass)
 
 ## nutrient data
 
-```{r}
+```{r eval=F}
 
 nutrient <- list.files(file.path(dir_M, "git-annex/impact_acceleration/stressors/land_based/int"),
            pattern="fert", full=TRUE)
@@ -63,7 +65,7 @@ stack_nutrient <- stack(c(zones_all, nutrient))
 
 ## extract nutrient data and save
 
-```{r}
+```{r eval=F}
 
 nutrient_data <- extract(stack_nutrient, seagrass_points[, 1:2], progress="text", df=TRUE, cellnumbers=TRUE)
 
@@ -74,7 +76,7 @@ write.csv(nutrient_data, file.path(dir_M, "git-annex/globalprep/hab_seagrass/v20
 
 ## extract nutrient data and save
 
-```{r}
+```{r eval=F}
 
 nutrient_data <- extract(stack_nutrient, seagrass_points[, 1:2], progress="text", df=TRUE, cellnumbers=TRUE)
 
@@ -85,7 +87,7 @@ write.csv(nutrient_data, file.path(dir_M, "git-annex/globalprep/hab_seagrass/v20
 
 ## estimate slope over time
 
-```{r}
+```{r eval=F}
 
 
 nutrient_trend <- read.csv(file.path(dir_M, "git-annex/globalprep/hab_seagrass/v2019/sg_trend/seagrass_cell_nutrients.csv"))
@@ -133,7 +135,7 @@ From 1990-2000 (the most recent years of trend analysis) there were 115 sites wi
 
 I also assume that each ~1km2 raster cell is an independent seagrass bed.  This is similar to the average size based on polygon areas in original data.
 
-```{r}
+```{r eval=F}
 
 # proportion sites decreasing:
 115/(115+72+88) # 0.42
@@ -161,7 +163,7 @@ table(nutrient_coef2$trend_cat)
 
 The constant values will have a trend of 0.  For the Increasing and Decreasing categories this will scale linearly from 0 to the 99th predicted quantile based on SD.  
 
-```{r}
+```{r eval=F}
 
 library("scales")
 

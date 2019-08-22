@@ -11,10 +11,11 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
 pdf_document:
   toc: true
 ---
+
 ``` {r setup, echo = TRUE, message = FALSE, warning = FALSE, include=FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
@@ -26,6 +27,7 @@ library(raster)
 library(here)
 library(ggridges)
 library(ggplot2)
+library(tidyverse)
 
 source(here('workflow/R/common.R'))
 rgns_global <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/regionData.csv") %>%
@@ -163,7 +165,7 @@ The `spp_risk_dists/_output` folder contains the rasters of biodiversity risk, s
 ## Compare all vs. comprehensively assessed species
 In the past, we have used all species with IUCN risk assessments to calculate the species subgoal.  However, some of Casey's work suggests it is better to use the taxa groups that have been comprehensively assessed by IUCN (> 90% of species assessed).  The general concern is that IUCN tends to oversample species in the Atlantic portion of the ocean, relative to other regions.  This is indicated by the larger number of species with IUCN status in this region.  However, the Atlantic falls in line with the other regions when looking at the comprehensively assessed species.  
 
-```{r}
+```{r eval=F}
 #this will be the same for 2019 since we only used comprehesively assessed taxa
 
 library(beyonce)
