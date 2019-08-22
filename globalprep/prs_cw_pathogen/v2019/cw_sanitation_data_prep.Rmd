@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
 pdf_document:
   toc: true
 editor_options: 
@@ -75,7 +75,7 @@ Percentage of people without sanitation was multiplied by the coastal population
 
 # Setup
 
-```{r setup, results="hide", message = FALSE, warning = FALSE, eval=FALSE}
+```{r setup, results="hide", message = FALSE, warning = FALSE}
 
 
 library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
@@ -501,8 +501,6 @@ write_csv(trend_data, here("globalprep/prs_cw_pathogen/v2019/output/po_pathogen_
 
 ### Trend data
 
-There is not a great correspondence between this year and last year's trend estimates.  This is partially due to changes in the source data.  But mainly, it is due to the limited number of years used in last year's assessment to calculate trend.  
-
 ```{r, eval=FALSE}
 
 new <- read_csv(here("globalprep/prs_cw_pathogen/v2019/output/po_pathogen_popdensity25mi_trend.csv"))
@@ -517,7 +515,7 @@ ggplotly(ggplot(compare, aes(y = trend, x = trend_2018, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
-# Several regions have large variation in trend between v2019 and v2018
+# A few regions have large variation in trend between v2019 and v2018
 # v2019 trend = -1: 70, 206, 86, 31
 # v2019 trend = 1: 81
 
@@ -544,7 +542,7 @@ We checked the main discrepancies and these were due to changes in source data. 
 
 ### Outlier exploration
 
-```{r}
+```{r outliers, eval=FALSE}
 
 ### Comparison of basic access to sanitation scores 
 sani_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2019/JMP_2019_WLD.csv"), header=FALSE, sep = ",", na.strings = c(NA, ''), stringsAsFactors = FALSE, strip.white = TRUE)

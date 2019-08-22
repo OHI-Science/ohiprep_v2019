@@ -21,11 +21,11 @@ editor_options:
 
 # Summary
 
-This script generates the "need" layer for the artisanal opportunities goal.  The "access" layer, which is not updated due to a lack of a data source, is located here: globalprep/res_mora_ao/v2013/data/r_mora_s4_2013a.csv.
+This script generates the "need" layer for the artisanal opportunities goal.  The "access" layer was updated in v2019 with new Fisheries Management Index data, and is located here: , which is not updated due to a lack of a data source, is located here: globalprep/res_fmi/v2019/output/fmi_res.csv.
 
 
 ## Updates from previous assessment
-Uninhabited and low population regions now given an NA value (vs. a gapfilled value).
+Uninhabited and low population regions now given an NA value (vs. a gapfilled value). Also switched to using the here() package to avoid using setwd()
 
 ***
 ## Data Source 

@@ -8,7 +8,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohiprep_v2018/src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -249,7 +249,7 @@ ico_spp_countries <- read_csv(here("globalprep/ico/v2019/int/ico_spp_countries.c
 ```
 
 Name to region function (in OHI core package) reports regions that don't have a match in OHI region list. Here we report certain reported regions at a higher spatial scale, based on the listed regions in the error message. 
-```{r}
+```{r country_split, eval=FALSE}
 
 # Report these regions at higher spatial resolution:
 country_split_1 <- data.frame(country = "Bonaire, Sint Eustatius and Saba", region = c('Bonaire', 'Saba', 'Sint Eustatius'))
@@ -694,7 +694,7 @@ Region ID | Region Name | Status | Prev Status | d_nspp | Insights
 
 
 
-```{r}
+```{r outliers, include=FALSE, eval=F}
 library(tidyverse)
 library(here)
 

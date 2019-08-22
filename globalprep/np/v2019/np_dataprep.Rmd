@@ -1,5 +1,5 @@
 ---
-title: 'OHI 2019: Natural Products
+title: 'OHI 2019: Natural Products'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -8,12 +8,12 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep_v2019/master/globalprep/np/v2019/np_dataprep.html]
+[REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep_v2019/master/globalprep/np/v2019/np_dataprep.html)
 
 # Summary
 This analysis converts FAO commodities data into data layers used to calculate OHI 2018 global natural products scores.  
@@ -21,7 +21,7 @@ This analysis converts FAO commodities data into data layers used to calculate O
 # Updates from previous assessment
 New year of FAO data (1976-2016). To stabilize the model, we include only commodities with >= 4 non-zero/non-NA values within the most recent 10 years (vs. the entire time frame we previously used).
 
-For next year, consider only including commodities with USD value > 1.  This may further improve the stability of the model.
+For next year, consider only including commodities with USD value > 1.  This may further improve the stability of the model. Also want to narrow the products to just fish oil and seaweed to mitigate model instability.
 
 ***
 
@@ -32,8 +32,7 @@ For next year, consider only including commodities with USD value > 1.  This may
      App release date: May 2019
 FAO raw commodities quantity 1976_2016
 FAO raw commodities value 1976_2016
-FAO metadata found [here](http://ref.data.fao.org/dataset?entryId=aea93578-9b01-4448-9305-917348ca00b2&tab=metadata)
-**fix this link^^**
+FAO metadata found [here](http://www.fao.org/fishery/statistics/global-commodities-production/en)
 
 **Downloaded**: July 22 2019
 
@@ -420,12 +419,12 @@ Checking out some outliers with large changes in status values (found after uplo
 
 region_id   | region name  | change in status  | explanation
 ----------- | ---------------- | ------------------ | -------------------
-67             |           Libya             | +84                       |
-153           |      Cook Islands        | +27                     | 
-78            |          Lebanon            | +24                     | 
-43            |            Kenya              | + 18                    | 
-191          |              Iran            | -30                          | 
-```{r}
+67         |       Libya             | +84         | Looks like there may have been a difference in calculation or mistake made somewhere - the v2018 final output file np_harvest_tonnes.csv had NA for shells in 2013-2015, whereas the same data file for v2019 had 3-5 tonnes for this product over the same span (tonnes values were 0 - 1 for previous years in both files, so big jump). Odd because the raw data have matching numbers for tonnes, so maybe something got messed up in either this year or last year's calculation (neither year gapfilled these data).
+153       |      Cook Islands        | +27         | No differences in raw data, but values for ornamentals are different between v2018 and v2019- minorly for 2010-11, and more significantly between 2012-2015. This is odd because the raw data for both v2018 and v2019 has 0 for ornamental fish nei and and NA for ornamental saltwater fish (the only ornamental items for this region) for 2012-2015. Note: ornamental saltwater fish values were gapfilled using UN georegions (in v2018 and v2019).
+78        |         Lebanon          | +24         |  Big changes to ornamentals from 2012-2015 between v2018 and v2019 (raw data had some fish oil values that were zero in v2018 that are now NA, otherwise all raw values matched up). Ornamental fish nei values were zerofilled from 2011-2013 , ornamental saltwater fish zerofilled in 2014
+43        |         Kenya            | + 18        | Again, big jump in ornamental tonnes from 2013-2015, with no changes in the raw data between v2018 and v2019. None of these data were gapfilled.
+191       |           Iran           | -30         | In raw data, ornamental fish nei had zeroes for 2014-2015 in v2019 and NAs in v2019; no other changes, including in output tonnes data between v2018 and v2019 (must have gapfilled based on previous years' data).
+```{r exploration, include=FALSE}
 
 ## Look at Commodities TONNES for a few countries
 
