@@ -182,5 +182,19 @@ bbmsy <- data_gf %>%
 
 write.csv(bbmsy, "output/fis_bbmsy.csv", row.names=FALSE) 
 
+bbmsy_92 <- read.csv("output/fis_bbmsy_gf.csv") %>%
+  filter(rgn_id == 92)
+
+bbmsy_157 <- read.csv("output/fis_bbmsy_gf.csv") %>%
+  filter(rgn_id == 157) %>%
+  select(year , bbmsy, mean_catch, rgn_id, stock_id)
+
+bbmsy_157_ly <- read.csv("../v2018/output/fis_bbmsy_gf.csv") %>%
+  filter(rgn_id == 157) %>%
+  rename(old_bbmsy = bbmsy, old_mean_catch = mean_catch) %>%
+  select(year, old_bbmsy, old_mean_catch, rgn_id, stock_id)
+
+compare_157 <- bbmsy_157 %>%
+  inner_join(bbmsy_157_ly, by = c("year","stock_id", "rgn_id"))
 ```
 
