@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Compiled on Thu Aug 22 09:57:19 2019 by mwilliams" />
+<meta name="author" content="Compiled on Fri Aug 23 11:12:32 2019 by mwilliams" />
 
 
 <title>OHI 2019 - Iconic species subgoal</title>
@@ -430,7 +430,7 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">OHI 2019 - Iconic species subgoal</h1>
-<h4 class="author"><em>Compiled on Thu Aug 22 09:57:19 2019 by mwilliams</em></h4>
+<h4 class="author"><em>Compiled on Fri Aug 23 11:12:32 2019 by mwilliams</em></h4>
 
 </div>
 
@@ -489,9 +489,7 @@ $(document).ready(function () {
 </div>
 <div id="updates-from-previous-assessment" class="section level1">
 <h1><span class="header-section-number">2</span> Updates from previous assessment</h1>
-<p>No changes have been made to the data prep methods for this goal, since the 2016 assessment, though there were some slight changes to improve the code. API key is read from a file, the ‘get from API’ function now includes error checking (it reports a little on what the error is, whether it’s a zero-length data frame or a try error, etc) and multiple attempts (if it gets an error it tries again a few times), and there is also a delay parameter to space out requests to the API.</p>
-<p>Changes <em>were</em> made in 2018 to the iconic species trend calculation. Trends are now calculated (in ohi-global, <code>functions.R</code>) using status values based only on species with two or more IUCN evaluations in the last 20 years. This change was made because including species which have not been re-evaluated for a long time tends to positively bias trend values, or at least dampen the trends by essentially including as zeros, values that are not truely known to be zero… To accommodate this change in the trend calculation, years 1992-present are included in the prepped data as well as in the ohi-global <code>scenario_data_years.csv</code>.</p>
-<p>In 2019, we stopped using the regions list to merge IUCN and iconic species region IDs and switched to the name_2_rgn() funciton in ohicore. However, this function reports regions that don’t have a match in OHI region list, so we report certain reported regions at a higher spatial scale, based on the listed regions in the error message.</p>
+<p>Additional year of IUCN Red List data added. In 2019, we stopped using the regions list to merge IUCN and iconic species region IDs and switched to the name_2_rgn() funciton in ohicore. However, this function reports regions that don’t have a match in OHI region list, so we report certain reported regions at a higher spatial scale, based on the listed regions in the error message.</p>
 <div id="future-improvements" class="section level2">
 <h2><span class="header-section-number">2.1</span> Future improvements?</h2>
 <ul>
@@ -508,7 +506,7 @@ $(document).ready(function () {
 <ul>
 <li>IUCN 2016. IUCN Red List of Threatened Species. Version 2016-1 &lt;www.iucnredlist.org&gt;
 <ul>
-<li><strong>Accessed</strong>: Thu Aug 22 09:57:19 2019 by mwilliams</li>
+<li><strong>Accessed</strong>: Fri Aug 23 11:12:32 2019 by mwilliams</li>
 </ul></li>
 </ul></li>
 <li><strong>Native data resolution</strong>: Country level (by country name)</li>

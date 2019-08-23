@@ -83,7 +83,8 @@ Trend is calculated using time series of risk categories based on current and pa
 
 # Updates from previous assessment
 
-Added Casey Ohara's personal common.R functions into the common_fxns.R file located in the '_setup' file for this goal. 
+Added Casey Ohara's personal common.R functions into the common_fxns.R file located in the '_setup' file for this goal. Additional year of data.
+
 
 ***
 

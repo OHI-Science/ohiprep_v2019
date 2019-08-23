@@ -25,7 +25,7 @@ This script generates the "need" layer for the artisanal opportunities goal.  Th
 
 
 ## Updates from previous assessment
-Uninhabited and low population regions now given an NA value (vs. a gapfilled value). Also switched to using the here() package to avoid using setwd()
+One more year of data. Uninhabited and low population regions now given an NA value (vs. a gapfilled value). Also switched to using the here() package to avoid using setwd()
 
 ***
 ## Data Source 

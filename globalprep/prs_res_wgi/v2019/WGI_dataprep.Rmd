@@ -25,7 +25,9 @@ This script downloads WGI data and prepares it for a pressures (1 - WGI) and res
 
 # Updates from previous assessment
 
-None.  Consider this improvement for future assessments: create a linear model to estimate missing data rather than just taking averages of years with data (~ line 230).
+No methods updates; additional year of data added.  
+
+Consider this improvement for future assessments: create a linear model to estimate missing data rather than just taking averages of years with data (~ line 230).
 
 ***
 
