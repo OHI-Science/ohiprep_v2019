@@ -134,7 +134,7 @@ ram_bmsy <- timeseries_values_views %>%
   mutate(ram_bmsy = ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy)) %>% 
   dplyr::filter(year > 1979) %>%
   filter(!is.na(ram_bmsy)) %>% 
-  dplyr::select(stockid, year, ram_bmsy)
+  dplyr::select(stockid, year, ram_bmsy) #10697 observations with ram data... 
 
 ```
 
@@ -145,20 +145,26 @@ ram_bmsy_check <- timeseries_values_views %>%
   mutate(ram_bmsy = ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy)) %>% 
   dplyr::filter(year > 1979)
 
-sum(is.na(ram_bmsy_check$ram_bmsy)) #24480
+sum(is.na(ram_bmsy_check$ram_bmsy)) #24480 NAs with only msy values in ram_bmsy column... 24480/35177 = ~69% of ram data is NA with these methods. 
 
 
 ram_bmgt_check <- timeseries_values_views %>%
   select(stockid, year, TBdivTBmsy, SSBdivSSBmsy, TBdivTBmgt, SSBdivSSBmgt) %>%
   mutate(ram_bmsy = 
-           ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, TBdivTBmgt)) %>%
+           ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy)) %>%
   mutate(ram_bmsy =
-           ifelse(is.na(TBdivTBmsy) & is.na(TBdivTBmgt), SSBdivSSBmsy, ram_bmsy)) %>%
+           ifelse(is.na(TBdivTBmsy) & is.na(SSBdivSSBmsy), TBdivTBmgt, ram_bmsy)) %>%
   mutate(ram_bmsy = 
-           ifelse(is.na(TBdivTBmsy) & is.na(TBdivTBmgt) & is.na(SSBdivSSBmsy), SSBdivSSBmgt, ram_bmsy)) %>%
+           ifelse(is.na(TBdivTBmsy) & is.na(SSBdivSSBmsy) & is.na(TBdivTBmgt), SSBdivSSBmgt, ram_bmsy)) %>%
   dplyr::filter(year > 1979)
 
-sum(is.na(ram_bmgt_check$ram_bmsy)) #21195
+sum(is.na(ram_bmgt_check$ram_bmsy)) #21195 NAs with new methods in ram_bmsy column... 21195/35177 = ~60% of ram data is NA with new methods.. better than before. Gained 3285 rows of data.
+
+ram_bmgt_check_final <- ram_bmgt_check %>%
+  filter(!is.na(ram_bmsy)) %>%
+  dplyr::select(stockid,year,ram_bmsy)
+
+sort(setdiff(ram_bmgt_check_final$stockid, ram_bmsy$stockid)) ## there are 96 stocks added. Are these present in both the RAM and Watson data? 
 ```
 
 
