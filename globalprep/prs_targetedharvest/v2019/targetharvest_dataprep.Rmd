@@ -36,6 +36,7 @@ v2019: Adding in here() where appropriate and incorporating read_csv() etc, chan
     http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
      Release date: March 2019 
 FAO Global Capture Production Quantity 1950_2017
+Information: http://www.fao.org/fishery/statistics/global-capture-production/en
 
 **Downloaded**: May 23 2019
 

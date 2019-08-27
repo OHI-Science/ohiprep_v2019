@@ -61,8 +61,8 @@ In 2019, we stopped using the regions list to merge IUCN and iconic species regi
 **Species native country information:**
 
 * __Reference__: 
-    * IUCN 2016. IUCN Red List of Threatened Species. Version 2016-1 <www.iucnredlist.org>
-        * __Accessed__: `r date()` by `r Sys.info()['user']` 
+    * IUCN 2019. IUCN Red List of Threatened Species. Version 2019-2 <www.iucnredlist.org>
+        * __Accessed__: 15 May 2019 
 * __Native data resolution__: Country level (by country name)
 * __Time range__: 1965-2019 (discrete past assessments by species) 
 * __Format__:  JSON
