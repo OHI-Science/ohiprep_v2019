@@ -94,7 +94,7 @@ IUCN:
 
 * __Reference__: 
     * IUCN 2019. The IUCN Red List of Threatened Species. Version 2019-1. <http://www.iucnredlist.org>.
-        * Shapefiles available from: http://www.iucnredlist.org/technical-documents/spatial-data
+        * Shapefiles available from: https://www.iucnredlist.org/resources/spatial-data-download
         * __Downloaded__: April 22, 2019
     *BirdLife International and Handbook of the Birds of the World (2018) Bird species distribution maps of the world. Version 2018.1. BirdLife International, Cambridge, UK and NatureServe, Arlington, USA. http://datazone.birdlife.org/species/requestdis.
         * Zipped shapefile available from BirdLife International.  
