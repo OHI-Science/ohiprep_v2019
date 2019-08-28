@@ -128,7 +128,10 @@ corrplot.mixed(tbmsy_ssbmsy_cor,
                tl.pos = "d",
                tl.cex = 0.75) ## 0.83 positive correlation
 
-plot(tbmsy_ssbmsy$TBdivTBmsy, tbmsy_ssbmsy$SSBdivSSBmsy)
+tbmsy_ssbmsy_filt <- tbmsy_ssbmsy %>%
+  filter(TBdivTBmsy <= 2, SSBdivSSBmsy <= 2)
+
+plot(tbmsy_ssbmsy_filt$TBdivTBmsy, tbmsy_ssbmsy_filt$SSBdivSSBmsy)
 abline(0,1, col = "red")
 
 ## compare the Total Biomass msy and management targets. 
@@ -144,7 +147,10 @@ corrplot.mixed(tb_msy_mgt_cor,
                tl.pos = "d",
                tl.cex = 0.75) #0.64 positive correlation
 
-plot(TB_msy_mgt$TBdivTBmsy, TB_msy_mgt$TBdivTBmgt)
+tb_msy_mgt_filt <- TB_msy_mgt %>%
+  filter(TBdivTBmsy <= 2, TBdivTBmgt <= 2)
+
+plot(tb_msy_mgt_filt$TBdivTBmsy, tb_msy_mgt_filt$TBdivTBmgt)
 abline(0,1, col = "red")
 
 ## compare the ssb msy and management targets. 
@@ -160,7 +166,10 @@ corrplot.mixed(ssb_msy_mgt_cor,
                tl.pos = "d",
                tl.cex = 0.75) #0.84 positive correlation
 
-plot(ssb_msy_mgt$SSBdivSSBmsy, ssb_msy_mgt$SSBdivSSBmgt)
+ssb_msy_mgt_filt <- ssb_msy_mgt %>%
+  filter(SSBdivSSBmsy <= 2, SSBdivSSBmgt <= 2)
+
+plot(ssb_msy_mgt_filt$SSBdivSSBmsy, ssb_msy_mgt_filt$SSBdivSSBmgt)
 abline(0,1, col = "red")
 
 
@@ -177,8 +186,11 @@ corrplot.mixed(tbmgt_ssbmgt_cor,
                tl.pos = "d",
                tl.cex = 0.75) ## 0.79 positive correlation
 
+tbmgt_ssbmgt_filt <- tbmgt_ssbmgt %>%
+    filter(TBdivTBmgt <= 2, SSBdivSSBmgt <= 2)
 
-plot(tbmgt_ssbmgt$TBdivTBmgt, tbmgt_ssbmgt$SSBdivSSBmgt)
+
+plot(tbmgt_ssbmgt_filt$TBdivTBmgt, tbmgt_ssbmgt_filt$SSBdivSSBmgt)
 abline(0,1, col = "red")
 
 ## compare TBmsy and SSBmgt
@@ -194,7 +206,10 @@ corrplot.mixed(tbmsy_ssbmgt_cor,
                tl.pos = "d",
                tl.cex = 0.75) ## 0.82 positive correlation
 
-plot(tbmsy_ssbmgt$TBdivTBmsy, tbmsy_ssbmgt$SSBdivSSBmgt)
+tbmsy_ssbmgt_filt <- tbmsy_ssbmgt %>%
+    filter(TBdivTBmsy <= 2, SSBdivSSBmgt <= 2)
+
+plot(tbmsy_ssbmgt_filt$TBdivTBmsy, tbmsy_ssbmgt_filt$SSBdivSSBmgt)
 abline(0,1, col = "red")
 
 ## compare TBmsy, TBmgt, and SSBmsy

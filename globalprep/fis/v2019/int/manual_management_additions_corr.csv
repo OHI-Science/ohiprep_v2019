@@ -1,0 +1,95 @@
+rgn_id,fao_id,RAM_area_m2,stockid,stocklong
+190,27,NA,BLINGVb-VI-VII,Blue ling Vb-VI-VII
+181,27,NA,BLINGVb-VI-VII,Blue ling Vb-VI-VII
+179,27,NA,BLINGVb-VI-VII,Blue ling Vb-VI-VII
+143,27,NA,CAPEIIa-V-XIV,Capelin IIa-V-XIV
+145,27,NA,COD1IN,Atlantic cod NAFO Subarea 1 (inshore)
+145,27,NA,CODIf-XIV,Atlantic cod ICES If-XIV
+143,27,NA,CODIf-XIV,Atlantic cod ICES If-XIV
+175,27,NA,CODIIIaW-IV-VIId,Atlantic cod IIIa (west) and IV-VIId
+180,27,NA,CODIIIaW-IV-VIId,Atlantic cod IIIa (west) and IV-VIId
+223,27,NA,CODIIIaW-IV-VIId,Atlantic cod IIIa (west) and IV-VIId
+223,27,NA,CODNEARNCW,Atlantic cod Northeast Arctic (Norwegian coastal waters)
+143,27,NA,CUSKVa-XIV,Tusk Va and XIV
+145,27,NA,CUSKVa-XIV,Tusk Va and XIV
+180,27,NA,EBASSIVbc-VII,European seabass IVbc and VII
+177,27,NA,EBASSIVbc-VII,European seabass IVbc and VII
+143,27,NA,GOLDREDV-VI-XII-XIV,Golden Redfish V-VI-XII-XIV
+179,27,NA,HADNS-IIIa-VIa,Haddock North Sea and IIIa-VIa
+176,27,NA,HADNS-IIIa-VIa,Haddock North Sea and IIIa-VIa
+145,27,NA,HADNS-IIIa-VIa,Haddock North Sea and IIIa-VIa
+143,27,NA,HADNS-IIIa-VIa,Haddock North Sea and IIIa-VIa
+223,27,NA,HADNS-IIIa-VIa,Haddock North Sea and IIIa-VIa
+73,27,NA,HADNS-IIIa-VIa,Haddock North Sea and IIIa-VIa
+70,27,NA,HERR2529-32,Herring Subdivisions 25-29 and 32
+69,27,NA,HERR2529-33,Herring Subdivisions 25-29 and 33
+189,27,NA,HERR2529-34,Herring Subdivisions 25-29 and 34
+178,27,NA,HERR2529-35,Herring Subdivisions 25-29 and 35
+22,27,NA,HERR2529-36,Herring Subdivisions 25-29 and 36
+73,27,NA,HERR2529-37,Herring Subdivisions 25-29 and 37
+222,27,NA,HERR30-31,Herring Subdivisions 30-31
+174,27,NA,HERR30-32,Herring Subdivisions 30-32
+175,27,NA,HERRNS-IIIa-VIId,"Herring IIIa, VIId and North Sea"
+179,27,NA,HERRNS-IIIa-VIId,"Herring IIIa, VIId and North Sea"
+176,27,NA,HERRNS-IIIa-VIId,"Herring IIIa, VIId and North Sea"
+181,27,NA,HERRNS-IIIa-VIId,"Herring IIIa, VIId and North Sea"
+189,27,NA,HERRNS-IIIa-VIId,"Herring IIIa, VIId and North Sea"
+177,27,NA,HERRNS-IIIa-VIId,"Herring IIIa, VIId and North Sea"
+223,27,NA,HERRNS-IIIa-VIId,"Herring IIIa, VIId and North Sea"
+222,27,NA,HERRNS-IIIa-VIId,"Herring IIIa, VIId and North Sea"
+182,27,NA,HMACKIIa-IVa-Vb-VIa-VII-VIII,Horse mackerel IIa-IVa-Vb-VIa-VII-VIII
+179,27,NA,HMACKIIa-IVa-Vb-VIa-VII-VIII,Horse mackerel IIa-IVa-Vb-VIa-VII-VIII
+181,27,NA,HMACKIIa-IVa-Vb-VIa-VII-VIII,Horse mackerel IIa-IVa-Vb-VIa-VII-VIII
+180,27,NA,HMACKIIa-IVa-Vb-VIa-VII-VIII,Horse mackerel IIa-IVa-Vb-VIa-VII-VIII
+223,27,NA,HMACKIIa-IVa-Vb-VIa-VII-VIII,Horse mackerel IIa-IVa-Vb-VIa-VII-VIII
+183,27,NA,HMACKIXa,Horse mackerel Portugese Waters -East
+182,27,NA,HMACKIXa,Horse mackerel Portugese Waters -East
+143,27,NA,LINGVa,Ling Iceland Grounds
+182,27,NA,MEGVII-VIIIabd,Megrim VII-VIIIabd
+181,27,NA,MEGVII-VIIIabd,Megrim VII-VIIIabd
+180,27,NA,MEGVII-VIIIabd,Megrim VII-VIIIabd
+179,27,NA,MEGVII-VIIIabd,Megrim VII-VIIIabd
+180,27,NA,NEPHFU14,Norway lobster Irish Sea East (FU 14)
+181,27,NA,NEPHFU17,Norway lobster Aran Grounds (FU 17)
+180,27,NA,NEPHFU7,Norway lobster Fladen Ground (FU 7)
+NA,NA,NA,NEPHMEDGSA17-18,Norway lobster Adriatic Sea
+175,27,NA,NPOUTIIIa-IV,Norway pout IIIa and North Sea
+141,27,NA,NPOUTIIIa-IV,Norway pout IIIa and North Sea
+176,27,NA,NPOUTIIIa-IV,Norway pout IIIa and North Sea
+177,27,NA,NPOUTIIIa-IV,Norway pout IIIa and North Sea
+223,27,NA,NPOUTIIIa-IV,Norway pout IIIa and North Sea
+224,87,NA,NSHRIMPCSCH,Nylon shrimp Central-Southern Chile
+224,87,NA,NSHRIMPNCH,Nylon shrimp Northern Chile
+137,87,NA,PANCHCCH,Peruvian Anchoveta Central Chile
+138,87,NA,PANCHCCH,Peruvian Anchoveta Central Chile
+224,87,NA,PANCHCCH,Peruvian Anchoveta Central Chile
+224,87,NA,PANCHCSCH,Peruvian Anchoveta Central-Southern Chile
+224,87,NA,PANCHNCHSP,Peruvian Anchoveta Northern Chile Southern Peru
+138,87,NA,PANCHNCHSP,Peruvian Anchoveta Northern Chile Southern Peru
+172,41,NA,PCEELARGS,Pink Cusk-eel Southern Argentina
+175,27,NA,PLAIC2123,European Plaice Subdivisions 21-23
+175,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+141,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+145,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+143,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+69,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+189,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+223,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+178,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+183,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+73,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+182,27,NA,REDDEEPDP-1-2-V-XII-XIV,Beaked Redfish Areas V-XII-XIV and NAFO Subareas 1-2 (deep)
+NA,NA,NA,SEELNSSA4,Sand eel Sandeel Area 4
+175,27,NA,SOLEIIIa-2224,Common sole 22-24-IIIa
+176,27,NA,SOLEIIIa-2225,Common sole 22-24-IIIa
+177,27,NA,SOLEIIIa-2226,Common sole 22-24-IIIa
+223,27,NA,SOLEIIIa-2227,Common sole 22-24-IIIa
+222,27,NA,SOLEIIIa-2228,Common sole 22-24-IIIa
+179,27,NA,SOLEVIIIab,Common sole VIIIab
+NA,NA,NA,SPURDNEATL,Spurdog Northeast Atlantic
+179,27,NA,WANGLVII-VIIIabd,White anglerfish VII and VIIIabd
+182,27,NA,WANGLVII-VIIIabd,White anglerfish VII and VIIIabd
+180,27,NA,WANGLVII-VIIIabd,White anglerfish VII and VIIIabd
+182,27,NA,WANGLVIIIc-IXa,White anglerfish VIIIc-IXa
+181,27,NA,WHITVIIa,Whiting Irish Sea
+180,27,NA,WHITVIIa,Whiting Irish Sea
