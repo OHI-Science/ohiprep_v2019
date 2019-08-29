@@ -1,12 +1,12 @@
 ## Ocean Health Index: Fisheries Sub-goal (FIS)
 
-See full details for how the Watson catch data was prepped [here](https://raw.githack.com/OHI-Science/ohiprep_v2019/gh-pages/globalprep/fis/v2018/RAM_data_prep.html).
+See full details for how the Watson catch data was prepped [here](https://raw.githack.com/OHI-Science/ohiprep_v2019/gh-pages/globalprep/fis/v2019/catch_data_prep.html).
 
-See full details for how BBmsy was calculated [here](https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/calculate_bbmsy.html).
+See full details for how BBmsy was calculated [here](https://raw.githack.com/OHI-Science/ohiprep_v2019/gh-pages/globalprep/fis/v2019/calculate_bbmsy.html).
 
 See full details for how RAM data was prepped
-[here RAM dataprep](https://rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/RAM_CMSY_combine.html)
-[here RAM_CMSY](https://rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/fis/v2018/RAM_CMSY_combine.html)
+[here RAM dataprep](https://raw.githack.com/OHI-Science/ohiprep_v2019/gh-pages/globalprep/fis/v2019/RAM_data_prep.html)
+[here RAM_CMSY](https://raw.githack.com/OHI-Science/ohiprep_v2019/gh-pages/globalprep/fis/v2019/RAM_CMSY_combine.html)
 
 
 If using these data, please see our [citation policy](http://ohi-science.org/citation-policy/).

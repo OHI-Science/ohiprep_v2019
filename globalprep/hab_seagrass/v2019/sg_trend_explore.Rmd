@@ -13,8 +13,6 @@ output:
     toc: true
 ---
 
-Hi Gage I put eval=F in the header of everything so that it would knit, but you might want to remove some of those if there are figures you want to see in the knitted doc.  
--Molly
 
 ```{r setup, include=FALSE}
 

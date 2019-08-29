@@ -62,6 +62,12 @@ Changed the code to calculate zonal statistics. No longer using the "mcapply()" 
 
 # Setup
 
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
 ```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
@@ -113,7 +119,7 @@ This process is all done in the script: `1_prep_wdpa_rast.Rmd`. After that is co
 
 Comparing the global WDPA raster to the 3 nautical miles offshore and 1 km inland rasters, we can tally the protected area within each region and compare to the total area within each region.  Note each cell is 500 m x 500 m, so area is .25 km^2^, but since we are simply calculating a ratio, this cancels out.
 
-``` {r lsp_zonal_stats, eval = TRUE}
+``` {r lsp_zonal_stats, eval = FALSE}
 
 zonal_files <- c('zonal_3nm' =  file.path(dir_goal, 'int', 'zonal_stats_3nm.csv'),
                  'zonal_1km' =  file.path(dir_goal, 'int', 'zonal_stats_1km.csv'),
@@ -173,7 +179,7 @@ Once the WDPA raster is cross-tabulated against the OHI region rasters (both 3 n
 
 ### Summary of zonal stats dataframes (3 nm offshore):
 
-``` {r}
+``` {r, eval = FALSE}
 stats_3nm <- read_csv(zonal_files['zonal_3nm'])
 print(summary(stats_3nm))
 
@@ -204,7 +210,7 @@ Since the cells are 500 m on a side, we can easily calculate area by multiplying
 Finally we can calculate the status of a region for any given year by finding the ratio of protected:total and normalizing by the goal's target of 30% protected area.
 
 
-``` {r summarize_zonal_stats, eval = TRUE}
+``` {r summarize_zonal_stats, eval = FALSE}
 
 stats_3nm <- read_csv(zonal_files['zonal_3nm'])
 stats_1km <- read_csv(zonal_files['zonal_1km'])
@@ -252,17 +258,7 @@ write_csv(prot_eez, file.path(dir_goal, 'int', 'area_protected_eez.csv'))
 ```
 
 
-### Protected areas (3 nm offshore, 2019 only):
 
-`r DT::datatable(prot_3nm %>% filter(year == 2019) %>% select(-year, -contains('cell')), caption = '3 nautical mile offshore zone - area in km^2^')`
-
-### Protected areas (1 km inland, 2019 only):
-
-`r DT::datatable(prot_1km %>% filter(year == 2019) %>% select(-year, -contains('cell')), caption = '1 kilometer inland zone - area in km^2^')`
-
-### Protected areas (full EEZ, 2018 only):
-
-`r DT::datatable(prot_eez %>% filter(year == 2019) %>% select(-year, -contains('cell')), caption = 'Full EEZ - area in km^2^')`
 
 ***
 
@@ -273,7 +269,7 @@ From the protected area files, write out the individual layers ready for the Too
 * total area for offshore 3 nm and inland 1 km
 * protected area for offshore 3 nm and inland 1 km
 
-``` {r write_layers, eval = TRUE}
+``` {r write_layers, eval = FALSE}
 
 prot_3nm <- read_csv(file.path(dir_goal, 'int', 'area_protected_3nm.csv')) %>%
   rename(area = a_tot_km2,
@@ -298,7 +294,7 @@ a_prot_1km <- write_lsp_layer(prot_1km, c('year', 'a_prot_1km'), 'lsp_prot_area_
 ```
 
 Some goals require calculation of resilience nearshore (3nm) or entire EEZ.
-``` {r estimate status by year, eval = TRUE}
+``` {r estimate status by year, eval = FALSE}
 
 area_ref = .30 ### 30% of area protected = reference point
 
@@ -364,7 +360,7 @@ Plot scores for 2019 vs 2018 assessment years
 * 2018 AY data goes through June 2018
 * 2019 AY data goes through March (downloaded on April 1) 2019
 
-``` {r plot_scores_vs_v2016, plotly = TRUE, eval = TRUE}
+``` {r plot_scores_vs_v2016, plotly = TRUE, eval = FALSE}
 
 library(ggplot2)
 library(plotly)

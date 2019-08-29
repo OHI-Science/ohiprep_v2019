@@ -13,8 +13,6 @@ output:
     toc: true
 ---
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/mar/v2018/mar_dataprep.html]?bro
-
 # Summary
 This analysis converts FAO mariculture data into data used to calculate the OHI global mariculture status score.  This also calculates the genetic escapee from mariculture pressure data.
 

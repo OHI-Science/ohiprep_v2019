@@ -11,10 +11,16 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../../src/templates/ohi_hdr.html'
+      in_header: '../../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
+
+
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
 
 ``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
 
@@ -148,7 +154,7 @@ This may *over*predict range for many species whose range is limited by depth,
 due to polyon buffering.  This can be used to sanity-check the 
 raster-calculated ranges.
 
-``` {r calculate range from polygons, eval = TRUE}
+``` {r calculate range from polygons, eval = FALSE}
 
 spp_maps <- read_csv(file.path(dir_data, sprintf('spp_marine_maps_%s.csv', api_version)),
                      col_types = 'ddcicccl')
@@ -199,7 +205,7 @@ if(!file.exists(polygon_areas_file) | reload) {
 
 ### plot raster-calculated ranges vs polygon-calculated ranges
 
-``` {r, eval = TRUE}
+``` {r, eval = FALSE}
 
 range_df <- read_csv(polygon_areas_file, col_types = 'dd') %>%
   full_join(read_csv(spp_range_file, col_types = 'ddcc') %>%
