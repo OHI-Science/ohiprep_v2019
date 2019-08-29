@@ -95,35 +95,31 @@ Check number of Watson stocks that have CMSY or RAM B/Bmsy values:
 ## Watson v RAM BBMSY
 setdiff(ram$stock_id, mean_catch$stock_id)
 setdiff(mean_catch$stock_id, ram$stock_id)
-intersect(ram$stock_id, mean_catch$stock_id) #291 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids) - v2018
-                                             #298 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids) - v2019
+intersect(ram$stock_id, mean_catch$stock_id) #339 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids) - v2019
 
 ## Watson v CMSY
 setdiff(cmsy$stock_id, mean_catch$stock_id)
 setdiff(mean_catch$stock_id, cmsy$stock_id)
-intersect(mean_catch$stock_id, cmsy$stock_id) #806 stocks with CMSY-B/Bmsy data - v2018
-                                              #738 stocks with CMSY-B/Bmsy data - v2019
+intersect(mean_catch$stock_id, cmsy$stock_id) #738 stocks with CMSY-B/Bmsy data - v2019
 ```
 
 Combine Watson to RAM-B/Bmsy:
 ```{r}
 
 data <- mean_catch %>%
-  left_join(ram, by=c('rgn_id', 'stock_id', "year")) # 561,834 catch records (catch from specific fao and ohi regions) when joined with ram increases to 564,318 because there are multiple stocks for some species - v2018
-# 608006 catch records (catch from specific fao and ohi regions) when joined with ram increases to 610575 because there are multiple stocks for some species - v2019
+  left_join(ram, by=c('rgn_id', 'stock_id', "year"))# 608006 catch records (catch from specific fao and ohi regions) when joined with ram increases to 612599 because there are multiple stocks for some species - v2019
 
-sum(!is.na(data$ram_bmsy))/nrow(data) # about 5.5% of catch records have RAM data - v2018
-                                      # about 5.2% of catch records have RAM data - v2019
-sum(data$mean_catch[!is.na(data$ram_bmsy)])/sum(data$mean_catch) # about 29% of tons of catch have RAM data - v2018
-                                                                 # about 34% of tons of catch have RAM data - v2019
+sum(!is.na(data$ram_bmsy))/nrow(data) # about 6% of catch records have RAM data - v2019
+sum(data$mean_catch[!is.na(data$ram_bmsy)])/sum(data$mean_catch) # about 54% of tons of catch have RAM data - v2019 (this was 34% before the addition of management values!!!!)
 
 ```
 
 Save & view duplicate stocks:
 ```{r}
 
-sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_"))) # 4098 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid) - v2018
-                                                                       # 11950 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid) - v2019
+sum(duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_")))
+# 13974 regions with multiple RAM stocks (stockid_ram) for the same species (see scientific name in stockid) (was 11950 before addition of management values!!!!)
+
 
 ## save the duplicate stock values to take a look at an example
 tmp <- data[duplicated(paste(data$rgn_id, data$stock_id, data$year, sep="_")), ]
@@ -181,20 +177,5 @@ bbmsy <- data_gf %>%
   filter(!is.na(bbmsy))
 
 write.csv(bbmsy, "output/fis_bbmsy.csv", row.names=FALSE) 
-
-bbmsy_92 <- read.csv("output/fis_bbmsy_gf.csv") %>%
-  filter(rgn_id == 92)
-
-bbmsy_157 <- read.csv("output/fis_bbmsy_gf.csv") %>%
-  filter(rgn_id == 157) %>%
-  select(year , bbmsy, mean_catch, rgn_id, stock_id)
-
-bbmsy_157_ly <- read.csv("../v2018/output/fis_bbmsy_gf.csv") %>%
-  filter(rgn_id == 157) %>%
-  rename(old_bbmsy = bbmsy, old_mean_catch = mean_catch) %>%
-  select(year, old_bbmsy, old_mean_catch, rgn_id, stock_id)
-
-compare_157 <- bbmsy_157 %>%
-  inner_join(bbmsy_157_ly, by = c("year","stock_id", "rgn_id"))
 ```
 

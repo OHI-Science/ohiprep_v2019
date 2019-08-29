@@ -1,4 +1,4 @@
-RAM_species,Watson_species
+﻿RAM_species,Watson_species
 Bathyraja parmifera,NA
 Caulolatilus microps,NA
 Centroberyx gerrardi,NA
@@ -12,15 +12,15 @@ Hexagrammos decagrammus,NA
 Istiompax indica,Makaira indica
 Kajikia audax,Tetrapturus audax
 Lepidopsetta polyxystra,NA
-Lepidorhombus spp.,NA
+Lepidorhombus spp.,Lepidorhombus
 Loligo reynaudii,NA
 Merluccius gayi,Merluccius gayi gayi
 Neoplatycephalus richardsoni,NA
 Pagrus major,NA
 Platycephalus conatus,NA
-Sardinella spp,NA
+Sardinella spp,Sardinella
 Sardinops melanostictus,Sardinops sagax
-Scomber colias,NA
+Scomber colias,Scomber japonicus 
 Scorpaena guttata,NA
 Sebastes aleutianus,NA
 Sebastes auriculatus,NA
@@ -30,13 +30,13 @@ Sebastes chlorostictus,NA
 Sebastes crameri,NA
 Sebastes diploproa,NA
 Sebastes elongatus,NA
-Sebastes fasciatus,NA
+Sebastes fasciatus,Sebastes viviparus
 Sebastes levis,NA
 Sebastes melanostomus,NA
 Sebastes nebulosus,NA
 Sebastes polyspinis,NA
 Sebastes ruberrimus,NA
-Sebastes spp,NA
+Sebastes spp,Sebastes
 Sebastes variabilis,NA
 Sebastolobus altivelis,NA
 Sebastolobus macrochir,NA
@@ -47,3 +47,5 @@ Takifugu rubripes,NA
 Tanakius kitaharae,NA
 Zearaja chilensis,NA
 Sillago flindersi,NA
+Ammodytes spp,Ammodytes
+Sebastes norvegicus,Sebastes marinus

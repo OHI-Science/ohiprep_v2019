@@ -57,7 +57,7 @@ An example of our aggregation process: New Zealand is located entirely in FAO re
 
 Note: the same data was used to prepare fishing pressures (prs_fish). We will be using annual catch .rds files prepared in the mazu prs_fish folder
 ``` {r setup, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE, echo = TRUE, eval=FALSE)
 ```
 
 ```{r, eval=FALSE}

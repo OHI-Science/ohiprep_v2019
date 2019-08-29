@@ -1,5 +1,5 @@
 ---
-title: "OHI 2018: FP, SAUP Species Resilience Lookup Table"
+title: "OHI 2019: FP, SAUP Species Resilience Lookup Table"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -17,7 +17,7 @@ This script uses FishBase to find the Resilience for each of the species in the 
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(eval=FALSE)
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
 
 library(dplyr)
 library(rfishbase)
@@ -29,7 +29,7 @@ source('../../../workflow/R/common.R')
 
 # Read in Watson catch data and match common names to scientific names
 
-```{r catch_dat}
+```{r catch_dat, eval = FALSE}
 
 taxon <- read.csv('output/stock_catch_no_res.csv') %>%
           dplyr::select(sciname = TaxonName,
@@ -59,7 +59,7 @@ taxon_res <- taxon %>%
 
 There are some duplicated species since fishbase provides resilience per stock...we'll want to remove the duplicates 
 
-```{r duplicates}
+```{r duplicates, eval = FALSE}
 dup <- taxon_res$sciname[duplicated(taxon_res$sciname)]
 
 d <- taxon_res %>%
@@ -73,7 +73,7 @@ Now we have 3 species that have stocks with 2 different resiliences:
 [1] "Brosme brosme"      "Clupea harengus"    "Platichthys flesus"     
 
 For these three species, we will remove all resilience's except for Medium since Medium is the default resilience when there isn't one for catch-MSY. 
-```{r}
+```{r, eval = FALSE}
 
 three_sp <- d %>%
             filter(sciname %in% dup_sp,
@@ -91,7 +91,7 @@ taxon_res2 <- taxon_res%>%
 
 We still have species with NA for Resilience. This is likely for non-fish species. We can try to get resilience for these species by setting the URL to SeaLifeBase in the stocks call.
 
-```{r}
+```{r, eval = FALSE}
 
 sp_w_nas <- taxon_res2 %>%
             filter(is.na(Resilience)) %>%
@@ -115,7 +115,7 @@ taxon_res3 <- taxon_res2 %>%
 
 We will have to leave the rest as NA (there aren't very many). This will cause the CMSY model to default to Medium resilience but will not remove them from assessment.
 
-```{r}
+```{r, eval = FALSE}
 write.csv(taxon_res3,file = 'output/taxon_resilience_lookup.csv')
 ```       
 
