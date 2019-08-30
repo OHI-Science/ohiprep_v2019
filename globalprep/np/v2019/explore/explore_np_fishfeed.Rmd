@@ -18,6 +18,7 @@ output:
 
 knitr::opts_chunk$set(eval=FALSE)
 
+library(here)
 library(tidyverse)
 source(here('workflow/R/common.R'))
 ```
@@ -52,30 +53,21 @@ tail(weighted_mean_bbmsy_forage, 10)
 sum_forage <- forage_fish_catch %>%
   group_by(rgn_id) %>%
   summarise(total_forage_catch = sum(catch_fish_feed, na.rm = TRUE)) %>%
-  ungroup()
+  ungroup() %>%
+  mutate(total_forage_catch_log = log(total_forage_catch + 1))
 
 fish_oil_tonnes <- read_csv(file.path("../output/np_harvest_tonnes.csv")) %>%
   filter(product == "fish_oil") %>%
   group_by(rgn_id) %>%
   summarise(total_fish_oil = sum(tonnes)) %>%
-  ungroup()
+  ungroup() %>%
+  mutate(total_fish_oil_log = log(total_fish_oil + 1))
 
 combined <- sum_forage %>%
   left_join(fish_oil_tonnes, by = "rgn_id")
 
-plot(combined$total_forage_catch, combined$total_fish_oil)
+plot(combined$total_forage_catch_log, combined$total_fish_oil_log)
 abline(0,1, col = "red")
-
-combined_outliers <- sum_forage %>%
-  left_join(fish_oil_tonnes, by = "rgn_id") %>%
-  #dplyr::filter(rgn_id != c(138, 163, 175, 210, 223, 143)) %>%
-  mutate(difference = total_forage_catch - total_fish_oil) %>%
-  filter(difference < 20000)
-
-plot(combined_outliers$total_forage_catch, combined_outliers$total_fish_oil)
-abline(0,1, col = "red")
-
-plot(combined_outliers$rgn_id, combined_outliers$difference)
 
 ```
 
