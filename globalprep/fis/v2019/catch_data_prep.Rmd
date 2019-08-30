@@ -568,12 +568,14 @@ write.csv(mean_catch_toolbox, "output/mean_catch.csv", row.names=FALSE)
 
 mean_catch_toolbox_human <- mean_catch %>%
   mutate(stock_id_taxonkey = paste(stock_id, TaxonKey, sep="_")) %>%
-  dplyr::select(rgn_id, stock_id_taxonkey, year, mean_catch_human) %>%
+  dplyr::select(rgn_id, stock_id_taxonkey, year, mean_catch = mean_catch_human) %>%
   filter(year >= 2001) %>%  # filter to include only analysis years
   data.frame()
 
-write.csv(mean_catch_toolbox_human, "output/mean_catch_minus_feed.csv")
+write.csv(mean_catch_toolbox_human, "output/mean_catch_minus_feed.csv", row.names = FALSE)
 
+
+mean_catch_toolbox_human <- read_csv(file.path("output/mean_catch_minus_feed.csv"))
 ```
 
 ## Data check 
