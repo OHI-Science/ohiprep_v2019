@@ -520,7 +520,10 @@ prop_human_cons <- (1 - (19/31))
 ## join this with catch_zeros by species, and multiply by 1 - (19/31) =  0.3870968... this is the proportion of catch used for humans 
 catch_zero_minus_fish_feed <- forage_fish_taxa_list %>%
   left_join(catch_zeros, by = "TaxonKey") %>%
-  mutate(catch_human = prop_human_cons*catch)
+  mutate(catch_human = prop_human_cons*catch,
+         catch_fish_feed = catch*(1-prop_human_cons))
+write_csv(catch_zero_minus_fish_feed, "int/catch_fish_feed.csv")
+
 
 #join catch_zeros with catch_zero_minus_fish_feed
 catch_zeros <- catch_zeros %>%

@@ -79,10 +79,10 @@ Read in the three data tables:
 ```{r combine}
 
 cmsy <- read.csv('int/cmsy_b_bmsy_mean5yrs.csv') %>%
-  select(stock_id, year, cmsy_bbmsy=mean_5year)
+  dplyr::select(stock_id, year, cmsy_bbmsy=mean_5year)
 
 ram <- read.csv("int/ram_bmsy.csv") %>% # final output from RAM_data_prep
-  rename(stock_id = stockid) # to match other two data tabls
+  rename(stock_id = stockid) # to match other two data tables
 
 mean_catch <- read.csv("output/mean_catch.csv", stringsAsFactors = FALSE) %>% # final output from Watson catch
   mutate(taxon_key = str_extract(stock_id_taxonkey, "(\\d)+$")) %>% # extract ending consecutive digits
@@ -95,7 +95,7 @@ Check number of Watson stocks that have CMSY or RAM B/Bmsy values:
 ## Watson v RAM BBMSY
 setdiff(ram$stock_id, mean_catch$stock_id)
 setdiff(mean_catch$stock_id, ram$stock_id)
-intersect(ram$stock_id, mean_catch$stock_id) #339 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids) - v2019
+intersect(ram$stock_id, mean_catch$stock_id) #342 stocks with RAM-B/Bmsy data (although RAM is matched by fao and rgn ids) - v2019
 
 ## Watson v CMSY
 setdiff(cmsy$stock_id, mean_catch$stock_id)
@@ -166,14 +166,14 @@ B/Bmsy values for each catch record are generated (for the species where this is
    mutate(bmsy_data_source = ifelse(!is.na(ram_bmsy), "RAM", NA)) %>%
    mutate(bmsy_data_source = ifelse(is.na(bmsy_data_source) & !is.na(cmsy_bbmsy), "CMSY", bmsy_data_source)) %>%
    mutate(bbmsy = ifelse(is.na(ram_bmsy), cmsy_bbmsy, ram_bmsy)) %>%
-   select(rgn_id, stock_id, taxon_key, year, bbmsy, bmsy_data_source, RAM_gapfilled=method, mean_catch) %>%
+   dplyr::select(rgn_id, stock_id, taxon_key, year, bbmsy, bmsy_data_source, RAM_gapfilled=method, mean_catch) %>%
    filter(year >= 2001)
 
 
 write.csv(data_gf, "output/fis_bbmsy_gf.csv", row.names=FALSE) 
  
 bbmsy <- data_gf %>%
-  select(rgn_id, stock_id, year, bbmsy) %>%
+  dplyr::select(rgn_id, stock_id, year, bbmsy) %>%
   filter(!is.na(bbmsy))
 
 write.csv(bbmsy, "output/fis_bbmsy.csv", row.names=FALSE) 

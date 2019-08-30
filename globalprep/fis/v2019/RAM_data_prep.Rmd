@@ -137,7 +137,7 @@ load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2019/RLSADB v4.44/DB 
 #   dplyr::select(stockid, stocklong, year, ram_bmsy)
 
 ram_bmsy_new <- timeseries_values_views %>%
-  select(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy, TBdivTBmgt, SSBdivSSBmgt) %>%
+  dplyr::select(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy, TBdivTBmgt, SSBdivSSBmgt) %>%
   mutate(ram_bmsy = 
            ifelse(!is.na(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy)) %>%
   mutate(ram_bmsy =
@@ -436,7 +436,7 @@ setdiff(ram_spatial$stockid, ram_meta$stockid) # make sure all the spatial data 
 
 # join with metadata to get scientific name
 ram_spatial <- ram_spatial %>%
-  select(-stocklong) %>%
+  dplyr::select(-stocklong) %>%
   left_join(ram_meta, by = c("stockid")) %>%
   rename(RAM_species = scientificname)
 
@@ -478,7 +478,8 @@ setdiff(tmp, ram_name_corr$RAM_species)
 
 ## join ram spatial with RAM species on scientific name. We can use this to help check whether questionable species names across the ram and watson data match by region and fao id...
 ram_sp_fao_ohi <- tmp %>%
-  left_join(ram_spatial, by = c("scientificname" = "RAM_species"))
+  left_join(ram_spatial, by = c("scientificname" = "RAM_species")) %>%
+  unique()
 
 write_csv(ram_sp_fao_ohi, "int/new_ram_sp.csv")  
 
@@ -488,11 +489,11 @@ wat_sp_fao_ohi <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/s
    dplyr::filter(year > 1979)
 
 
-# Then I hand-looked up each of the missing ones to generate this list - most still unmatched
+# Then I hand-looked up each of the missing ones to generate this list - most still unmatched. See "RAM_species_to_watson_notes.csv" for our reasoning behind these changes. 
 ram_name_corr <- read.csv("int/RAM_species_to_Watson.csv", stringsAsFactors = FALSE) %>%
    filter(!is.na(Watson_species))  # Watson to RAM name conversion
 
-ram_name_corr # matched species, only 13
+ram_name_corr # matched species, only 15
 ```
 
 
@@ -511,6 +512,7 @@ ram_spatial <- ram_spatial %>%
   dplyr::select(rgn_id, fao_id, stockid, stocklong, species, RAM_area_m2)
 
 length(unique(ram_spatial$stockid)) # 452 RAM stocks with B/Bmsy data - v2019
+length(unique(ram_spatial$species)) #218
 ```
 
 

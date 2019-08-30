@@ -10,7 +10,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Compiled on Fri Aug 30 11:08:49 2019 by sgclawson" />
+<meta name="author" content="Compiled on Fri Aug 30 14:22:59 2019 by sgclawson" />
 
 
 <title>OHI 2019: Food Provision/Fisheries, Preparing RAM B/Bmsy data</title>
@@ -1640,7 +1640,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">OHI 2019: Food Provision/Fisheries, Preparing RAM B/Bmsy data</h1>
-<h4 class="author"><em>Compiled on Fri Aug 30 11:08:49 2019 by sgclawson</em></h4>
+<h4 class="author"><em>Compiled on Fri Aug 30 14:22:59 2019 by sgclawson</em></h4>
 
 </div>
 
@@ -1745,7 +1745,7 @@ This stores assorted metadata associated with the stock, with datatypes along th
 <a class="sourceLine" id="cb3-8" title="8"><span class="co">#   dplyr::select(stockid, stocklong, year, ram_bmsy)</span></a>
 <a class="sourceLine" id="cb3-9" title="9"></a>
 <a class="sourceLine" id="cb3-10" title="10">ram_bmsy_new &lt;-<span class="st"> </span>timeseries_values_views <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb3-11" title="11"><span class="st">  </span><span class="kw">select</span>(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy, TBdivTBmgt, SSBdivSSBmgt) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-11" title="11"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(stockid, stocklong, year, TBdivTBmsy, SSBdivSSBmsy, TBdivTBmgt, SSBdivSSBmgt) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb3-12" title="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ram_bmsy =</span> </a>
 <a class="sourceLine" id="cb3-13" title="13">           <span class="kw">ifelse</span>(<span class="op">!</span><span class="kw">is.na</span>(TBdivTBmsy), TBdivTBmsy, SSBdivSSBmsy)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb3-14" title="14"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">ram_bmsy =</span></a>
@@ -2012,7 +2012,7 @@ This stores assorted metadata associated with the stock, with datatypes along th
 <a class="sourceLine" id="cb8-8" title="8"></a>
 <a class="sourceLine" id="cb8-9" title="9"><span class="co"># join with metadata to get scientific name</span></a>
 <a class="sourceLine" id="cb8-10" title="10">ram_spatial &lt;-<span class="st"> </span>ram_spatial <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-11" title="11"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>stocklong) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="op">-</span>stocklong) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb8-12" title="12"><span class="st">  </span><span class="kw">left_join</span>(ram_meta, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;stockid&quot;</span>)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb8-13" title="13"><span class="st">  </span><span class="kw">rename</span>(<span class="dt">RAM_species =</span> scientificname)</a></code></pre></div>
 </div>
@@ -2050,21 +2050,22 @@ This stores assorted metadata associated with the stock, with datatypes along th
 <a class="sourceLine" id="cb9-29" title="29"></a>
 <a class="sourceLine" id="cb9-30" title="30"><span class="co">## join ram spatial with RAM species on scientific name. We can use this to help check whether questionable species names across the ram and watson data match by region and fao id...</span></a>
 <a class="sourceLine" id="cb9-31" title="31">ram_sp_fao_ohi &lt;-<span class="st"> </span>tmp <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-32" title="32"><span class="st">  </span><span class="kw">left_join</span>(ram_spatial, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;scientificname&quot;</span> =<span class="st"> &quot;RAM_species&quot;</span>))</a>
-<a class="sourceLine" id="cb9-33" title="33"></a>
-<a class="sourceLine" id="cb9-34" title="34"><span class="kw">write_csv</span>(ram_sp_fao_ohi, <span class="st">&quot;int/new_ram_sp.csv&quot;</span>)  </a>
-<a class="sourceLine" id="cb9-35" title="35"></a>
-<a class="sourceLine" id="cb9-36" title="36"><span class="co">## get watson fao_ohi regions</span></a>
-<a class="sourceLine" id="cb9-37" title="37">wat_sp_fao_ohi &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_M,<span class="st">&#39;git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn_taxa.csv&#39;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb9-38" title="38"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">rename</span>(<span class="dt">wat_scientificname =</span> TaxonName) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-39" title="39"><span class="st">   </span>dplyr<span class="op">::</span><span class="kw">filter</span>(year <span class="op">&gt;</span><span class="st"> </span><span class="dv">1979</span>)</a>
-<a class="sourceLine" id="cb9-40" title="40"></a>
+<a class="sourceLine" id="cb9-32" title="32"><span class="st">  </span><span class="kw">left_join</span>(ram_spatial, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;scientificname&quot;</span> =<span class="st"> &quot;RAM_species&quot;</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb9-33" title="33"><span class="st">  </span><span class="kw">unique</span>()</a>
+<a class="sourceLine" id="cb9-34" title="34"></a>
+<a class="sourceLine" id="cb9-35" title="35"><span class="kw">write_csv</span>(ram_sp_fao_ohi, <span class="st">&quot;int/new_ram_sp.csv&quot;</span>)  </a>
+<a class="sourceLine" id="cb9-36" title="36"></a>
+<a class="sourceLine" id="cb9-37" title="37"><span class="co">## get watson fao_ohi regions</span></a>
+<a class="sourceLine" id="cb9-38" title="38">wat_sp_fao_ohi &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(dir_M,<span class="st">&#39;git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn_taxa.csv&#39;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb9-39" title="39"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">rename</span>(<span class="dt">wat_scientificname =</span> TaxonName) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb9-40" title="40"><span class="st">   </span>dplyr<span class="op">::</span><span class="kw">filter</span>(year <span class="op">&gt;</span><span class="st"> </span><span class="dv">1979</span>)</a>
 <a class="sourceLine" id="cb9-41" title="41"></a>
-<a class="sourceLine" id="cb9-42" title="42"><span class="co"># Then I hand-looked up each of the missing ones to generate this list - most still unmatched</span></a>
-<a class="sourceLine" id="cb9-43" title="43">ram_name_corr &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/RAM_species_to_Watson.csv&quot;</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-44" title="44"><span class="st">   </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(Watson_species))  <span class="co"># Watson to RAM name conversion</span></a>
-<a class="sourceLine" id="cb9-45" title="45"></a>
-<a class="sourceLine" id="cb9-46" title="46">ram_name_corr <span class="co"># matched species, only 13</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-42" title="42"></a>
+<a class="sourceLine" id="cb9-43" title="43"><span class="co"># Then I hand-looked up each of the missing ones to generate this list - most still unmatched. See &quot;RAM_species_to_watson_notes.csv&quot; for our reasoning behind these changes. </span></a>
+<a class="sourceLine" id="cb9-44" title="44">ram_name_corr &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;int/RAM_species_to_Watson.csv&quot;</span>, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb9-45" title="45"><span class="st">   </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(Watson_species))  <span class="co"># Watson to RAM name conversion</span></a>
+<a class="sourceLine" id="cb9-46" title="46"></a>
+<a class="sourceLine" id="cb9-47" title="47">ram_name_corr <span class="co"># matched species, only 15</span></a></code></pre></div>
 <div id="final-formatting" class="section level3">
 <h3>Final formatting</h3>
 <p>Harmonize names between RAM and Watson data.</p>

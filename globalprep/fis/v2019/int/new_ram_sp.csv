@@ -28,12 +28,6 @@ Bathyraja parmifera,73,67,NA,ALSKABSAI,Alaska skate Bering Sea and Aleutian Isla
 Bathyraja parmifera,73,61,NA,ALSKABSAI,Alaska skate Bering Sea and Aleutian Islands
 Bathyraja parmifera,163,67,NA,ALSKABSAI,Alaska skate Bering Sea and Aleutian Islands
 Bathyraja parmifera,163,61,NA,ALSKABSAI,Alaska skate Bering Sea and Aleutian Islands
-Bathyraja parmifera,73,67,NA,ALSKABSAI,Alaska skate Bering Sea and Aleutian Islands
-Bathyraja parmifera,73,61,NA,ALSKABSAI,Alaska skate Bering Sea and Aleutian Islands
-Bathyraja parmifera,163,67,NA,ALSKABSAI,Alaska skate Bering Sea and Aleutian Islands
-Bathyraja parmifera,163,61,NA,ALSKABSAI,Alaska skate Bering Sea and Aleutian Islands
-Caulolatilus microps,163,31,NA,BLTILESATLC,Blueline tilefish Southern Atlantic coast
-Caulolatilus microps,163,21,NA,BLTILESATLC,Blueline tilefish Southern Atlantic coast
 Caulolatilus microps,163,31,NA,BLTILESATLC,Blueline tilefish Southern Atlantic coast
 Caulolatilus microps,163,21,NA,BLTILESATLC,Blueline tilefish Southern Atlantic coast
 Centroberyx gerrardi,16,57,511883712061.639,BIGHTREDSE,Bight redfish Southeast Australia
@@ -48,12 +42,7 @@ Chrysophrys auratus,162,81,382948414516.878,NZSNAPNZ8,New Zealand snapper New Ze
 Chrysophrys auratus,276,81,28081993.5173357,NZSNAPNZ7,New Zealand snapper New Zealand SNA 7
 Chrysophrys auratus,276,81,27959424.7704024,NZSNAPNZ8,New Zealand snapper New Zealand Area 8
 Cleisthenes herzensteini,210,61,NA,PHFLOUNSOJ,Pointhead flounder Sea of Japan
-Cleisthenes herzensteini,210,61,NA,PHFLOUNSOJ,Pointhead flounder Sea of Japan
 Eopsetta grigorjewi,210,61,NA,RSFLOUNSOJ,Round-nose flounder Sea of Japan
-Eopsetta grigorjewi,210,61,NA,RSFLOUNSOJ,Round-nose flounder Sea of Japan
-Etrumeus teres,20,61,NA,RHERRTSST,Round herring Tsushima Strait
-Etrumeus teres,209,61,NA,RHERRTSST,Round herring Tsushima Strait
-Etrumeus teres,210,61,NA,RHERRTSST,Round herring Tsushima Strait
 Etrumeus teres,20,61,NA,RHERRTSST,Round herring Tsushima Strait
 Etrumeus teres,209,61,NA,RHERRTSST,Round herring Tsushima Strait
 Etrumeus teres,210,61,NA,RHERRTSST,Round herring Tsushima Strait
@@ -274,24 +263,15 @@ Kajikia audax,277,87,3454151891413.05,STMARLINNEPAC,Striped marlin Northeast Pac
 Lepidopsetta polyxystra,163,61,78166767032.092,NRSOLEEBSAI,Northern rock sole Eastern Bering Sea and Aleutian Islands
 Lepidopsetta polyxystra,163,67,465099929375.482,NRSOLEEBSAI,Northern rock sole Eastern Bering Sea and Aleutian Islands
 Lepidopsetta polyxystra,163,61,NA,NRSOLEGA,Northern rock sole Gulf of Alaska
-Lepidopsetta polyxystra,163,61,NA,NRSOLEGA,Northern rock sole Gulf of Alaska
-Lepidorhombus spp,180,27,NA,MEGSPPIVa-VIa,Megrim spp. IVa and VIa
-Lepidorhombus spp,181,27,NA,MEGSPPIVa-VIa,Megrim spp. IVa and VIa
 Lepidorhombus spp,180,27,NA,MEGSPPIVa-VIa,Megrim spp. IVa and VIa
 Lepidorhombus spp,181,27,NA,MEGSPPIVa-VIa,Megrim spp. IVa and VIa
 Loligo reynaudii,101,47,56409073.7131319,CHSQUIDSA,Cape Hope squid South Africa
 Loligo reynaudii,102,47,604767246740.227,CHSQUIDSA,Cape Hope squid South Africa
 Loligo reynaudii,267,47,2761094349.54676,CHSQUIDSA,Cape Hope squid South Africa
 Merluccius gayi,224,87,NA,SPHAKECH,South Pacific Hake Chile
-Merluccius gayi,224,87,NA,SPHAKECH,South Pacific Hake Chile
 Neoplatycephalus richardsoni,16,57,211780297815.481,TIGERFLATSE,Tiger flathead Southeast Australia
 Neoplatycephalus richardsoni,16,71,420497376.617977,TIGERFLATSE,Tiger flathead Southeast Australia
 Neoplatycephalus richardsoni,16,81,41207480970.6327,TIGERFLATSE,Tiger flathead Southeast Australia
-Pagrus major,20,61,NA,RBRMECS,Red seabream East China Sea
-Pagrus major,209,61,NA,RBRMECS,Red seabream East China Sea
-Pagrus major,210,61,NA,RBRMECS,Red seabream East China Sea
-Pagrus major,210,61,NA,RBRMSETOE,Red seabream Inland Sea of Japan (East)
-Pagrus major,210,61,NA,RBRMSETOW,Red seabream Inland Sea of Japan (West)
 Pagrus major,20,61,NA,RBRMECS,Red seabream East China Sea
 Pagrus major,209,61,NA,RBRMECS,Red seabream East China Sea
 Pagrus major,210,61,NA,RBRMECS,Red seabream East China Sea
@@ -313,12 +293,6 @@ Sardinops melanostictus,73,61,NA,PILCHPJPN,Japanese sardine Pacific Coast of Jap
 Sardinops melanostictus,209,61,NA,PILCHTSST,Japanese sardine Tsushima Strait
 Sardinops melanostictus,210,61,NA,PILCHPJPN,Japanese sardine Pacific Coast of Japan
 Sardinops melanostictus,210,61,NA,PILCHTSST,Japanese sardine Tsushima Strait
-Sardinops melanostictus,73,61,NA,PILCHPJPN,Japanese sardine Pacific Coast of Japan
-Sardinops melanostictus,210,61,NA,PILCHPJPN,Japanese sardine Pacific Coast of Japan
-Sardinops melanostictus,20,61,NA,PILCHTSST,Japanese sardine Tsushima Strait
-Sardinops melanostictus,209,61,NA,PILCHTSST,Japanese sardine Tsushima Strait
-Sardinops melanostictus,210,61,NA,PILCHTSST,Japanese sardine Tsushima Strait
-Scomber colias,172,41,NA,ACMACKSARG,Argentine chub mackerel Southern Argentina
 Scomber colias,172,41,NA,ACMACKSARG,Argentine chub mackerel Southern Argentina
 Scorpaena guttata,135,77,0.767144628915503,CALSCORPSCAL,California scorpionfish Southern California
 Scorpaena guttata,163,77,91245173617.9348,CALSCORPSCAL,California scorpionfish Southern California
@@ -328,14 +302,8 @@ Sebastes aleutianus,163,67,196611700839.952,REYEROCKGA,Rougheye rockfish Gulf of
 Sebastes aleutianus,218,67,1016592.60473575,REYEROCKGA,Rougheye rockfish Gulf of Alaska
 Sebastes auriculatus,163,67,NA,BRNROCKPCOAST,Brown rockfish Pacific Coast
 Sebastes auriculatus,163,77,NA,BRNROCKPCOAST,Brown rockfish Pacific Coast
-Sebastes auriculatus,163,67,NA,BRNROCKPCOAST,Brown rockfish Pacific Coast
-Sebastes auriculatus,163,77,NA,BRNROCKPCOAST,Brown rockfish Pacific Coast
 Sebastes aurora,163,67,NA,AUROCKPCOAST,Aurora rockfish Pacific Coast
 Sebastes aurora,163,77,NA,AUROCKPCOAST,Aurora rockfish Pacific Coast
-Sebastes aurora,163,67,NA,AUROCKPCOAST,Aurora rockfish Pacific Coast
-Sebastes aurora,163,77,NA,AUROCKPCOAST,Aurora rockfish Pacific Coast
-Sebastes caurinus,163,67,NA,CPRROCKPCOAST,Copper rockfish Pacific Coast
-Sebastes caurinus,163,77,NA,CPRROCKPCOAST,Copper rockfish Pacific Coast
 Sebastes caurinus,163,67,NA,CPRROCKPCOAST,Copper rockfish Pacific Coast
 Sebastes caurinus,163,77,NA,CPRROCKPCOAST,Copper rockfish Pacific Coast
 Sebastes chlorostictus,135,77,0.767144628915503,GRSPROCKSCAL,Greenspotted rockfish Pacific Coast South
@@ -363,10 +331,6 @@ Sebastes nebulosus,163,67,NA,CHROCKCPCOAST,China rockfish Central Pacific Coast
 Sebastes nebulosus,163,67,NA,CHROCKNPCOAST,China rockfish Northern Pacific Coast
 Sebastes nebulosus,163,77,NA,CHROCKCPCOAST,China rockfish Central Pacific Coast
 Sebastes nebulosus,163,77,NA,CHROCKSPCOAST,China rockfish Southern Pacific Coast
-Sebastes nebulosus,163,67,NA,CHROCKCPCOAST,China rockfish Central Pacific Coast
-Sebastes nebulosus,163,77,NA,CHROCKCPCOAST,China rockfish Central Pacific Coast
-Sebastes nebulosus,163,67,NA,CHROCKNPCOAST,China rockfish Northern Pacific Coast
-Sebastes nebulosus,163,77,NA,CHROCKSPCOAST,China rockfish Southern Pacific Coast
 Sebastes norvegicus,143,27,NA,GOLDREDV-VI-XII-XIV,Golden Redfish V-VI-XII-XIV
 Sebastes polyspinis,163,61,48977718986.2062,NROCKBSAI,Northern rockfish Bering Sea and Aleutian Islands
 Sebastes polyspinis,163,67,86232868246.5904,NROCKBSAI,Northern rockfish Bering Sea and Aleutian Islands
@@ -380,8 +344,6 @@ Sebastes variabilis,163,67,164815082340.898,DUSROCKGA,Dusky rockfish Gulf of Ala
 Sebastolobus altivelis,135,77,0.767144628915503,LSTHORNHPCOAST,Longspine thornyhead Pacific Coast
 Sebastolobus altivelis,163,77,91245173617.9348,LSTHORNHPCOAST,Longspine thornyhead Pacific Coast
 Sebastolobus macrochir,210,61,NA,KCROCKNPAC,Kichiji rockfish North Pacific
-Sebastolobus macrochir,210,61,NA,KCROCKNPAC,Kichiji rockfish North Pacific
-Seriola quinqueradiata,210,61,NA,JAMBERJPN,Japanese amberjack Japan
 Seriola quinqueradiata,210,61,NA,JAMBERJPN,Japanese amberjack Japan
 Sillago flindersi,16,57,298626212463.888,SWHITSE,School whiting Southeast Australia
 Sillago flindersi,16,71,20345072554.1599,SWHITSE,School whiting Southeast Australia
@@ -393,15 +355,8 @@ Squalus suckleyi,163,77,189912493901.743,SPSDOGPCOAST,Spotted spiny dogfish Paci
 Squalus suckleyi,275,77,154695.398189879,SPSDOGPCOAST,Spotted spiny dogfish Pacific Coast
 Takifugu rubripes,210,61,NA,JPUFFIMKB,Japanese pufferfish Ise and Mikawa Bay
 Takifugu rubripes,210,61,NA,JPUFFSOJECSSI,Japanese pufferfish Sea of Japan and East China Sea and Seto Inland sea
-Takifugu rubripes,210,61,NA,JPUFFIMKB,Japanese pufferfish Ise and Mikawa Bay
-Takifugu rubripes,210,61,NA,JPUFFSOJECSSI,Japanese pufferfish Sea of Japan and East China Sea and Seto Inland sea
 Tanakius kitaharae,20,61,NA,WLFLOUNNPAC,Willowy flounder North Pacific
 Tanakius kitaharae,209,61,NA,WLFLOUNNPAC,Willowy flounder North Pacific
 Tanakius kitaharae,210,61,NA,WLFLOUNNPAC,Willowy flounder North Pacific
-Tanakius kitaharae,20,61,NA,WLFLOUNNPAC,Willowy flounder North Pacific
-Tanakius kitaharae,209,61,NA,WLFLOUNNPAC,Willowy flounder North Pacific
-Tanakius kitaharae,210,61,NA,WLFLOUNNPAC,Willowy flounder North Pacific
-Zearaja chilensis,224,87,NA,YNOSESKACSCH,Yellownose skate Central-Southern Chile
-Zearaja chilensis,224,87,NA,YNOSESKASCH,Yellownose skate Southern Chile
 Zearaja chilensis,224,87,NA,YNOSESKACSCH,Yellownose skate Central-Southern Chile
 Zearaja chilensis,224,87,NA,YNOSESKASCH,Yellownose skate Southern Chile

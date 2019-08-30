@@ -1,0 +1,51 @@
+RAM_species,Watson_species,Questionable Wat sp,Notes,Mel Check
+Bathyraja parmifera,NA,,,x
+Caulolatilus microps,NA,,,x
+Centroberyx gerrardi,NA,,,x
+Chionoecetes bairdi,Chionoecetes,,,Two species that are difficult to distinguish so often just ided as Chionoecetes
+Chrysophrys auratus,Pagrus auratus,,"The taxonomic status of this species is being debated, and it may be referred to as either Pagrus auratus or Chrysophrys auratus",x
+Cleisthenes herzensteini,NA,,,x
+Eopsetta grigorjewi,NA,,,x
+Etrumeus teres,NA,,,x
+Haliotis iris,Haliotis,,,"New Zealand abalone, none Ided to species, so seems reasonable to add this one. If there are other RAM species, they will be averaged"
+Hexagrammos decagrammus,NA,,,x
+Istiompax indica,Makaira indica,,https://en.wikipedia.org/wiki/Black_marlin,x
+Kajikia audax,Tetrapturus audax,,https://en.wikipedia.org/wiki/Striped_marlin,x
+Lepidopsetta polyxystra,NA,,,x
+Lepidorhombus spp.,Lepidorhombus,Lepidorhombus,"Could be a match here… RAM has rgn id 180/181, fao 27… watson has those as well, but many more under ""Lepidorhombus""",looks reasonable to me
+Loligo reynaudii,Loligo vulgaris,,,"Previously treated as a subspecies of vulgaris, but seems to be still treated that way in RAM"
+Merluccius gayi,Merluccius gayi gayi,,,x
+Neoplatycephalus richardsoni,NA,,,x
+Pagrus major,NA,,,x
+Platycephalus conatus,NA,,,x
+Sardinella spp,Sardinella,Sardinella,"Could be a match here… most RAM and watson fao/ohi regions match.. There are many more in ""Sardinella"" watson. ",looks reasonable to me
+Sardinops melanostictus,Sardinops sagax,,http://www.fao.org/fishery/species/2893/en,x
+Scomber colias,Scomber japonicus ,,https://en.wikipedia.org/wiki/Atlantic_chub_mackerel,x
+Scorpaena guttata,NA,,,x
+Sebastes aleutianus,NA,,,x
+Sebastes auriculatus,NA,,,x
+Sebastes aurora,NA,,,x
+Sebastes caurinus,NA,,,x
+Sebastes chlorostictus,NA,,,x
+Sebastes crameri,NA,,,x
+Sebastes diploproa,NA,,,x
+Sebastes elongatus,NA,,,x
+Sebastes fasciatus,Sebastes viviparus,Sebastes viviparus,"Possible… not sure if this synonym is valid, but it is in watson and not RAM: https://www.fishbase.se/Nomenclature/SynonymsList.php?ID=3969&SynCode=30636&GenusName=Sebastes&SpeciesName=fasciatus",I agree
+Sebastes levis,NA,,,x
+Sebastes melanostomus,NA,,,x
+Sebastes nebulosus,NA,,,x
+Sebastes polyspinis,NA,,,x
+Sebastes ruberrimus,NA,,,x
+Sebastes spp,Sebastes,Sebastes,"Could be a match here… RAM has rgn id 218/261, fao 21… watson has those as well, but many more ohi/fao rgns under ""Sebastes"" as well",I agreeÖreferred to as Redfish in both sources
+Sebastes variabilis,NA,,,x
+Sebastolobus altivelis,NA,,,x
+Sebastolobus macrochir,NA,,,x
+Seriola quinqueradiata,NA,,,x
+Sphyrna tiburo,NA,,,x
+Squalus suckleyi,Squalus acanthias,,https://www.fishbase.se/Nomenclature/SynonymsList.php?ID=65869&SynCode=164793&GenusName=Squalus&SpeciesName=suckleyi,x
+Takifugu rubripes,NA,,,x
+Tanakius kitaharae,NA,,,x
+Zearaja chilensis,NA,,,x
+Sillago flindersi,NA,,,x
+Ammodytes spp,NA,Ammodytes,Could be a match here… only a couple of the rgnid and faoid match between the ram and watson for these…,"probably a match, but lets skip this oneÖnot really sure"
+Sebastes norvegicus,Sebastes marinus,Sebastes marinus,"Possible… not sure if this synonym is valid, but it is in watson and not RAM: https://www.fishbase.se/Nomenclature/SynonymsList.php?ID=501&SynCode=149739&GenusName=Sebastes&SpeciesName=norvegicus",agreed!
