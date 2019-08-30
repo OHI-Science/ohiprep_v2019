@@ -1,0 +1,698 @@
+---
+title: "OHI 2019 - Species subgoal (Biodiversity goal and resilience)"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../workflow/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+---
+
+``` {r setup, echo = TRUE, message = FALSE, warning = FALSE, include=FALSE}
+
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
+                      echo = TRUE, message = FALSE, warning = FALSE)
+
+library(dplyr)
+library(rgdal)
+library(raster)
+library(here)
+library(ggridges)
+library(ggplot2)
+library(tidyverse)
+
+source(here('workflow/R/common.R'))
+rgns_global <- read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep/master/globalprep/spatial/v2017/output/regionData.csv") %>%
+  dplyr::filter(rgn_type == "eez") %>%
+  dplyr::select(rgn_id) %>%
+  dplyr::filter(rgn_id != 213)
+
+
+```
+
+# Source
+We use the methods and code from Casey O'Hara: https://github.com/oharac/spp_risk_dists
+to prepare the data for the species subgoal.
+
+Reference:
+
+# Summary
+
+Spatial species range data and extinction risk data from IUCN is used to generate regional scores for the Species subgoal (part of the Biodiversity goal) and resilience layers.
+
+
+**Mean risk status per cell:**
+Species ranges are converted to a global spatial raster of 10 km resolution.  
+
+The mean extinction risk for each cell, $\bar{R}_{cell}$,  is calculated by averaging the IUCN extinction risk of the species with ranges overlapping the cell.  
+
+*Risk* is a scaled value representing the species extinction risk category: 
+    * 'LC' = 0.0, 'NT' = 0.2, 'VU' = 0.4, 'EN' = 0.6, 'CR' = 0.8, 'EX' = 1.0
+
+
+$$\bar{R}_{cell} = \frac{\displaystyle\sum_{species}(Risk)}{n_{spp}}$$
+
+**Mean risk status per region:**
+The mean extinction risk for a region, $\bar{R}_{SPP}$, is estimated by averaging the risk values of the raster cells falling within each OHI region, with each cell's contribution weighted by the number of species in the cell.
+
+**Species goal model**
+
+The regional risk values are converted to species status scores by subtracting the risk values from 1 and rescaling so a risk value of $\ge 0.75 $ receives a score of zero. 
+
+From Halpern et al (2012):
+
+> The target for the Species sub-goal is to have all species at a risk status of Least Concern. We scaled the lower end of the biodiversity goal to be 0 when 75% species are extinct, a level comparable to the five documented mass extinctions and would constitute a catastrophic loss of biodiversity. 
+
+
+$$X_{SPP} = \frac{((1 - \bar{R}_{SPP}) - 0.25)}{(1 - 0.25)} * 100%$$
+
+where:
+
+* $X_{SPP}$ is Species goal status
+* $\bar{R}_{SPP}$ is mean extinction risk for a region
+
+Trend is calculated using time series of risk categories based on current and past assessments.
+
+# Updates from previous assessment
+
+Added Casey Ohara's personal common.R functions into the common_fxns.R file located in the '_setup' file for this goal. Additional year of data.
+
+
+***
+
+# Data Sources
+
+IUCN:
+
+* __Reference__: 
+    * IUCN 2019. The IUCN Red List of Threatened Species. Version 2019-1. <http://www.iucnredlist.org>.
+        * Shapefiles available from: https://www.iucnredlist.org/resources/spatial-data-download
+        * __Downloaded__: April 22, 2019
+    *BirdLife International and Handbook of the Birds of the World (2018) Bird species distribution maps of the world. Version 2018.1. BirdLife International, Cambridge, UK and NatureServe, Arlington, USA. http://datazone.birdlife.org/species/requestdis.
+        * Zipped shapefile available from BirdLife International.  
+        * __Downloaded__: April 27, 2019
+* __Description__:  Shapefiles containing polygons of assessed species ranges; each shapefile represents all assessed species within a comprehensively-assessed (i.e. >90% assessed) taxonomic group.
+* __Native data resolution__: NA
+* __Time range__: NA
+* __Format__:  Shapefile
+
+
+
+***
+
+# Methods
+
+There are several steps that need to be taken to get to this point in the data prep.  
+
+Here is an overview of the organization of files and data that are run prior to this:
+
+### Code
+
+#### Run this first! Setup directory: `spp_risk_dists/_setup`
+
+In this directory are a sequence of files used to generate the bits and pieces that are later assembled into the rasters of biodiversity risk.
+
+.Rmd files are sequenced with a prefix number (and letter) to indicate the order of operations.  Briefly:
+
+1. Pull information from the IUCN Red List API to determine an overall species list, habitat information, and current risk (conservation status).
+2. Pull information from API on risk from regional assessments; also recode the regions according to Marine Ecoregions (Spalding et al, 2007) for later spatialization.
+3. Pull historical assessment information from API for possible trend analysis.  Note that this did not make it into the final draft of the manuscript.
+4. Set up spatial layers in Gall-Peters, 100 km<sup>2</sup> cells.  Layers include:
+    * cell ID (cells are sequentially numbered for combining with tabular data)
+    * ocean area
+    * marine protected area (classification, year of protection, proportion of protection)
+    * Exclusive Economic Zones (EEZ) and FAO fishing regions
+    * Marine Ecoregions of the World
+    * bathymetry
+    * NOTE: these layers are all saved in the `spp_risk_dists/_spatial` directory.
+5. Convert species range maps to rasters. (skip 5a .Rmd because all that is doing is checking the non-comprehensive data, which is not used for OHI and was not downloaded for the subgoal.)
+    * For maps provided directly by IUCN, aggregate into multispecies files based on family.  There is some cleaning done at this stage to fix problematic extents and attributes.
+    * From the list of all available maps, generate a master list of all mapped, assessed species for inclusion in the study.
+    * Rasterize each species to a .csv that includes cell ID and presence.  A .csv format was used for file size and ease of reading and binding into dataframes.
+6. Aggregate individual species ranges into larger taxonomic groups, and summarize key variables (mean risk, variance of risk, number of species, etc) by group.  
+    * Technically this is not necessary but makes it easier to quality check the process along the way, and supports mapping at the level of taxonomic group rather than the entire species list level.
+    * This process is done twice: once for uniform weighting and once for range-rarity weighting.  Resulting files are saved separately.
+
+#### Then run this!  Root directory: `spp_risk_dists`
+
+At this level there are several scripts, prefixed `1x_biodiversity_maps`, that collate the various taxonomic group level files (generated in `setup` part 6) and summarize to the global level.  
+
+* Note each creates a specific aggregation - comprehensively assessed species vs all available species; uniform vs range-rarity weighting.
+* The rasters generated in these scripts are saved in the `_output` folder.
+
+
+### Data and output files
+
+The `spp_risk_dists/_data` folder contains tabular data about IUCN species used throughout the processing of this analysis.  These files are generated by scripts in the setup directory.
+
+The `spp_risk_dists/_spatial` folder contains general spatial data generated and/or used in the `setup` scripts.  These include:
+
+* rasters for cell ID, EEZ ID, marine ecoregion ID, ocean area, and bathymetry masks.   
+* tabular data of region names and lookups for IUCN regional assessment to marine ecoregion.
+* tabular data of marine protected area level/year/coverage to cell ID.
+* shapefiles used for map plotting from Natural Earth.
+
+The `spp_risk_dists/_output` folder contains the rasters of biodiversity risk, species richness, variance of risk, etc generated from the scripts in the base directory.
+
+***
+## Compare all vs. comprehensively assessed species
+In the past, we have used all species with IUCN risk assessments to calculate the species subgoal.  However, some of Casey's work suggests it is better to use the taxa groups that have been comprehensively assessed by IUCN (> 90% of species assessed).  The general concern is that IUCN tends to oversample species in the Atlantic portion of the ocean, relative to other regions.  This is indicated by the larger number of species with IUCN status in this region.  However, the Atlantic falls in line with the other regions when looking at the comprehensively assessed species.  
+
+```{r eval=F}
+#this will be the same for 2019 since we only used comprehesively assessed taxa
+
+library(beyonce)
+cols <- beyonce_palette(129, 100, type = "continuous")
+
+#2019
+n_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_spp_risk_raster_comp.tif"))
+log_n_comp <- log(n_comp)
+plot(log_n_comp, col=cols)
+
+#2018
+#n_comp <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_comp.tif"))
+#log_n_comp <- log(n_comp)
+#plot(log_n_comp, col=cols)
+
+#2019
+n_all <- raster::raster(here("globalprep/spp/v2019/_output/n_spp_risk_raster_all.tif"))
+log_n_all <- log(n_all)
+plot(log_n_all, col=cols)
+
+#2018
+#n_all <- raster::raster(here("globalprep/spp/v2018/_output/n_spp_risk_raster_all.tif"))
+#log_n_all <- log(n_all)
+#plot(log_n_all, col=cols)
+
+prop_comp <- n_comp/n_all
+plot(prop_comp, col=rev(cols))
+#this makes sense. For some reason Damselfish and a few reptiles were classified as "non comprehensive", but they are actually comprehensive. 
+```
+
+
+## SPP: Status
+
+### Status: Extract average species risk for each region
+For each cell, we multiply the average species risk by the number of species in order to weight each cells contribution by the number of species.  We sum these values for each region and calculate:
+(average species risk * number species)/number of species
+
+```{r}
+
+mean_risk_comp <- raster::raster(here("globalprep/spp/v2019/_output/mean_risk_raster_comp.tif"))
+
+n_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_spp_risk_raster_comp.tif"))
+
+regions_ohi <- raster::raster(here("globalprep/spp/v2019/_spatial/eez_rast.tif"))
+
+risk_stack_comp <- stack(regions_ohi, mean_risk_comp, n_comp)
+risk_vals_comp <- values(risk_stack_comp) %>%
+  data.frame()
+risk_vals_comp <- filter(risk_vals_comp, !is.na(eez_rast))
+risk_vals_comp <- filter(risk_vals_comp, !is.na(mean_risk_raster_comp))
+
+rgn_risk_comp <- risk_vals_comp %>%
+  rowwise() %>%
+  dplyr::mutate(risk_weight = mean_risk_raster_comp * n_spp_risk_raster_comp) %>%
+  group_by(eez_rast) %>%
+  summarize(rgn_risk_weight = sum(risk_weight),
+            rgn_n_species = sum(n_spp_risk_raster_comp))
+
+rgn_risk_comp <- rgn_risk_comp %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(mean_risk = rgn_risk_weight/rgn_n_species) %>%
+  dplyr::select(rgn_id = eez_rast, mean_risk)
+
+
+```
+
+
+### Status: estimate for previous years
+We use the trend data to estimate risk values for previous years (vs. using the same values for all assessment years).  The change in species status across years is based on a linear model.
+
+Trend is calculated using the same method as the risk calculation. For each cell, we multiply the average species trend by the number of species in order to weight each cell's contribution by the number of species in the cell.  We sum these values for each OHI region and calculate for each region:
+(average species trend * number species)/number of species
+
+```{r}
+
+trend_comp <- raster::raster(here("globalprep/spp/v2019/_output/trend_raster_comp.tif"))
+
+n_trend_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_trend_raster_comp.tif"))
+
+regions_ohi <- raster::raster(here("globalprep/spp/v2019/_spatial/eez_rast.tif"))
+
+trend_stack_comp <- stack(regions_ohi, trend_comp, n_trend_comp)
+trend_vals_comp <- values(trend_stack_comp) %>%
+  data.frame()
+
+trend_vals_comp <- filter(trend_vals_comp, !is.na(eez_rast))
+trend_vals_comp <- filter(trend_vals_comp, !is.na(trend_raster_comp))
+
+rgn_trend_comp <- trend_vals_comp %>%
+  rowwise() %>%
+  dplyr::mutate(trend_weight = trend_raster_comp * n_trend_raster_comp) %>%
+  group_by(eez_rast) %>%
+  summarize(rgn_trend_weight = sum(trend_weight),
+            rgn_n_species = sum(n_trend_raster_comp)) %>%
+  rename(rgn_id = eez_rast)
+
+rgn_trend_comp <- rgn_trend_comp %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(mean_trend = rgn_trend_weight/rgn_n_species) %>%
+  dplyr::select(rgn_id, mean_trend)
+
+
+```
+  
+
+### Status: Get yearly risk scores based on trend
+We estimate previous risk for each region, using the trend data.  We assume change in risk is linear.  
+
+```{r}
+assess_years <- 2012:2019
+years <- expand.grid(rgn_id = unique(rgn_risk_comp$rgn_id), year=assess_years)
+
+# this is what the trend will be multiplied by to get a risk estimate for each year:
+year_multiplier <- data.frame(year=assess_years, multiplier = rev(0:(length(assess_years)-1))) 
+
+rgn_risk_comp_yrs <- rgn_risk_comp %>%
+  dplyr::left_join(rgn_trend_comp, by = "rgn_id") %>%
+  dplyr::left_join(years, by = "rgn_id") %>%
+  dplyr::left_join(year_multiplier, by="year") %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(mean_risk_per_year = mean_risk - mean_trend*multiplier) %>%
+  dplyr::select(rgn_id, year, mean_risk = mean_risk_per_year)
+
+
+```
+
+
+### Status: Converting regional mean risk to status
+We rescale the data so a risk factor of 0.75 is equal to zero.
+```{r}
+rgn_status <- rgn_risk_comp_yrs %>%
+  mutate(spp_status = (0.75 - mean_risk)/0.75)
+```
+
+### Status: Gapfill missing regions
+
+Region 232 (Bosnia) does not have a value, which is not surprising because their coast is super small and results are erratic for this region.  We gapfill with surrounding regions.
+
+```{r}
+
+status_gf <- rgns_global %>%
+  left_join(rgn_status) %>%
+    dplyr::select(-mean_risk)
+summary(status_gf)
+filter(status_gf, is.na(spp_status))
+
+croatia <- filter(status_gf, rgn_id == 187)
+mont <- filter(status_gf, rgn_id == 186) 
+
+bosnia <- bind_rows(croatia, mont) %>%
+  group_by(year) %>%
+  summarize(spp_status = mean(spp_status)) %>%
+  mutate(rgn_id = 232)
+
+status_gf <- status_gf %>%
+  filter(rgn_id !=232) %>%
+  bind_rows(bosnia)
+
+
+```
+
+### Status: Final formatting for ohi-global
+
+```{r}
+status <- status_gf %>%
+  dplyr::select(rgn_id, year, score = spp_status)
+dim(status)  # 220*length(assess_years)
+summary(status) # should be no NA values
+
+write.csv(status, here("globalprep/spp/v2019/output/sp_status_global.csv"), row.names=FALSE)  
+
+```
+
+### Status: Compare to last year
+
+```{r}
+status <- read_csv(here("globalprep/spp/v2019/output/sp_status_global.csv"))
+
+old_spp <- read.csv(here("globalprep/spp/v2018/output/sp_status_global.csv")) %>%
+  filter(year == max(year)) %>%
+  rename(old_score = score) %>%
+  mutate(year = 2019) %>%
+  left_join(status) %>%
+  rename(new_score = score)
+
+plot(old_spp$old_score, old_spp$new_score)
+abline(0,1, col="red")
+
+old_spp_gather <- old_spp %>%
+  dplyr::select(rgn_id, old_score, new_score) %>%
+  tidyr::gather("assessment", "score", -1) %>%
+  dplyr::filter(rgn_id <= 250)
+
+ggplot(old_spp_gather, aes(y=assessment, x=score)) + 
+  geom_density_ridges()
+
+```
+
+## SPP: Trend
+
+### Trend: calculating
+Getting proportional trend requires the status data (trend/status). Proportional trend is multiplied by 5 to get estimated change in five years. 
+```{r}
+# proportional trend requires status data
+status <- read.csv(here("globalprep/spp/v2019/output/sp_status_global.csv")) %>%
+  dplyr::filter(year==max(year)) %>%
+  dplyr::select(rgn_id, score)
+
+# Calculated in above section: Trend data
+rgn_trend_score <- rgn_trend_comp %>%
+  mutate(spp_trend_adj = -mean_trend/0.75) %>%  # puts in comparable units to status
+  left_join(status, by="rgn_id") %>%
+  dplyr::mutate(trend_score = spp_trend_adj/score * 5)
+
+```
+
+### Trend: Gapfilling missing data
+Check there are data for every region.  Region 232 (Bosnia) does not have a value which is not surprising because their coast is super small and results are erratic for this region.  We estimate this using the mean of the 2 surrounding regions.  
+
+```{r}
+
+trend <- rgns_global %>%
+  left_join(rgn_trend_score) 
+
+summary(trend)
+
+filter(trend, is.na(trend_score))
+
+croatia <- filter(trend, rgn_id == 187)
+mont <- filter(trend, rgn_id == 186)
+bosnia <- mean(c(croatia$trend_score, mont$trend_score))
+
+trend$trend_score[trend$rgn_id == 232] <- bosnia 
+```
+
+## Trend: Final formatting for ohi-global
+
+```{r}
+trend <- trend %>%
+  dplyr::select(rgn_id, score = trend_score)
+dim(trend) # should be 220
+summary(trend) # should be no NAs
+
+write.csv(trend, here("globalprep/spp/v2019/output/sp_trend_global.csv"), row.names=FALSE)  
+
+
+```
+
+### Trend: Compare to last year
+We use a very different approach for calculating trend this year. Previously we used proxy data rather than actual change in IUCN status over time.  Our previous method overestimated the magnitude of the trend.  It is not surprising there is poor correlation with trend estimates in previous years, but it is reassuring the the values mainly fall in the same quadrant.  
+```{r}
+
+trend <- read.csv(here("globalprep/spp/v2019/output/sp_trend_global.csv"))  
+
+old_spp <- read.csv(here("globalprep/spp/v2018/output/sp_trend_global.csv")) %>%
+  rename(old_score = score) %>%
+  left_join(trend) 
+
+plot(old_spp$old_score, old_spp$score)# xlim=c(-0.35, 0.05))
+abline(h=0, col="red")
+abline(v=0, col="red")
+abline(0,1, col="red")
+
+#old_check <- old_spp %>%
+#  mutate(diff = old_score - score) %>%
+#  filter(old_score < -0.02, score > -0.01 )
+#all outliers for this seem to be african nations 
+```
+
+
+### Status/trend: save a record of gapfilling
+```{r}
+status <- read.csv(here("globalprep/spp/v2019/output/sp_status_global.csv")) %>%
+  mutate(gapfilled = ifelse(rgn_id == 232, 1, 0)) %>%
+  mutate(method = ifelse(rgn_id == 232, "mean of neighbors", NA)) %>%
+  dplyr::select(rgn_id, year, gapfilled, method)
+write.csv(status, here("globalprep/spp/v2019/output/sp_status_global_gf.csv"), row.names=FALSE)          
+
+trend <- read.csv(here("globalprep/spp/v2019/output/sp_trend_global.csv")) %>%
+  mutate(gapfilled = ifelse(rgn_id == 232, 1, 0)) %>%
+  mutate(method = ifelse(rgn_id == 232, "mean of neighbors", NA)) %>%
+  dplyr::select(rgn_id, gapfilled, method)
+write.csv(trend, here("globalprep/spp/v2019/output/sp_trend_global_gf.csv"), row.names=FALSE)          
+
+
+```
+
+
+## Resilience data
+We use species condition data as a resilience measure as well.  We also calculate species condition at 3nm of shoreline, because for some goals, nearshore species condition is the relevant metric.   
+
+### Resilience: Prepare rasters for 3nm extraction
+We reproject the data to have higher resolution in order to more easily extract the data at the 3nm scale.  
+We modify the method a bit from above due to size of the rasters.  
+```{r, eval=FALSE}
+#3nm raster file
+rgns <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
+plot(rgns)
+
+# relevant species files
+mean_risk_comp <- raster::raster(here("globalprep/spp/v2019/_output/mean_risk_raster_comp.tif"))
+n_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_spp_risk_raster_comp.tif"))
+
+risk_x_n <- mean_risk_comp*n_comp
+
+# project rasters to moll
+# saved in Mazu:spp/v2019
+projectRaster(risk_x_n, rgns, method="ngb", over=TRUE, 
+              filename=file.path(dir_M, "git-annex/globalprep/spp/v2019/int/risk_x_n_comp_mol.tif"),
+              progress="text")
+projectRaster(n_comp, rgns, method="ngb", over=TRUE, 
+              filename=file.path(dir_M, "git-annex/globalprep/spp/v2019/int/n_comp_mol.tif"),
+              progress="text")
+
+
+```
+
+
+### Resilience: Extract data
+Extract species risk data that corresponds to 3nm regions.
+
+```{r}
+
+#3nm raster file
+rgns <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
+plot(rgns)
+
+risk_x_n_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2019/int/risk_x_n_comp_mol.tif"))
+n_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2019/int/n_comp_mol.tif"))
+
+risk_stack <- stack(risk_x_n_mol, n_mol)
+
+risk_df <- raster::zonal(risk_stack, rgns, fun='sum')
+
+rgn_3nm_risk <- risk_df %>%
+  data.frame() %>%
+  rowwise() %>%
+  dplyr::mutate(rgn_wt_risk = risk_x_n_comp_mol/n_comp_mol) %>%
+  dplyr::select(rgn_id = zone, rgn_wt_risk)
+  
+
+```
+
+### Resilience: estimate for previous years
+We use the trend data to estimate risk values for previous years (vs. using the same values for all assessment years).  The change in species status across years is based on a linear model.
+
+Trend is calculated using the same method as the risk calculation. For each cell, we multiply the average species trend by the number of species in order to weight each cell's contribution by the number of species in the cell.  We sum these values for each OHI region and calculate for each region:
+(average species trend * number species)/number of species
+
+
+#### Resilience: Prepare rasters for 3nm extraction (trend to estimate previous years' data)
+We reproject the data to have higher resolution in order to more easily extract the data at the 3nm scale.  
+```{r, eval=FALSE}
+
+trend_comp <- raster::raster(here("globalprep/spp/v2019/_output/trend_raster_comp.tif"))
+
+n_trend_comp <- raster::raster(here("globalprep/spp/v2019/_output/n_trend_raster_comp.tif"))
+
+trend_x_n <- trend_comp*n_trend_comp
+
+# project rasters to moll
+# saved in Mazu:spp/v2019
+projectRaster(trend_x_n, rgns, method="ngb", over=TRUE, 
+              filename=file.path(dir_M, "git-annex/globalprep/spp/v2019/int/trend_x_n_comp_mol.tif"),
+              progress="text")
+projectRaster(n_trend_comp, rgns, method="ngb", over=TRUE, 
+              filename=file.path(dir_M, "git-annex/globalprep/spp/v2019/int/n_trend_comp_mol.tif"),
+              progress="text")
+
+```
+
+### Resilience: Extract trend data (used to estimate previous years' data)
+Extract species risk data that corresponds to 3nm regions.
+
+```{r}
+#3nm raster file
+rgns_3nm <- raster(file.path(dir_M, "git-annex/globalprep/spatial/v2018/rgns_3nm_offshore_mol.tif"))
+plot(rgns_3nm)
+
+trend_3nm_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2019/int/trend_x_n_comp_mol.tif"))
+n_trend_3nm_mol <- raster(file.path(dir_M, "git-annex/globalprep/spp/v2019/int/n_trend_comp_mol.tif"))
+
+
+trend_stack <- stack(trend_3nm_mol, n_trend_3nm_mol)
+
+trend_df <- raster::zonal(trend_stack, rgns, fun='sum')
+
+rgn_3nm_trend <- trend_df %>%
+  data.frame() %>%
+  rowwise() %>%
+  dplyr::mutate(rgn_wt_trend = trend_x_n_comp_mol/n_trend_comp_mol) %>%
+  dplyr::select(rgn_id = zone, rgn_wt_trend)
+
+
+```
+  
+
+### Resilience: Calculate yearly risk scores based on trend
+We estimate previous risk for each region, using the trend data.  We assume change in risk is linear.  
+
+```{r}
+assess_years <- 2012:2019
+years <- expand.grid(rgn_id = unique(rgn_3nm_trend$rgn_id), year=assess_years)
+
+# this is what the trend will be multiplied by to get a risk estimate for each year:
+year_multiplier <- data.frame(year=assess_years, multiplier = rev(0:(length(assess_years)-1))) 
+
+rgn_risk_3nm <- rgn_3nm_risk %>%
+  left_join(rgn_3nm_trend, by = "rgn_id") %>%
+  left_join(years, by = "rgn_id") %>%
+  left_join(year_multiplier, by="year") %>%
+  rowwise() %>%
+  mutate(mean_risk_per_year = rgn_wt_risk - rgn_wt_trend*multiplier) %>%
+  dplyr::select(rgn_id, year, mean_risk = mean_risk_per_year)
+
+
+```
+
+
+
+### Resilience: Converting regional mean risk to status
+We rescale the data so a risk factor of 0.75 is equal to zero.
+```{r}
+
+rgn_3nm_res <- rgn_risk_3nm %>%
+  mutate(spp_status = (0.75 - mean_risk)/0.75)
+
+# quick check
+hist(rgn_3nm_res$spp_status)
+
+
+```
+
+### Resilience: Gapfill missing regions
+
+Region 19 (Tuvalu) does not have a value.  This is an island.  We gapfill with the value from the entire eez.
+
+```{r}
+
+res_gf <- rgns_global %>%
+  left_join(rgn_3nm_res) %>%
+    dplyr::select(-mean_risk)
+
+summary(res_gf)
+filter(res_gf, is.na(spp_status))
+
+# get eez value:
+eez_status <- read.csv(here("globalprep/spp/v2019/output/sp_status_global.csv")) %>%
+  filter(rgn_id == 19) %>%
+  rename(spp_status = score)
+
+res_gf <- res_gf %>%
+  filter(!is.na(spp_status)) %>%
+  bind_rows(eez_status)
+
+
+summary(res_gf)
+```
+
+### Resilience: Final formatting for ohi-global
+
+```{r}
+resilience <- res_gf %>%
+  dplyr::select(rgn_id, year, score = spp_status)
+dim(resilience)  # 220 * 8
+summary(resilience) # should be no NA values
+
+write.csv(resilience, here("globalprep/spp/v2019/output/sp_status_3nm.csv"), row.names=FALSE)  
+
+```
+
+### Resilience: save a record of gapfilling
+```{r}
+res <- read.csv(here("globalprep/spp/v2019/output/sp_status_3nm.csv")) %>%
+  mutate(gapfilled = ifelse(rgn_id == 19, 1, 0)) %>%
+  mutate(method = ifelse(rgn_id == 19, "eez scale data used", NA)) %>%
+  dplyr::select(rgn_id, year, gapfilled, method)
+write.csv(res, here("globalprep/spp/v2019/output/sp_status_3nm_gf.csv"), row.names=FALSE)          
+
+
+```
+
+
+### Resilience: Compare
+Compared to the entire EEZ, most (but not all) coastal areas have lower species condition scores. The correlation with last year is better than it was last year. 
+
+```{r}
+
+# compare to eez values
+eez_status <- read.csv(here("globalprep/spp/v2019/output/sp_status_global.csv")) %>%
+  filter(year == max(year)) %>%
+  dplyr::select(rgn_id, eez_score = score)
+
+status <- read.csv(here("globalprep/spp/v2019/output/sp_status_3nm.csv")) %>%
+  dplyr::select(rgn_id, year, nm3_score = score) %>%
+  filter(year == max(year)) %>%
+  left_join(eez_status, by = "rgn_id")
+
+plot(status$nm3_score, status$eez_score)
+abline(0,1)
+
+# compare to last year's values
+status <- read.csv(here("globalprep/spp/v2019/output/sp_status_3nm.csv")) %>%
+  filter(year == max(year))
+
+old_spp <- read.csv(here("globalprep/spp/v2018/output/sp_status_3nm.csv")) %>%
+  filter(year == max(year)) %>%
+  rename(old_score = score) %>%
+  mutate(year = 2019) %>%
+  left_join(status) %>%
+  rename(new_score = score) 
+
+plot(old_spp$old_score, old_spp$new_score)
+abline(0,1, col="red")
+
+old_spp_gather <- old_spp %>%
+  dplyr::select(rgn_id, old_score, new_score) %>%
+  tidyr::gather("assessment", "score", -1) %>%
+  filter(rgn_id <= 250)
+
+ggplot(old_spp_gather, aes(y=assessment, x=score)) + 
+  geom_density_ridges()
+
+check_3nm_old <- old_spp %>%
+  filter(new_score > 0.85, old_score > 0.79, old_score <0.87) %>%
+  mutate(diff = old_score - new_score)
+
+```
+

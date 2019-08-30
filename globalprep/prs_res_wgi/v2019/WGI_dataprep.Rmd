@@ -3,26 +3,31 @@ title: 'OHI 2019 - World Governance Indicator'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
+    code_folding: show
     toc: true
+    toc_depth: 1
+    toc_float: yes
     number_sections: true
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 editor_options: 
   chunk_output_type: console
 ---
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2017/WGI_dataprep.html]
+[REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2019/WGI_dataprep.html)
 
 # Summary
 This script downloads WGI data and prepares it for a pressures (1 - WGI) and resilience data layer.  
 
 # Updates from previous assessment
 
-None.  Consider this improvement for future assessments: create a linear model to estimate missing data rather than just taking averages of years with data (~ line 230).
+No methods updates; additional year of data added.  
+
+Consider this improvement for future assessments: create a linear model to estimate missing data rather than just taking averages of years with data (~ line 230).
 
 ***
 
@@ -477,7 +482,7 @@ write.csv(tmp_gf, here("globalprep/prs_res_wgi/v2019/output/wgi_gf.csv"), row.na
 ```
 
 Checking on outliers in 2019 assessment:
-```{r}
+```{r outliers, eval=FALSE}
 
 worldbank_wgi_from_wdi_api <- read_csv("globalprep/prs_res_wgi/v2019/raw/worldbank_wgi_from_wdi_api_2019-04-15.csv")
 

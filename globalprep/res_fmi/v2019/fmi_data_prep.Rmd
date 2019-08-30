@@ -3,36 +3,63 @@ title: 'OHI 2019 - Fisheries Management Index (Resilience)'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
+    code_folding: show
     toc: true
+    toc_depth: 1
+    toc_float: yes
     number_sections: true
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html' 
   pdf_document:
     toc: true
 editor_options: 
   chunk_output_type: console
 ---
 
-
 # Summary
-This document describes the steps for obtaining and wrangling the data used to calculate the fisheries management index resilience layer for the 2019 global assessment.
+This document outlines the process for developing linear models to gapfill fisheries management index scores to use as a resilience layer for the 2019 global assessment.
 
 # Data Sources
 
 The following data are used:
 
 ## Fisheries Management Index Data 
-Add some detail about this data.
 
-* [Fisheries Management Index](https://oursharedseas.com/2019-update/fisheries/#highchart-fisheries-fmindex)
+[Fisheries Management Index](https://oursharedseas.com/2019-update/fisheries/#highchart-fisheries-fmindex) data were first introduced in a 2017 paper by Melnychuk et al., *[Fisheries Management Impacts on Target Species Status](https://doi.org/10.1073/pnas.1609915114)*. Scores range from 0-1 and rate management effectiveness of fisheries in distinct regions on a stock-by-stock basis. The scores are determined by expert surveys that characterize attributes of research, management, enforcement, and socioeconomic factors. The first survey was conducted in 2016 in 28 major fishing countries that collectively account for >80% of global catch. Another survey was performed in 2018 on 40 countries, the scores from which we are using for this OHI resilience layer. 
 
 **Date retreived:** 12 July 2019
 
-**Method:** Data are not accessible in csv format from website, so points were manually entered into excel and saved as a csv (found in v2019/raw)
+**Method:** Data are not accessible in csv format from website, so points were manually entered into excel and saved as a csv (found in v2019/raw). Because FMI scores only exist for 40 out of the 220 OHI regions, we trained linear models using scores from the AO need layer (rescaled GDP per capita per person purchasing power), GDP per capita, World Governance Index (WGI), Social Progress Indicator (SPI), and UN georegion labels to determine which would be most effective for gapfilling the missing data. After comparing the models, we determined SPI and UN georegions to be the best predictors of FMI, and used these models to gapfill FMI scores for the remaining 80 regions. 20 of these regions remain NA as they are uninhabited.
 
-Data was available for only 40 regions.  We used our rescaled and gapfilled version of the Social Progress Index and UN geogregion data to estimate missing regions.
+
+## SPI
+
+*Note: These data were not updated for v2019 at the time of completing the FMI resilience layer.*
+
+**Citation**: http://www.socialprogress.org/
+
+Stern, S., A. Wares and T. Epner. 2018. Social Progress Index: 2018 Methodology Report.
+
+**Source information**: 
+http://www.socialprogress.org/ --> Download Data
+
+**Date Downloaded**: 9/21/2018
+
+**Time range**: 2014-2018
+
+**Native data resolution**: country scores
+
+**Format**:  Excel file
+
+**Description**: Social Progress Index scores and components for countries.
+
+
+## UN georegions
+
+UNgeorgn() loads a dataframe from common.R with UN geopolitical designations, and is commonly used in OHI to gapfill missing data. The distinct regions are derived from the [United Nations Statistics Division](https://unstats.un.org/unsd/methodology/m49/). Each region is assigned four labels with increasing granularity/specificity: r0_label = World (1 level), r1_label = continental regions (7 levels: Oceania, Asia, Africa, Europe, Southern Islands, Latin America and the Caribbean, and Americas), r2_label = georegions (22 levels for subregions and intermediary regions).
+
 
 # Updates from previous assessment
 These data have not been updated since 2013, so this is an entirely new method for establishing resilience values. 
@@ -40,7 +67,7 @@ These data have not been updated since 2013, so this is an entirely new method f
 
 # Initial set-up code
 
-```{r setup, message=FALSE, warning=FALSE}
+```{r setup, message=FALSE, warning=FALSE, results="hide"}
 
 #library(devtools)
 #devtools::install_github("ohi-science/ohicore@dev")
@@ -60,7 +87,7 @@ source('https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/wor
 
 # Load and wrangle FMI data 
 
-```{r}
+```{r, message=FALSE, warning=FALSE, results="hide"}
 fmi_raw <- read_csv(here("globalprep/res_fmi/v2019/raw/FMI_data_raw.csv")) %>%
   rename("2016" = fmi_2016) %>% 
   rename("2018" = fmi_2018) %>% 
@@ -79,12 +106,11 @@ fmi_rgn$year <- as.numeric(fmi_rgn$year)
 
 
 ## Load data from Social Progress Index (SPI) + UN Georegions, create linear models for gapfilling
-```{r}
+```{r, message=FALSE, warning=FALSE, results="hide"}
 
 ## Load SPI data
 
 spi <- read_csv(here("globalprep/prs_res_spi/v2018/output/spi_res.csv"))
-# can update this for 2019 once we complete this layer 
 
 fmi_spi <- fmi_rgn %>% 
   left_join(spi, by=c("rgn_id","year")) %>% 
@@ -120,7 +146,7 @@ abline(0,1, col="red")
 
 # Gapfilling regions without FMI scores using best fit model
 More information about the linear model process development can be found in fmi_model_compare.Rmd and the [Github issue from v2019](https://github.com/OHI-Science/globalfellows-issues/issues/91). 
-```{r}
+```{r, message=FALSE, warning=FALSE, results="hide"}
 
 fmi_gf <- UNgeorgn %>% 
   merge(spi) %>%
@@ -204,7 +230,7 @@ write_csv(final_fmi_gf, here("globalprep/res_fmi/v2019/output/fmi_res_gf.csv"))
 
 ## Compare to Mora data from 2013
 
-```{r}
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
 
 # Load old data (not sure which file to use for comparions?)
 
@@ -224,11 +250,11 @@ ggplotly(ggplot(mora_v_fmi, aes(x = mora, y = fmi_2019, labels = rgn_id)) +
 # Not a great correlation here - compare non-gapfilled data only with Mora data:
 
 mora_v_fmi2 <- fmi_rgn %>% 
-  rename(fmi_2019=fmi) %>% 
+  rename(fmi_2019_not_gf=fmi) %>% 
   left_join(mora, by="rgn_id") %>% 
   rename(mora=value)
 
-ggplotly(ggplot(mora_v_fmi2, aes(x = mora, y = fmi_2019, labels = rgn_id)) +
+ggplotly(ggplot(mora_v_fmi2, aes(x = mora, y = fmi_2019_not_gf, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 

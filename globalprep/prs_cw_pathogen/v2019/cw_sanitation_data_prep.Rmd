@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
 pdf_document:
   toc: true
 editor_options: 
@@ -75,7 +75,7 @@ Percentage of people without sanitation was multiplied by the coastal population
 
 # Setup
 
-```{r setup, results="hide", message = FALSE, warning = FALSE, eval=FALSE}
+```{r setup, results="hide", message = FALSE, warning = FALSE}
 
 
 library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
@@ -501,8 +501,6 @@ write_csv(trend_data, here("globalprep/prs_cw_pathogen/v2019/output/po_pathogen_
 
 ### Trend data
 
-There is not a great correspondence between this year and last year's trend estimates.  This is partially due to changes in the source data.  But mainly, it is due to the limited number of years used in last year's assessment to calculate trend.  
-
 ```{r, eval=FALSE}
 
 new <- read_csv(here("globalprep/prs_cw_pathogen/v2019/output/po_pathogen_popdensity25mi_trend.csv"))
@@ -517,7 +515,7 @@ ggplotly(ggplot(compare, aes(y = trend, x = trend_2018, labels = rgn_id)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red"))
 
-# Several regions have large variation in trend between v2019 and v2018
+# A few regions have large variation in trend between v2019 and v2018
 # v2019 trend = -1: 70, 206, 86, 31
 # v2019 trend = 1: 81
 
@@ -541,4 +539,50 @@ abline(0,1, col="red")
 
 ### Compare results
 We checked the main discrepancies and these were due to changes in source data.  Fairly small changes in access can lead to fairly large changes in pressure scores, depending on the population. There are slightly higher pressure scores this year (indicated by points tending to be above the 1-1 red line) due to modifications of reference point calculations.
+
+### Outlier exploration
+
+```{r outliers, eval=FALSE}
+
+### Comparison of basic access to sanitation scores 
+sani_raw <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2019/JMP_2019_WLD.csv"), header=FALSE, sep = ",", na.strings = c(NA, ''), stringsAsFactors = FALSE, strip.white = TRUE)
+
+sani_raw_old <- read.csv(file.path(dir_M, "git-annex/globalprep/_raw_data/WHO_UNICEFF/d2018/JMP_2017_WLD.csv"), header=FALSE, sep = ",", na.strings = c(NA, ''), stringsAsFactors = FALSE, strip.white = TRUE)
+
+sani_old <- sani_raw_old %>%
+  dplyr::slice(-1) %>%                # cut first row with column names
+  dplyr::select(country = V1,
+         year = V3,
+         pop = V4,
+         basic_pct = V6) %>%
+  dplyr::mutate(basic_pct = ifelse(basic_pct=="-", NA, basic_pct)) %>% 
+  dplyr::mutate(pop = stringr::str_remove_all(pop, pattern = " ")) %>%
+  dplyr::mutate(basic_pct = ifelse(stringr::str_detect(basic_pct,">99"), 99.5, basic_pct)) %>%
+  dplyr::mutate_at(.vars = c("pop", "basic_pct", "year"), .funs = as.numeric)%>%
+  dplyr::mutate(pop = pop * 1000,
+          basic_prop = basic_pct/100) %>%
+  dplyr::filter(!is.na(year))
+
+sani_old_outliers <- sani_old %>% 
+  filter(country == "Maldives" | country == "Nigeria" | country == "Bangladesh" | country == "Singapore" | country == "Tuvalu" | country == "Russian Federation"  | country == "Marshall Islands" | country == "Nauru") %>% 
+  rename(pop_2018 = pop, basic_pct_2018 = basic_pct, basic_prop_2018 = basic_prop)
+  
+sani_compare <- sani %>%
+  filter(country == "Maldives" | country == "Nigeria" | country == "Bangladesh" | country == "Singapore" | country == "Tuvalu" | country == "Russian Federation"  | country == "Marshall Islands" | country == "Nauru") %>% 
+  left_join(sani_old_outliers, by=c("country", "year")) %>% 
+  select(country, year, pop, pop_2018, basic_pct, basic_pct_2018)
+
+### Comparison of pressure scores
+
+unsani_prs_old <- read_csv(here("globalprep/prs_cw_pathogen/v2018/output/po_pathogen_popdensity25mi.csv")) %>%
+  rename(pressure_score_2018 = pressure_score) %>% 
+  left_join(unsani_prs, by=c("rgn_id", "year")) %>% 
+  filter(rgn_id %in% c(39, 196, 204, 208, 19, 73, 11, 10))
+
+
+unsani_prs_old_all <- read_csv(here("globalprep/prs_cw_pathogen/v2018/output/po_pathogen_popdensity25mi.csv")) %>%
+  rename(pressure_score_2018 = pressure_score) %>% 
+  left_join(unsani_prs, by=c("rgn_id", "year")) %>% 
+  mutate(diff = pressure_score-pressure_score_2018)
+```
 

@@ -3,12 +3,15 @@ title: 'OHI 2019 - Tourism and Recreation '
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
+    code_folding: show
     toc: true
+    toc_depth: 1
+    toc_float: yes
     number_sections: true
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html' 
   pdf_document:
     toc: true
 editor_options: 
@@ -16,7 +19,7 @@ editor_options:
 ---
 
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2017/tr_data_prep.html]
+[REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/tr/v2018/tr_data_prep.html)
 
 
 # Summary
@@ -64,7 +67,7 @@ Tourism sustainability data from the WEC Travel and Tourism Competitiveness Repo
 
 ## Initial set-up code
 
-```{r setup, message=FALSE, warning=FALSE}
+```{r setup, message=FALSE, warning=FALSE, results="hide"}
 
 #library(devtools)
 #devtools::install_github("ohi-science/ohicore@dev")
@@ -93,7 +96,7 @@ These data are from the [World Travel & Tourism Council](http://www.wttc.org/dat
 
 These data are cleaned and formatted using the R/process_WTTC.R script. Missing values are gapfilled using the UN georegion information.
 
-```{r wttc prop tourism, eval=FALSE}
+```{r wttc prop tourism, message=FALSE, warning=FALSE, echo=FALSE, results="hide"}
 
 ## describe where the raw data are located:
 scenario_yr <- "v2019"
@@ -182,7 +185,7 @@ tr_data_raw_gf <- tr_data_raw_gf %>%
 
 
 # check NAs once more 
-summary(tr_data_raw_gf)
+# summary(tr_data_raw_gf)
 # v2019: Adding the low pop df identifies 13 additional regions that should be NA instead of gapfilled, taking the total number of NAs in the data set from 245 to 700
 
 
@@ -200,6 +203,10 @@ tr_data <- tr_data_raw_gf %>%
 # Save gap-filled data
 write_csv(tr_data, here("globalprep/tr/v2019/output/tr_jobs_pct_tourism.csv"))
 
+```
+
+## Data check and outlier investigation
+```{r data check, message=FALSE, echo=FALSE}
 
 
 ## A quick check to make sure last year's values aren't too crazy different
@@ -236,6 +243,8 @@ outliers <- tr_data_raw %>%
 
 ### v2019: These outliers can be explained by changes in the source data. Compared raw data from v2018 and all of these regions have large changes in the % share of total employment reported for the year 2018. WTTC likely backfills and adjusts their data on a yearly basis.  
 ```
+
+
 
 # Tw: Travel warnings
 
@@ -365,7 +374,7 @@ write_csv(warn_multiplier, here("globalprep/tr/v2019/intermediate/warning.csv"))
 
 ## Convert names to OHI regions and clean. 
 
-```{r travel warnings, eval=FALSE}
+```{r travel warnings, message=FALSE, echo=FALSE, results="hide"}
 warn <- read_csv(here("globalprep/tr/v2019/intermediate/warning.csv"))
 
 #Add rgn_id
@@ -395,7 +404,7 @@ sort(table(paste(warn_rgn$year, warn_rgn$rgn_id)))
 Many European regions now have a travel warning due to increased terrorism (e.g., United Kingdom, Italy, Spain, Germany), although this doesn't show up in the following figure because previously, these regions had no travel warning (and were thus, NA).
 
 The change in not penalizing subregional warnings tended to reduce the penalty (i.e. increase the multiplier value).
-```{r, eval=FALSE}
+```{r, message=FALSE, echo=FALSE}
 # The following indicates changes over time as well as changes to the State Department's approach to quantifying risk
 
 tmp_old <- read_csv(here("globalprep/tr/v2018/output/tr_travelwarnings.csv")) %>% 

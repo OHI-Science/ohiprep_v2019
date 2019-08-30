@@ -11,18 +11,23 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../../src/templates/ohi_hdr.html'
+      in_header: '../../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
 
+```{r}
+
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
 ``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
 
-#when using "select()" we receive an error. I believe this is because of a package conflict. Specify dplyr::select() whenever using hte function. 
-
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
-                      echo = TRUE, message = FALSE, warning = FALSE)
+                      echo = TRUE, message = FALSE, warning = FALSE, eval = FALSE)
+```
 
+```{r}
 library(dplyr)
 library(rgdal)
 library(raster)
@@ -39,7 +44,7 @@ scenario <- 'v2019'
 dir_goal <- here('globalprep', goal, scenario)
 
 ### provenance tracking
-library(provRmd); prov_setup() #delete if not needed 
+#library(provRmd); prov_setup() #delete if not needed 
 
 ### goal specific folders and info
 dir_anx  <- file.path(dir_M, 'git-annex/globalprep')
@@ -289,7 +294,7 @@ if(!file.exists(spp_sys_from_api_file) | reload) {
 
 From the habitats gleaned in the previous chunk, generate an inclusion list based on those that are considered marine.  "Included" habitats are determined from inspection of the habitat list; we are including habitats 9-12, plus 15.11, 15.12, 15.13.  Note category 13 is Marine Coastal/Supratidal, but includes many species whose "marine" dependence is only incidental.  If these species do not show up in category 12 (marine intertidal) then they are assumed to not actually depend on marine habitats.
 
-``` {r generate_hab_inclusion_list, eval = TRUE}
+``` {r generate_hab_inclusion_list, eval = FALSE}
 
 hab_inclusion_file <- file.path(dir_setup, 'int', 'iucn_habitat_categories.csv')
 

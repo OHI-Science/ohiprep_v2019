@@ -40,6 +40,10 @@ However, this was taking forever to run (>24 hours). It is a nice check, but not
 
 # Setup
 
+```{r, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
 ```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
@@ -203,7 +207,7 @@ writeRasterBlocks <- function(rast, filename) {
 
 `fasterize()` from the `fasterize` package takes advantage of Simple Features objects from the `sf` package, rather than objects from the `sp` package.  It is considerably faster; it returned a completed raster in ten minutes.  However, saving the very large (18GB) resulting raster proved problematic.  The `writeRasterBlocks()` function defined above helped get around that problem though still took over an hour to write the raster to disk.
 
-``` {r fasterize_wdpa, eval = TRUE}
+``` {r fasterize_wdpa, eval = FALSE}
 
 library(sf)
 library(fasterize) ### devtools::install_github('ecohealthalliance/fasterize')

@@ -8,7 +8,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '~/github/ohiprep_v2018/src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
@@ -45,10 +45,7 @@ ICO trend is calculated in a similar manner, but weightings are assigned accordi
 
 # Updates from previous assessment
 
-No changes have been made to the data prep methods for this goal, since the 2016 assessment, though there were some slight changes to improve the code. API key is read from a file, the 'get from API' function now includes error checking (it reports a little on what the error is, whether it's a zero-length data frame or a try error, etc) and multiple attempts (if it gets an error it tries again a few times), and there is also a delay parameter to space out requests to the API. 
-
-Changes _were_ made in 2018 to the iconic species trend calculation. Trends are now calculated (in ohi-global, `functions.R`) using status values based only on species with two or more IUCN evaluations in the last 20 years. This change was made because including species which have not been re-evaluated for a long time tends to positively bias trend values, or at least dampen the trends by essentially including as zeros, values that are not truely known to be zero... To accommodate this change in the trend calculation, years 1992-present are included in the prepped data as well as in the ohi-global `scenario_data_years.csv`.
-
+Additional year of IUCN Red List data added. 
 In 2019, we stopped using the regions list to merge IUCN and iconic species region IDs and switched to the name_2_rgn() funciton in ohicore. However, this function reports regions that don't have a match in OHI region list, so we report certain reported regions at a higher spatial scale, based on the listed regions in the error message. 
 
 
@@ -64,8 +61,8 @@ In 2019, we stopped using the regions list to merge IUCN and iconic species regi
 **Species native country information:**
 
 * __Reference__: 
-    * IUCN 2016. IUCN Red List of Threatened Species. Version 2016-1 <www.iucnredlist.org>
-        * __Accessed__: `r date()` by `r Sys.info()['user']` 
+    * IUCN 2019. IUCN Red List of Threatened Species. Version 2019-2 <www.iucnredlist.org>
+        * __Accessed__: 15 May 2019 
 * __Native data resolution__: Country level (by country name)
 * __Time range__: 1965-2019 (discrete past assessments by species) 
 * __Format__:  JSON
@@ -249,7 +246,7 @@ ico_spp_countries <- read_csv(here("globalprep/ico/v2019/int/ico_spp_countries.c
 ```
 
 Name to region function (in OHI core package) reports regions that don't have a match in OHI region list. Here we report certain reported regions at a higher spatial scale, based on the listed regions in the error message. 
-```{r}
+```{r country_split, eval=FALSE}
 
 # Report these regions at higher spatial resolution:
 country_split_1 <- data.frame(country = "Bonaire, Sint Eustatius and Saba", region = c('Bonaire', 'Saba', 'Sint Eustatius'))
@@ -694,7 +691,7 @@ Region ID | Region Name | Status | Prev Status | d_nspp | Insights
 
 
 
-```{r}
+```{r outliers, include=FALSE, eval=F}
 library(tidyverse)
 library(here)
 

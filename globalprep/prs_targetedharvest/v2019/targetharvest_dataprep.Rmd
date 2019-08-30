@@ -3,18 +3,22 @@ title: 'OHI 2019 - Targeted harvest pressure'
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
+    code_folding: show
     toc: true
+    toc_depth: 1
+    toc_float: yes
     number_sections: true
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../src/templates/ohi_hdr.html' # delete/change this link? 
+      in_header: '../../../workflow/templates/ohi_hdr.html' 
   pdf_document:
     toc: true
+editor_options: 
+  chunk_output_type: console
 ---
 
-[REFERENCE RMD FILE: https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2017/targetharvest_dataprep.html]
-^ this is old, should we change it to the latest data prep file? 
+[REFERENCE RMD FILE](https://cdn.rawgit.com/OHI-Science/ohiprep/master/globalprep/np/v2019/targetharvest_dataprep.html)
 
 #Summary
 This analysis converts FAO capture production data into the OHI 2019 targeted harvest pressure data.  
@@ -32,6 +36,7 @@ v2019: Adding in here() where appropriate and incorporating read_csv() etc, chan
     http://www.fao.org/fishery/statistics/software/fishstatj/en#downlApp
      Release date: March 2019 
 FAO Global Capture Production Quantity 1950_2017
+Information: http://www.fao.org/fishery/statistics/global-capture-production/en
 
 **Downloaded**: May 23 2019
 

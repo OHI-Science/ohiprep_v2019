@@ -11,7 +11,7 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: #'../../../src/templates/ohi_hdr.html'
+      in_header: '../../../workflow/templates/ohi_hdr.html'
 pdf_document:
   toc: true
 editor_options: 
@@ -26,8 +26,7 @@ editor_options:
 This document describes the steps for obtaining and wrangling the data used to calculate the mariculture population pressure subdimension for the 2019 global assessment. The general data preparation calculations are summarized [here](http://ohi-science.org/ohi-global/layers.html#inland_coastal_population). For context and explanation see the mariculture (subgoal of food provision) [model summary](http://ohi-science.org/ohi-global/goals.html#food_provision:_mariculture).
 
 # Updates from previous assessment
-No updates were made to this methodology since the previous assessment.
-v2019: Hosting all spatial files on Mazu server instead of github
+New 25 mile inland buffer raster was created; previous version did not include some regions. Hosting all spatial files on Mazu server instead of github to decrease processing time. 
 
 ***
 

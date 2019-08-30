@@ -1,0 +1,258 @@
+---
+title: "OHI 2019: Explore Biomass Variables"
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    code_folding: show
+    toc: true
+    toc_depth: 1
+    toc_float: yes
+    number_sections: false
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../workflow/templates/ohi_hdr.html'
+pdf_document:
+  toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+# Summary
+
+This script explores the use of management target biomass variables (TBdivTBmgt, SSBdivSSBmgt), in conjunction with the regular maximum sustainable yield variables (TBdivTBmsy, SSBdivSSBmsy). 
+
+## Updates from previous assessment
+
+This is new to the 2019 assessment year. 
+
+# Data
+## B/Bmsy values from stock assessments 
+
+Reference: [RAM Legacy Stock Assessment Database](http://ramlegacy.org) v4.44
+
+* Downloaded: 2/28/2019
+* Description: B/Bmsy value by stock and year (other data, which we do not use, are also available in the database)
+* Native data resolution: stock (fish stock, species and region specific)
+* Time range: 1950 - 2016
+* Format: R data files (.rds)
+* DOI: 10.5281/zenodo.2542919
+
+## Setup
+
+``` {r setup, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'figs/',message = FALSE, warning = FALSE)
+```
+
+```{r, eval = FALSE}
+
+## Libraries
+library(dplyr)
+library(tidyr)
+library(readr)
+library(sf)
+library(ggplot2)
+library(here) 
+library(corrplot)
+
+## highlight out when knitting
+setwd(here::here("globalprep/fis/v2019"))
+source('../../../workflow/R/common.R')
+
+```
+
+## Obtain RAM B/Bmsy data
+
+The data is stored as a relational database in an R object. Check that the names of each element have not changed from last year! Update as appropriate in the below list. 
+
+The following tables are included (for full list, see loadDBdata.r in mazu):  
+
+1. timeseries  
+The time series data is a data frame containing all assessments conducted per stock with the following headers/columns:  
+(1) assessid (2) stockid (3) stocklong (4) tsid (5) tsyear (6) tsvalue
+
+2. bioparams  
+The time series data is a data frame with the following headers/columns:  
+(1) assessid (2) stockid (3) stocklong (4) bioid (5) biovalue (6) bioyear (7) bionotes  
+
+3.  timeseries_values_views  
+This stores the timeseries values, using the most recent assessment available, with timeseries type. The dataframe contains the following headers/columns: stockid, stocklong, year, TBbest, TCbest, ERbest, BdivBmsypref, UdivUmsypref, BdivBmgtpref, UdivUmgtpref, TB, SSB, TN, R, TC, TL, RecC, F, ER, TBdivTBmsy, SSBdivSSBmsy, FdivFmsy, ERdivERmsy, CdivMSY, TBdivTBmsy, SSBdivSSBmsy, FdivFmgt, ERdivERmgt, Cpair, TAC, Cadvised, survB, CPUE, EFFORT, and stocks along the rows.
+
+4. timeseries_units_views  
+This stores the timeseries units (or time series source for touse time series), with timeseries type. The dataframe contains the following headers/columns: stockid, stocklong, TBbest, TCbest, ERbest, BdivBmgtpref, UdivUmsypref, BdivBmgtpret, UdivUmgtpref, TB, SSB, TN, R, TC, TL, RecC, F, ER, TBdivTBmsy, SSBdivSSBmsy, FdivFmsy, ERdivERmsy, CdivMSY, TBdivTBmgt, SSBdivSSBmgt, FdivFmgt, ERdivERmgt, Cpair, TAC, Cadvised, survB, CPUE, EFFORT, and stocks along the rows
+
+5. timeseries_id_views  
+This stores the timeseries ids with timeseries id along the columns. The dataframe contains the following headers/columns: stockid, stocklong, TBbest, TCbest, ERbest, BdivBmsypref, UdivUmsypref, BdivBmgtpref, UdivUmgtpref, TB, SSB, TN, R, TC, TL, RecC, F, ER, TBdivTBmsy, SSBdivSSBmsy, FdivFmsy, ERdivERmsy, CdivMSY, TBdivTBmgt, SSBdivSSBmgt, FdivFmgt, ERdivERmgt, Cpair, TAC, Cadvised, survB, CPUE, EFFORT, and stocks along the rows.
+
+6. bioparams_values_views  
+This stores the bioparams values, with bioparam type along the columns
+(TBmsybest, ERmsybest, MSYbest, TBmgtbest, ERmgtbest, TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TBmgt, SSBmgt, Fmgt, ERmgt, TB0, SSB0, M, TBlim, SSBlim, Flim, ERlim) and stocks along the rows.
+
+7. bioparams_units_views  
+This stores the bioparams units, with bioparam type along the columns (TBmsybest, ERmsybest, MSYbest, TBmgtbest, ERmgtbest, TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TBmgt, SSBmgt, Fmgt, ERmgt, TB0, SSB0, M, TBlim, SSBlim, Flim, ERlim) and stocks along the rows.
+
+8. bioparams_ids_views  
+This stores the bioparams ids, with bioparam id along the columns
+(TBmsybest, ERmsybest, MSYbest, TBmgtbest, ERmgtbest, TBmsy, SSBmsy, Nmsy, MSY, Fmsy, ERmsy, TBmgt, SSBmgt, Fmgt, ERmgt, TB0, SSB0, M, TBlim, SSBlim, Flim, ERlim) and stocks along the rows.
+
+9. metadata  
+This stores assorted metadata associated with the stock, with datatypes along the columns
+(assessid, stockid, stocklong, assessyear, scientificname, commonname, areaname, managementauthority, assessorfull, region, FisheryType) and stock by row.
+
+10. tsmetrics
+Contains metadata, with columns tscategory, tsshort, tslong, tsunitsshort, tsunitslong, tsunique.
+
+
+For this data prep we primarily use and consult `timeseries_values_views`, `tsmetrics`, and `metadata`
+```{r load_data, eval = FALSE}
+
+load(file.path(dir_M, "git-annex/globalprep/_raw_data/RAM/d2019/RLSADB v4.44/DB Files With Assessment Data/DBdata.RData"))
+
+ram_bmsy <- timeseries_values_views %>%
+  dplyr::select(stockid, year, TBdivTBmsy, SSBdivSSBmsy, TBdivTBmgt, SSBdivSSBmgt)
+
+```
+
+Make a correlation plot of these data
+```{r, eval = FALSE}
+## what we currently use. TBmsy and SSBmsy
+tbmsy_ssbmsy <- ram_bmsy %>%
+  dplyr::select(stockid, year, TBdivTBmsy, SSBdivSSBmsy) %>%
+  dplyr::filter(!is.na(TBdivTBmsy), !is.na(SSBdivSSBmsy)) #have to filter out NAs or we can't make a corrplot...
+
+tbmsy_ssbmsy_cor <- cor(tbmsy_ssbmsy[3:4])
+corrplot.mixed(tbmsy_ssbmsy_cor,
+               number.cex = 0.7, 
+               upper = "ellipse", 
+               tl.col = "black",
+               tl.pos = "d",
+               tl.cex = 0.75) ## 0.83 positive correlation
+
+tbmsy_ssbmsy_filt <- tbmsy_ssbmsy %>%
+  filter(TBdivTBmsy <= 2, SSBdivSSBmsy <= 2)
+
+plot(tbmsy_ssbmsy_filt$TBdivTBmsy, tbmsy_ssbmsy_filt$SSBdivSSBmsy)
+abline(0,1, col = "red")
+
+## compare the Total Biomass msy and management targets. 
+TB_msy_mgt <- ram_bmsy %>%
+  dplyr::select(stockid, year, TBdivTBmsy, TBdivTBmgt) %>%
+  dplyr::filter(!is.na(TBdivTBmsy), !is.na(TBdivTBmgt))
+
+tb_msy_mgt_cor <- cor(TB_msy_mgt[3:4])
+corrplot.mixed(tb_msy_mgt_cor,
+               number.cex = 0.7, 
+               upper = "ellipse", 
+               tl.col = "black",
+               tl.pos = "d",
+               tl.cex = 0.75) #0.64 positive correlation
+
+tb_msy_mgt_filt <- TB_msy_mgt %>%
+  filter(TBdivTBmsy <= 2, TBdivTBmgt <= 2)
+
+plot(tb_msy_mgt_filt$TBdivTBmsy, tb_msy_mgt_filt$TBdivTBmgt)
+abline(0,1, col = "red")
+
+## compare the ssb msy and management targets. 
+ssb_msy_mgt <- ram_bmsy %>%
+  dplyr::select(stockid, year, SSBdivSSBmsy, SSBdivSSBmgt) %>%
+  dplyr::filter(!is.na(SSBdivSSBmsy), !is.na(SSBdivSSBmgt))
+
+ssb_msy_mgt_cor <- cor(ssb_msy_mgt[3:4])
+corrplot.mixed(ssb_msy_mgt_cor,
+               number.cex = 0.7, 
+               upper = "ellipse", 
+               tl.col = "black",
+               tl.pos = "d",
+               tl.cex = 0.75) #0.84 positive correlation
+
+ssb_msy_mgt_filt <- ssb_msy_mgt %>%
+  filter(SSBdivSSBmsy <= 2, SSBdivSSBmgt <= 2)
+
+plot(ssb_msy_mgt_filt$SSBdivSSBmsy, ssb_msy_mgt_filt$SSBdivSSBmgt)
+abline(0,1, col = "red")
+
+
+## Compare tbmgt and ssbmgt 
+tbmgt_ssbmgt <- ram_bmsy %>%
+  dplyr::select(stockid, year, TBdivTBmgt, SSBdivSSBmgt) %>%
+  dplyr::filter(!is.na(TBdivTBmgt), !is.na(SSBdivSSBmgt))
+
+tbmgt_ssbmgt_cor <- cor(tbmgt_ssbmgt[3:4])
+corrplot.mixed(tbmgt_ssbmgt_cor,
+               number.cex = 0.7, 
+               upper = "ellipse", 
+               tl.col = "black",
+               tl.pos = "d",
+               tl.cex = 0.75) ## 0.79 positive correlation
+
+tbmgt_ssbmgt_filt <- tbmgt_ssbmgt %>%
+    filter(TBdivTBmgt <= 2, SSBdivSSBmgt <= 2)
+
+
+plot(tbmgt_ssbmgt_filt$TBdivTBmgt, tbmgt_ssbmgt_filt$SSBdivSSBmgt)
+abline(0,1, col = "red")
+
+## compare TBmsy and SSBmgt
+tbmsy_ssbmgt <- ram_bmsy %>%
+  dplyr::select(stockid, year, TBdivTBmsy, SSBdivSSBmgt) %>%
+  dplyr::filter(!is.na(TBdivTBmsy), !is.na(SSBdivSSBmgt))
+
+tbmsy_ssbmgt_cor <- cor(tbmsy_ssbmgt[3:4])
+corrplot.mixed(tbmsy_ssbmgt_cor,
+               number.cex = 0.7, 
+               upper = "ellipse", 
+               tl.col = "black",
+               tl.pos = "d",
+               tl.cex = 0.75) ## 0.82 positive correlation
+
+tbmsy_ssbmgt_filt <- tbmsy_ssbmgt %>%
+    filter(TBdivTBmsy <= 2, SSBdivSSBmgt <= 2)
+
+plot(tbmsy_ssbmgt_filt$TBdivTBmsy, tbmsy_ssbmgt_filt$SSBdivSSBmgt)
+abline(0,1, col = "red")
+
+## compare TBmsy, TBmgt, and SSBmsy
+tbmsy_tbmgt_ssbmsy <- ram_bmsy %>%
+  dplyr::select(stockid, year, TBdivTBmsy, TBdivTBmgt, SSBdivSSBmsy) %>%
+  filter(!is.na(TBdivTBmsy), !is.na(TBdivTBmgt), !is.na(SSBdivSSBmsy))
+
+tbmsy_tbmgt_ssbmsy_cor <- cor(tbmsy_tbmgt_ssbmsy[3:5])
+corrplot.mixed(tbmsy_tbmgt_ssbmsy_cor,
+               number.cex = 0.7, 
+               upper = "ellipse", 
+               tl.col = "black",
+               tl.pos = "d",
+               tl.cex = 0.75) ## when all three of these are present, very correllated. Nearly 1 for all. 
+
+## compare TBmsy, TBmgt, and SSBmgt 
+tbmsy_tbmgt_ssbmgt <- ram_bmsy %>%
+  dplyr::select(stockid, year, TBdivTBmsy, TBdivTBmgt, SSBdivSSBmgt) %>%
+  filter(!is.na(TBdivTBmsy), !is.na(TBdivTBmgt), !is.na(SSBdivSSBmgt)) ## data frame is empty. Cannot make a correlation plot from this.
+
+## compare TBmsy, SSBmsy, and SSBmgt 
+tbmsy_SSBmsy_ssbmgt <- ram_bmsy %>%
+  dplyr::select(stockid, year, TBdivTBmsy, SSBdivSSBmsy, SSBdivSSBmgt) %>%
+  filter(!is.na(TBdivTBmsy), !is.na(SSBdivSSBmsy), !is.na(SSBdivSSBmgt)) ## 571 observations
+
+tbmsy_ssbmsy_ssbmgt_cor <- cor(tbmsy_SSBmsy_ssbmgt[3:5])
+corrplot.mixed(tbmsy_ssbmsy_ssbmgt_cor,
+               number.cex = 0.7, 
+               upper = "ellipse", 
+               tl.col = "black",
+               tl.pos = "d",
+               tl.cex = 0.75)
+
+## compare SSBdivSSBmsy TBmgt, and SSBmgt 
+ssbmsy_tbmgt_ssbmgt <- ram_bmsy %>%
+  dplyr::select(stockid, year, SSBdivSSBmsy, TBdivTBmgt, SSBdivSSBmgt) %>%
+  filter(!is.na(SSBdivSSBmsy), !is.na(TBdivTBmgt), !is.na(SSBdivSSBmgt)) ## data frame is empty. Cannot make a correlation plot from this.
+
+## compare TBmsy, SSBmsy, and SSBmgt 
+tbmsy_SSBmsy_ssbmgt <- ram_bmsy %>%
+  dplyr::select(stockid, year, TBdivTBmsy, SSBdivSSBmsy, SSBdivSSBmgt) %>%
+  filter(!is.na(TBdivTBmsy), !is.na(SSBdivSSBmsy), !is.na(SSBdivSSBmgt)) ## data frame is empty. Cannot make a correlation plot from this.
+
+
+```
+

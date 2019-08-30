@@ -10,7 +10,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Compiled on Thu Aug 15 11:48:57 2019 by sgclawson" />
+<meta name="author" content="Compiled on Thu Aug 29 15:45:53 2019 by sgclawson" />
 
 
 <title>OHI 2019: Mariculture</title>
@@ -419,7 +419,7 @@ summary {
 
 
 <h1 class="title toc-ignore">OHI 2019: Mariculture</h1>
-<h4 class="author"><em>Compiled on Thu Aug 15 11:48:57 2019 by sgclawson</em></h4>
+<h4 class="author"><em>Compiled on Thu Aug 29 15:45:53 2019 by sgclawson</em></h4>
 
 </div>
 
@@ -470,7 +470,6 @@ summary {
 </ul>
 </div>
 
-<p>[REFERENCE RMD FILE: <a href="https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/mar/v2018/mar_dataprep.html" class="uri">https://cdn.rawgit.com/OHI-Science/ohiprep_v2018/master/globalprep/mar/v2018/mar_dataprep.html</a>]?bro</p>
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
 <p>This analysis converts FAO mariculture data into data used to calculate the OHI global mariculture status score. This also calculates the genetic escapee from mariculture pressure data.</p>
@@ -1631,25 +1630,26 @@ Mariculture Sustainability Index (Trujillo 2008)</p>
 <a class="sourceLine" id="cb47-24" title="24">         <span class="dt">potential_prod_one_percent_f =</span> <span class="kw">replace_na</span>(potential_prod_one_percent_f, <span class="dv">0</span>)) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb47-25" title="25"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">potential_mar_tonnes =</span> potential_prod_one_percent_b <span class="op">+</span><span class="st"> </span>potential_prod_one_percent_f) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb47-26" title="26"><span class="st">  </span><span class="kw">arrange</span>(rgn_id) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb47-27" title="27"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, potential_mar_tonnes)</a>
-<a class="sourceLine" id="cb47-28" title="28"></a>
-<a class="sourceLine" id="cb47-29" title="29"><span class="kw">write_csv</span>(pot_aq_final, <span class="kw">file.path</span>(dir_git, <span class="st">&#39;output/aq_potential_final.csv&#39;</span>))</a>
-<a class="sourceLine" id="cb47-30" title="30"></a>
-<a class="sourceLine" id="cb47-31" title="31">DT<span class="op">::</span><span class="kw">datatable</span>(pot_aq_final)</a>
-<a class="sourceLine" id="cb47-32" title="32"></a>
-<a class="sourceLine" id="cb47-33" title="33"><span class="co">## make gapfilling dataset </span></a>
-<a class="sourceLine" id="cb47-34" title="34">pot_aq_final_gf &lt;-<span class="st"> </span>pot_aq_final <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb47-35" title="35"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gapfilled =</span> <span class="kw">case_when</span>(</a>
-<a class="sourceLine" id="cb47-36" title="36">    potential_mar_tonnes <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb47-37" title="37">    potential_mar_tonnes <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span></a>
-<a class="sourceLine" id="cb47-38" title="38">  ), </a>
-<a class="sourceLine" id="cb47-39" title="39">  <span class="dt">method =</span> <span class="kw">case_when</span>(</a>
-<a class="sourceLine" id="cb47-40" title="40">    potential_mar_tonnes <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> &quot;missing regions given 0 value&quot;</span>,</a>
-<a class="sourceLine" id="cb47-41" title="41">    potential_mar_tonnes <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> &quot;&quot;</span></a>
-<a class="sourceLine" id="cb47-42" title="42">  )) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb47-43" title="43"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, gapfilled, method)</a>
-<a class="sourceLine" id="cb47-44" title="44"></a>
-<a class="sourceLine" id="cb47-45" title="45"><span class="kw">write_csv</span>(pot_aq_final_gf, <span class="kw">file.path</span>(dir_git, <span class="st">&quot;output/aq_potential_gf.csv&quot;</span>))</a></code></pre></div>
+<a class="sourceLine" id="cb47-27" title="27"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, potential_mar_tonnes) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb47-28" title="28"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="dv">2019</span>)</a>
+<a class="sourceLine" id="cb47-29" title="29"></a>
+<a class="sourceLine" id="cb47-30" title="30"><span class="kw">write_csv</span>(pot_aq_final, <span class="kw">file.path</span>(dir_git, <span class="st">&#39;output/aq_potential_final.csv&#39;</span>))</a>
+<a class="sourceLine" id="cb47-31" title="31"></a>
+<a class="sourceLine" id="cb47-32" title="32">DT<span class="op">::</span><span class="kw">datatable</span>(pot_aq_final)</a>
+<a class="sourceLine" id="cb47-33" title="33"></a>
+<a class="sourceLine" id="cb47-34" title="34"><span class="co">## make gapfilling dataset </span></a>
+<a class="sourceLine" id="cb47-35" title="35">pot_aq_final_gf &lt;-<span class="st"> </span>pot_aq_final <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb47-36" title="36"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">gapfilled =</span> <span class="kw">case_when</span>(</a>
+<a class="sourceLine" id="cb47-37" title="37">    potential_mar_tonnes <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb47-38" title="38">    potential_mar_tonnes <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb47-39" title="39">  ), </a>
+<a class="sourceLine" id="cb47-40" title="40">  <span class="dt">method =</span> <span class="kw">case_when</span>(</a>
+<a class="sourceLine" id="cb47-41" title="41">    potential_mar_tonnes <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> &quot;missing regions given 0 value&quot;</span>,</a>
+<a class="sourceLine" id="cb47-42" title="42">    potential_mar_tonnes <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> &quot;&quot;</span></a>
+<a class="sourceLine" id="cb47-43" title="43">  )) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb47-44" title="44"><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">select</span>(rgn_id, gapfilled, method, year)</a>
+<a class="sourceLine" id="cb47-45" title="45"></a>
+<a class="sourceLine" id="cb47-46" title="46"><span class="kw">write_csv</span>(pot_aq_final_gf, <span class="kw">file.path</span>(dir_git, <span class="st">&quot;output/aq_potential_gf.csv&quot;</span>))</a></code></pre></div>
 <hr />
 </div>
 </div>

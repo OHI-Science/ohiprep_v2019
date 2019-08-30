@@ -11,17 +11,25 @@ output:
     theme: cerulean
     highlight: haddock
     includes: 
-      in_header: '../../../../src/templates/ohi_hdr.html'
+      in_header: '../../../../workflow/templates/ohi_hdr.html'
   pdf_document:
     toc: true
 ---
 
+```{r}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+
 ``` {r setup, echo = TRUE, message = FALSE, warning = FALSE}
 
 knitr::opts_chunk$set(fig.width = 6, fig.height = 4, fig.path = 'Figs/',
-                      echo = TRUE, message = FALSE, warning = FALSE)
+                      echo = TRUE, message = FALSE, warning = FALSE, eval = FALSE)
+
+```
 
 
+```{r}
 library(dplyr)
 library(rgdal)
 library(raster)
@@ -95,11 +103,10 @@ write_csv(rgn_assess, rgn_assess_from_api_file)
 
 Regional Assessments:
 
-`r DT::datatable(rgn_assess)`
   
 For each assessment, read the pages of species info.  Pages are 10k spp long, so break into individual pages and then attach.  Species lists will be matched to the marine habitats list, and updated category codes and scores attached.
 
-``` {r}
+```{r, eval = FALSE}
 
 rgn_assess <- read_csv(rgn_assess_from_api_file)
 
