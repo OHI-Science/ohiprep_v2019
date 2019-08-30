@@ -278,7 +278,6 @@ df_na <- df %>%
   filter(is.na(rgn_id))
 nrow(df_na)
 
-# 147,269 catch data without fao regions assigned - v2018
 # 151313 catch data without fao regions assigned - v2019
 df_na <- df %>% 
   filter(is.na(fao_rgn))
@@ -291,7 +290,6 @@ Check NA values before taxa was added
 ## before adding in taxa info
 stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn.csv'))
 
-## no NAs - v2018
 ## 1 NA - v2019
 stock_na <- stock_rgn %>%
   filter(is.na(rgn_id))
@@ -316,8 +314,7 @@ output_df <- catch %>%
     dplyr::rename(CellID = Cell) %>% # match what is in cells.csv
     dplyr::left_join(cells)
 
-summary(output_df) # FAO ID 29,703 NAs - v2018
-                   # FAO ID 25,866 NAs - v2019
+summary(output_df) # FAO ID 25,866 NAs - v2019
 
 ## after fix cells.csv, no NAs in ohi rgns, just in fao_id
 output_na <- output_df %>% 
@@ -503,11 +500,44 @@ catch_zeros <- catch_zeros %>%
 Calculate mean catch for ohi regions (using data from 1980 onward). These data are used to weight the RAM b/bmsy values 
 ```{r, eval=FALSE}
 
+## correcting for forage fish used as feed/fish oil
+## We have traditionally included all fisheries catch in the Food Provision goal. However, a substantial portion of catch is used in animal feed. Our plan is to remove a portion of catch of these species from the fisheries goal.
+
+## read in list of species used for feed
+forage_fish_taxa_list <- read_csv(file.path("raw/forage_fish_taxa_list.csv"))
+
+
+taxon_key_info <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn_taxa.csv'))
+
+## need to get TaxonKey's for each species to join with catch_zeros
+forage_fish_taxa_list <- forage_fish_taxa_list %>%
+  left_join(taxon_key_info, by = c("forage_fish" = "TaxonName")) %>%
+  dplyr::select(forage_fish, inWatson, TaxonKey) %>%
+  unique()
+
+ 
+prop_human_cons <- (1 - (19/31))
+## join this with catch_zeros by species, and multiply by 1 - (19/31) =  0.3870968... this is the proportion of catch used for humans 
+catch_zero_minus_fish_feed <- forage_fish_taxa_list %>%
+  left_join(catch_zeros, by = "TaxonKey") %>%
+  mutate(catch_human = prop_human_cons*catch)
+
+#join catch_zeros with catch_zero_minus_fish_feed
+catch_zeros <- catch_zeros %>%
+  left_join(catch_zero_minus_fish_feed) %>%
+  mutate(catch_human = case_when(
+    is.na(catch_human) ~ catch,
+    !is.na(catch_human) ~ catch_human
+  )) %>%
+  dplyr::select(-forage_fish, -inWatson)
+
 mean_catch <- catch_zeros %>%
   filter(year >= 1980) %>%
   group_by(rgn_id, fao_id, TaxonKey, stock_id) %>%
-  mutate(mean_catch = mean(catch, na.rm=TRUE)) %>% # mean catch for each stock (in a specific ohi-fao region)
-  filter(mean_catch != 0)  %>%      ## some stocks have no reported catch for time period
+  mutate(mean_catch = mean(catch, na.rm=TRUE),
+         mean_catch_human = mean(catch_human, na.rm = TRUE)) %>% # mean catch for each stock (in a specific ohi-fao region)
+  filter(mean_catch != 0,
+         mean_catch_human != 0)  %>%      ## some stocks have no reported catch for time period
   ungroup()
 
 ```
@@ -517,7 +547,7 @@ Check out the data
 
 data.frame(dplyr::filter(catch, stock_id == "Zygochlamys_patagonica-87" & rgn_id==172))
 data.frame(filter(mean_catch, stock_id == "Marine_fishes_not_identified-57" & rgn_id==1)) # includes finfishes (100139) and other marine fishes (100039)
-
+data.frame(filter(mean_catch, stock_id == "Clupeiformes-57" & rgn_id==1)) # look at one which is in forage_fish
 ```
 
 ## Toolbox formatting and save
@@ -532,6 +562,14 @@ mean_catch_toolbox <- mean_catch %>%
   data.frame()
 
 write.csv(mean_catch_toolbox, "output/mean_catch.csv", row.names=FALSE)
+
+mean_catch_toolbox_human <- mean_catch %>%
+  mutate(stock_id_taxonkey = paste(stock_id, TaxonKey, sep="_")) %>%
+  dplyr::select(rgn_id, stock_id_taxonkey, year, mean_catch_human) %>%
+  filter(year >= 2001) %>%  # filter to include only analysis years
+  data.frame()
+
+write.csv(mean_catch_toolbox_human, "output/mean_catch_minus_feed.csv")
 
 ```
 

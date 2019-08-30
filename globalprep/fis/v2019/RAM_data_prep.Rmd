@@ -447,6 +447,7 @@ ram_spatial <- ram_spatial %>%
 In most cases, the RAM and Watson data use the same species names, but there are a few exceptions.  The following code identifies species in the RAM data that are not in the Watson data. In these cases, different species names may be used (although not necessarily because some of the species may be present in RAM, but not Watson, for other reasons). For these species, I used fishbase to explore synonyms and create a table to harmonize the RAM species names with the Watson species names (saved as: int/RAM_species_to_Watson.csv).
 
 ```{r name harmonize, eval = FALSE}
+ram_bmsy_gf_final <- read_csv(file.path("int/ram_stock_bmsy_gf.csv"))
 
 # get list of RAM species, scientific name
 ram_sp <- ram_bmsy_gf_final %>%
@@ -464,7 +465,7 @@ wat_sp <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_cat
   arrange(wat_scientificname)
 
 # compare names - what's in RAM that's not in Watson
-tmp <- sort(setdiff(ram_sp$scientificname, wat_sp$wat_scientificname)) # 50 species names
+tmp <- data.frame(scientificname = sort(setdiff(ram_sp$scientificname, wat_sp$wat_scientificname))) # 50 species names
 
 # compare names - what's in watson that's not in RAM
 tmp2 <- sort(setdiff(wat_sp$wat_scientificname, ram_sp$scientificname)) # 1197 species names
@@ -476,9 +477,11 @@ setdiff(tmp, ram_name_corr$RAM_species)
 
 
 ## join ram spatial with RAM species on scientific name. We can use this to help check whether questionable species names across the ram and watson data match by region and fao id...
-ram_sp_fao_ohi <- ram_sp %>%
+ram_sp_fao_ohi <- tmp %>%
   left_join(ram_spatial, by = c("scientificname" = "RAM_species"))
-  
+
+write_csv(ram_sp_fao_ohi, "int/new_ram_sp.csv")  
+
 ## get watson fao_ohi regions
 wat_sp_fao_ohi <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn_taxa.csv')) %>% 
   dplyr::rename(wat_scientificname = TaxonName) %>%
