@@ -71,3 +71,124 @@ abline(0,1, col = "red")
 
 ```
 
+## See how much catch is is caught in high seas per each country 
+
+*This was taken from catch_data_prep.Rmd in the fis subgoal and modified to include high seas regions in the mean catch data*
+```{r}
+file <- file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn_taxa.csv')
+
+catch <- read_csv(file) %>%
+  rename(common = CommonName, fao_id = fao_rgn, species=TaxonName)
+
+summary(catch)
+
+
+## filter out non ohi eez regions 
+catch <- catch %>%
+  filter(!is.na(rgn_id)) %>%
+  filter(!is.na(fao_id)) ## keep all regions because want to see high seas regions 
+
+
+## calculate total annual catch for each stock
+catch <- catch %>%
+  dplyr::select(year, rgn_id, fao_id, stock_id, TaxonKey, tons) %>%
+  group_by(rgn_id, fao_id, TaxonKey, stock_id, year) %>%
+  summarize(catch = sum(tons)) %>%
+  ungroup()
+```
+
+For years with no reported catch, add zero values (after first reported catch)
+
+```{r, eval=FALSE}
+
+## these data have no zero catch values, so add years with no reported catch to data table:
+catch_zeros <- catch %>%
+  spread(year, catch) %>%
+  data.frame() %>%
+  gather("year", "catch", num_range("X", min(catch$year):max(catch$year))) %>%
+  mutate(year = as.numeric(gsub("X", "", year))) %>%
+  mutate(catch = ifelse(is.na(catch), 0, catch))
+
+## this part eliminates the zero catch values prior to the first reported non-zero catch   
+catch_zeros <- catch_zeros %>%
+  group_by(fao_id, TaxonKey, stock_id, rgn_id) %>%
+  arrange(year) %>%
+  mutate(cum_catch = cumsum(catch)) %>%
+  filter(cum_catch > 0) %>%
+  dplyr::select(-cum_catch) %>%
+  ungroup()
+
+```
+
+## Calculate Mean Catch
+Calculate mean catch for ohi regions (using data from 1980 onward). These data are used to weight the RAM b/bmsy values 
+```{r, eval=FALSE}
+
+## correcting for forage fish used as feed/fish oil
+## We have traditionally included all fisheries catch in the Food Provision goal. However, a substantial portion of catch is used in animal feed. Our plan is to remove a portion of catch of these species from the fisheries goal.
+
+## read in list of species used for feed
+forage_fish_taxa_list <- read_csv(file.path(here(), "globalprep/fis/v2019/raw/forage_fish_taxa_list.csv"))
+
+
+taxon_key_info <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn_taxa.csv'))
+
+## need to get TaxonKey's for each species to join with catch_zeros
+forage_fish_taxa_list <- forage_fish_taxa_list %>%
+  left_join(taxon_key_info, by = c("forage_fish" = "TaxonName")) %>%
+  dplyr::select(forage_fish, inWatson, TaxonKey) %>%
+  unique()
+
+ 
+prop_human_cons <- (1 - (19/31))
+## join this with catch_zeros by species, and multiply by 1 - (19/31) =  0.3870968... this is the proportion of catch used for humans 
+catch_zero_minus_fish_feed <- forage_fish_taxa_list %>%
+  left_join(catch_zeros, by = "TaxonKey") %>%
+  mutate(catch_human = prop_human_cons*catch,
+         catch_fish_feed = catch*(1-prop_human_cons))
+write_csv(catch_zero_minus_fish_feed, "int/catch_fish_feed.csv")
+
+
+#join catch_zeros with catch_zero_minus_fish_feed
+catch_zeros <- catch_zeros %>%
+  left_join(catch_zero_minus_fish_feed) %>%
+  mutate(catch_human = case_when(
+    is.na(catch_human) ~ catch,
+    !is.na(catch_human) ~ catch_human
+  )) %>%
+  dplyr::select(-forage_fish, -inWatson)
+
+mean_catch <- catch_zeros %>%
+  filter(year >= 1980) %>%
+  group_by(rgn_id, fao_id, TaxonKey, stock_id) %>%
+  mutate(mean_catch = mean(catch, na.rm=TRUE),
+         mean_catch_human = mean(catch_human, na.rm = TRUE)) %>% # mean catch for each stock (in a specific ohi-fao region)
+  filter(mean_catch != 0,
+         mean_catch_human != 0)  %>%      ## some stocks have no reported catch for time period
+  ungroup()
+
+```
+
+Check out the data
+```{r, eval=FALSE}
+
+data.frame(dplyr::filter(catch, stock_id == "Zygochlamys_patagonica-87" & rgn_id==172))
+data.frame(filter(mean_catch, stock_id == "Marine_fishes_not_identified-57" & rgn_id==1)) # includes finfishes (100139) and other marine fishes (100039)
+data.frame(filter(mean_catch, stock_id == "Clupeiformes-57" & rgn_id==1)) # look at one which is in forage_fish
+```
+
+## Toolbox formatting and save
+
+```{r, eval=FALSE}
+options(scipen = 999) # to prevent taxonkey from turning into scientific notation
+
+mean_catch_toolbox <- mean_catch %>%
+  mutate(stock_id_taxonkey = paste(stock_id, TaxonKey, sep="_")) %>%
+  dplyr::select(rgn_id, stock_id_taxonkey, year, mean_catch) %>%
+  filter(year >= 2001) %>%  # filter to include only analysis years
+  data.frame()
+
+write.csv(mean_catch_toolbox, "mean_catch_highseas.csv", row.names=FALSE)
+
+```
+
