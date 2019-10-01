@@ -34,14 +34,21 @@ You will be working with a dataset describing Ocean Health Index scores for:
   - 220 countries/regions (we use these terms interchangably)
   - 7 years (2012 - 2018)
   
-We will read in the data from Github.com:
+We will read in the data from Github.com, and do some preliminary exploration:
 
 ```{r data}
 
 ## read in OHI data:
 ohi_data <- read_csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/Reference/Lessons_in_OHI/coding_exercise/scores.csv")
 
+
+## do a quick exploration of the data:
+
+
+
 ```
+
+
 
 
 ## Task 1
