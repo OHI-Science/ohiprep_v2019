@@ -1,0 +1,200 @@
+---
+title: "Coding Exercise for NCEAS Data Science Application"
+output: html_document
+---
+
+## Instructions
+
+You will have 24 hours to complete this activity. You will work directly in this document, using code chunks (gray parts) to wrangle, analyze, and visualize data according to the instructions. 
+
+Please document your process in the code chunks and/or in the text of the Rmarkdown file.  
+
+Once you have finished, please add your last name to the file name (e.g., frazier_coding_exercise.Rmd) and send to halpern@nceas.ucsb.edu.  
+
+You will be evaluated on: coding ability, documentation of code, and communication of results.     
+
+
+## Packages
+
+Add the packages you will use in this code chunk.  We will get you started with the `readr` package, which we use to read in the dataset below.
+```{r setup, include=FALSE}
+
+## loading packages
+library(readr)
+
+```
+
+
+
+## Data
+
+You will be working with a dataset describing Ocean Health Index scores for:
+ 
+  - 10 goals + 1 overall country score ("Index") 
+  - 220 countries
+  - 7 years (2012 - 2018)
+
+We will read in the data from Github.com:
+
+```{r setup, include=FALSE}
+
+## loading packages
+library(readr)
+
+```
+
+
+
+
+## Questions
+
+### Getting the data
+
+*Goal* Read the latest OHI global data into the R working space (call the data object "scores").
+
+*Hint* Here is a link to the data: 
+https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/scores.csv
+
+```{r, include=FALSE}
+## Working space
+
+scores <- read_csv("https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/yearly_results/global2018/OHI_final_formatted_scores_2018-11-28.csv") %>%
+  filter(region_id > 0, dimension == "score") %>%
+  mutate(chars = nchar(goal)) %>%
+  filter(chars<3 | chars>3) %>%
+  select(year = scenario, goal, region_id, score=value)
+
+write_csv(scores, "C:/Users/melan/Documents/github/ohiprep_v2019/Reference/Lessons_in_OHI/coding_exercise/scores.csv")
+
+```
+
+### Region explore
+
+*Question* Why are there N=222 regions (see code below)...aren't there supposed to be 220?
+
+*Hint 1* Here is a link to the official region list: https://raw.githubusercontent.com/OHI-Science/ohi-global/draft/eez/spatial/regions_list.csv
+
+*Hint 2* Which region has all NA values for scores?
+
+*Answer* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+length(unique(scores$region_id))
+
+```
+
+*Question* Which region id corresponds to the United States?
+
+### Goal explore
+
+*Question * When I look at the number of goals, N=19 show up....I thought there were supposed to be 10 goals!!! Can you explain what all these are? Also, why do some of the goal abbreviations have 2 letters and others 3 letters?  
+
+*Hint 1* Review the methods doc here: https://raw.githack.com/OHI-Science/ohi-global/published/global2018/Results/Supplement_Results.html
+
+*Answer* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+unique(scores$goal)
+
+```
+
+
+### Dimension explore
+
+*Question* There are 6 dimensions reported in this dataset (future, pressures, resilience, score, status, and trend).  When I look at the number of records in each of these categories, I notice that there are more "score" values reported than "status" values (see working space below). Given that scores are calculated using status, it seems like these should have the same number of records. Can you figure out what is going on here. Is something going wrong?  
+
+*Answer* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+unique(scores$dimension)
+table(scores$dimension)
+
+table(scores$goal)
+table(scores$goal, scores$dimension)
+
+# ok...but why are the different values for pressures/resilience/trend and future?
+# addition of region 0!
+ao <- filter(scores, goal=="AO")
+table(scores$region_id, scores$dimension)
+```
+
+
+### Missing data
+
+*Question* Figure out which goals/subgoals have the most NA values for scores in 2018.  Which ones have the least?  Can you discern any reason why some goals have lots of missing values and others do not?
+
+*Hint* Include only dimension = score, and year = 2018, and cut region_id = 0.
+
+*Answer* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+na_data <- scores %>% 
+  filter(dimension == "score") %>%
+  filter(region_id != 0) %>%
+  filter(year == 2018)
+
+```
+
+*Question* Artisanal opportunities has no missing data (except for region 213, which is Antarctica).  Look over the description of the artisanal opportunities goal (http://ohi-science.org/ohi-global/goals#artisanal_fishing_opportunity).  Based on this description, in your opinion, should uninhabited islands be given an NA value? 
+
+*Answer* Write your answer here!
+
+### Scores
+
+*Question* If we have a goal with a future status of 80 and status of 90...what is the score?  
+
+*Hint* Isolate the future, status, and score values for one region and one goal and see if you can identify a pattern.
+
+*Answer* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+
+```
+
+
+### Metadata
+
+*Project* Based on your data exploration and other resources, provide some metadata that describes each variable.  Write it so it would be useful to you in the future as you are looking through these data.
+
+Write it in the following table.  NOTE: Knit the document to see if the table is formatting correctly (but don't bother if you do not know how to knit a document or if you are running into errors!).
+
+Variable   | Description                  | Values
+---------- | ---------------------------- | ------------------------------
+goal       |                              |
+dimension  |                              | 
+region_id  |                              | 
+score      |                              |          
+year       |  Scenario year               | 2012 to 2019 
+
+
+```{r, include=FALSE}
+## Working space
+
+summary(scores)
+
+```
+
+
+### Plot
+
+*Project* Create a scatterplot that compares 2012 and 2018 *scores* for each region for the artisanal opportunities goal. Based on this, do scores for the artisanal opportunities goal appear to have increased or decreased over time? 
+
+*Answer* Write your answer here!
+
+```{r, include=FALSE}
+## Working space
+
+
+
+```
+
