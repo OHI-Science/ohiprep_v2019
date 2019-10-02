@@ -1,0 +1,642 @@
+---
+title: 'OHI: Social Progress Index: Exploring gapfilling'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../workflow/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+
+# Summary
+This script gapfills the Social Progress Index (SPI) data and formats it for the OHI global assessment.
+
+# Updates
+Now 6 years of data included in SPI.Created updated spi_categories.csv in Mazu. See the 2019 Methodology Report cited below for a detailed description of the SPI changes from 2018 to 2019. This is saved in Mazu and can also be downloaded [here](https://www.socialprogress.org/index/global/methodology).
+
+***
+
+**Citation**: http://www.socialprogress.org/
+
+Stern, S., A. Wares and T. Epner. 2019. Social Progress Index: 2019 Methodology Report.
+
+**Source information**: 
+https://www.socialprogress.org/download
+https://www.socialprogress.org/index/global/methodology
+
+**Date Downloaded**: 9/27/2019
+
+**Time range**: 2014-2019
+
+**Native data resolution**: country scores
+
+**Format**:  Excel file
+
+**Description**: Social Progress Index scores and components for countries.
+
+```{r setup, warning=FALSE, message = FALSE}
+# load libraries, set directories
+library(ohicore)  #devtools::install_github('ohi-science/ohicore@dev')
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(Hmisc)
+library(here)
+library(validate)
+library(tidyverse)
+
+## comment out when knitting
+setwd(here::here("globalprep","prs_res_spi","v2019"))
+
+
+### Load FAO-specific user-defined functions
+source('../../../workflow/R/common.R') # directory locations
+
+set.seed(227)
+
+```
+
+# Social Progress Index data
+
+Organize data and gapfill missing countries that have incomplete data.  This index is comprised of 3 indicators, which are each comprised of 4 subindicators, which are comprised of several datasets.  If one of the subindicators are missing, the SPI is not calculated.  The first round of gapfilling involves using relationships between the the subindicators to gapfill missing data. If a region is missing all subindicator data, then a second round of gapfilling is performed using relationships between UN geopolitical regions and the World Governance Indicator to gapfill the SPI score.
+
+The following gets all years of data (currently in separate files).
+
+ToleranceandInclusion and AccesstoInformationandCommunications 
+```{r}
+cats <- read.csv(file.path(dir_M, 'git-annex/globalprep/_raw_data/SocialProgressIndex/d2019/spi_categories.csv')) %>%
+  mutate(subcategory = gsub(" ", "", subcategory))
+
+files <- list.files(file.path(dir_M, 
+          "git-annex/globalprep/_raw_data/SocialProgressIndex/d2019"),
+          pattern = "spi_(\\d+)", full = TRUE)
+
+all_spi <- data.frame()
+
+for(spi in files){   #spi = files[6]
+
+spi_data <- read.csv(spi, check.names=FALSE, stringsAsFactors=FALSE) 
+
+names(spi_data) <- gsub(" ", "", names(spi_data))
+
+yr <- str_extract(basename(spi), "(\\d+)")
+
+spi_data <- spi_data %>%
+  dplyr::select(-1, -Code, - Status) %>% ## have to deselect the first column using the term '1' because each file has a different first column name... i.e. 2014ranking, 2015ranking, etc... 
+  filter(Country != "World") %>% ## don't include the 'World' ranking, as we are only interested in each country. 
+  mutate(year = yr) %>%
+  gather('subcategory', 'score', -Country, -year) %>%
+  filter(subcategory %in% cats$subcategory) %>%
+  left_join(cats, by = "subcategory")
+
+all_spi <- rbind(all_spi, spi_data)
+
+}
+
+```
+
+
+## Gapfilling: Step 1
+In this case, we use relationships between the subindicators to estimate missing data.
+
+
+### Gapfill Basic Human Need (bhn) indicator 
+
+```{r}
+
+set.seed(227)
+bhn_subs <- all_spi %>%
+  dplyr::filter(category %in% c("bhn")) %>%
+  spread(subcategory, score)
+
+bhn_tmp <- all_spi %>%
+  dplyr::filter(category %in% c("bhn_score")) %>%
+  select(Country, year, bhn_score=score) %>%
+  left_join(bhn_subs, by=c("Country", "year"))
+
+
+bhn_tmp <- bhn_tmp %>%
+  rowwise() %>%
+  mutate(NA_tot = sum(is.na(NutritionandBasicMedicalCare), is.na(PersonalSafety), is.na(Shelter),
+             is.na(WaterandSanitation)))
+
+## Ideally most NA_tot values are 0
+hist(bhn_tmp$NA_tot)
+table(bhn_tmp$NA_tot)
+
+#library(mice)
+# md.pattern(select(bhn_tmp, -(1:4))) # mice package
+
+imputes <- 50
+bhn_gf <- aregImpute(~ WaterandSanitation + Shelter + NutritionandBasicMedicalCare + PersonalSafety, 
+                         data = bhn_tmp, type = "regression", n.impute = imputes)
+
+
+bhn_gf
+
+# to get mean and sd of all imputations
+impute_scores_all <- data.frame()
+
+for (imp in 1:imputes){ 
+   #imp = 1
+  
+  imputed <- impute.transcan(bhn_gf, imputation=imp, data=bhn_tmp, list.out=TRUE,
+                           pr=FALSE, check=FALSE)
+  
+      subcat_data <- data.frame(imputed)
+  
+      impute_scores <- data.frame(Country = bhn_tmp$Country, 
+                                  year = bhn_tmp$year,
+                                  imputation = imp)
+      
+      impute_scores <- cbind(impute_scores, subcat_data)
+    
+      impute_scores_all <- rbind(impute_scores_all, impute_scores)
+    }
+
+## Convert class of value columns from `impute` to `numeric` to avoid "Warning message: attributes are not identical across measure variables; they will be dropped" when gathering columns
+impute_scores_all$WaterandSanitation <- as.numeric(impute_scores_all$WaterandSanitation)
+impute_scores_all$Shelter <- as.numeric(impute_scores_all$Shelter)
+impute_scores_all$NutritionandBasicMedicalCare <- as.numeric(impute_scores_all$NutritionandBasicMedicalCare)
+impute_scores_all$PersonalSafety <- as.numeric(impute_scores_all$PersonalSafety)
+
+impute_scores_summary <- impute_scores_all %>%
+  gather("subcategory", "score", -(1:3)) %>%
+  group_by(Country, year, subcategory) %>%
+  dplyr::summarize(score_predict = mean(score),
+            sd_score_predict = sd(score)) %>% 
+  ungroup()
+
+bhn_tmp_long <- bhn_tmp %>%
+  select(Country, year, bhn_score, NA_tot, NutritionandBasicMedicalCare, 
+         PersonalSafety, Shelter, WaterandSanitation) %>%
+  gather("subcategory", "score", -(1:4)) %>%
+  left_join(impute_scores_summary, by=c("Country", "year", "subcategory"))
+
+## Should be no NAs in column sd_score_predict or score_predict
+summary(bhn_tmp_long)
+
+bhn_data <- bhn_tmp_long %>%
+  mutate(score = ifelse(is.na(score) & NA_tot < 4, score_predict, score)) %>%
+  group_by(Country, year) %>%
+  dplyr::summarize( #bhn_score_old = mean(bhn_score), # used this to test to make sure all is well, use `check_that( )` below
+            score = mean(score),
+            NA_tot = mean(NA_tot)) %>%
+  ungroup() %>% 
+  mutate(category = "bhn")
+
+```
+
+### Gapfill Opportunity (op) indicator 
+
+```{r}
+
+set.seed(227)
+op_subs <- all_spi %>%
+  dplyr::filter(category %in% c("op")) %>%
+  spread(subcategory, score)
+
+op_tmp <- all_spi %>%
+  dplyr::filter(category %in% c("op_score")) %>%
+  select(Country, year, op_score=score) %>%
+  left_join(op_subs, by=c("Country", "year"))
+
+
+op_tmp <- op_tmp %>%
+  rowwise() %>%
+  mutate(NA_tot = sum(is.na(AccesstoAdvancedEducation), is.na(PersonalFreedomandChoice), is.na(PersonalRights),
+             is.na(Inclusiveness)))
+
+## Ideally most NA_tot values are 0
+hist(op_tmp$NA_tot)
+table(op_tmp$NA_tot)
+
+#md.pattern(select(op_tmp, -(1:4))) # mice package
+
+imputes <- 50
+op_gf <- aregImpute(~ AccesstoAdvancedEducation + PersonalFreedomandChoice + PersonalRights + Inclusiveness, 
+                         data = op_tmp, type = "regression", n.impute = imputes)
+
+
+op_gf
+
+# to get mean and sd of all imputations
+impute_scores_all <- data.frame()
+
+for (imp in 1:imputes){ 
+  #imp = 1
+  
+  ## The imputed score values from 0 to 100
+  imputed <- impute.transcan(op_gf, imputation=imp, data=op_tmp, list.out=TRUE,
+                           pr=FALSE, check=FALSE)
+  
+      subcat_data <- data.frame(imputed)
+  
+      impute_scores <- data.frame(Country = op_tmp$Country, 
+                                  year = op_tmp$year,
+                                  imputation = imp)
+      
+      impute_scores <- cbind(impute_scores, subcat_data)
+    
+      impute_scores_all <- rbind(impute_scores_all, impute_scores)
+    }
+
+## Convert columns from impute to numeric just to be safe and to prevent warning message from gathering
+impute_scores_all$AccesstoAdvancedEducation <- as.numeric(impute_scores_all$AccesstoAdvancedEducation)
+impute_scores_all$PersonalFreedomandChoice <- as.numeric(impute_scores_all$PersonalFreedomandChoice)
+impute_scores_all$PersonalRights <- as.numeric(impute_scores_all$PersonalRights)
+impute_scores_all$Inclusiveness <- as.numeric(impute_scores_all$Inclusiveness)
+
+impute_scores_summary <- impute_scores_all %>%
+  gather("subcategory", "score", -(1:3)) %>%
+  group_by(Country, year, subcategory) %>%
+  dplyr::summarize(score_predict = mean(score),
+            sd_score_predict = sd(score)) %>% 
+  ungroup()
+
+
+op_tmp_long <- op_tmp %>%
+  select(Country, year, op_score, NA_tot, AccesstoAdvancedEducation, 
+         PersonalFreedomandChoice, PersonalRights, Inclusiveness) %>%
+  gather("subcategory", "score", -(1:4)) %>%
+  left_join(impute_scores_summary, by=c("Country", "year", "subcategory"))
+
+
+## should have no NAs in score_predict and sd_score_predict
+summary(op_tmp_long)
+
+op_data <- op_tmp_long %>%
+  mutate(score = ifelse(is.na(score) & NA_tot < 4, score_predict, score)) %>%
+  group_by(Country, year) %>%
+  dplyr::summarize( #op_score_old = mean(op_score), # used this to test to make sure all is well, try `check_validate( )` below
+            score = mean(score),
+            NA_tot = mean(NA_tot)) %>%
+  ungroup() %>% 
+  mutate(category = "op") 
+
+```
+
+
+### Gapfill Foundations of Wellbeing (fw) indicator 
+
+```{r}
+
+set.seed(227)
+fw_subs <- all_spi %>%
+  dplyr::filter(category %in% c("fw")) %>%
+  spread(subcategory, score)
+
+fw_tmp <- all_spi %>%
+  dplyr::filter(category %in% c("fw_score")) %>%
+  select(Country, year, fw_score=score) %>%
+  left_join(fw_subs, by=c("Country", "year"))
+
+
+fw_tmp <- fw_tmp %>%
+  rowwise() %>%
+  mutate(NA_tot = sum(is.na(AccesstoBasicKnowledge), is.na(AccesstoInformationandCommunications), is.na(EnvironmentalQuality),is.na(HealthandWellness)))
+
+## most values should be 0
+hist(fw_tmp$NA_tot)
+table(fw_tmp$NA_tot)
+
+#md.pattern(select(fw_tmp, -(1:4))) # mice package
+
+imputes <- 50
+fw_gf <- aregImpute(~ AccesstoBasicKnowledge + AccesstoInformationandCommunications + EnvironmentalQuality + HealthandWellness, 
+                         data = fw_tmp, type = "regression", n.impute = imputes)
+
+
+fw_gf
+
+# to get mean and sd of all imputations
+impute_scores_all <- data.frame()
+
+for (imp in 1:imputes){ 
+  #imp = 1
+  
+  imputed <- impute.transcan(fw_gf, imputation=imp, data=fw_tmp, list.out=TRUE,
+                           pr=FALSE, check=FALSE)
+  
+      subcat_data <- data.frame(imputed)
+  
+      impute_scores <- data.frame(Country = fw_tmp$Country, 
+                                  year = fw_tmp$year,
+                                  imputation = imp)
+      
+      impute_scores <- cbind(impute_scores, subcat_data)
+    
+      impute_scores_all <- rbind(impute_scores_all, impute_scores)
+    }
+
+## Convert columns from impute to numeric just to be safe and to prevent warning message from gathering. Due to some impute values having *
+impute_scores_all$AccesstoBasicKnowledge <- as.numeric(impute_scores_all$AccesstoBasicKnowledge)
+impute_scores_all$AccesstoInformationandCommunications <- as.numeric(impute_scores_all$AccesstoInformationandCommunications)
+impute_scores_all$EnvironmentalQuality <- as.numeric(impute_scores_all$EnvironmentalQuality)
+impute_scores_all$HealthandWellness <- as.numeric(impute_scores_all$HealthandWellness)
+
+impute_scores_summary <- impute_scores_all %>%
+  gather("subcategory", "score", -(1:3)) %>%
+  group_by(Country, year, subcategory) %>%
+  dplyr::summarize(score_predict = mean(score),
+            sd_score_predict = sd(score)) %>% 
+  ungroup()
+
+
+fw_tmp_long <- fw_tmp %>%
+  select(Country, year, fw_score, NA_tot, AccesstoBasicKnowledge, 
+         AccesstoInformationandCommunications, EnvironmentalQuality, HealthandWellness) %>%
+  gather("subcategory", "score", -(1:4)) %>%
+  left_join(impute_scores_summary, by=c("Country", "year", "subcategory"))
+
+
+summary(fw_tmp_long)
+
+fw_data <- fw_tmp_long %>%
+  mutate(score = ifelse(is.na(score) & NA_tot < 4, score_predict, score)) %>%
+  group_by(Country, year) %>%
+  dplyr::summarize( #fw_score_old = mean(fw_score), # used this to test to make sure all is well, try `check_that( )` below
+            score = mean(score),
+            NA_tot = mean(NA_tot)) %>%
+  ungroup() %>% 
+  mutate(category = "fw") 
+
+```
+
+
+
+## Combine data to get Social Progress Index
+
+The next step averages the 3 indicators and identifies gapfilling. All the rows where all four indicators are missing `NA_tot = 4` will have an NA in the `score` column.
+
+```{r}
+
+spi_calc <- rbind(bhn_data, op_data, fw_data) %>%
+  mutate(gapfill = paste(category, NA_tot, sep = "_")) %>%
+  mutate(score = ifelse(score > 100, 100, score),
+         score = ifelse(score < 0, 0, score)) %>%
+  group_by(Country, year) %>%
+  dplyr::summarize(
+            score = mean(score),
+            method = paste(unique(gapfill), collapse=", "),
+            gapfill = sum(NA_tot)) %>%
+  ungroup() %>% 
+  mutate(method = ifelse(gapfill == 0, NA, method),
+         gapfill = ifelse(gapfill >= 1, 1, 0)) %>% # change values to just yes or no
+  data.frame()
+
+## Some scores might still be NA because no values exist for that country
+
+# check:
+check <- spi_data %>%
+  filter(subcategory=="SocialProgressIndex") %>%
+  dplyr::select(Country, year, true_score=score) %>%
+  left_join(spi_calc, by = c("Country", "year"))
+
+## Perfect
+plot(check$true_score, check$score)
+abline(0,1, col="red")
+
+
+write.csv(spi_calc, "int/Country_spi.csv", row.names=FALSE)
+
+
+```
+
+## Assign countries to OHI regions
+
+```{r}
+
+spi_calc <- read.csv("int/Country_spi.csv", stringsAsFactors = FALSE)
+
+spi_calc <- spi_calc %>%
+  mutate(Country = case_when(
+    Country=="C<f4>te d'Ivoire" ~ "Cote d'Ivoire",
+    Country=="R<e9>union" ~ "Reunion",
+    Country=="Cura<e7>ao" ~ "Curacao",
+    Country=="Korea, Democratic Republic of" ~ "North Korea",
+    Country=="St. Helena" ~ "Saint Helena",
+    Country=="St. Martin" ~ "Northern Saint-Martin",
+    TRUE ~ Country # Everything else, leave it be
+    ))
+
+# Channel Islands are Jersey and Guernsey, but these are already in the data
+
+spi_rgn <- name_2_rgn(df_in = spi_calc, 
+                       fld_name='Country',
+                      flds_unique = c("year"))
+
+# Weight the following duplicates by population
+# China, Guadeloupe, Guam, Hong Kong, Macao, Martinique, Northern Mariana Islands, Puerto Rico, Virgin Islands (U.S.)... just use wikipedia populations 
+
+pop_weights <- data.frame(Country = c("China", "Hong Kong", "Macao",
+                 "Guadeloupe", "Martinique",
+                 "Guam", "Northern Mariana Islands",
+                 "Puerto Rico", "Virgin Islands (U.S.)"),
+                 pop = c(1379113306, 7482500, 622567,
+                         395700, 376480,
+                         164229, 55144,
+                         3195153, 106405))
+spi_rgn <- spi_rgn %>%
+  left_join(pop_weights, by = "Country") %>%
+  mutate(pop = ifelse(is.na(pop), 1, pop)) %>%
+  group_by(rgn_id, rgn_name, year) %>%
+  dplyr::summarize(score = weighted.mean(score, pop, na.rm=TRUE),
+            method = paste(unique(method), collapse=" "),
+            gapfill = weighted.mean(gapfill, pop, na.rm=TRUE))%>%
+  ungroup() %>% 
+  dplyr::mutate(year = as.numeric(year))
+
+
+```
+
+# Compare to WGI
+
+WGI is a couple years behind the SPI, so we will use 2016 WGI for the 2017 and 2018 SPI. There is a strong correlation betwen the WGI and SPI indicators.
+```{r}
+
+wgi <- read.csv('../../prs_res_wgi/v2019/output/wgi_res.csv') %>%
+  select(rgn_id, year, wgi_score = resilience_score)
+
+length(unique(wgi$rgn_id))
+
+wgi_2018 <- wgi %>%
+  filter(year == 2016) %>%
+  mutate(year = 2018)
+
+wgi_2019 <- wgi %>%
+  filter(year == 2016) %>%
+  mutate(year = 2019)
+
+wgi <- rbind(wgi, wgi_2018, wgi_2019)
+
+wgi_spi <- wgi %>%
+  left_join(spi_rgn, by=c("rgn_id", "year"))
+
+plot(wgi_spi$wgi_score*100, wgi_spi$score, ylab="Social Progress Index, score", xlab="Worldwide Governance Score")
+abline(0,1, col="red")
+
+mod <- lm(score ~ wgi_score, data=wgi_spi)
+summary(mod)
+
+```
+
+# Second round of gapfilling 
+In this case, UN geopolitical regions and WGI scores are used to estimate regions with no data.  Based on this analysis, a model that includes WGI data and r2 UN geopolitical regions is the best model to predict missing SPI values. 
+
+```{r}
+
+years <- data.frame(year = min(spi_rgn$year):max(spi_rgn$year))
+
+rgns_gf_un <- georegions %>%
+  merge(years) %>%
+  left_join(spi_rgn, by = c("rgn_id","year")) %>%
+  left_join(wgi, by = c("rgn_id", "year")) %>%
+  mutate(r2 = as.factor(r2)) %>%
+  mutate(r1 = as.factor(r1))
+
+
+## Compare models to select a gapfilling method
+mod1 <- lm(score ~ r2, data = rgns_gf_un, na.action="na.exclude")
+mod2 <- lm(score ~ r2 + wgi_score, data = rgns_gf_un, na.action="na.exclude")
+mod3 <- lm(score ~ r1, data = rgns_gf_un, na.action="na.exclude")
+mod4 <- lm(score ~ r1 + wgi_score, data = rgns_gf_un, na.action="na.exclude")
+mod5 <- lm(score ~ wgi_score, data = rgns_gf_un, na.action="na.exclude")
+mod6 <- lm(score ~ r1 + poly(wgi_score, 2), data = rgns_gf_un, na.action = "na.exclude")
+mod7 <- lm(score ~ r1 + poly(wgi_score, 3), data = rgns_gf_un, na.action = "na.exclude")
+
+
+## the lowest AIC score is likely the best model
+AIC(mod1, mod2, mod3, mod4, mod5, mod6, mod7)
+
+## plot the models with the two lowest AIC scores
+plot(predict(mod2), rgns_gf_un$score)
+abline(0,1)
+plot(predict(mod7), rgns_gf_un$score)
+abline(0,1)
+
+## Estimate missing data and gapfill
+## need to add this because some R2 regions have no data
+r2_regions <- unique(rgns_gf_un$r2[!is.na(rgns_gf_un$score)])
+rgns_gf_un$r2 <- ifelse(rgns_gf_un$r2 %in% r2_regions, rgns_gf_un$r2, NA)
+
+r1_regions <- unique(rgns_gf_un$r1[!is.na(rgns_gf_un$score)])
+rgns_gf_un$r1 <- ifelse(rgns_gf_un$r1 %in% r1_regions, rgns_gf_un$r1, NA)
+
+
+## Predict scores using r2 and wgi scores
+mod_gf_r2 <- lm(score ~ r2 + wgi_score, data = rgns_gf_un, na.action = "na.exclude")
+rgns_gf_un$score_pred_r2 <- predict(mod_gf_r2, newdata = rgns_gf_un[, c("r2", "wgi_score")])
+## Predict scores using r1 and wgi scores
+mod_gf_r1 <- lm(score ~ r1 + wgi_score, data = rgns_gf_un, na.action = na.exclude)
+rgns_gf_un$score_pred_r1 <- predict(mod_gf_r1, newdata = rgns_gf_un[, c("r1", "wgi_score")])
+## Predict scores just using wgi scores
+mod_gf_wgi <- lm(score ~ wgi_score, data = rgns_gf_un, na.action = na.exclude)
+rgns_gf_un$score_pred_wgi <- predict(mod_gf_wgi, newdata = data.frame(wgi_score = rgns_gf_un$wgi_score))
+
+## Record gapfill methods
+## Combine scores with predicted model scores
+rgns_gf <- rgns_gf_un %>%
+  mutate(method = ifelse(is.na(score), "UN georgn & WGI", method)) %>%
+  mutate(gapfill = ifelse(is.na(score), "1", gapfill)) %>%
+  mutate(score = ifelse(is.na(score), score_pred_r2, score)) %>%
+  mutate(score = ifelse(is.na(score), score_pred_r1, score)) %>%
+  mutate(score = ifelse(is.na(score), score_pred_wgi, score)) %>%
+  select(rgn_id, year, score, method, gapfill) %>%
+  mutate(score = ifelse(score > 100, 100, score),
+         score = ifelse(score < 0, 0, score))
+
+summary(rgns_gf)  # should be no NA values
+length(unique(rgns_gf$rgn_id)) # should be 220 regions
+
+```
+
+# Uninhabited regions
+
+These regions will receive an NA for their score (when established population is < 3000 people). 
+
+```{r}
+low_pop()
+low_pop <- low_pop %>%
+  filter(est_population < 3000 | is.na(est_population)) 
+
+rgns_gf_uninhab <- rgns_gf %>%
+  mutate(score = ifelse(rgn_id %in% low_pop$rgn_id, NA, score)) %>%
+  mutate(gapfill = ifelse(rgn_id %in% low_pop$rgn_id, NA, gapfill))
+
+```
+
+# Save final data
+
+```{r}
+gf_2018 <- read_csv(file.path("../v2018/output/spi_gf.csv"))
+
+
+gf_data <- rgns_gf_uninhab %>%
+  select(rgn_id, year, gapfill, method) %>%
+  mutate(gapfill = ifelse(is.na(method), 0, 1))
+write.csv(gf_data, "output/spi_gf.csv", row.names=FALSE)
+
+
+res_data <- rgns_gf_uninhab %>%
+  select(rgn_id, year, resilience_score=score) %>%
+  mutate(resilience_score = resilience_score/100)
+write.csv(res_data, "output/spi_res.csv", row.names=FALSE)
+
+prs_data <- rgns_gf_uninhab %>%
+  select(rgn_id, year, pressure_score=score) %>%
+  mutate(pressure_score = 1 - (pressure_score/100))
+write.csv(prs_data, "output/spi_prs.csv", row.names=FALSE)
+
+```
+
+# Data check 
+
+```{r}
+## Resilience comparison, filtered for 2018
+new_spi_res <- read_csv(file.path("output/spi_res.csv")) %>%
+  filter(year == 2018) %>%
+  select(rgn_id, new_resilience_score = resilience_score)
+
+old_new <- read_csv("../v2018/output/spi_res.csv") %>%
+  filter(year == 2018) %>% 
+  left_join(new_spi_res, by = 'rgn_id')
+
+plot(old_new$new_resilience_score, old_new$resilience_score)
+abline(0, 1, col="red")
+
+## Pressure score comparison, filtered for 2018
+new_spi_prs <- read_csv(file.path("output/spi_prs.csv")) %>%
+  filter(year == 2018) %>%
+  select(rgn_id, new_pressure_score = pressure_score)
+
+old_new <- read_csv("../v2018/output/spi_prs.csv") %>%
+  filter(year == 2018) %>% 
+  left_join(new_spi_prs, by = 'rgn_id')
+
+plot(old_new$new_pressure_score, old_new$pressure_score)
+abline(0, 1, col="red")
+
+
+## Pressure score comparison, All years 
+new_spi_prs <- read_csv(file.path("output/spi_prs.csv")) %>%
+  #filter(year == 2018) %>%
+  select(rgn_id, new_pressure_score = pressure_score)
+
+old_new <- read_csv("../v2018/output/spi_prs.csv") %>%
+  #filter(year == 2018) %>% 
+  left_join(new_spi_prs, by = 'rgn_id')
+
+plot(old_new$new_pressure_score, old_new$pressure_score)
+abline(0, 1, col="red")
+```
+
+
+***
+
