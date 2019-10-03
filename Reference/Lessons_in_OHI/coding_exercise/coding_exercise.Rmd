@@ -11,7 +11,7 @@ You will have 24 hours to complete this activity. You will work directly in this
 - answer questions and provide additional insights/thoughts
 - document workflow
 
-Note: If you are unfamiliar with Rmarkdown, that is no problem; just add your code to the gray code chunks and treat it like any .R file. Text can be added in tge white parts of the document.
+Note: If you are unfamiliar with Rmarkdown, that is no problem; just add your code to the gray code chunks and treat it like any .R file. Text can be added in the white parts of the document.
 
 Once you have finished, please add your last name to the file name (e.g., frazier_coding_exercise.Rmd) and send to halpern@nceas.ucsb.edu. You can also provide a knitted html version of this file as well, but this is not necessary.
 
