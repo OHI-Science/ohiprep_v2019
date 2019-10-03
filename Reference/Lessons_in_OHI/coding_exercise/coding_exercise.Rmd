@@ -5,14 +5,13 @@ output: html_document
 
 ## Instructions
 
-You will have 24 hours to complete this activity. You will work directly in this Rmarkdown document:
+You will have 24 hours to complete this activity. You will work directly in this Rmarkdown document to:
 
-* writing code to wrangle, analyze, and visualize the data in the gray "code chunk" portion of the document 
-* answering questions (and providing additional insights/thoughts) in the text portion of the document
+- write code to wrangle, analyze, and visualize the data  
+- answer questions and provide additional insights/thoughts
+- document workflow
 
-Note: If you are unfamiliar with Rmarkdown, that is ok....just add your code to the gray code chunks and run it like you would in any .R file. 
-
-As well as answering the specific questions throughout the document, be sure to document your workflow.  This information can be included in the code chunks as well as the text of the Rmarkdown file.  
+Note: If you are unfamiliar with Rmarkdown, that is no problem; just add your code to the gray code chunks and treat it like any .R file. Text can be added in tge white parts of the document.
 
 Once you have finished, please add your last name to the file name (e.g., frazier_coding_exercise.Rmd) and send to halpern@nceas.ucsb.edu. You can also provide a knitted html version of this file as well, but this is not necessary.
 
@@ -24,7 +23,7 @@ Please contact frazier@nceas.ucsb.edu if you have any questions about this exerc
 
 ## Packages
 
-Add the packages you will use to the following code chunk.  We start by loading the `readr` package, which we will use to read in dataset.
+Add packages you will use to the following code chunk.  We start by loading the `readr` package, which we will use to read in dataset.
 
 ```{r setup}
 
@@ -37,9 +36,9 @@ library(readr)
 
 ## Data
 
-You will be working with a dataset describing global Ocean Health Index (http://ohi-science.org/ohi-global/) scores for the 2018 assessment for:
+You will be working with a dataset describing global Ocean Health Index scores for:
  
-  - 10 goals and 1 Index score for each country.  Goals describe specific benefits we receive from the ocean (e.g., food provision and tourism and recreation) and the Index score is the overall score for the country calculated by averaging the 10 goal scores. 
+  - 10 goals and 1 "Index" score for each country.  Goals describe specific benefits we receive from the ocean (e.g., food provision and tourism and recreation) and the Index score is the overall score for the country calculated by averaging the 10 goal scores. 
   - 220 countries/regions (we use these terms interchangably)
   - 7 years
   
@@ -64,7 +63,7 @@ What information did you learn about the data from your explorations?
 
 Please help make these data more human readable by including the full goal name (vs. the 2 letter abbreviation) and the country name.  
 
-Here is a table that includes the goal name and description: https://github.com/OHI-Science/ohi-global/blob/draft/global_supplement/tables/ten_goals.csv
+Here is a table that includes goal names: https://github.com/OHI-Science/ohi-global/blob/draft/global_supplement/tables/ten_goals.csv
 
 Here is a table with the region names: https://github.com/OHI-Science/ohi-global/blob/draft/eez/spatial/regions_list.csv
 (the rgn_id column in this file matches the region_id column in the ohi_data)
@@ -117,7 +116,7 @@ Create a plot showing all 10 goal scores and the "Index" score for the United St
 
 ## Task 4
 
-For each country and goal (i.e., the 10 goal + 1 Index score), calculate the average score across all years (note: each country should have N=11 scores when finished).
+For each country and goal (i.e., the 10 goal + 1 Index scores), calculate the average score across all years (note: each country should have N=11 scores when finished).
 
 ```{r across year avg}
 
@@ -128,7 +127,7 @@ For each country and goal (i.e., the 10 goal + 1 Index score), calculate the ave
 ```
 
 
-Create a plot that shows the distribution of *Index* scores of all countries.
+Create a plot that shows the distribution (e.g., histogram or barplot or ??) of *Index* scores of all countries.
 
 ```{r across year avg}
 
