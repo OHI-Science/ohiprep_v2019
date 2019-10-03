@@ -5,13 +5,16 @@ output: html_document
 
 ## Instructions
 
-You will have 24 hours to complete this activity. You will work directly in this document, using code chunks (gray parts) to wrangle, analyze, and visualize data according to the instructions. 
+You will have 24 hours to complete this activity. You will work directly in this document, using code chunks (gray parts) to wrangle, analyze, and visualize data according to the instructions. (NOTE: all code *must* be in the gray code chunks)
 
-As necessary, document any responses to questions, as well as notes describing your process, in the code chunks and/or in the text of the Rmarkdown file.  
+As necessary, provide responses to questions as well as any notes you make to document your workflow.  This information can be included in the code chunks and/or in the text of the Rmarkdown file.  
 
-Once you have finished, please add your last name to the file name (e.g., frazier_coding_exercise.Rmd) and send to halpern@nceas.ucsb.edu.  
+Once you have finished, please add your last name to the file name (e.g., frazier_coding_exercise.Rmd) and send to halpern@nceas.ucsb.edu. You can also provide a knitted html version of this file as well, but this is not necessary.
 
 You will be evaluated on: coding ability, documentation of code, and communication of results.     
+
+
+Please contact frazier@nceas.ucsb.edu if you have any questions about this exercise.
 
 
 ## Packages
@@ -28,13 +31,13 @@ library(readr)
 
 ## Data
 
-You will be working with a dataset describing Ocean Health Index scores for:
+You will be working with a dataset describing global Ocean Health Index (http://ohi-science.org/ohi-global/) scores for the 2018 assessment for:
  
-  - 10 goals + 1 overall country score ("Index") 
+  - 10 goals and 1 Index score for each country.  Goals describe specific benefits we receive from the ocean (e.g., food provision and tourism and recreation) and the Index score is the overall score for the country calculated by averaging the 10 goal scores. 
   - 220 countries/regions (we use these terms interchangably)
-  - 7 years (2012 - 2018)
+  - 7 years
   
-We will read in the data from Github.com, and do some preliminary exploration:
+We will read in the data from GitHub.com, and do some preliminary exploration:
 
 ```{r data}
 
@@ -42,18 +45,18 @@ We will read in the data from Github.com, and do some preliminary exploration:
 ohi_data <- read_csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/Reference/Lessons_in_OHI/coding_exercise/scores.csv")
 
 
-## do a quick exploration of the data:
+## do an initial exploration of the data (i.e., what functions do you use to become familiar with a dataset):
 
 
 
 ```
 
-
+What information did you learn about the data from your explorations? 
 
 
 ## Task 1
 
-Help make these data more human readable by including the full goal name (vs. the 2 letter abbreviations) and the country name.  
+Please help make these data more human readable by including the full goal name (vs. the 2 letter abbreviation) and the country name.  
 
 Here is a table that includes the goal name and description: https://github.com/OHI-Science/ohi-global/blob/draft/global_supplement/tables/ten_goals.csv
 
@@ -62,9 +65,10 @@ Here is a table with the region names: https://github.com/OHI-Science/ohi-global
 
 ```{r human readable}
 
-## Write code needed to update ohi_data to include the full goal name and the country name.
+## Write code needed to update the ohi_data to include the full goal name and the country name.
 
 
+## Write code to save the new version of the data frame.
 
 
 ```
@@ -94,11 +98,11 @@ One of the countries has no data.  Figure out which one.
 
 ## Task 3
 
-Create a plot showing the goal and Index scores for the United States of America from 2012 to 2017. 
+Create a plot showing all 10 goal scores and the "Index" score for the United States of America from 2012 to 2017. 
 
 ```{r US}
 
-## Code to create plot of USA of goal and Index scores across years
+## Code to create plot of USA of 10 goal and Index scores across years
 
 
 
@@ -107,7 +111,7 @@ Create a plot showing the goal and Index scores for the United States of America
 
 ## Task 4
 
-For each country and goal, calculate the average score across all years (i.e., each country should have N=11 scores when finished).
+For each country and goal (i.e., the 10 goal + 1 Index score), calculate the average score across all years (note: each country should have N=11 scores when finished).
 
 ```{r across year avg}
 
@@ -118,7 +122,7 @@ For each country and goal, calculate the average score across all years (i.e., e
 ```
 
 
-Create a plot that shows the distribution of Index scores of all countries.
+Create a plot that shows the distribution of *Index* scores of all countries.
 
 ```{r across year avg}
 
@@ -129,30 +133,8 @@ Create a plot that shows the distribution of Index scores of all countries.
 ```
 
 
+
 ## Task 5
-
-For each year and goal (including "Index"), determine the average score across all countries (The data frame should have 11*7=77 rows when finished).  
-
-```{r global scores}
-
-## Code to get global average scores for each goal and year
-
-
-```
-
-Create a plot showing average global scores for each goal (and the Index) from 2012 to 2018.   
-
-```{r global scores plot}
-
-## Code to create plot of average global goal scores across time for each goal/Index
-
-
-```
-
-Which goals tend to have high scores? Low scores?  Can you see any patterns over time?
-
-
-## Task 6
 Figure out which goals have the most NA values for scores in 2018.  Which ones have the least?  
 
 ```{r missing data}
