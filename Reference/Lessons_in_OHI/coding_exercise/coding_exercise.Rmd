@@ -5,9 +5,14 @@ output: html_document
 
 ## Instructions
 
-You will have 24 hours to complete this activity. You will work directly in this document, using code chunks (gray parts) to wrangle, analyze, and visualize data according to the instructions. (NOTE: all code *must* be in the gray code chunks)
+You will have 24 hours to complete this activity. You will work directly in this Rmarkdown document:
 
-As necessary, provide responses to questions as well as any notes you make to document your workflow.  This information can be included in the code chunks and/or in the text of the Rmarkdown file.  
+* writing code to wrangle, analyze, and visualize the data in the gray "code chunk" portion of the document 
+* answering questions (and providing additional insights/thoughts) in the text portion of the document
+
+Note: If you are unfamiliar with Rmarkdown, that is ok....just add your code to the gray code chunks and run it like you would in any .R file. 
+
+As well as answering the specific questions throughout the document, be sure to document your workflow.  This information can be included in the code chunks as well as the text of the Rmarkdown file.  
 
 Once you have finished, please add your last name to the file name (e.g., frazier_coding_exercise.Rmd) and send to halpern@nceas.ucsb.edu. You can also provide a knitted html version of this file as well, but this is not necessary.
 
@@ -19,7 +24,8 @@ Please contact frazier@nceas.ucsb.edu if you have any questions about this exerc
 
 ## Packages
 
-Add the packages you will use to this code chunk.  We start by loading the `readr` package, which we use to read in the dataset below.
+Add the packages you will use to the following code chunk.  We start by loading the `readr` package, which we will use to read in dataset.
+
 ```{r setup}
 
 ## loading packages
@@ -45,7 +51,7 @@ We will read in the data from GitHub.com, and do some preliminary exploration:
 ohi_data <- read_csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2019/gh-pages/Reference/Lessons_in_OHI/coding_exercise/scores.csv")
 
 
-## do an initial exploration of the data (i.e., what functions do you use to become familiar with a dataset):
+## do an initial exploration of the data (i.e., what functions do you use to familiarize yourself with a dataset):
 
 
 
