@@ -11,14 +11,15 @@ You will have 24 hours to complete this activity. You will work directly in this
 - answer questions and provide additional insights/thoughts
 - document workflow
 
-Note: If you are unfamiliar with Rmarkdown, that is no problem; just add your code to the gray code chunks and treat it like any .R file. Text can be added in the white parts of the document.
+Note: If you are unfamiliar with Rmarkdown, that is no problem; just add your code to the gray code chunks and treat it like any .R file. Text can be added to the white parts of the document.
 
-Once you have finished, please add your last name to the file name (e.g., frazier_coding_exercise.Rmd) and send to halpern@nceas.ucsb.edu. You can also provide a knitted html version of this file as well, but this is not necessary.
+Once you have finished, please add your last name to the file name (e.g., NAME_coding_exercise.Rmd) and send to: Ben Halpern and Melanie Frazier (halpern@nceas.ucsb.edu and frazier@nceas.ucsb.edu). 
+You can also provide a knitted html version of this file as well, but this is not necessary.
 
 You will be evaluated on: coding ability, documentation of code, and communication of results.     
 
 
-Please contact frazier@nceas.ucsb.edu if you have any questions about this exercise.
+Please contact Melanie (frazier@nceas.ucsb.edu) if you have any questions about this exercise.
 
 
 ## Packages
@@ -129,7 +130,7 @@ For each country and goal (i.e., the 10 goal + 1 Index scores), calculate the av
 
 Create a plot that shows the distribution (e.g., histogram or barplot or ??) of *Index* scores of all countries.
 
-```{r across year avg}
+```{r across year plot}
 
 ## Code to create a plot showing distribution of country Index scores
 
