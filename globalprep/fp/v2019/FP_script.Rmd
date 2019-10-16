@@ -1,0 +1,131 @@
+---
+title: 'OHI: Food Provision'
+author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+    theme: cerulean
+    highlight: haddock
+    includes: 
+      in_header: '../../../workflow/templates/ohi_hdr.html'
+  pdf_document:
+    toc: true
+---
+
+# Methods
+
+```{r}
+
+## load libraries
+library(dplyr)
+library(tidyr)
+library(here)
+
+setwd(here::here("globalprep","fp","v2019"))
+
+## Load FAO-specific user-defined functions
+source('http://ohi-science.org/ohiprep_v2019/workflow/R/common.R')
+
+```
+
+
+# Import Output Data: Mariculture data
+
+Mariculture production in tonnes.
+```{r}
+
+mar <- read.csv('../../mar/v2019/output/MAR_FP_data.csv')
+
+```
+
+Fisheries data.
+```{r}
+
+fis <- read.csv("../../fis/v2019/output/FP_fis_catch.csv") %>%
+  dplyr::select(rgn_id, year, fis_t = fis_catch)
+
+```
+
+# Wrangle 
+
+## Tidy MAR data
+```{r}
+
+mar <- mar %>%
+  group_by(rgn_id, year) %>%
+  summarize(mar_t = sum(value, na.rm=TRUE)) %>%
+  dplyr::select(rgn_id, year, mar_t) %>%
+  ungroup()
+
+# this one is turning to NA in FP
+filter(mar, rgn_id ==95) # ok, this makes sense
+
+```
+
+## Tidy FIS data
+
+```{r}
+
+fis <- fis %>%
+  mutate(fis_t = ifelse(fis_t==0, NA, fis_t)) %>%  # 11 NA values is correct
+  group_by(rgn_id) %>%
+  arrange(year) %>%
+  fill(fis_t) %>% 
+  ungroup()
+
+```
+
+## Combine MAR and FIS
+
+Adjust years so they are equivalent.
+```{r}
+
+adjust <- max(mar$year) - max(fis$year)
+
+mar <- mar %>%
+  mutate(year = year - adjust)
+
+tmp <- full_join(fis, mar, by=c('rgn_id', 'year'), all=TRUE)
+
+## If NA, turn it into a 0 before weighting
+tmp <- tmp %>%
+  mutate(fis_t = ifelse(is.na(fis_t), 0, fis_t)) %>%
+  mutate(mar_t = ifelse(is.na(mar_t), 0, mar_t)) %>%
+  mutate(w_fis = fis_t/(fis_t + mar_t)) %>%
+  mutate(w_fis = ifelse(mar_t==0 & fis_t == 0, NA, w_fis)) %>%
+  filter(year >= 2005) %>%
+  dplyr::select(rgn_id, year, w_fis) 
+
+hist(tmp$w_fis)
+
+```
+
+# Data check
+
+Compare to previous year data (a big jump in fish data, so not super compatible, but should be correlated at least)
+```{r}
+
+compare <- read.csv("../../fp/v2018/output/wildcaught_weight.csv") %>%
+  rename(w_fis_old = w_fis) %>%
+  left_join(tmp, by=c('rgn_id', 'year'))
+plot(compare$w_fis_old, compare$w_fis)
+abline(0, 1, col="red")
+
+```
+
+# Save data
+
+```{r}
+
+write.csv(tmp, 'output/wildcaught_weight.csv', row.names=FALSE)
+
+## add gf file (no gapfilling)
+tmp_gf <- tmp %>%
+  mutate(w_fis = 0) %>%
+  dplyr::select(rgn_id, year, gapfilled=w_fis)
+
+write.csv(tmp_gf, 'output/wildcaught_weight_gf.csv', row.names=FALSE)
+
+```
+
