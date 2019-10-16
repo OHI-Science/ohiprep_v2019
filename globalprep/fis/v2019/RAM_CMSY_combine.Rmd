@@ -171,11 +171,20 @@ B/Bmsy values for each catch record are generated (for the species where this is
 
 
 write.csv(data_gf, "output/fis_bbmsy_gf.csv", row.names=FALSE) 
- 
+
+data_gf <- read.csv("output/fis_bbmsy_gf.csv") 
+
 bbmsy <- data_gf %>%
   dplyr::select(rgn_id, stock_id, year, bbmsy) %>%
-  filter(!is.na(bbmsy))
+  dplyr::filter(!is.na(bbmsy))
+  
+bbmsy_dups_fixed <- bbmsy %>%
+  group_by(rgn_id, stock_id, year) %>%
+  summarise(bbmsy = mean(bbmsy)) %>% ## account for the duplicated TaxonName/CommonName noted in "catch_data_prep.Rmd"...
+  ungroup()
 
-write.csv(bbmsy, "output/fis_bbmsy.csv", row.names=FALSE) 
+
+write.csv(bbmsy_dups_fixed, "output/fis_bbmsy.csv", row.names=FALSE) 
+
 ```
 

@@ -222,6 +222,9 @@ Look at which entries that don't have a Taxon key match. Search taxon in [Sea Ar
 ```{r, eval=FALSE}
 
 taxonkey <- read_excel(file.path(IMAS_d2019, "Codes.xlsx"), sheet = "Taxa")
+
+taxonkey[duplicated(taxonkey[,2:3]),] ## this shows that there is one TaxonName/CommonName that are the same, with two different TaxonKeys... this presents a problem in the future, as this will have TWO values for each bbmsy calculation.. We fix this later in RAM_CMSY_combine.Rmd by group_by() and averaging the final bbmsy values for each rgn and fao id...
+
 stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn.csv'))
 
 ## check diffs - no differences. 
@@ -247,6 +250,7 @@ Add taxa to the stock catch by region.
 
 ## read in modified taxon key table
 taxonkey <- read.csv("int/watson_taxon_key_v2019.csv", stringsAsFactors = FALSE)
+
 stock_rgn <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn.csv'))
 
 # check
@@ -364,7 +368,6 @@ min_tons = 1000
 ## read in catch data created above
 df <- read_csv(file.path(dir_M,'git-annex/globalprep/fis/v2019/int/stock_catch_by_rgn_taxa.csv'))
 
-
 ## create dataset ready to run through catch-only models
 stks <- df %>%
               filter(TaxonKey >= 600000,               #remove all records of catch reported at higher taxonomic levels than species
@@ -403,6 +406,8 @@ taxon_res = read_csv('output/taxon_resilience_lookup.csv') %>%
  - Add the resilience information to the stks dataframe created above, and re-write it to the output folder. 
  
 ```{r prep_data_bbmsy1, eval=FALSE}
+stks <- read_csv("output/stock_catch_no_res.csv")
+
 stks_res <- stks %>%
               dplyr::left_join(taxon_res, by = "CommonName") %>%                  #add resilience information
               dplyr::select(year, TaxonName, CommonName, Resilience, fao_rgn, stock_id, TaxonKey, tons) 

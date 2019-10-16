@@ -61,7 +61,6 @@ Read in catch data aggregated from half degree cell to OHI region [catch_data_pr
 
 catch <- read_csv('output/stock_catch.csv') %>%
           rename(common = CommonName)
-
 ```
 
 # Catch-MSY
@@ -114,6 +113,8 @@ write.csv(cmsy_bbmsy,file='output/cmsy_bbmsy.csv', row.names=FALSE)
 Explore why there are some NAs (I think non convergance)
 
 ```{r nas, eval=F}
+
+cmsy_bbmsy <- read_csv("output/cmsy_bbmsy.csv") 
 
 nas <- cmsy_bbmsy %>%
   group_by(stock_id)%>%
