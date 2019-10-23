@@ -96,12 +96,17 @@ indexInd <- read.csv(file.path(rawFolder,"IndexInd.csv"))
 indexNInd <- read.csv(file.path(rawFolder, "IndexNInd.csv"))
 taxa <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Taxa")
 country <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Country")
+gear <- read_excel(file.path(rawFolder, "Codes.xlsx"), sheet = "Gear") %>%
+  dplyr::select(FGearCode, FleetGearName) %>%
+  unique() ## Need to include the gear in this because we will use this for softbottom habitat pressure
 
 master <- indexInd %>%
    dplyr::full_join(indexNInd, by = c("ID","IYear", "CNumber", "Taxonkey", "Gear", "FGearCode", "NumCells"))  %>%
   dplyr::left_join(country, by = c("CNumber" = "Country")) %>%
   dplyr::left_join(taxa, by = c("Taxonkey" = "TaxonKey")) %>%
-    dplyr::select(ID, Year = IYear, CountryName = `FAO name`, TaxonName, CommonName, IndReported = Reported.x, IndIUU = IUUTotal.x, IndDiscards = Discards.x, NIndReported = Reported.y, NIndIUU = IUUTotal.y, NIndDiscards = Discards.y )
+  dplyr::left_join(gear, by = c("FGearCode")) %>%
+    dplyr::select(ID, Year = IYear, CountryName = `FAO name`, TaxonName, CommonName, IndReported = Reported.x, IndIUU = IUUTotal.x, IndDiscards = Discards.x, NIndReported = Reported.y, NIndIUU = IUUTotal.y, NIndDiscards = Discards.y, FleetGearName )
+
 
 master[is.na(master)] <- 0 #replace NA values with 0
 
