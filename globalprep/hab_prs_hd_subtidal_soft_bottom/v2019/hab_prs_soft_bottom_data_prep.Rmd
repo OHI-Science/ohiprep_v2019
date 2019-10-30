@@ -1,5 +1,5 @@
 ---
-title: "OHI 2018 - Soft bottom pressure data prep"
+title: "OHI 2019 - Soft bottom pressure data prep"
 author: "*Compiled on `r date()` by `r Sys.info()['user']`*"
 output: 
   html_document:
@@ -212,7 +212,7 @@ ohi_regions_wgs <-  st_transform(ohi_regions, proj4string(catch_crs))
 catch_rasts <- list.files(file.path(dir_M, "git-annex/globalprep/hab_prs_hd_subtidal_soft_bottom/v2019/int"), pattern = 'catch_count_.*.tif', full.names = TRUE)
 
 catch_rasts <- catch_rasts[c(1,2,3,4,5,6,7,8,9,10,11,13)] #Filter for the 12 missing rasters to run in the loop
-
+# catch_rasts <- catch_rasts[c(9,10,11,13)]
 
 #registering cores for parallel processing
 registerDoParallel(4)
@@ -246,20 +246,19 @@ sb_catch_rgn <- sb_catch_rgn %>%
 write.csv(sb_catch_rgn, file = file.path(here(), "globalprep/hab_prs_hd_subtidal_soft_bottom/v2019/int", sprintf("sb_catch_rgn_%s.csv", catch_year)), row.names=FALSE)
 
 }
-# still need 2011, 2012, 2013, 2015
+
 
 ```
 
 ## Standarized catches per soft-bottom area
 
 ```{r, eval=FALSE}
-area <-  read.csv("https://raw.githubusercontent.com/OHI-Science/ohiprep_v2018/master/globalprep/hab_prs_hd_subtidal_soft_bottom/v2016/output/habitat_extent_softbottom.csv")
-
+area <-  read.csv(file.path(here(), "globalprep/hab_prs_hd_subtidal_soft_bottom/v2016/output/habitat_extent_softbottom.csv"))
 
 ## Read in csv for each year and combine them in one data frame
 
 ## Make sure you are in the correct wd
-#setwd("~/github/ohiprep_v2018/globalprep/hab_prs_hd_subtidal_soft_bottom/v2018") 
+#setwd("~/github/ohiprep_v2019/globalprep/hab_prs_hd_subtidal_soft_bottom/v2019") 
 
 files <- list.files("int", pattern = "sb_catch_rgn_.*.csv", full.names = TRUE) 
 
@@ -281,14 +280,14 @@ max <- data_density %>%
 
 write.csv(max, "int/reference_point_max.csv", row.names=FALSE) ##Make sure you are working in the correct working directory
 
-
 ## Reference point = max values accroass all years
 ref_point <- read.csv("int/reference_point_max.csv")
 ref_point_max <- max(ref_point$maxDensity)
 
-##ref_point = 7052.172 (year 2015)
+##ref_point 2018 = 7052.172 (year 2015)
+##ref_point 2019 = 45.76575 (year 2015)
 
-## cheking for distribution of data. In the past density data happens to be very skewed
+## checking for distribution of data. In the past density data happens to be very skewed
 hist(data_density$density) ## Yes, very skewed data
 
 ## rescale the density: 
@@ -312,6 +311,7 @@ write.csv(ref_median, "int/reference_point_median.csv", row.names=FALSE)
 
 
 ref_point_median <- min(ref_median$ref_median) # 0.8590695
+                                               # 0.99485138963124
 
 
 ## Rescale for second time:  
@@ -336,7 +336,7 @@ data_rescaled_2 <- data_rescaled %>%
 ```{r, eval=FALSE}
 
   ## check against old data
-old <- read.csv("../v2017/output/habitat_health_softbottom.csv") %>%
+old <- read.csv("../v2018/output/habitat_health_softbottom.csv") %>%
   dplyr::filter(year == 2014) %>% 
   dplyr::select(rgn_id, old_health=health)
   
@@ -373,7 +373,7 @@ save_dir <- "output"
 
 condition_pressure <- data_rescaled_2 %>%
   mutate(habitat = "soft_bottom") %>%
-  mutate(pressure = 1 - density_rescaled_median_capped) %>% ##trasnfomes it back into pressure-measssure
+  mutate(pressure = 1 - density_rescaled_median_capped) %>% ##transformes it back into pressure-measssure
   dplyr::select(rgn_id, year, habitat, health=density_rescaled_median_capped, pressure) %>%
   filter(!is.na(pressure))
 
@@ -427,7 +427,7 @@ Compare trend, pressure, pressure output to last year's values
 ```{r, eval=FALSE}
 
  ## Health data
-old_health <- read.csv("../v2017/output/habitat_health_softbottom.csv") %>%
+old_health <- read.csv("../v2018/output/habitat_health_softbottom.csv") %>%
   dplyr::filter(year == 2014) %>% 
   dplyr::select(rgn_id, old_health=health)
   
@@ -442,7 +442,7 @@ abline(0,1, col = 'red')
 
 
 ##Pressure
-old_pressure <- read.csv("../v2017/output/hd_sb_subtidal.csv") %>%
+old_pressure <- read.csv("../v2018/output/hd_sb_subtidal.csv") %>%
   dplyr::filter(year == 2014) %>% 
   dplyr::select(rgn_id, old_pressure= pressure_score)
   
@@ -460,12 +460,13 @@ compare_pressure_plot <- ggplot(data = compare_pressure, aes(x = old_pressure, y
   geom_abline(color = "red")
 
 plot(compare_plot)
+library(plotly)
 ggplotly(compare_pressure_plot)
 
 
 
 ##Trend
-old_trend <- read.csv("../v2017/output/habitat_trend_softbottom.csv") %>%
+old_trend <- read.csv("../v2018/output/habitat_trend_softbottom.csv") %>%
   dplyr::filter(year == 2014) %>% 
   dplyr::select(rgn_id, old_trend= trend)
   
